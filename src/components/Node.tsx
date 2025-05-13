@@ -107,18 +107,29 @@ const Node = ({ basic, live, online }: NodeProps) => {
       }}
       className="hover:shadow-2xl hover:scale-102 hover:cursor-pointer"
     >
-      <Flex direction="column" gap="3">
-        <Flex justify="between" align="center">
+      <Flex direction="column" gap={isMobile ? "2" : "4"}>
+        <Flex justify="between" align="center" my={isMobile ? "-1" : "0"}>
           <Flex justify="start" align="center">
             <Flag flag={basic.region} />
-            <Text
-              weight="bold"
-              size={isMobile ? "3" : "4"}
-              truncate
-              style={{ maxWidth: "200px" }}
-            >
-              {basic.name}
-            </Text>
+            <Flex direction="column">
+              <Text
+                weight="bold"
+                size={isMobile ? "2" : "4"}
+                truncate
+                style={{ maxWidth: "200px" }}
+              >
+                {basic.name}
+              </Text>
+              <Text
+                color="gray"
+                hidden={!isMobile}
+                style={{
+                  marginTop: "-3px",
+                  fontSize: "0.728rem",
+                }}
+                className="text-sm"
+              >{formatUptime(liveData.uptime)}</Text>
+            </Flex>
           </Flex>
 
           <Badge color={online ? "green" : "red"} variant="soft">
@@ -184,14 +195,18 @@ const Node = ({ basic, live, online }: NodeProps) => {
             </Text>
           </Flex>
           <Flex justify="between" gap="2" hidden={!isMobile}>
+            <Text size="2">{t("card_network_speed")}</Text>
             <Text size="2">
-              ↑ {uploadSpeed}/s ({totalUpload})
-            </Text>
-            <Text size="2">
-              ↓ {downloadSpeed}/s ({totalDownload})
+              ↑ {uploadSpeed}/s ↓ {downloadSpeed}/s
             </Text>
           </Flex>
-          <Flex justify="between">
+          <Flex justify="between" gap="2" hidden={!isMobile}>
+            <Text size="2">{t("card_total_traffic")}</Text>
+            <Text size="2">
+              ↑ {totalUpload} ↓ {totalDownload}
+            </Text>
+          </Flex>
+          <Flex justify="between" hidden={isMobile}>
             <Text size="2" color="gray">
               {t("card_uptime")}
             </Text>
@@ -219,22 +234,22 @@ export const NodeGrid = ({ nodes, liveData }: NodeGridProps) => {
   const sortedNodes = [...nodes].sort((a, b) => {
     const aOnline = onlineNodes.includes(a.uuid);
     const bOnline = onlineNodes.includes(b.uuid);
-    
+
     // 如果一个在线一个离线，在线的排前面
     if (aOnline !== bOnline) {
       return aOnline ? -1 : 1;
     }
-    
+
     // 都是在线或都是离线的情况下，按权重降序排序
     return b.weight - a.weight;
   });
 
   return (
     <Box
+    className="gap-2 md:gap-4"
       style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
-        gap: "1.5rem",
+        gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
         padding: "1rem",
         width: "100%",
         boxSizing: "border-box",
@@ -242,14 +257,15 @@ export const NodeGrid = ({ nodes, liveData }: NodeGridProps) => {
     >
       {sortedNodes.map((node) => {
         const isOnline = onlineNodes.includes(node.uuid);
-        const nodeData = liveData && liveData.data ? liveData.data[node.uuid] : undefined;
-        
+        const nodeData =
+          liveData && liveData.data ? liveData.data[node.uuid] : undefined;
+
         return (
-          <Node 
-            key={node.uuid} 
-            basic={node} 
-            live={nodeData} 
-            online={isOnline} 
+          <Node
+            key={node.uuid}
+            basic={node}
+            live={nodeData}
+            online={isOnline}
           />
         );
       })}
