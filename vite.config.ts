@@ -5,6 +5,9 @@ import Pages from "vite-plugin-pages";
 
 // https://vite.dev/config/
 import type { UserConfig } from "vite";
+import * as fs from "fs";
+import * as path from "path";
+import dotenv from "dotenv";
 
 export default defineConfig(({ mode }) => {
   const baseConfig: UserConfig = {
@@ -30,6 +33,13 @@ export default defineConfig(({ mode }) => {
   };
 
   if (mode === "development") {
+    const envPath = path.resolve(process.cwd(), ".env.development");
+    if (fs.existsSync(envPath)) {
+      const envConfig = dotenv.parse(fs.readFileSync(envPath));
+      for (const k in envConfig) {
+        process.env[k] = envConfig[k];
+      }
+    }
     baseConfig.server = {
       proxy: {
         "/api": {
