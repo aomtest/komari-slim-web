@@ -1,11 +1,19 @@
-import { Callout, Text, Box } from "@radix-ui/themes";
-import Node from "../components/Node";
-import type { NodeBasicInfo, NodeResponse } from "../types/NodeBasicInfo";
-import Footer from "../components/Footer";
+import {
+  Callout,
+  Card,
+  Flex,
+  Text
+} from "@radix-ui/themes";
 import React from "react";
-import type { LiveDataResponse } from "../types/LiveData";
-import NavBar from "../components/NavBar";
 import { useTranslation } from "react-i18next";
+import Footer from "../components/Footer";
+import NavBar from "../components/NavBar";
+import { NodeGrid } from "../components/Node";
+import type { LiveDataResponse } from "../types/LiveData";
+import {
+  formatBytes,
+  type NodeResponse,
+} from "../types/NodeBasicInfo";
 
 const Index = () => {
   const [t] = useTranslation();
@@ -95,7 +103,7 @@ const Index = () => {
               </Callout.Icon>
               <Callout.Text>
                 <Text size="2" weight="medium">
-                  {t('warn_https')}
+                  {t("warn_https")}
                 </Text>
               </Callout.Text>
             </Callout.Root>
@@ -121,32 +129,104 @@ const Index = () => {
               </Callout.Icon>
               <Callout.Text>
                 <Text size="2" weight="medium">
-                  {t('warn_websocket')}
+                  {t("warn_websocket")}
                 </Text>
               </Callout.Text>
             </Callout.Root>
+            <Card className="mx-4">
+              <div className="flex md:flex-row flex-col md:gap-4 gap-1 justify-between md:items-center">
+                <Flex
+                  direction="row"
+                  justify="between"
+                  align="center"
+                  flexBasis={"20%"}
+                >
+                  <Text>{t("current_time")}</Text>
+                  <Text>{new Date().toLocaleString()}</Text>
+                </Flex>
+                <div
+                  className="h-6 w-0.5 md:block hidden"
+                  style={{ backgroundColor: "var(--accent-5)" }}
+                />
+                <Flex
+                  direction="row"
+                  justify="between"
+                  align="center"
+                  flexBasis={"20%"}
+                >
+                  <Text>{t("current_online")}</Text>
+                  <Text>
+                    {live_data?.data?.online.length ?? 0} /{" "}
+                    {node?.data?.length ?? 0}
+                  </Text>
+                </Flex>
+                <div
+                  className="h-6 w-0.5 md:block hidden"
+                  style={{ backgroundColor: "var(--accent-5)" }}
+                />
 
-            <Box
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
-                gap: "1.5rem",
-                padding: "1rem",
-                width: "100%",
-                boxSizing: "border-box",
-              }}
-            >
-              {node &&
-                node.data &&
-                node.data.map((n: NodeBasicInfo) => (
-                  <Node
-                    key={n.uuid}
-                    basic={n}
-                    live={live_data?.data.data[n.uuid]}
-                    online={!!live_data?.data.online?.includes(n.uuid)}
-                  />
-                ))}
-            </Box>
+                <Flex
+                  direction="row"
+                  justify="between"
+                  align="center"
+                  flexBasis={"20%"}
+                >
+                  <Text>{t("region_overview")}</Text>
+                  <Text>
+                    {node?.data
+                      ? Object.entries(
+                          node.data.reduce((acc, item) => {
+                            acc[item.region] = (acc[item.region] || 0) + 1;
+                            return acc;
+                          }, {} as Record<string, number>)
+                        ).length
+                      : 0}
+                  </Text>
+                </Flex>
+                <div
+                  className="h-6 w-0.5 md:block hidden"
+                  style={{ backgroundColor: "var(--accent-5)" }}
+                />
+
+                <Flex
+                  direction="row"
+                  justify="between"
+                  align="center"
+                  flexBasis={"20%"}
+                >
+                  <Text>{t("traffic_overview")}</Text>
+                  <Text>
+                    {"↑ " +
+                      formatBytes(
+                        live_data?.data?.data
+                          ? Object.values(live_data.data.data).reduce(
+                              (acc, node) => {
+                                return acc + (node.network.totalUp || 0);
+                              },
+                              0
+                            )
+                          : 0
+                      )}{" "}
+                    /{" "}
+                    {"↓ " +
+                      formatBytes(
+                        live_data?.data?.data
+                          ? Object.values(live_data.data.data).reduce(
+                              (acc, node) => {
+                                return acc + (node.network.totalDown || 0);
+                              },
+                              0
+                            )
+                          : 0
+                      )}
+                  </Text>
+                </Flex>
+              </div>
+            </Card>
+            <NodeGrid
+              nodes={node?.data ?? []}
+              liveData={live_data?.data ?? { online: [], data: {} }}
+            />
           </main>
           <Footer />
         </div>

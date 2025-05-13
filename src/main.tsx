@@ -15,7 +15,6 @@ import "./i18n/config"; // Import i18next config
 import { Suspense } from "react";
 import { useRoutes } from "react-router-dom";
 import { routes } from "./routes";
-
 const App = () => {
   const [appearance, setAppearance] = useLocalStorage<Appearance>(
     "appearance",
@@ -36,11 +35,13 @@ const App = () => {
   );
   const routing = useRoutes(routes);
   return (
-    <ThemeContext.Provider value={themeContextValue}>
-      <Theme appearance={appearance} accentColor={color} scaling="110%">
-          <Suspense fallback={<div>Loading...</div>}>{routing}</Suspense>
-      </Theme>
-    </ThemeContext.Provider>
+    <Suspense fallback={<div>Loading...</div>}>
+      <ThemeContext.Provider value={themeContextValue}>
+        <Theme appearance={appearance} accentColor={color} scaling="110%">
+          {routing}
+        </Theme>
+      </ThemeContext.Provider>
+    </Suspense>
   );
 };
 

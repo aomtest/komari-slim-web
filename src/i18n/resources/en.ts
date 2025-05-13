@@ -61,6 +61,10 @@ const en = {
     edit:  "Edit",
     token: "Token",
     save: "Save",
+    current_online: "Current Online",
+    current_time: "Current Time",
+    region_overview: "Region",
+    traffic_overview: "Traffic Overview",
   },
 };
 

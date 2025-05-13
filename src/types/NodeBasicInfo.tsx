@@ -24,7 +24,7 @@ export interface NodeBasicInfo {
   /** 版本号 */
   version: string;
   /** 权重 */
-  weigth: number;
+  weight: number;
   /** 创建时间 */
   CreatedAt: string;
   /** 更新时间 */

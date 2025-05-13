@@ -1,7 +1,8 @@
 import * as React from "react";
-import { Dialog, Flex, Text, TextField, Button, Box } from "@radix-ui/themes";
+import { Dialog, Flex, Text, TextField, Button, Box, IconButton } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { TablerSettings } from "./Icones/Tabler";
 
 type MeResp = { logged_in: boolean; username: string };
 
@@ -78,7 +79,7 @@ const LoginDialog = () => {
 
   return me.logged_in ? (
     <Link to="/admin">
-      <Button>{me.username}</Button>
+      <IconButton><TablerSettings/></IconButton>
     </Link>
   ) : (
     <Dialog.Root>

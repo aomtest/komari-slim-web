@@ -61,6 +61,10 @@ const zh_CN = {
     edit:  "编辑",
     token: "令牌",
     save:  "保存",
+    current_online: "当前在线",
+    current_time: "当前时间",
+    region_overview: "点亮地区",
+    traffic_overview: "流量概览",
   },
 };
 

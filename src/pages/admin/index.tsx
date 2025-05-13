@@ -5,8 +5,7 @@ import { Flex, IconButton, Strong, Text } from "@radix-ui/themes";
 import NodeCard from "../../components/admin/NodeCard";
 import { useTranslation } from "react-i18next";
 import React from "react";
-import {PlusIcon } from "@radix-ui/react-icons";
-
+import { PlusIcon } from "@radix-ui/react-icons";
 type MeResp = { logged_in: boolean; username: string };
 
 const Admin = () => {
@@ -50,9 +49,11 @@ const Admin = () => {
   }, []);
   return (
     <Flex direction="column" gap="2">
-      <Text size="6"><Strong>{t("panel_welcome", {  username: me.username })}</Strong></Text>
+      <Text size="6">
+        <Strong>{t("panel_welcome", { username: me.username })}</Strong>
+      </Text>
       <Flex justify="end" gap="3">
-        <IconButton>
+        <IconButton >
           <PlusIcon />
         </IconButton>
       </Flex>
