@@ -75,9 +75,9 @@ const Index = () => {
     <>
       <div
         style={{ backgroundColor: "var(--accent-1)" }}
-        className="flex justify-center min-w-dvw min-h-dvh"
+        className="flex justify-center min-h-screen w-full"
       >
-        <div className="flex flex-col md:w-3/5 w-full min-h-full">
+        <div className="flex flex-col md:mx-4 w-full min-h-full">
           <NavBar />
           <main className="m-1">
             <Callout.Root m="2" hidden={ishttps} color="red">
