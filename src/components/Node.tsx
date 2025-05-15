@@ -31,21 +31,20 @@ function formatOs(os: string): string {
 
 /** 将字节转换为人类可读的大小 */
 
-/** 格式化秒*/
-export function formatUptime(seconds: number): string {
-  const [t] = useTranslation();
-  if (!seconds || seconds < 0) return "0S";
-  const d = Math.floor(seconds / 86400);
-  const h = Math.floor((seconds % 86400) / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = Math.floor(seconds % 60);
-  const parts = [];
-  if (d) parts.push(`${d} ${t("time_day")}`);
-  if (h) parts.push(`${h} ${t("time_hour")}`);
-  if (m) parts.push(`${m} ${t("time_minute")}`);
-  if (s || parts.length === 0) parts.push(`${s} ${t("time_second")}`);
-  return parts.join(" ");
-}
+  /** 格式化秒*/
+  export function formatUptime(seconds: number, t: TFunction): string {
+    if (!seconds || seconds < 0) return t("nodeCard.time_second", { val: 0 });
+    const d = Math.floor(seconds / 86400);
+    const h = Math.floor((seconds % 86400) / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.floor(seconds % 60);
+    const parts = [];
+    if (d) parts.push(`${d} ${t("nodeCard.time_day")}`);
+    if (h) parts.push(`${h} ${t("nodeCard.time_hour")}`);
+    if (m) parts.push(`${m} ${t("nodeCard.time_minute")}`);
+    if (s || parts.length === 0) parts.push(`${s} ${t("nodeCard.time_second")}`);
+    return parts.join(" ");
+  }
 export function formatBytes(bytes: number): string {
   const units = ["B", "KB", "MB", "GB", "TB", "PB"];
   let size = bytes;
@@ -128,12 +127,12 @@ const Node = ({ basic, live, online }: NodeProps) => {
                   fontSize: "0.728rem",
                 }}
                 className="text-sm"
-              >{formatUptime(liveData.uptime)}</Text>
+              >{formatUptime(liveData.uptime, t)}</Text>
             </Flex>
           </Flex>
 
           <Badge color={online ? "green" : "red"} variant="soft">
-            {online ? t("card_online") : t("card_offline")}
+            {online ? t("nodeCard.online") : t("nodeCard.offline")}
           </Badge>
         </Flex>
 
@@ -150,10 +149,10 @@ const Node = ({ basic, live, online }: NodeProps) => {
           </Flex>
           <Flex className="md:flex-col flex-row md:gap-1 gap-4">
             {/* CPU Usage */}
-            <UsageBar label={t("card_cpu")} value={liveData.cpu.usage} />
+            <UsageBar label={t("nodeCard.cpu")} value={liveData.cpu.usage} />
 
             {/* Memory Usage */}
-            <UsageBar label={t("card_ram")} value={memoryUsagePercent} />
+            <UsageBar label={t("nodeCard.ram")} value={memoryUsagePercent} />
             <Text
               className="md:block hidden"
               size="1"
@@ -165,7 +164,7 @@ const Node = ({ basic, live, online }: NodeProps) => {
             </Text>
 
             {/* Disk Usage */}
-            <UsageBar label={t("card_disk")} value={diskUsagePercent} />
+            <UsageBar label={t("nodeCard.disk")} value={diskUsagePercent} />
             <Text
               size="1"
               className="md:block hidden"
@@ -179,7 +178,7 @@ const Node = ({ basic, live, online }: NodeProps) => {
 
           <Flex justify="between" hidden={isMobile}>
             <Text size="2" color="gray">
-              {t("card_network_speed")}
+              {t("nodeCard.networkSpeed")}
             </Text>
             <Text size="2">
               ↑ {uploadSpeed}/s ↓ {downloadSpeed}/s
@@ -188,29 +187,29 @@ const Node = ({ basic, live, online }: NodeProps) => {
 
           <Flex justify="between" hidden={isMobile}>
             <Text size="2" color="gray">
-              {t("card_total_traffic")}
+              {t("nodeCard.totalTraffic")}
             </Text>
             <Text size="2">
-              ↑ {totalUpload}/s ↓ {totalDownload}/s
+              ↑ {totalUpload} ↓ {totalDownload}
             </Text>
           </Flex>
           <Flex justify="between" gap="2" hidden={!isMobile}>
-            <Text size="2">{t("card_network_speed")}</Text>
+            <Text size="2">{t("nodeCard.networkSpeed")}</Text>
             <Text size="2">
               ↑ {uploadSpeed}/s ↓ {downloadSpeed}/s
             </Text>
           </Flex>
           <Flex justify="between" gap="2" hidden={!isMobile}>
-            <Text size="2">{t("card_total_traffic")}</Text>
+            <Text size="2">{t("nodeCard.totalTraffic")}</Text>
             <Text size="2">
               ↑ {totalUpload} ↓ {totalDownload}
             </Text>
           </Flex>
           <Flex justify="between" hidden={isMobile}>
             <Text size="2" color="gray">
-              {t("card_uptime")}
+              {t("nodeCard.uptime")}
             </Text>
-            <Text size="2">{formatUptime(liveData.uptime)}</Text>
+            <Text size="2">{formatUptime(liveData.uptime, t)}</Text>
           </Flex>
         </Flex>
       </Flex>
@@ -226,6 +225,7 @@ type NodeGridProps = {
 };
 
 import { Box } from "@radix-ui/themes";
+import type { TFunction } from "i18next";
 export const NodeGrid = ({ nodes, liveData }: NodeGridProps) => {
   // 确保liveData是有效的
   const onlineNodes = liveData && liveData.online ? liveData.online : [];

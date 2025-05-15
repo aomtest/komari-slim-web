@@ -48,6 +48,7 @@ const LoginDialog = () => {
       }
     } catch (err) {
       setErrorMsg("Network error");
+      console.error(err);
     } finally {
       setIsLoading(false);
     }
@@ -84,12 +85,12 @@ const LoginDialog = () => {
   ) : (
     <Dialog.Root>
       <Dialog.Trigger>
-        <Button>{t("login")}</Button>
+        <Button>{t("login.title")}</Button>
       </Dialog.Trigger>
       <Dialog.Content maxWidth="450px">
-        <Dialog.Title>{t("login")}</Dialog.Title>
+        <Dialog.Title>{t("login.title")}</Dialog.Title>
         <Dialog.Description size="2" mb="4">
-          {t("login_desc")}
+          {t("login.desc")}
         </Dialog.Description>
         <Box
           onSubmit={(e) => {
@@ -102,7 +103,7 @@ const LoginDialog = () => {
           <Flex direction="column" gap="3">
             <label>
               <Text as="div" size="2" mb="1" weight="bold">
-                {t("username")}
+                {t("login.username")}
               </Text>
               <TextField.Root
                 value={username}
@@ -115,20 +116,20 @@ const LoginDialog = () => {
             </label>
             <label>
               <Text as="div" size="2" mb="1" weight="bold">
-                {t("password")}
+                {t("login.password")}
               </Text>
               <TextField.Root
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onKeyDown={handleKeyDown}
                 type="password"
-                placeholder={t("password_placeholder")}
+                placeholder={t("login.password_placeholder")}
                 disabled={isLoading}
               />
             </label>
             <label hidden={require2Fac}>
               <Text as="div" size="2" mb="1" weight="bold">
-                {t("two_factor")}
+                {t("login.two_factor")}
               </Text>
               <TextField.Root
                 value={twoFac}
@@ -150,7 +151,7 @@ const LoginDialog = () => {
               style={{ opacity: isLoading || !isFormValid ? 0.6 : 1 }}
               onClick={handleLogin}
             >
-              {isLoading ? "Logging in..." : t("login")}
+              {isLoading ? "Logging in..." : t("login.title")}
             </Button>
             <Button
               onClick={() => {
@@ -160,7 +161,7 @@ const LoginDialog = () => {
               disabled={isLoading}
               type="button" // Prevent form submission
             >
-              {t("login_with_github")}
+              {t("login.login_with_github")}
             </Button>
           </Flex>
         </Box>

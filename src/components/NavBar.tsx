@@ -22,14 +22,16 @@ const NavBar = () => {
           </label>
         </div>
       </div>
-      <IconButton
-        variant="soft"
-        onClick={() => {
-          window.open("https://github.com/komari-monitor", "_blank");
-        }}
-      >
-        <GitHubLogoIcon />
-      </IconButton>
+      {process.env.NODE_ENV == "development" && (
+        <IconButton
+          variant="soft"
+          onClick={() => {
+            window.open("https://github.com/komari-monitor", "_blank");
+          }}
+        >
+          <GitHubLogoIcon />
+        </IconButton>
+      )}
       <ThemeSwitch />
       <ColorSwitch />
       <LanguageSwitch />

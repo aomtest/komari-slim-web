@@ -1,19 +1,11 @@
-import {
-  Callout,
-  Card,
-  Flex,
-  Text
-} from "@radix-ui/themes";
+import { Callout, Card, Flex, Text } from "@radix-ui/themes";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import Footer from "../components/Footer";
 import NavBar from "../components/NavBar";
 import { NodeGrid } from "../components/Node";
 import type { LiveDataResponse } from "../types/LiveData";
-import {
-  formatBytes,
-  type NodeResponse,
-} from "../types/NodeBasicInfo";
+import { formatBytes, type NodeResponse } from "../types/NodeBasicInfo";
 
 const Index = () => {
   const [t] = useTranslation();
@@ -38,7 +30,6 @@ const Index = () => {
   // WebSocket connection effect
   React.useEffect(() => {
     let ws: WebSocket | null = null;
-    let interval: number;
     let reconnectTimeout: number;
 
     const connect = () => {
@@ -51,7 +42,9 @@ const Index = () => {
         try {
           const data = JSON.parse(event.data);
           setLiveData(data);
-        } catch (e) {}
+        } catch (e) {
+          console.error(e);
+        }
       };
       ws.onerror = () => {
         ws?.close();
@@ -65,7 +58,7 @@ const Index = () => {
 
     connect();
 
-    interval = window.setInterval(() => {
+    const interval = window.setInterval(() => {
       if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send("get");
       }
@@ -82,12 +75,24 @@ const Index = () => {
   return (
     <>
       <div
-        style={{ backgroundColor: "var(--accent-1)" }}
-        className="flex justify-center min-h-screen w-full"
+        style={{
+          backgroundColor: "var(--accent-1)",
+          height: "100vh",
+          width: "100vw",
+          overflow: "hidden",
+        }}
+        className="flex justify-center"
       >
-        <div className="flex flex-col md:mx-4 w-full min-h-full">
+        <div className="flex flex-col md:mx-4 w-full h-full">
           <NavBar />
-          <main className="m-1">
+          <main
+            className="m-1"
+            style={{
+              flex: 1,
+              overflowY: "auto",
+              minHeight: 0,
+            }}
+          >
             <Callout.Root m="2" hidden={ishttps} color="red">
               <Callout.Icon>
                 <svg
@@ -107,7 +112,6 @@ const Index = () => {
                 </Text>
               </Callout.Text>
             </Callout.Root>
-
             <Callout.Root
               m="2"
               hidden={showCallout}
@@ -226,9 +230,9 @@ const Index = () => {
             <NodeGrid
               nodes={node?.data ?? []}
               liveData={live_data?.data ?? { online: [], data: {} }}
-            />
+            />{" "}
+            <Footer />
           </main>
-          <Footer />
         </div>
       </div>
     </>

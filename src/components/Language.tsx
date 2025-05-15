@@ -7,8 +7,8 @@ interface LanguageSwitch {
 }
 
 const languages: { code: string; name: string }[] = [
-  { code: "zh_CN", name: "简体中文" },
-  { code: "en", name: "English" },
+  { code: "zh-CN", name: "简体中文" },
+  { code: "en-US", name: "English" },
 ];
 
 const LanguageSwitch = ({
