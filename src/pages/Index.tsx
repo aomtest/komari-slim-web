@@ -77,11 +77,8 @@ const Index = () => {
       <div
         style={{
           backgroundColor: "var(--accent-1)",
-          height: "100vh",
-          width: "100vw",
-          overflow: "hidden",
         }}
-        className="flex justify-center"
+        className="flex justify-center w-full"
       >
         <div className="flex flex-col md:mx-4 w-full h-full">
           <NavBar />
@@ -89,7 +86,6 @@ const Index = () => {
             className="m-1"
             style={{
               flex: 1,
-              overflowY: "auto",
               minHeight: 0,
             }}
           >
