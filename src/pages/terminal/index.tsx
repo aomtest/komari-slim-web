@@ -151,7 +151,7 @@ const TerminalPage = () => {
       </div>
       <div
         ref={terminalRef}
-        className="min-h-screen min-w-screen"
+        className="h-screen w-screen"
       />
     </div>
   );
