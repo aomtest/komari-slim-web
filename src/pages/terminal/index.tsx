@@ -126,9 +126,9 @@ const TerminalPage = () => {
   }, []);
 
   return (
-    <div className="flex min-h-screen min-w-screen justify-center bg-black flex-col">
-      <div className="flex justify-center items-center fixed top-2 w-full z-10">
-        <Callout.Root hidden={!callout} className="mx-auto" color="red">
+    <div className="flex justify-center bg-black flex-col">
+      <div className="flex justify-center items-center fixed top-2 left-auto right-auto w-full z-10">
+        <Callout.Root hidden={!callout} className="mx-auto" variant="soft" color="red">
           <Callout.Icon>
             <TablerAlertTriangleFilled />
           </Callout.Icon>
@@ -151,7 +151,7 @@ const TerminalPage = () => {
       </div>
       <div
         ref={terminalRef}
-        className="bg-black p-2 rounded-sm m-2 min-h-[96vh]"
+        className="min-h-screen min-w-screen"
       />
     </div>
   );
