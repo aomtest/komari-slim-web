@@ -45,7 +45,7 @@ const TerminalPage = () => {
     terminalInstance.current = term;
 
     // 连接WebSocket
-    const ws = new WebSocket(`./api/admin/client/${uuid}}/terminal`);
+    const ws = new WebSocket(`./api/admin/client/${uuid}/terminal`);
     ws.binaryType = "arraybuffer";
     wsRef.current = ws;
 
