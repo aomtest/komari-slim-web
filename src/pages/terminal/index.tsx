@@ -41,7 +41,6 @@ const TerminalPage = () => {
     term.loadAddon(searchAddon);
 
     term.open(terminalRef.current);
-    fitAddon.fit();
     terminalInstance.current = term;
 
     // 连接WebSocket
@@ -51,6 +50,7 @@ const TerminalPage = () => {
 
     // 发送终端尺寸
     ws.onopen = () => {
+      fitAddon.fit();
       const dimensions = { cols: term.cols, rows: term.rows };
       ws.send(
         JSON.stringify({
@@ -129,17 +129,24 @@ const TerminalPage = () => {
     <div className="flex min-h-screen min-w-screen justify-center bg-black flex-col">
       <div className="flex justify-center items-center fixed top-2 w-full z-10">
         <Callout.Root hidden={!callout} className="mx-auto" color="red">
-         <Callout.Icon>
+          <Callout.Icon>
             <TablerAlertTriangleFilled />
-         </Callout.Icon>
-         <Callout.Text>
-           <Flex align="center">
-             <span>{t("warn_https")}</span>
-             <IconButton variant="ghost" size="1" className="ml-4" onClick={() => {setCallout(false);}}>
+          </Callout.Icon>
+          <Callout.Text>
+            <Flex align="center">
+              <span>{t("warn_https")}</span>
+              <IconButton
+                variant="ghost"
+                size="1"
+                className="ml-4"
+                onClick={() => {
+                  setCallout(false);
+                }}
+              >
                 <Cross1Icon />
-           </IconButton>
-           </Flex>
-         </Callout.Text>
+              </IconButton>
+            </Flex>
+          </Callout.Text>
         </Callout.Root>
       </div>
       <div
