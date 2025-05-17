@@ -12,6 +12,7 @@ import { Pencil1Icon, CopyIcon } from "@radix-ui/react-icons";
 import type { NodeInfo } from "../../types/admin/NodeInfo";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import { TablerTerminal } from "../Icones/Tabler";
 
 interface NodeCardProps {
   data: NodeInfo;
@@ -39,7 +40,7 @@ const NodeCard = ({ data }: NodeCardProps) => {
         const responseData: TokenResponse = await response.json();
         setToken(responseData.token);
       } catch (error) {
-        console.error('Failed to load token:', error);
+        console.error("Failed to load token:", error);
       } finally {
         setIsLoading(false);
       }
@@ -134,44 +135,62 @@ const NodeCard = ({ data }: NodeCardProps) => {
         align="center"
         mt="4"
       >
+        <a
+          href={`../terminal?uuid=${data.uuid}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <IconButton variant="soft">
+            <TablerTerminal />{" "}
+          </IconButton>
+        </a>
         {/** Edit Button */}
-        <Dialog.Root open={isDialogOpen} onOpenChange={(open) => {
-          setIsDialogOpen(open);
-          if (open) loadToken();
-        }}>
+        <Dialog.Root
+          open={isDialogOpen}
+          onOpenChange={(open) => {
+            setIsDialogOpen(open);
+            if (open) loadToken();
+          }}
+        >
           <Dialog.Trigger>
             <Button variant="surface">
               <Pencil1Icon />
             </Button>
           </Dialog.Trigger>
           <Dialog.Content maxWidth="450px">
-            <Dialog.Title>{t('edit')}</Dialog.Title>
+            <Dialog.Title>{t("edit")}</Dialog.Title>
             <Flex gap="3" direction="column" justify="start">
               <label>
                 <Text as="div" size="2" mb="1" weight="bold">
                   {t("name")}
                 </Text>
-                <TextField.Root defaultValue={data.name} onChange={(e) => data.name = e.target.value}></TextField.Root>
+                <TextField.Root
+                  defaultValue={data.name}
+                  onChange={(e) => (data.name = e.target.value)}
+                ></TextField.Root>
               </label>
               <label>
                 <Text as="div" size="2" mb="1" weight="bold">
                   {t("token")}
                 </Text>
-                <TextField.Root 
-                  defaultValue={token} 
+                <TextField.Root
+                  defaultValue={token}
                   onChange={(e) => setToken(e.target.value)}
                   disabled={isLoading}
-                  placeholder={isLoading ? t('loading') : ''}
+                  placeholder={isLoading ? t("loading") : ""}
                 ></TextField.Root>
               </label>
               <label>
                 <Text as="div" size="2" mb="1" weight="bold">
                   {t("markup")}
                 </Text>
-                <TextField.Root defaultValue={data.markup} onChange={(e) => data.markup = e.target.value}></TextField.Root>
+                <TextField.Root
+                  defaultValue={data.markup}
+                  onChange={(e) => (data.markup = e.target.value)}
+                ></TextField.Root>
               </label>
               <Button onClick={() => edit()} disabled={isLoading}>
-                {t('save')}
+                {t("save")}
               </Button>
             </Flex>
           </Dialog.Content>

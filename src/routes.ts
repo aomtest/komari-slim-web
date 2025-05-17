@@ -21,4 +21,8 @@ export const routes: RouteObject[] = [
       { path: "settings", element: React.createElement(Settings) },
     ],
   },
+  {
+    path: "/terminal",
+    element: React.createElement(lazy(() => import("./pages/terminal"))),
+  },
 ];
