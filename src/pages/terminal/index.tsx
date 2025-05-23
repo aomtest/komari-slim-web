@@ -119,6 +119,32 @@ const TerminalPage = () => {
     };
     document.addEventListener("keydown", handleKeyDown);
 
+    // 处理右键菜单
+    const handleContextMenu = (e: MouseEvent) => {
+      if (e.ctrlKey || ws.readyState !== WebSocket.OPEN){
+        return;
+      }
+      const selection = window.getSelection();
+      const hasSelection = selection && selection.toString().length > 0;
+      if (hasSelection) {
+        e.preventDefault();
+        const selectedText = selection.toString();
+        navigator.clipboard.writeText(selectedText).finally(() => {
+          term.focus();
+          term.clearSelection();
+        });
+      } else {
+        e.preventDefault();
+        term.focus();
+        navigator.clipboard.readText().then((text) => {
+            const encoder = new TextEncoder();
+            const uint8Array = encoder.encode(text);
+            ws.send(uint8Array);
+        });
+      }
+    };
+
+    document.addEventListener("contextmenu", handleContextMenu);
     // 清理函数
     return () => {
       term.dispose();
@@ -130,7 +156,7 @@ const TerminalPage = () => {
       }
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("keydown", handleKeyDown);
-
+      document.removeEventListener("contextmenu", handleContextMenu);
     };
   }, []);
 
