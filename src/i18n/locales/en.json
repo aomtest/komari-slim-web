@@ -18,7 +18,11 @@
   "current_time": "Current Time",
   "region_overview": "Region",
   "traffic_overview": "Traffic Overview",
-
+  "terminal":{
+    "title": "Terminal",
+    "disconnect":"Disconnected",
+    "no_active_connection":"No active connection"
+  },
   "nodeCard": {
     "os": "OS",
     "arch": "Architecture",

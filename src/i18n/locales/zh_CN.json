@@ -18,7 +18,11 @@
   "current_time": "当前时间",
   "region_overview": "点亮地区",
   "traffic_overview": "流量概览",
-
+  "terminal":{
+    "title": "终端",
+    "disconnect":"连接已断开",
+    "no_active_connection":"没有活动连接"
+  },
   "nodeCard": {
     "os": "操作系统",
     "arch": "架构",

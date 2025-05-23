@@ -18,6 +18,21 @@ const TerminalPage = () => {
   const uuid = params.get("uuid");
   const [callout, setCallout] = useState(false);
   const [t] = useTranslation();
+
+  useEffect(() => {
+    if (uuid === null) {
+      window.location.href = "/";
+    }
+    fetch("./api/admin/client/list")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.length === 0) {
+          alert(t("terminal.no_active_connection"));
+        }
+        const client = data.find((item: { uuid: string }) => item.uuid === uuid);
+        document.title = `${t("terminal.title")} - ${client?.name || t("terminal.title")}`;
+      });
+  }, []);
   useEffect(() => {
     setCallout(window.location.protocol !== "https:");
     // 初始化终端
@@ -50,15 +65,8 @@ const TerminalPage = () => {
 
     // 发送终端尺寸
     ws.onopen = () => {
-      fitAddon.fit();
-      const dimensions = { cols: term.cols, rows: term.rows };
-      ws.send(
-        JSON.stringify({
-          type: "resize",
-          cols: dimensions.cols,
-          rows: dimensions.rows,
-        })
-      );
+      handleResize(); // 撑满窗口区域
+      handleResize(); // resize
     };
 
     // 接收服务器数据
@@ -122,13 +130,19 @@ const TerminalPage = () => {
       }
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("keydown", handleKeyDown);
+
     };
   }, []);
 
   return (
-    <div className="flex justify-center bg-black flex-col">
+    <div className="flex justify-center bg-black md:bg-accent-3 flex-col">
       <div className="flex justify-center items-center fixed top-2 left-auto right-auto w-full z-10">
-        <Callout.Root hidden={!callout} className="mx-auto" variant="soft" color="red">
+        <Callout.Root
+          hidden={!callout}
+          className="mx-auto"
+          variant="soft"
+          color="red"
+        >
           <Callout.Icon>
             <TablerAlertTriangleFilled />
           </Callout.Icon>
@@ -149,10 +163,9 @@ const TerminalPage = () => {
           </Callout.Text>
         </Callout.Root>
       </div>
-      <div
-        ref={terminalRef}
-        className="h-screen w-screen"
-      />
+      <div className="m-0 md:p-4 p-0 w-screen h-screen bg-black">
+        <div ref={terminalRef} className="h-full w-full" />
+      </div>
     </div>
   );
 };
