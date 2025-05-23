@@ -80,7 +80,7 @@ const TerminalPage = () => {
     };
 
     // 连接关闭
-    ws.onclose = () => term.write("\nConnection closed");
+    ws.onclose = () => term.write(`\n ${t("terminal.disconnect")}`);
 
     // 处理用户输入并发送到服务器
     term.onData((data) => {
