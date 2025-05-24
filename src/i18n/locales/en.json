@@ -18,10 +18,10 @@
   "current_time": "Current Time",
   "region_overview": "Region",
   "traffic_overview": "Traffic Overview",
-  "terminal":{
+  "terminal": {
     "title": "Terminal",
-    "disconnect":"Disconnected",
-    "no_active_connection":"No active connection"
+    "disconnect": "Disconnected",
+    "no_active_connection": "No active connection"
   },
   "nodeCard": {
     "os": "OS",
@@ -37,9 +37,10 @@
     "time_day": "day",
     "time_hour": "h",
     "time_minute": "min",
-    "time_second": "s"
+    "time_second": "s",
+    "swap": "Swap",
+    "last_updated": "Last Update"
   },
-
   "login": {
     "title": "Login",
     "desc": "Log in to the Komari control panel.",
@@ -51,7 +52,6 @@
     "error_required_fields": "Username and password are required",
     "login_button": "Login"
   },
-
   "color": {
     "gray": "Gray",
     "gold": "Gold",
@@ -79,5 +79,21 @@
     "lime": "Lime",
     "mint": "Mint",
     "sky": "Sky"
-  }
+  },
+  "chart": {
+    "cpu_usage": "CPU Usage",
+    "ram_used": "Ram Used",
+    "swap_used": "Swap Used",
+    "process": "Processes",
+    "network": "Network Speed",
+    "network_up": "Upload",
+    "network_down": "Download",
+    "connections": "Connections",
+    "tcp_connections": "TCP",
+    "udp_connections": "UDP",
+    "mem_used": "Ram",
+    "disk_used": "Disk"
+  },
+  "instance": "Instance",
+  "home_title": "Komari Monitor"
 }

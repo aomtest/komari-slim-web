@@ -18,10 +18,10 @@
   "current_time": "当前时间",
   "region_overview": "点亮地区",
   "traffic_overview": "流量概览",
-  "terminal":{
+  "terminal": {
     "title": "终端",
-    "disconnect":"连接已断开",
-    "no_active_connection":"没有活动连接"
+    "disconnect": "连接已断开",
+    "no_active_connection": "没有活动连接"
   },
   "nodeCard": {
     "os": "操作系统",
@@ -37,9 +37,10 @@
     "time_day": "天",
     "time_hour": "时",
     "time_minute": "分",
-    "time_second": "秒"
+    "time_second": "秒",
+    "swap": "交换",
+    "last_updated": "最后上报"
   },
-
   "login": {
     "title": "登录",
     "desc": "登录到 Komari 控制面板。",
@@ -51,7 +52,6 @@
     "error_required_fields": "用户名和密码是必填项",
     "login_button": "登录"
   },
-
   "color": {
     "gray": "灰色",
     "gold": "金色",
@@ -79,5 +79,19 @@
     "lime": "青柠色",
     "mint": "薄荷色",
     "sky": "天蓝色"
-  }
+  },
+  "chart": {
+    "cpu_usage": "CPU 使用率",
+    "process": "进程数",
+    "network_up": "上传",
+    "network_down": "下载",
+    "connections": "连接数",
+    "tcp_connections": "TCP",
+    "udp_connections": "UDP",
+    "mem_used": "内存",
+    "swap_used": "虚拟内存",
+    "disk_used": "磁盘"
+  },
+  "instance": "实例",
+  "home_title": "Komari Monitor"
 }

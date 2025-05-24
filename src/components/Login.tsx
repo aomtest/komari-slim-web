@@ -29,7 +29,7 @@ const LoginDialog = () => {
     setIsLoading(true);
 
     try {
-      const res = await fetch("./api/login", {
+      const res = await fetch("/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -58,7 +58,7 @@ const LoginDialog = () => {
   React.useEffect(() => {
     const fetchMe = async () => {
       try {
-        const resp = await fetch("./api/me", { cache: "force-cache" });
+        const resp = await fetch("/api/me", { cache: "force-cache" });
         const data = await resp.json();
         if (resp.status === 200) {
           setMe({ logged_in: data.logged_in, username: data.username });

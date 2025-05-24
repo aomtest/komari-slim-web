@@ -11,7 +11,11 @@ const Settings = lazy(() => import("./pages/admin/settings"));
 export const routes: RouteObject[] = [
   {
     path: "/",
-    element: React.createElement(Index),
+    element: React.createElement(lazy(() => import("./pages/_layout"))),
+    children: [
+      { index: true, element: React.createElement(Index) },
+      { path: "instance/:uuid", element: React.createElement(lazy(() => import("./pages/instance"))) },
+    ]
   },
   {
     path: "/admin",

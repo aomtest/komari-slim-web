@@ -31,20 +31,20 @@ function formatOs(os: string): string {
 
 /** 将字节转换为人类可读的大小 */
 
-  /** 格式化秒*/
-  export function formatUptime(seconds: number, t: TFunction): string {
-    if (!seconds || seconds < 0) return t("nodeCard.time_second", { val: 0 });
-    const d = Math.floor(seconds / 86400);
-    const h = Math.floor((seconds % 86400) / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = Math.floor(seconds % 60);
-    const parts = [];
-    if (d) parts.push(`${d} ${t("nodeCard.time_day")}`);
-    if (h) parts.push(`${h} ${t("nodeCard.time_hour")}`);
-    if (m) parts.push(`${m} ${t("nodeCard.time_minute")}`);
-    if (s || parts.length === 0) parts.push(`${s} ${t("nodeCard.time_second")}`);
-    return parts.join(" ");
-  }
+/** 格式化秒*/
+export function formatUptime(seconds: number, t: TFunction): string {
+  if (!seconds || seconds < 0) return t("nodeCard.time_second", { val: 0 });
+  const d = Math.floor(seconds / 86400);
+  const h = Math.floor((seconds % 86400) / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = Math.floor(seconds % 60);
+  const parts = [];
+  if (d) parts.push(`${d} ${t("nodeCard.time_day")}`);
+  if (h) parts.push(`${h} ${t("nodeCard.time_hour")}`);
+  if (m) parts.push(`${m} ${t("nodeCard.time_minute")}`);
+  if (s || parts.length === 0) parts.push(`${s} ${t("nodeCard.time_second")}`);
+  return parts.join(" ");
+}
 export function formatBytes(bytes: number): string {
   const units = ["B", "KB", "MB", "GB", "TB", "PB"];
   let size = bytes;
@@ -98,122 +98,126 @@ const Node = ({ basic, live, online }: NodeProps) => {
   const totalDownload = formatBytes(liveData.network.totalDown);
   //const totalTraffic = formatBytes(liveData.network.totalUp + liveData.network.totalDown);
   return (
-    <Card
-      style={{
-        width: "100%",
-        margin: "0 auto",
-        transition: "all 0.2s ease-in-out",
-      }}
-      className="hover:shadow-2xl hover:scale-102 hover:cursor-pointer"
-    >
-      <Flex direction="column" gap={isMobile ? "2" : "4"}>
-        <Flex justify="between" align="center" my={isMobile ? "-1" : "0"}>
-          <Flex justify="start" align="center">
-            <Flag flag={basic.region} />
-            <Flex direction="column">
-              <Text
-                weight="bold"
-                size={isMobile ? "2" : "4"}
-                truncate
-                style={{ maxWidth: "200px" }}
-              >
-                {basic.name}
+    <Link to={`/instance/${basic.uuid}`}>
+      <Card
+        style={{
+          width: "100%",
+          margin: "0 auto",
+          transition: "all 0.2s ease-in-out",
+        }}
+        className="hover:shadow-2xl hover:scale-102 hover:cursor-pointer"
+      >
+        <Flex direction="column" gap={isMobile ? "2" : "4"}>
+          <Flex justify="between" align="center" my={isMobile ? "-1" : "0"}>
+            <Flex justify="start" align="center">
+              <Flag flag={basic.region} />
+              <Flex direction="column">
+                <Text
+                  weight="bold"
+                  size={isMobile ? "2" : "4"}
+                  truncate
+                  style={{ maxWidth: "200px" }}
+                >
+                  {basic.name}
+                </Text>
+                <Text
+                  color="gray"
+                  hidden={!isMobile}
+                  style={{
+                    marginTop: "-3px",
+                    fontSize: "0.728rem",
+                  }}
+                  className="text-sm"
+                >
+                  {formatUptime(liveData.uptime, t)}
+                </Text>
+              </Flex>
+            </Flex>
+
+            <Badge color={online ? "green" : "red"} variant="soft">
+              {online ? t("nodeCard.online") : t("nodeCard.offline")}
+            </Badge>
+          </Flex>
+
+          <Separator size="4" />
+
+          <Flex direction="column" gap="2">
+            <Flex justify="between" hidden={isMobile}>
+              <Text size="2" color="gray">
+                OS
               </Text>
+              <Text size="2">
+                {formatOs(basic.os)} - {basic.arch}
+              </Text>
+            </Flex>
+            <Flex className="md:flex-col flex-row md:gap-1 gap-4">
+              {/* CPU Usage */}
+              <UsageBar label={t("nodeCard.cpu")} value={liveData.cpu.usage} />
+
+              {/* Memory Usage */}
+              <UsageBar label={t("nodeCard.ram")} value={memoryUsagePercent} />
               <Text
+                className="md:block hidden"
+                size="1"
                 color="gray"
-                hidden={!isMobile}
-                style={{
-                  marginTop: "-3px",
-                  fontSize: "0.728rem",
-                }}
-                className="text-sm"
-              >{formatUptime(liveData.uptime, t)}</Text>
+                style={{ marginTop: "-4px" }}
+              >
+                ({formatBytes(liveData.ram.used)} /{" "}
+                {formatBytes(basic.mem_total)})
+              </Text>
+
+              {/* Disk Usage */}
+              <UsageBar label={t("nodeCard.disk")} value={diskUsagePercent} />
+              <Text
+                size="1"
+                className="md:block hidden"
+                color="gray"
+                style={{ marginTop: "-4px" }}
+              >
+                ({formatBytes(liveData.disk.used)} /{" "}
+                {formatBytes(basic.disk_total)})
+              </Text>
+            </Flex>
+
+            <Flex justify="between" hidden={isMobile}>
+              <Text size="2" color="gray">
+                {t("nodeCard.networkSpeed")}
+              </Text>
+              <Text size="2">
+                ↑ {uploadSpeed}/s ↓ {downloadSpeed}/s
+              </Text>
+            </Flex>
+
+            <Flex justify="between" hidden={isMobile}>
+              <Text size="2" color="gray">
+                {t("nodeCard.totalTraffic")}
+              </Text>
+              <Text size="2">
+                ↑ {totalUpload} ↓ {totalDownload}
+              </Text>
+            </Flex>
+            <Flex justify="between" gap="2" hidden={!isMobile}>
+              <Text size="2">{t("nodeCard.networkSpeed")}</Text>
+              <Text size="2">
+                ↑ {uploadSpeed}/s ↓ {downloadSpeed}/s
+              </Text>
+            </Flex>
+            <Flex justify="between" gap="2" hidden={!isMobile}>
+              <Text size="2">{t("nodeCard.totalTraffic")}</Text>
+              <Text size="2">
+                ↑ {totalUpload} ↓ {totalDownload}
+              </Text>
+            </Flex>
+            <Flex justify="between" hidden={isMobile}>
+              <Text size="2" color="gray">
+                {t("nodeCard.uptime")}
+              </Text>
+              <Text size="2">{formatUptime(liveData.uptime, t)}</Text>
             </Flex>
           </Flex>
-
-          <Badge color={online ? "green" : "red"} variant="soft">
-            {online ? t("nodeCard.online") : t("nodeCard.offline")}
-          </Badge>
         </Flex>
-
-        <Separator size="4" />
-
-        <Flex direction="column" gap="2">
-          <Flex justify="between" hidden={isMobile}>
-            <Text size="2" color="gray">
-              OS
-            </Text>
-            <Text size="2">
-              {formatOs(basic.os)} - {basic.arch}
-            </Text>
-          </Flex>
-          <Flex className="md:flex-col flex-row md:gap-1 gap-4">
-            {/* CPU Usage */}
-            <UsageBar label={t("nodeCard.cpu")} value={liveData.cpu.usage} />
-
-            {/* Memory Usage */}
-            <UsageBar label={t("nodeCard.ram")} value={memoryUsagePercent} />
-            <Text
-              className="md:block hidden"
-              size="1"
-              color="gray"
-              style={{ marginTop: "-4px" }}
-            >
-              ({formatBytes(liveData.ram.used)} / {formatBytes(basic.mem_total)}
-              )
-            </Text>
-
-            {/* Disk Usage */}
-            <UsageBar label={t("nodeCard.disk")} value={diskUsagePercent} />
-            <Text
-              size="1"
-              className="md:block hidden"
-              color="gray"
-              style={{ marginTop: "-4px" }}
-            >
-              ({formatBytes(liveData.disk.used)} /{" "}
-              {formatBytes(basic.disk_total)})
-            </Text>
-          </Flex>
-
-          <Flex justify="between" hidden={isMobile}>
-            <Text size="2" color="gray">
-              {t("nodeCard.networkSpeed")}
-            </Text>
-            <Text size="2">
-              ↑ {uploadSpeed}/s ↓ {downloadSpeed}/s
-            </Text>
-          </Flex>
-
-          <Flex justify="between" hidden={isMobile}>
-            <Text size="2" color="gray">
-              {t("nodeCard.totalTraffic")}
-            </Text>
-            <Text size="2">
-              ↑ {totalUpload} ↓ {totalDownload}
-            </Text>
-          </Flex>
-          <Flex justify="between" gap="2" hidden={!isMobile}>
-            <Text size="2">{t("nodeCard.networkSpeed")}</Text>
-            <Text size="2">
-              ↑ {uploadSpeed}/s ↓ {downloadSpeed}/s
-            </Text>
-          </Flex>
-          <Flex justify="between" gap="2" hidden={!isMobile}>
-            <Text size="2">{t("nodeCard.totalTraffic")}</Text>
-            <Text size="2">
-              ↑ {totalUpload} ↓ {totalDownload}
-            </Text>
-          </Flex>
-          <Flex justify="between" hidden={isMobile}>
-            <Text size="2" color="gray">
-              {t("nodeCard.uptime")}
-            </Text>
-            <Text size="2">{formatUptime(liveData.uptime, t)}</Text>
-          </Flex>
-        </Flex>
-      </Flex>
-    </Card>
+      </Card>
+    </Link>
   );
 };
 
@@ -226,6 +230,7 @@ type NodeGridProps = {
 
 import { Box } from "@radix-ui/themes";
 import type { TFunction } from "i18next";
+import { Link } from "react-router-dom";
 export const NodeGrid = ({ nodes, liveData }: NodeGridProps) => {
   // 确保liveData是有效的
   const onlineNodes = liveData && liveData.online ? liveData.online : [];
@@ -246,7 +251,7 @@ export const NodeGrid = ({ nodes, liveData }: NodeGridProps) => {
 
   return (
     <Box
-    className="gap-2 md:gap-4"
+      className="gap-2 md:gap-4"
       style={{
         display: "grid",
         gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
