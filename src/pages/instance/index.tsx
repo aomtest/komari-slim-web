@@ -108,6 +108,20 @@ export default function InstancePage() {
             </Text>
             <Text size="2">{node?.arch}</Text>
           </Flex>
+          <Flex align={"center"} gap="2">
+            <Text size="2" weight="bold" wrap="nowrap">
+              {t("nodeCard.virtualization")}
+            </Text>
+            <Text size="2">{node?.virtualization ?? "Unknown"}</Text>
+          </Flex>
+        </label>
+        <label className="flex flex-wrap gap-2">
+          <Flex align={"center"} gap="2">
+            <Text size="2" weight="bold" wrap="nowrap">
+              GPU
+            </Text>
+            <Text size="2">{node?.gpu_name ?? "Unknown"}</Text>
+          </Flex>
         </label>
         <label className="flex flex-wrap gap-2">
           <Flex align={"center"} gap="2">

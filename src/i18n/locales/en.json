@@ -39,7 +39,8 @@
     "time_minute": "min",
     "time_second": "s",
     "swap": "Swap",
-    "last_updated": "Last Update"
+    "last_updated": "Last Update",
+    "virtualization": "Virtualization"
   },
   "login": {
     "title": "Login",

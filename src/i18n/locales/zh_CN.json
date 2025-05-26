@@ -39,7 +39,8 @@
     "time_minute": "分",
     "time_second": "秒",
     "swap": "交换",
-    "last_updated": "最后上报"
+    "last_updated": "最后上报",
+    "virtualization": "虚拟化"
   },
   "login": {
     "title": "登录",
