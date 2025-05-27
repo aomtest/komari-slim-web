@@ -1,11 +1,11 @@
 import { useState } from "react";
 import type { NodeInfo } from "../../types/admin/NodeInfo";
 import { useEffect } from "react";
-import { Flex, IconButton, Strong, Text } from "@radix-ui/themes";
-import NodeCard from "../../components/admin/NodeCard";
+import { DataTable } from "@/components/admin/NodeTable";
 import { useTranslation } from "react-i18next";
 import React from "react";
 import { PlusIcon } from "@radix-ui/react-icons";
+import { Button } from "@/components/ui/button";
 type MeResp = { logged_in: boolean; username: string };
 
 const Admin = () => {
@@ -48,17 +48,24 @@ const Admin = () => {
     fetchMe();
   }, []);
   return (
-    <Flex direction="column" gap="2">
-      <Text size="6">
-        <Strong>{t("panel_welcome", { username: me.username })}</Strong>
-      </Text>
-      <Flex justify="end" gap="3">
-        <IconButton >
-          <PlusIcon />
-        </IconButton>
-      </Flex>
-      {node && node.map((n) => <NodeCard key={n.uuid} data={n} />)}
-    </Flex>
+    <div className="p-4">
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-bold">
+          {t("admin.nodeList", "节点列表")}
+        </h1>
+        <Button>
+          <PlusIcon className="mr-1" />
+          {t("admin.addNode", "添加节点")}
+        </Button>
+      </div>
+      <div>
+        {node ? (
+          <DataTable data={node} />
+        ) : (
+          <div>{t("admin.loading", "加载中...")}</div>
+        )}
+      </div>
+    </div>
   );
 };
 

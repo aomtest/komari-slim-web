@@ -19,17 +19,23 @@ export default defineConfig(({ mode }) => {
         extensions: ["tsx", "jsx"],
       }),
     ],
-    build:{
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
+      },
+    },
+    build: {
       assetsDir: "assets",
-      
+
       outDir: "dist",
-      rollupOptions:{
-        output:{ // go embed ignore files start with '_'
+      rollupOptions: {
+        output: {
+          // go embed ignore files start with '_'
           chunkFileNames: "assets/chunk-[name]-[hash].js",
           entryFileNames: "assets/entry-[name]-[hash].js",
-        }
-      }
-    }
+        },
+      },
+    },
   };
 
   if (mode === "development") {

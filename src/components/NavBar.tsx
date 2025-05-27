@@ -9,7 +9,7 @@ const NavBar = () => {
   return (
     <nav className="flex rounded-b-lg items-center gap-3 max-h-16 justify-end min-w-full p-2">
       <div className="mr-auto flex">
-        <img src="/assets/logo.png" alt="Komari Logo" className="w-10 object-cover mr-2 self-center"/>
+        {/* <img src="/assets/logo.png" alt="Komari Logo" className="w-10 object-cover mr-2 self-center"/> */}
         <Link to="/">
           <label className="text-3xl font-bold ">Komari</label>
         </Link>
