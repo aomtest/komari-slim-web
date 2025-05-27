@@ -501,7 +501,7 @@ export function DataTable({
           // 重新生成 weight
           const updatedData = newData.map((item, index) => ({
             ...item,
-            weight: -index, // 从 0 开始重新设置 weight
+            weight: index, // 从 0 开始重新设置 weight
           }));
 
           // 构造 { uuid: weight } 对象

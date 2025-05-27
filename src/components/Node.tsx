@@ -245,8 +245,8 @@ export const NodeGrid = ({ nodes, liveData }: NodeGridProps) => {
       return aOnline ? -1 : 1;
     }
 
-    // 都是在线或都是离线的情况下，按权重降序排序
-    return b.weight - a.weight;
+    // 都是在线或都是离线的情况下，按权重升序排序（权重大的在后面）
+    return a.weight - b.weight;
   });
 
   return (
