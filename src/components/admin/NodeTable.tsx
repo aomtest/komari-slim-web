@@ -70,6 +70,7 @@ import {
   GripVertical,
   Pencil,
   Trash2,
+  Terminal,
 } from "lucide-react";
 import {
   Dialog,
@@ -263,13 +264,22 @@ async function removeClient(uuid: string) {
   });
 }
 
-// 新增：单独的 ActionsCell 组件
 function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
   const refreshTable = React.useContext(DataTableRefreshContext);
   const [removing, setRemoving] = React.useState(false);
 
   return (
     <div className="flex gap-2 justify-center">
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="终端"
+        onClick={() =>
+          window.open(`/terminal?uuid=${row.original.uuid}`, "_blank")
+        }
+      >
+        <Terminal />
+      </Button>
       <EditDialog item={row.original} />
       <Dialog>
         <DialogTrigger asChild>
@@ -302,9 +312,7 @@ function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
               }}
               asChild
             >
-              <DialogTrigger>
-                {removing ? "删除中..." : "确认"}
-              </DialogTrigger>
+              <DialogTrigger>{removing ? "删除中..." : "确认"}</DialogTrigger>
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -401,7 +409,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => <ActionsCell row={row} />, // 修改为组件调用
+    cell: ({ row }) => <ActionsCell row={row} />,
   },
 ];
 

@@ -5,28 +5,28 @@ import { DataTable } from "@/components/admin/NodeTable";
 import { useTranslation } from "react-i18next";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
-// type MeResp = { logged_in: boolean; username: string };
 
 const Admin = () => {
   const { t } = useTranslation();
-  const [node, useNode] = useState<NodeInfo[] | null>(null);
+  const [nodes, setNodes] = useState<NodeInfo[] | null>(null);
+
   useEffect(() => {
     const fetchNodeInfo = async () => {
       try {
         const response = await fetch("./api/admin/client/list");
         if (!response.ok) {
-          useNode(null);
+          setNodes(null);
+          return;
         }
         const data: NodeInfo[] = await response.json();
-        useNode(data);
+        setNodes(data);
       } catch (error) {
-        useNode(null);
+        setNodes(null);
+        console.error("Failed to fetch node info:", error);
       }
     };
     fetchNodeInfo();
   }, []);
-
-  // 已删除me和setMe相关代码
 
   return (
     <div className="p-4">
@@ -40,8 +40,8 @@ const Admin = () => {
         </Button>
       </div>
       <div>
-        {node ? (
-          <DataTable data={node} />
+        {nodes ? (
+          <DataTable data={nodes} />
         ) : (
           <div>{t("admin.loading", "加载中...")}</div>
         )}
