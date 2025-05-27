@@ -5,6 +5,8 @@ export interface NodeBasicInfo {
   name: string;
   /** CPU型号 */
   cpu_name: string;
+  /** 虚拟化 */
+  virtualization: string;
   /** 系统架构 */
   arch: string;
   /** CPU核心数 */
@@ -25,6 +27,12 @@ export interface NodeBasicInfo {
   version: string;
   /** 权重 */
   weight: number;
+  /** 价格 */
+  price: number;
+  /** 账单周期（天）*/
+  billing_cycle: number;
+  /** 过期时间 */
+  expired_at: string;
   /** 创建时间 */
   CreatedAt: string;
   /** 更新时间 */
