@@ -3,10 +3,9 @@ import type { NodeInfo } from "../../types/admin/NodeInfo";
 import { useEffect } from "react";
 import { DataTable } from "@/components/admin/NodeTable";
 import { useTranslation } from "react-i18next";
-import React from "react";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
-type MeResp = { logged_in: boolean; username: string };
+// type MeResp = { logged_in: boolean; username: string };
 
 const Admin = () => {
   const { t } = useTranslation();
@@ -27,26 +26,8 @@ const Admin = () => {
     fetchNodeInfo();
   }, []);
 
-  const [me, setMe] = React.useState<MeResp>({
-    logged_in: false,
-    username: "",
-  });
+  // 已删除me和setMe相关代码
 
-  React.useEffect(() => {
-    const fetchMe = async () => {
-      try {
-        const resp = await fetch("./api/me", { cache: "force-cache" });
-        const data = await resp.json();
-        if (resp.status === 200) {
-          setMe({ logged_in: data.logged_in, username: data.username });
-        }
-      } catch (err) {
-        console.error("Failed to fetch user info", err);
-      }
-    };
-
-    fetchMe();
-  }, []);
   return (
     <div className="p-4">
       <div className="flex items-center justify-between mb-4">
