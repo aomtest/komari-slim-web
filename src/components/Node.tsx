@@ -4,7 +4,6 @@ import type { NodeBasicInfo } from "../types/NodeBasicInfo";
 import UsageBar from "./UsageBar";
 import Flag from "./Flag";
 import { useTranslation } from "react-i18next";
-import { useState, useEffect } from "react";
 
 function formatOs(os: string): string {
   const patterns = [
@@ -65,17 +64,7 @@ interface NodeProps {
 }
 const Node = ({ basic, live, online }: NodeProps) => {
   const [t] = useTranslation();
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const handleResize = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  const isMobile = useIsMobile();
   const defaultLive = {
     cpu: { usage: 0 },
     ram: { used: 0 },
@@ -231,6 +220,7 @@ type NodeGridProps = {
 import { Box } from "@radix-ui/themes";
 import type { TFunction } from "i18next";
 import { Link } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
 export const NodeGrid = ({ nodes, liveData }: NodeGridProps) => {
   // 确保liveData是有效的
   const onlineNodes = liveData && liveData.online ? liveData.online : [];

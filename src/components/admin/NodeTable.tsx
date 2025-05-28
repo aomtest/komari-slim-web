@@ -32,11 +32,9 @@ import {
 } from "@tanstack/react-table";
 import { z } from "zod";
 
-import { schema } from "@/components/admin/NodeTable/schema/node"; 
-import { DataTableRefreshContext } from "@/components/admin/NodeTable/schema/DataTableRefreshContext"; 
-import { EditDialog } from "./NodeTable/NodeEditDialog"; 
-import { TableCellViewer } from "./NodeTable/NodeDetailViewer"; 
-import { DragHandle, DraggableRow } from "./NodeTable/NodeTableDndComponents"; 
+import { EditDialog } from "./NodeTable/NodeEditDialog";
+import { TableCellViewer } from "./NodeTable/NodeDetailViewer";
+import { DragHandle, DraggableRow } from "./NodeTable/NodeTableDndComponents";
 
 import { Button } from "@/components/ui/button";
 
@@ -61,6 +59,7 @@ import {
   Copy,
   Trash2,
   Terminal,
+  PlusIcon,
 } from "lucide-react";
 import {
   Dialog,
@@ -70,6 +69,10 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import type { schema } from "./NodeTable/schema/node";
+import { DataTableRefreshContext } from "./NodeTable/schema/DataTableRefreshContext";
+import { t } from "i18next";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 async function removeClient(uuid: string) {
   await fetch(`/api/admin/client/${uuid}/remove`, {
@@ -226,15 +229,11 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
 ];
 
+export function DataTable() {
+  const [data, setData] = React.useState<z.infer<typeof schema>[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
 
-export function DataTable({
-  data: initialData,
-}: {
-  data: z.infer<typeof schema>[];
-}) {
-  const [data, setData] = React.useState(() =>
-    [...initialData].sort((a, b) => (a.weight ?? 0) - (b.weight ?? 0))
-  );
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -248,11 +247,31 @@ export function DataTable({
     useSensor(TouchSensor, {}),
     useSensor(KeyboardSensor, {})
   );
-
+  const isMobile = useIsMobile();
   const dataIds = React.useMemo<UniqueIdentifier[]>(
     () => data?.map(({ uuid }) => uuid) || [],
     [data]
   );
+
+  React.useEffect(() => {
+    setIsLoading(true);
+    setError(null);
+    fetch("/api/admin/client/list")
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((list: z.infer<typeof schema>[]) => {
+        setData([...list].sort((a, b) => (a.weight ?? 0) - (b.weight ?? 0)));
+        setIsLoading(false);
+      })
+      .catch((e) => {
+        console.error("Failed to fetch node list:", e);
+        if (data.length > 0) setError("无法加载节点列表。");
+      });
+  }, [data.length]);
 
   const table = useReactTable({
     data,
@@ -279,10 +298,16 @@ export function DataTable({
     const { active, over } = event;
     if (active && over) {
       if (active.id !== over.id) {
-        setData((data) => {
-          const oldIndex = dataIds.indexOf(active.id as string);
-          const newIndex = dataIds.indexOf(over.id as string);
-          const newData = arrayMove(data, oldIndex, newIndex);
+        setData((currentData) => {
+          const oldIndex = currentData.findIndex(
+            (item) => item.uuid === active.id
+          );
+          const newIndex = currentData.findIndex(
+            (item) => item.uuid === over.id
+          );
+          if (oldIndex === -1 || newIndex === -1) return currentData;
+
+          const newData = arrayMove(currentData, oldIndex, newIndex);
 
           // 重新生成 weight
           const updatedData = newData.map((item, index) => ({
@@ -292,7 +317,7 @@ export function DataTable({
 
           // 构造 { uuid: weight } 对象
           const orderObj = updatedData.reduce((acc, cur) => {
-            acc[cur.uuid] = cur.weight;
+            acc[cur.uuid] = cur.weight!;
             return acc;
           }, {} as Record<string, number>);
 
@@ -311,113 +336,151 @@ export function DataTable({
 
   // 新增：刷新数据的方法
   const refreshTable = React.useCallback(() => {
+    setIsLoading(true);
+    setError(null);
     fetch("/api/admin/client/list")
-      .then((res) => res.json())
-      .then((list) =>
-        setData([...list].sort((a, b) => (a.weight ?? 0) - (b.weight ?? 0)))
-      );
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((list) => {
+        setData([...list].sort((a, b) => (a.weight ?? 0) - (b.weight ?? 0)));
+        setIsLoading(false);
+      })
+      .catch((e) => {
+        console.error("Failed to refresh node list:", e);
+        setError("刷新列表失败。");
+        setIsLoading(false);
+      });
   }, []);
 
+  if (isLoading) {
+    return <div className="p-4 text-center">加载中...</div>;
+  }
+
+  if (error) {
+    return <div className="p-4 text-center text-red-500">{error}</div>;
+  }
+
   return (
-    <DataTableRefreshContext.Provider value={refreshTable}>
-      <div className="w-full flex-col justify-start gap-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2"></div>
-        </div>
-        <div className="relative flex flex-col gap-4 overflow-auto">
-          <div className="overflow-hidden rounded-lg">
-            <DndContext
-              collisionDetection={closestCenter}
-              modifiers={[restrictToVerticalAxis]}
-              onDragEnd={handleDragEnd}
-              sensors={sensors}
-              id={sortableId}
-            >
-              <Table>
-                <TableHeader className="bg-muted sticky top-0 z-10">
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => {
-                        return (
-                          <TableHead key={header.id} colSpan={header.colSpan}>
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext()
-                                )}
-                          </TableHead>
-                        );
-                      })}
-                    </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody className="**:data-[slot=table-cell]:first:w-8">
-                  {table.getRowModel().rows?.length ? (
-                    <SortableContext
-                      items={dataIds}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      {table.getRowModel().rows.map((row) => (
-                        <DraggableRow key={row.id} row={row} />
-                      ))}
-                    </SortableContext>
-                  ) : (
-                    <TableRow>
-                      <TableCell
-                        colSpan={columns.length}
-                        className="h-24 text-center"
-                      >
-                        No results.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </DndContext>
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="text-muted-foreground flex-1 text-sm">
-              {table.getFilteredSelectedRowModel().rows.length} of{" "}
-              {table.getFilteredRowModel().rows.length} row(s) selected.
-            </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Columns2 />
-                  <span className="hidden lg:inline">自定义列</span>
-                  <span className="lg:hidden"></span>
-                  <ChevronDown />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                {table
-                  .getAllColumns()
-                  .filter(
-                    (column) =>
-                      typeof column.accessorFn !== "undefined" &&
-                      column.getCanHide()
-                  )
-                  .map((column) => {
-                    return (
-                      <DropdownMenuCheckboxItem
-                        key={column.id}
-                        className="capitalize"
-                        checked={column.getIsVisible()}
-                        onCheckedChange={(value) =>
-                          column.toggleVisibility(!!value)
-                        }
-                      >
-                        {column.id}
-                      </DropdownMenuCheckboxItem>
-                    );
-                  })}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
+    <div
+      className={`
+        mb-6
+        ${!isMobile ? "p-4" : ""}
+      `}
+    >
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-bold">
+          {t("admin.nodeList", "节点列表")}
+        </h1>
+        <Button>
+          <PlusIcon className="mr-1" />
+          {t("admin.addNode", "添加节点")}
+        </Button>
       </div>
-    </DataTableRefreshContext.Provider>
+      <DataTableRefreshContext.Provider value={refreshTable}>
+        <div className="w-full flex-col justify-start gap-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2"></div>
+          </div>
+          <div className="relative flex flex-col gap-4 overflow-auto">
+            <div className="overflow-hidden rounded-lg">
+              <DndContext
+                collisionDetection={closestCenter}
+                modifiers={[restrictToVerticalAxis]}
+                onDragEnd={handleDragEnd}
+                sensors={sensors}
+                id={sortableId}
+              >
+                <Table>
+                  <TableHeader className="bg-muted sticky top-0 z-10">
+                    {table.getHeaderGroups().map((headerGroup) => (
+                      <TableRow key={headerGroup.id}>
+                        {headerGroup.headers.map((header) => {
+                          return (
+                            <TableHead key={header.id} colSpan={header.colSpan}>
+                              {header.isPlaceholder
+                                ? null
+                                : flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext()
+                                  )}
+                            </TableHead>
+                          );
+                        })}
+                      </TableRow>
+                    ))}
+                  </TableHeader>
+                  <TableBody className="**:data-[slot=table-cell]:first:w-8">
+                    {table.getRowModel().rows?.length ? (
+                      <SortableContext
+                        items={dataIds}
+                        strategy={verticalListSortingStrategy}
+                      >
+                        {table.getRowModel().rows.map((row) => (
+                          <DraggableRow key={row.id} row={row} />
+                        ))}
+                      </SortableContext>
+                    ) : (
+                      <TableRow>
+                        <TableCell
+                          colSpan={columns.length}
+                          className="h-24 text-center"
+                        >
+                          {data.length === 0 && !isLoading
+                            ? "没有数据。"
+                            : "No results."}
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </DndContext>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="text-muted-foreground flex-1 text-sm">
+                {table.getFilteredSelectedRowModel().rows.length} of{" "}
+                {table.getFilteredRowModel().rows.length} row(s) selected.
+              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Columns2 />
+                    <span className="hidden lg:inline">自定义列</span>
+                    <span className="lg:hidden"></span>
+                    <ChevronDown />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  {table
+                    .getAllColumns()
+                    .filter(
+                      (column) =>
+                        typeof column.accessorFn !== "undefined" &&
+                        column.getCanHide()
+                    )
+                    .map((column) => {
+                      return (
+                        <DropdownMenuCheckboxItem
+                          key={column.id}
+                          className="capitalize"
+                          checked={column.getIsVisible()}
+                          onCheckedChange={(value) =>
+                            column.toggleVisibility(!!value)
+                          }
+                        >
+                          {column.id}
+                        </DropdownMenuCheckboxItem>
+                      );
+                    })}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+        </div>
+      </DataTableRefreshContext.Provider>
+    </div>
   );
 }
-
