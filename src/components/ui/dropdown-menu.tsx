@@ -3,6 +3,8 @@ import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
 import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { Theme } from "@radix-ui/themes"
+import { ThemeContext as AppThemeContext } from "@/contexts/ThemeContext"
 
 function DropdownMenu({
   ...props
@@ -32,8 +34,11 @@ function DropdownMenuTrigger({
 function DropdownMenuContent({
   className,
   sideOffset = 4,
+  children,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Content>) {
+  const { appearance, color } = React.useContext(AppThemeContext);
+
   return (
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.Content
@@ -44,7 +49,11 @@ function DropdownMenuContent({
           className
         )}
         {...props}
-      />
+      >
+        <Theme appearance={appearance === 'inherit' ? undefined : appearance} accentColor={color}>
+          {children}
+        </Theme>
+      </DropdownMenuPrimitive.Content>
     </DropdownMenuPrimitive.Portal>
   )
 }
@@ -222,8 +231,10 @@ function DropdownMenuSubTrigger({
 
 function DropdownMenuSubContent({
   className,
+  children,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.SubContent>) {
+  const { appearance, color } = React.useContext(AppThemeContext);
   return (
     <DropdownMenuPrimitive.SubContent
       data-slot="dropdown-menu-sub-content"
@@ -232,7 +243,11 @@ function DropdownMenuSubContent({
         className
       )}
       {...props}
-    />
+    >
+      <Theme appearance={appearance === 'inherit' ? undefined : appearance} accentColor={color}>
+        {children}
+      </Theme>
+    </DropdownMenuPrimitive.SubContent>
   )
 }
 

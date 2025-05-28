@@ -73,6 +73,7 @@ import type { schema } from "./NodeTable/schema/node";
 import { DataTableRefreshContext } from "./NodeTable/schema/DataTableRefreshContext";
 import { t } from "i18next";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Input } from "../ui/input";
 
 async function removeClient(uuid: string) {
   await fetch(`/api/admin/client/${uuid}/remove`, {
@@ -252,6 +253,16 @@ export function DataTable() {
     () => data?.map(({ uuid }) => uuid) || [],
     [data]
   );
+  const [newNodeName, setNewNodeName] = React.useState("");
+  async function handleAddNode() {
+    await fetch("/api/admin/client/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: newNodeName }),
+    });
+    setNewNodeName("");
+    refreshTable?.();
+  }
 
   React.useEffect(() => {
     setIsLoading(true);
@@ -375,10 +386,30 @@ export function DataTable() {
         <h1 className="text-2xl font-bold">
           {t("admin.nodeList", "节点列表")}
         </h1>
-        <Button>
-          <PlusIcon className="mr-1" />
-          {t("admin.addNode", "添加节点")}
-        </Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button>
+              <PlusIcon className="mr-1" />
+              {t("admin.addNode", "添加节点")}
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{t("admin.addNode", "添加节点")}</DialogTitle>
+            </DialogHeader>
+            <div className="">
+            <label className="block mb-1">名称 (可选)</label>
+            <Input
+              placeholder="Name"
+              value={newNodeName}
+              onChange={(e) => setNewNodeName(e.target.value)}
+            />
+            </div>
+            <DialogFooter>
+              <Button onClick={handleAddNode}>提交</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
       <DataTableRefreshContext.Provider value={refreshTable}>
         <div className="w-full flex-col justify-start gap-6">

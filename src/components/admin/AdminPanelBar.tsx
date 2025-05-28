@@ -21,6 +21,7 @@ import {
 } from "../Icones/Tabler";
 import LanguageSwitch from "../Language";
 import ThemeSwitch from "../ThemeSwitch";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface AdminPanelBarProps {
   content: ReactNode;
@@ -28,22 +29,16 @@ interface AdminPanelBarProps {
 
 const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const isMobile = useIsMobile();
   const ishttps = window.location.protocol === "https:";
   const [t] = useTranslation();
   // Handle responsive behavior
   useEffect(() => {
-    const handleResize = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
-      // PC 端默认展开侧边栏，移动端默认收起
-      setSidebarOpen(!mobile);
-    };
-
+    const handleResize = () => setSidebarOpen(!isMobile);
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [isMobile]);
 
   // 侧边栏动画变体
   const sidebarVariants = {
