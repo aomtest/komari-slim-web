@@ -14,10 +14,8 @@ import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import {
   SortableContext,
   arrayMove,
-  useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -34,27 +32,21 @@ import {
 } from "@tanstack/react-table";
 import { z } from "zod";
 
-import { useIsMobile } from "@/hooks/use-mobile";
+import { schema } from "@/components/admin/NodeTable/schema/node"; 
+import { DataTableRefreshContext } from "@/components/admin/NodeTable/schema/DataTableRefreshContext"; 
+import { EditDialog } from "./NodeTable/NodeEditDialog"; 
+import { TableCellViewer } from "./NodeTable/NodeDetailViewer"; 
+import { DragHandle, DraggableRow } from "./NodeTable/NodeTableDndComponents"; 
+
 import { Button } from "@/components/ui/button";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -67,8 +59,6 @@ import {
   ChevronDown,
   Columns2,
   Copy,
-  GripVertical,
-  Pencil,
   Trash2,
   Terminal,
 } from "lucide-react";
@@ -80,183 +70,6 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-
-interface ClientFormData {
-  name: string;
-  token: string;
-  remark: string;
-  public_remark: string;
-}
-
-export const schema = z.object({
-  uuid: z.string(),
-  name: z.string(),
-  cpu_name: z.string().optional(),
-  arch: z.string().optional(),
-  cpu_cores: z.number().optional(),
-  os: z.string().optional(),
-  gpu_name: z.string().optional(),
-  ipv4: z.string(),
-  ipv6: z.string().optional(),
-  region: z.string().optional(),
-  mem_total: z.number().optional(),
-  swap_total: z.number().optional(),
-  disk_total: z.number().optional(),
-  version: z.string(),
-  weight: z.number().optional(),
-  price: z.number().optional(),
-  expired_at: z.string().optional(),
-  CreatedAt: z.string().optional(),
-  UpdatedAt: z.string().optional(),
-});
-
-function DragHandle({ id }: { id: string }) {
-  const { attributes, listeners } = useSortable({
-    id,
-  });
-
-  return (
-    <Button
-      {...attributes}
-      {...listeners}
-      variant="ghost"
-      size="icon"
-      className="text-muted-foreground size-7 hover:bg-transparent"
-    >
-      <GripVertical className="text-muted-foreground size-3" />
-      <span className="sr-only">Drag to reorder</span>
-    </Button>
-  );
-}
-function EditDialog({ item }: { item: z.infer<typeof schema> }) {
-  const [form, setForm] = React.useState({
-    token: "",
-    remark: "",
-    public_remark: "",
-    name: item.name || "",
-    weight: item.weight || 0,
-  });
-  const [loading, setLoading] = React.useState(false);
-  const [open, setOpen] = React.useState(false);
-
-  // 新增：用于刷新数据的回调
-  const refreshTable = React.useContext(DataTableRefreshContext);
-
-  React.useEffect(() => {
-    let ignore = false;
-    setLoading(true);
-    fetch(`/api/admin/client/${item.uuid}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (!ignore) {
-          setForm((f) => ({
-            ...f,
-            token: data.token || "",
-          }));
-        }
-      })
-      .finally(() => {
-        if (!ignore) setLoading(false);
-      });
-    return () => {
-      ignore = true;
-    };
-  }, [item.uuid]);
-
-  function saveClientData(
-    uuid: string,
-    form: ClientFormData,
-    setLoading: (b: boolean) => void,
-    onSuccess?: () => void
-  ) {
-    setLoading(true);
-    fetch(`/api/admin/client/${uuid}/edit`, {
-      method: "POST",
-      body: JSON.stringify(form),
-    })
-      .then(() => {
-        if (onSuccess) {
-          onSuccess();
-        }
-        // 保存成功后刷新表格数据
-        if (refreshTable) refreshTable();
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="编辑">
-          <Pencil />
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>编辑信息</DialogTitle>
-        </DialogHeader>
-        <div className="flex flex-col gap-4">
-          <div>
-            <label className="block mb-1">名称</label>
-            <Input
-              value={form.name}
-              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              placeholder="请输入名称"
-              disabled={loading}
-            />
-          </div>
-          <div>
-            <label className="block mb-1">Token 令牌</label>
-            <Input
-              value={form.token}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, token: e.target.value }))
-              }
-              placeholder="请输入 Token"
-              disabled={loading}
-            />
-          </div>
-          <div>
-            <label className="block mb-1">私有备注</label>
-            <Textarea
-              value={form.remark}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, remark: e.target.value }))
-              }
-              placeholder="请输入私有备注"
-              disabled={loading}
-            />
-          </div>
-          <div>
-            <label className="block mb-1">公开备注</label>
-            <Textarea
-              value={form.public_remark}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, public_remark: e.target.value }))
-              }
-              placeholder="请输入公开备注"
-              disabled={loading}
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button
-            type="submit"
-            className="w-full"
-            onClick={() =>
-              saveClientData(item.uuid, form, setLoading, () => setOpen(false))
-            }
-            disabled={loading}
-          >
-            {loading ? "等待..." : "保存"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
 
 async function removeClient(uuid: string) {
   await fetch(`/api/admin/client/${uuid}/remove`, {
@@ -413,33 +226,6 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
 ];
 
-function DraggableRow({ row }: { row: Row<z.infer<typeof schema>> }) {
-  const { transform, transition, setNodeRef, isDragging } = useSortable({
-    id: row.original.uuid,
-  });
-
-  return (
-    <TableRow
-      data-state={row.getIsSelected() && "selected"}
-      data-dragging={isDragging}
-      ref={setNodeRef}
-      className="relative z-0 data-[dragging=true]:z-10 data-[dragging=true]:opacity-80"
-      style={{
-        transform: CSS.Transform.toString(transform),
-        transition: transition,
-      }}
-    >
-      {row.getVisibleCells().map((cell) => (
-        <TableCell key={cell.id}>
-          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-        </TableCell>
-      ))}
-    </TableRow>
-  );
-}
-
-// 用于跨组件刷新表格的上下文
-const DataTableRefreshContext = React.createContext<null | (() => void)>(null);
 
 export function DataTable({
   data: initialData,
@@ -635,209 +421,3 @@ export function DataTable({
   );
 }
 
-function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
-  const isMobile = useIsMobile();
-
-  return (
-    <Drawer direction={isMobile ? "bottom" : "right"}>
-      <DrawerTrigger asChild>
-        <Button variant="link" className="text-foreground w-fit px-0 text-left">
-          {item.name}
-        </Button>
-      </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader className="gap-1">
-          <DrawerTitle>{item.name}</DrawerTitle>
-          <DrawerDescription>机器详细信息</DrawerDescription>
-        </DrawerHeader>
-        <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
-          <form className="flex flex-col gap-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="detail-ip">IP 地址</Label>
-                <div className="flex flex-col gap-1">
-                  {item.ipv4 && (
-                    <div className="flex items-center gap-1">
-                      <div
-                        id="detail-ipv4"
-                        className="bg-muted px-3 py-2 rounded border flex-1"
-                      >
-                        {item.ipv4}
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="size-5"
-                        type="button"
-                        onClick={() => {
-                          navigator.clipboard.writeText(item.ipv4!);
-                        }}
-                      >
-                        <Copy size={16} />
-                      </Button>
-                    </div>
-                  )}
-                  {item.ipv6 && (
-                    <div className="flex items-center gap-1">
-                      <div
-                        id="detail-ipv6"
-                        className="bg-muted px-3 py-2 rounded border flex-1"
-                      >
-                        {item.ipv6}
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="size-5"
-                        type="button"
-                        onClick={() => {
-                          navigator.clipboard.writeText(item.ipv6!);
-                        }}
-                      >
-                        <Copy size={16} />
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="detail-version">客户端版本</Label>
-                <div
-                  id="detail-version"
-                  className="bg-muted px-3 py-2 rounded border"
-                >
-                  {item.version || (
-                    <span className="text-muted-foreground">-</span>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="detail-os">操作系统</Label>
-                <div
-                  id="detail-os"
-                  className="bg-muted px-3 py-2 rounded border"
-                >
-                  {item.os || <span className="text-muted-foreground">-</span>}
-                </div>
-              </div>
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="detail-arch">架构</Label>
-                <div
-                  id="detail-arch"
-                  className="bg-muted px-3 py-2 rounded border"
-                >
-                  {item.arch || (
-                    <span className="text-muted-foreground">-</span>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="detail-cpu_name">CPU</Label>
-                <div
-                  id="detail-cpu_name"
-                  className="bg-muted px-3 py-2 rounded border"
-                >
-                  {item.cpu_name || (
-                    <span className="text-muted-foreground">-</span>
-                  )}
-                </div>
-              </div>
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="detail-cpu_cores">CPU 核心数</Label>
-                <div
-                  id="detail-cpu_cores"
-                  className="bg-muted px-3 py-2 rounded border"
-                >
-                  {item.cpu_cores || (
-                    <span className="text-muted-foreground">-</span>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="detail-mem_total">总内存 (Bytes)</Label>
-                <div
-                  id="detail-mem_total"
-                  className="bg-muted px-3 py-2 rounded border"
-                >
-                  {item.mem_total || (
-                    <span className="text-muted-foreground">-</span>
-                  )}
-                </div>
-              </div>
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="detail-disk_total">总磁盘空间 (Bytes)</Label>
-                <div
-                  id="detail-disk_total"
-                  className="bg-muted px-3 py-2 rounded border"
-                >
-                  {item.disk_total || (
-                    <span className="text-muted-foreground">-</span>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-3">
-              <Label htmlFor="detail-gpu_name">GPU</Label>
-              <div
-                id="detail-gpu_name"
-                className="bg-muted px-3 py-2 rounded border"
-              >
-                {item.gpu_name || (
-                  <span className="text-muted-foreground">-</span>
-                )}
-              </div>
-            </div>
-            <div className="flex flex-col gap-3">
-              <Label htmlFor="detail-uuid">UUID</Label>
-              <div
-                id="detail-uuid"
-                className="bg-muted px-3 py-2 rounded border"
-              >
-                {item.uuid || <span className="text-muted-foreground">-</span>}
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="detail-createdAt">创建时间</Label>
-                <div
-                  id="detail-createdAt"
-                  className="bg-muted px-3 py-2 rounded border"
-                >
-                  {item.CreatedAt ? (
-                    new Date(item.CreatedAt).toLocaleString()
-                  ) : (
-                    <span className="text-muted-foreground">-</span>
-                  )}
-                </div>
-              </div>
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="detail-updatedAt">更新时间</Label>
-                <div
-                  id="detail-updatedAt"
-                  className="bg-muted px-3 py-2 rounded border"
-                >
-                  {item.UpdatedAt ? (
-                    new Date(item.UpdatedAt).toLocaleString()
-                  ) : (
-                    <span className="text-muted-foreground">-</span>
-                  )}
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
-        <DrawerFooter>
-          <DrawerClose asChild>
-            <Button>Done</Button>
-          </DrawerClose>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
-  );
-}
