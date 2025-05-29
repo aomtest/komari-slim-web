@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/drawer";
 import { Label } from "@/components/ui/label";
 import { Copy } from "lucide-react";
+import { t } from "i18next";
 
 export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
   const isMobile = useIsMobile();
@@ -28,19 +29,23 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
       <DrawerContent>
         <DrawerHeader className="gap-1">
           <DrawerTitle>{item.name}</DrawerTitle>
-          <DrawerDescription>机器详细信息</DrawerDescription>
+          <DrawerDescription>
+            {t("admin.nodeDetail.machineDetail", "机器详细信息")}
+          </DrawerDescription>
         </DrawerHeader>
         <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
           <form className="flex flex-col gap-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-3">
-                <Label htmlFor="detail-ip">IP 地址</Label>
+                <Label htmlFor="detail-ip">
+                  {t("admin.nodeDetail.ipAddress", "IP 地址")}
+                </Label>
                 <div className="flex flex-col gap-1">
                   {item.ipv4 && (
                     <div className="flex items-center gap-1">
                       <div
                         id="detail-ipv4"
-                        className="bg-muted px-3 py-2 rounded border flex-1"
+                        className="bg-muted px-3 py-2 rounded border flex-1 min-w-0"
                       >
                         {item.ipv4}
                       </div>
@@ -61,7 +66,7 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                     <div className="flex items-center gap-1">
                       <div
                         id="detail-ipv6"
-                        className="bg-muted px-3 py-2 rounded border flex-1"
+                        className="bg-muted px-3 py-2 rounded border flex-1 min-w-0"
                       >
                         {item.ipv6}
                       </div>
@@ -81,7 +86,9 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                 </div>
               </div>
               <div className="flex flex-col gap-3">
-                <Label htmlFor="detail-version">客户端版本</Label>
+                <Label htmlFor="detail-version">
+                  {t("admin.nodeDetail.clientVersion", "客户端版本")}
+                </Label>
                 <div
                   id="detail-version"
                   className="bg-muted px-3 py-2 rounded border"
@@ -94,7 +101,9 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-3">
-                <Label htmlFor="detail-os">操作系统</Label>
+                <Label htmlFor="detail-os">
+                  {t("admin.nodeDetail.os", "操作系统")}
+                </Label>
                 <div
                   id="detail-os"
                   className="bg-muted px-3 py-2 rounded border"
@@ -103,7 +112,9 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                 </div>
               </div>
               <div className="flex flex-col gap-3">
-                <Label htmlFor="detail-arch">架构</Label>
+                <Label htmlFor="detail-arch">
+                  {t("admin.nodeDetail.arch", "架构")}
+                </Label>
                 <div
                   id="detail-arch"
                   className="bg-muted px-3 py-2 rounded border"
@@ -116,7 +127,9 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-3">
-                <Label htmlFor="detail-cpu_name">CPU</Label>
+                <Label htmlFor="detail-cpu_name">
+                  {t("admin.nodeDetail.cpu", "CPU")}
+                </Label>
                 <div
                   id="detail-cpu_name"
                   className="bg-muted px-3 py-2 rounded border"
@@ -127,7 +140,9 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                 </div>
               </div>
               <div className="flex flex-col gap-3">
-                <Label htmlFor="detail-cpu_cores">CPU 核心数</Label>
+                <Label htmlFor="detail-cpu_cores">
+                  {t("admin.nodeDetail.cpuCores", "CPU 核心数")}
+                </Label>
                 <div
                   id="detail-cpu_cores"
                   className="bg-muted px-3 py-2 rounded border"
@@ -140,7 +155,9 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-3">
-                <Label htmlFor="detail-mem_total">总内存 (Bytes)</Label>
+                <Label htmlFor="detail-mem_total">
+                  {t("admin.nodeDetail.memTotal", "总内存 (Bytes)")}
+                </Label>
                 <div
                   id="detail-mem_total"
                   className="bg-muted px-3 py-2 rounded border"
@@ -151,7 +168,9 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                 </div>
               </div>
               <div className="flex flex-col gap-3">
-                <Label htmlFor="detail-disk_total">总磁盘空间 (Bytes)</Label>
+                <Label htmlFor="detail-disk_total">
+                  {t("admin.nodeDetail.diskTotal", "总磁盘空间 (Bytes)")}
+                </Label>
                 <div
                   id="detail-disk_total"
                   className="bg-muted px-3 py-2 rounded border"
@@ -163,7 +182,9 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
               </div>
             </div>
             <div className="flex flex-col gap-3">
-              <Label htmlFor="detail-gpu_name">GPU</Label>
+              <Label htmlFor="detail-gpu_name">
+                {t("admin.nodeDetail.gpu", "GPU")}
+              </Label>
               <div
                 id="detail-gpu_name"
                 className="bg-muted px-3 py-2 rounded border"
@@ -174,7 +195,9 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
               </div>
             </div>
             <div className="flex flex-col gap-3">
-              <Label htmlFor="detail-uuid">UUID</Label>
+              <Label htmlFor="detail-uuid">
+                {t("admin.nodeDetail.uuid", "UUID")}
+              </Label>
               <div
                 id="detail-uuid"
                 className="bg-muted px-3 py-2 rounded border"
@@ -184,7 +207,9 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-3">
-                <Label htmlFor="detail-createdAt">创建时间</Label>
+                <Label htmlFor="detail-createdAt">
+                  {t("admin.nodeDetail.createdAt", "创建时间")}
+                </Label>
                 <div
                   id="detail-createdAt"
                   className="bg-muted px-3 py-2 rounded border"
@@ -197,7 +222,9 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                 </div>
               </div>
               <div className="flex flex-col gap-3">
-                <Label htmlFor="detail-updatedAt">更新时间</Label>
+                <Label htmlFor="detail-updatedAt">
+                  {t("admin.nodeDetail.updatedAt", "更新时间")}
+                </Label>
                 <div
                   id="detail-updatedAt"
                   className="bg-muted px-3 py-2 rounded border"
@@ -214,7 +241,7 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
         </div>
         <DrawerFooter>
           <DrawerClose asChild>
-            <Button>Done</Button>
+            <Button>{t("admin.nodeDetail.done", "完成")}</Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>

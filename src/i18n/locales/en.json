@@ -96,5 +96,59 @@
     "disk_used": "Disk"
   },
   "instance": "Instance",
-  "home_title": "Komari Monitor"
+  "home_title": "Komari Monitor",
+  "admin": {
+    "nodeTable": {
+      "addNode": "Add",
+      "cancel": "Cancel",
+      "cannotUndo": "This operation will not be restored!",
+      "clientVersion": "Client version",
+      "confirm": "confirm",
+      "confirmDelete": "Confirm deletion",
+      "customColumns": "Custom columns",
+      "delete": "delete",
+      "deleting": "Delete...",
+      "errorLoadNodeList": "Unable to load the node list",
+      "errorRefreshNodeList": "Failed to refresh the list",
+      "ipAddress": "IP address",
+      "loading": "loading...",
+      "name": "name",
+      "nameOptional": "Name (optional)",
+      "namePlaceholder": "Name",
+      "noData": "No data",
+      "noResults": "No results",
+      "nodeList": "Node list",
+      "submit": "submit",
+      "terminal": "terminal"
+    },
+    "nodeDetail": {
+      "arch": "Architecture",
+      "clientVersion": "Client version",
+      "cpu": "CPU",
+      "cpuCores": "CPU core number",
+      "createdAt": "Creation time",
+      "diskTotal": "Total disk space (Bytes)",
+      "done": "Finish",
+      "gpu": "GPU",
+      "ipAddress": "IP address",
+      "machineDetail": "Machine details",
+      "memTotal": "Total Memory (Bytes)",
+      "os": "operating system",
+      "updatedAt": "Update time",
+      "uuid": "UUID"
+    },
+    "nodeEdit": {
+      "editInfo": "Edit information",
+      "name": "name",
+      "namePlaceholder": "Please enter a name",
+      "publicRemark": "Public Notes",
+      "publicRemarkPlaceholder": "Please enter public notes",
+      "remark": "Private Notes",
+      "remarkPlaceholder": "Please enter private notes",
+      "save": "save",
+      "token": "Token Token",
+      "tokenPlaceholder": "Please enter Token",
+      "waiting": "wait..."
+    }
+  }
 }

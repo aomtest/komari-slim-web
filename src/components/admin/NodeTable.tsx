@@ -90,7 +90,6 @@ function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
       <Button
         variant="ghost"
         size="icon"
-        aria-label="终端"
         onClick={() =>
           window.open(`/terminal?uuid=${row.original.uuid}`, "_blank")
         }
@@ -103,7 +102,6 @@ function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
           <Button
             variant="ghost"
             size="icon"
-            aria-label="删除"
             className="text-destructive"
           >
             <Trash2 />
@@ -111,12 +109,12 @@ function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>确认删除</DialogTitle>
+            <DialogTitle>{t("admin.nodeTable.confirmDelete")}</DialogTitle>
           </DialogHeader>
-          <div>这个操作将无法恢复！</div>
+          <div>{t("admin.nodeTable.cannotUndo")}</div>
           <DialogFooter>
             <Button variant="outline" asChild>
-              <DialogTrigger>取消</DialogTrigger>
+              <DialogTrigger>{t("admin.nodeTable.cancel")}</DialogTrigger>
             </Button>
             <Button
               variant="destructive"
@@ -129,7 +127,7 @@ function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
               }}
               asChild
             >
-              <DialogTrigger>{removing ? "删除中..." : "确认"}</DialogTrigger>
+              <DialogTrigger>{removing ? t("admin.nodeTable.deleting") : t("admin.nodeTable.confirm",)}</DialogTrigger>
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -153,7 +151,6 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
             (table.getIsSomeRowsSelected() && "indeterminate")
           }
           onCheckedChange={(value) => table.toggleAllRowsSelected(!!value)}
-          aria-label="Select all"
         />
       </div>
     ),
@@ -162,7 +159,6 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
         />
       </div>
     ),
@@ -171,7 +167,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
   {
     accessorKey: "name",
-    header: "名称",
+    header: t("admin.nodeTable.name"),
     cell: ({ row }) => {
       return <TableCellViewer item={row.original} />;
     },
@@ -179,7 +175,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
   {
     accessorKey: "ipv4",
-    header: "IP 地址",
+    header: t("admin.nodeTable.ipAddress"),
     cell: ({ row }) => {
       const ipv4 = row.original.ipv4;
       const ipv6 = row.original.ipv6;
@@ -221,7 +217,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
   {
     accessorKey: "version",
-    header: "客户端版本",
+    header: t("admin.nodeTable.clientVersion",),
     cell: ({ row }) => <div className="w-32">{row.getValue("version")}</div>,
   },
   {
@@ -280,7 +276,7 @@ export function DataTable() {
       })
       .catch((e) => {
         console.error("Failed to fetch node list:", e);
-        if (data.length > 0) setError("无法加载节点列表。");
+        if (data.length > 0) setError(t("admin.nodeTable.errorLoadNodeList"));
       });
   }, [data.length]);
 
@@ -362,13 +358,13 @@ export function DataTable() {
       })
       .catch((e) => {
         console.error("Failed to refresh node list:", e);
-        setError("刷新列表失败。");
+        setError(t("admin.nodeTable.errorRefreshNodeList"));
         setIsLoading(false);
       });
   }, []);
 
   if (isLoading) {
-    return <div className="p-4 text-center">加载中...</div>;
+    return <div className="p-4 text-center">{t("admin.nodeTable.loading")}</div>;
   }
 
   if (error) {
@@ -384,29 +380,29 @@ export function DataTable() {
     >
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold">
-          {t("admin.nodeList", "节点列表")}
+          {t("admin.nodeTable.nodeList")}
         </h1>
         <Dialog>
           <DialogTrigger asChild>
             <Button>
               <PlusIcon className="mr-1" />
-              {t("admin.addNode", "添加节点")}
+              {t("admin.nodeTable.addNode")}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{t("admin.addNode", "添加节点")}</DialogTitle>
+              <DialogTitle>{t("admin.nodeTable.addNode")}</DialogTitle>
             </DialogHeader>
             <div className="">
-            <label className="block mb-1">名称 (可选)</label>
+            <label className="block mb-1">{t("admin.nodeTable.nameOptional")}</label>
             <Input
-              placeholder="Name"
+              placeholder={t("admin.nodeTable.namePlaceholder")}
               value={newNodeName}
               onChange={(e) => setNewNodeName(e.target.value)}
             />
             </div>
             <DialogFooter>
-              <Button onClick={handleAddNode}>提交</Button>
+              <Button onClick={handleAddNode}>{t("admin.nodeTable.submit")}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -461,8 +457,8 @@ export function DataTable() {
                           className="h-24 text-center"
                         >
                           {data.length === 0 && !isLoading
-                            ? "没有数据。"
-                            : "No results."}
+                            ? t("admin.nodeTable.noData")
+                            : t("admin.nodeTable.noResults")}
                         </TableCell>
                       </TableRow>
                     )}
@@ -479,7 +475,7 @@ export function DataTable() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm">
                     <Columns2 />
-                    <span className="hidden lg:inline">自定义列</span>
+                    <span className="hidden lg:inline">{t("admin.nodeTable.customColumns")}</span>
                     <span className="lg:hidden"></span>
                     <ChevronDown />
                   </Button>

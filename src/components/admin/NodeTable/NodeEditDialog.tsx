@@ -1,6 +1,9 @@
 import * as React from "react";
 import { z } from "zod";
-import { schema, type ClientFormData } from "@/components/admin/NodeTable/schema/node";
+import {
+  schema,
+  type ClientFormData,
+} from "@/components/admin/NodeTable/schema/node";
 import { DataTableRefreshContext } from "@/components/admin/NodeTable/schema/DataTableRefreshContext";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Pencil } from "lucide-react";
+import { t } from "i18next";
 
 export function EditDialog({ item }: { item: z.infer<typeof schema> }) {
   const [form, setForm] = React.useState<ClientFormData & { weight: number }>({
@@ -38,7 +42,7 @@ export function EditDialog({ item }: { item: z.infer<typeof schema> }) {
           setForm((f) => ({
             ...f,
             token: data.token || "",
-            remark: data.remark || "", 
+            remark: data.remark || "",
             public_remark: data.public_remark || "",
           }));
         }
@@ -53,7 +57,7 @@ export function EditDialog({ item }: { item: z.infer<typeof schema> }) {
 
   function saveClientData(
     uuid: string,
-    formData: ClientFormData, 
+    formData: ClientFormData,
     setLoadingCallback: (b: boolean) => void,
     onSuccess?: () => void
   ) {
@@ -74,54 +78,70 @@ export function EditDialog({ item }: { item: z.infer<typeof schema> }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="编辑">
+        <Button variant="ghost" size="icon">
           <Pencil />
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>编辑信息</DialogTitle>
+          <DialogTitle>{t("admin.nodeEdit.editInfo", "编辑信息")}</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div>
-            <label className="block mb-1">名称</label>
+            <label className="block mb-1">
+              {t("admin.nodeEdit.name", "名称")}
+            </label>
             <Input
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              placeholder="请输入名称"
+              placeholder={t("admin.nodeEdit.namePlaceholder", "请输入名称")}
               disabled={loading}
             />
           </div>
           <div>
-            <label className="block mb-1">Token 令牌</label>
+            <label className="block mb-1">
+              {t("admin.nodeEdit.token", "Token 令牌")}
+            </label>
             <Input
               value={form.token}
               onChange={(e) =>
                 setForm((f) => ({ ...f, token: e.target.value }))
               }
-              placeholder="请输入 Token"
+              placeholder={t("admin.nodeEdit.tokenPlaceholder", "请输入 Token")}
               disabled={loading}
+              readOnly
+              className="bg-gray-200"
             />
           </div>
           <div>
-            <label className="block mb-1">私有备注</label>
+            <label className="block mb-1">
+              {t("admin.nodeEdit.remark", "私有备注")}
+            </label>
             <Textarea
               value={form.remark}
               onChange={(e) =>
                 setForm((f) => ({ ...f, remark: e.target.value }))
               }
-              placeholder="请输入私有备注"
+              placeholder={t(
+                "admin.nodeEdit.remarkPlaceholder",
+                "请输入私有备注"
+              )}
               disabled={loading}
             />
           </div>
           <div>
-            <label className="block mb-1">公开备注</label>
+            <label className="block mb-1">
+              {t("admin.nodeEdit.publicRemark", "公开备注")}
+            </label>
             <Textarea
               value={form.public_remark}
               onChange={(e) =>
                 setForm((f) => ({ ...f, public_remark: e.target.value }))
               }
-              placeholder="请输入公开备注"
+              placeholder={t(
+                "admin.nodeEdit.publicRemarkPlaceholder",
+                "请输入公开备注"
+              )}
               disabled={loading}
             />
           </div>
@@ -131,14 +151,16 @@ export function EditDialog({ item }: { item: z.infer<typeof schema> }) {
             type="submit"
             className="w-full"
             onClick={() => {
-              const { ...clientFormData } = form; 
+              const { ...clientFormData } = form;
               saveClientData(item.uuid, clientFormData, setLoading, () =>
                 setOpen(false)
               );
             }}
             disabled={loading}
           >
-            {loading ? "等待..." : "保存"}
+            {loading
+              ? t("admin.nodeEdit.waiting", "等待...")
+              : t("admin.nodeEdit.save", "保存")}
           </Button>
         </DialogFooter>
       </DialogContent>
