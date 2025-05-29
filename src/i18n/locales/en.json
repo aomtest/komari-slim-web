@@ -148,7 +148,8 @@
       "noResults": "No results",
       "nodeList": "Node list",
       "submit": "submit",
-      "terminal": "terminal"
+      "terminal": "terminal",
+      "submitting": "wait"
     },
     "nodeDetail": {
       "arch": "Architecture",

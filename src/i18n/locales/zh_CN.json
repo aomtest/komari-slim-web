@@ -148,7 +148,8 @@
       "submit": "提交",
       "noData": "没有数据",
       "noResults": "No results",
-      "customColumns": "自定义列"
+      "customColumns": "自定义列",
+      "submitting": "等待"
     },
     "nodeDetail": {
       "machineDetail": "机器详细信息",
