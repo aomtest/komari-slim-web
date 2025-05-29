@@ -16,107 +16,22 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Pencil, Terminal, Trash2 } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { t } from "i18next";
-import type { Row } from "@tanstack/react-table";
-
-
-async function removeClient(uuid: string) {
-  await fetch(`/api/admin/client/${uuid}/remove`, {
-    method: "POST",
-  });
-}
-
-export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
-  const refreshTable = React.useContext(DataTableRefreshContext);
-  const [removing, setRemoving] = React.useState(false);
-
-  return (
-    <div className="flex gap-2 justify-center">
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() =>
-          window.open(`/terminal?uuid=${row.original.uuid}`, "_blank")
-        }
-      >
-        <Terminal />
-      </Button>
-      <EditDialog item={row.original} />
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-destructive"
-          >
-            <Trash2 />
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t("admin.nodeTable.confirmDelete")}</DialogTitle>
-          </DialogHeader>
-          <div>{t("admin.nodeTable.cannotUndo")}</div>
-          <DialogFooter>
-            <Button variant="outline" asChild>
-              <DialogTrigger>{t("admin.nodeTable.cancel")}</DialogTrigger>
-            </Button>
-            <Button
-              variant="destructive"
-              disabled={removing}
-              onClick={async () => {
-                setRemoving(true);
-                await removeClient(row.original.uuid);
-                setRemoving(false);
-                if (refreshTable) refreshTable();
-              }}
-              asChild
-            >
-              <DialogTrigger>{removing ? t("admin.nodeTable.deleting") : t("admin.nodeTable.confirm",)}</DialogTrigger>
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
-}
+import { toast } from "sonner";
 
 export function EditDialog({ item }: { item: z.infer<typeof schema> }) {
   const [form, setForm] = React.useState<ClientFormData & { weight: number }>({
-    token: "",
-    remark: "",
-    public_remark: "",
     name: item.name || "",
+    token: item.token || "", // 从 item 初始化 token
+    remark: item.remark || "", // 从 item 初始化 remark
+    public_remark: item.public_remark || "", // 从 item 初始化 public_remark
     weight: item.weight || 0,
   });
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
 
   const refreshTable = React.useContext(DataTableRefreshContext);
-
-  React.useEffect(() => {
-    let ignore = false;
-    setLoading(true);
-    fetch(`/api/admin/client/${item.uuid}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (!ignore) {
-          setForm((f) => ({
-            ...f,
-            token: data.token || "",
-            remark: data.remark || "",
-            public_remark: data.public_remark || "",
-          }));
-        }
-      })
-      .finally(() => {
-        if (!ignore) setLoading(false);
-      });
-    return () => {
-      ignore = true;
-    };
-  }, [item.uuid]);
 
   function saveClientData(
     uuid: string,
@@ -129,13 +44,18 @@ export function EditDialog({ item }: { item: z.infer<typeof schema> }) {
       method: "POST",
       body: JSON.stringify(formData),
     })
-      .then(() => {
-        if (onSuccess) {
-          onSuccess();
+      .then(async (res) => {
+        if (onSuccess) onSuccess();
+        if (res.status === 200) {
+          if (refreshTable) refreshTable();
+          toast.success(t("admin.nodeEdit.saveSuccess", "保存成功"));
+        } else {
+          toast.error(t("admin.nodeEdit.saveError", "保存失败"));
         }
-        if (refreshTable) refreshTable();
       })
-      .catch(() => {})
+      .catch(() => {
+        toast.error(t("admin.nodeEdit.saveError", "保存失败"));
+      })
       .finally(() => setLoadingCallback(false));
   }
   return (
@@ -214,8 +134,13 @@ export function EditDialog({ item }: { item: z.infer<typeof schema> }) {
             type="submit"
             className="w-full"
             onClick={() => {
-              const { ...clientFormData } = form;
-              saveClientData(item.uuid, clientFormData, setLoading, () =>
+              const payload: ClientFormData = {
+                name: form.name,
+                token: form.token,
+                remark: form.remark,
+                public_remark: form.public_remark,
+              };
+              saveClientData(item.uuid, payload, setLoading, () =>
                 setOpen(false)
               );
             }}

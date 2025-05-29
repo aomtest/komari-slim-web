@@ -91,7 +91,9 @@
     "udp_connections": "UDP",
     "mem_used": "内存",
     "swap_used": "虚拟内存",
-    "disk_used": "磁盘"
+    "disk_used": "磁盘",
+    "network": "网络",
+    "ram_used": "内存"
   },
   "instance": "实例",
   "home_title": "Komari Monitor",
@@ -146,7 +148,9 @@
       "publicRemark": "公开备注",
       "publicRemarkPlaceholder": "请输入公开备注",
       "waiting": "等待...",
-      "save": "保存"
+      "save": "保存",
+      "saveSuccess": "保存成功",
+      "saveError": "保存失败"
     }
   }
 }

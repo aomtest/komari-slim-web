@@ -31,7 +31,6 @@ import {
 } from "@tanstack/react-table";
 import { z } from "zod";
 
-import { ActionsCell } from "./NodeTable/NodeEditDialog";
 import { TableCellViewer } from "./NodeTable/NodeDetailViewer";
 import { DragHandle, DraggableRow } from "./NodeTable/NodeTableDndComponents";
 
@@ -71,6 +70,7 @@ import { DataTableRefreshContext } from "./NodeTable/schema/DataTableRefreshCont
 import { t } from "i18next";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Input } from "../ui/input";
+import { ActionsCell } from "./NodeTable/NodeFunction";
 
 const columns: ColumnDef<z.infer<typeof schema>>[] = [
   {

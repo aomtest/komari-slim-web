@@ -27,4 +27,7 @@ export const schema = z.object({
   expired_at: z.string().optional(),
   CreatedAt: z.string().optional(),
   UpdatedAt: z.string().optional(),
+  token: z.string().optional(),
+  remark: z.string().optional(),
+  public_remark: z.string().optional(),
 });

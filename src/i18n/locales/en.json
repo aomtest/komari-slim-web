@@ -148,7 +148,9 @@
       "save": "save",
       "token": "Token Token",
       "tokenPlaceholder": "Please enter Token",
-      "waiting": "wait..."
+      "waiting": "wait...",
+      "saveError": "Saving failed",
+      "saveSuccess": "Save successfully"
     }
   }
 }
