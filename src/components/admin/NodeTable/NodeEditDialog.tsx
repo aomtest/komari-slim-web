@@ -16,8 +16,71 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Pencil } from "lucide-react";
+import { Pencil, Terminal, Trash2 } from "lucide-react";
 import { t } from "i18next";
+import type { Row } from "@tanstack/react-table";
+
+
+async function removeClient(uuid: string) {
+  await fetch(`/api/admin/client/${uuid}/remove`, {
+    method: "POST",
+  });
+}
+
+export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
+  const refreshTable = React.useContext(DataTableRefreshContext);
+  const [removing, setRemoving] = React.useState(false);
+
+  return (
+    <div className="flex gap-2 justify-center">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() =>
+          window.open(`/terminal?uuid=${row.original.uuid}`, "_blank")
+        }
+      >
+        <Terminal />
+      </Button>
+      <EditDialog item={row.original} />
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-destructive"
+          >
+            <Trash2 />
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("admin.nodeTable.confirmDelete")}</DialogTitle>
+          </DialogHeader>
+          <div>{t("admin.nodeTable.cannotUndo")}</div>
+          <DialogFooter>
+            <Button variant="outline" asChild>
+              <DialogTrigger>{t("admin.nodeTable.cancel")}</DialogTrigger>
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={removing}
+              onClick={async () => {
+                setRemoving(true);
+                await removeClient(row.original.uuid);
+                setRemoving(false);
+                if (refreshTable) refreshTable();
+              }}
+              asChild
+            >
+              <DialogTrigger>{removing ? t("admin.nodeTable.deleting") : t("admin.nodeTable.confirm",)}</DialogTrigger>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
 
 export function EditDialog({ item }: { item: z.infer<typeof schema> }) {
   const [form, setForm] = React.useState<ClientFormData & { weight: number }>({

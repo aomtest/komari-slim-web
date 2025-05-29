@@ -32,7 +32,7 @@ const TerminalPage = () => {
         const client = data.find((item: { uuid: string }) => item.uuid === uuid);
         document.title = `${t("terminal.title")} - ${client?.name || t("terminal.title")}`;
       });
-  }, []);
+  }, [t, uuid]);
   useEffect(() => {
     setCallout(window.location.protocol !== "https:");
     // 初始化终端
@@ -158,7 +158,7 @@ const TerminalPage = () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("contextmenu", handleContextMenu);
     };
-  }, []);
+  }, [t, uuid]);
 
   return (
     <div className="flex justify-center bg-black md:bg-accent-3 flex-col">

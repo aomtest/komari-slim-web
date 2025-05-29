@@ -19,7 +19,6 @@ import {
 import {
   type ColumnDef,
   type ColumnFiltersState,
-  type Row,
   type SortingState,
   type VisibilityState,
   flexRender,
@@ -32,7 +31,7 @@ import {
 } from "@tanstack/react-table";
 import { z } from "zod";
 
-import { EditDialog } from "./NodeTable/NodeEditDialog";
+import { ActionsCell } from "./NodeTable/NodeEditDialog";
 import { TableCellViewer } from "./NodeTable/NodeDetailViewer";
 import { DragHandle, DraggableRow } from "./NodeTable/NodeTableDndComponents";
 
@@ -57,8 +56,6 @@ import {
   ChevronDown,
   Columns2,
   Copy,
-  Trash2,
-  Terminal,
   PlusIcon,
 } from "lucide-react";
 import {
@@ -75,66 +72,6 @@ import { t } from "i18next";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Input } from "../ui/input";
 
-async function removeClient(uuid: string) {
-  await fetch(`/api/admin/client/${uuid}/remove`, {
-    method: "POST",
-  });
-}
-
-function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
-  const refreshTable = React.useContext(DataTableRefreshContext);
-  const [removing, setRemoving] = React.useState(false);
-
-  return (
-    <div className="flex gap-2 justify-center">
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() =>
-          window.open(`/terminal?uuid=${row.original.uuid}`, "_blank")
-        }
-      >
-        <Terminal />
-      </Button>
-      <EditDialog item={row.original} />
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-destructive"
-          >
-            <Trash2 />
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t("admin.nodeTable.confirmDelete")}</DialogTitle>
-          </DialogHeader>
-          <div>{t("admin.nodeTable.cannotUndo")}</div>
-          <DialogFooter>
-            <Button variant="outline" asChild>
-              <DialogTrigger>{t("admin.nodeTable.cancel")}</DialogTrigger>
-            </Button>
-            <Button
-              variant="destructive"
-              disabled={removing}
-              onClick={async () => {
-                setRemoving(true);
-                await removeClient(row.original.uuid);
-                setRemoving(false);
-                if (refreshTable) refreshTable();
-              }}
-              asChild
-            >
-              <DialogTrigger>{removing ? t("admin.nodeTable.deleting") : t("admin.nodeTable.confirm",)}</DialogTrigger>
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
-}
 const columns: ColumnDef<z.infer<typeof schema>>[] = [
   {
     id: "drag",
@@ -343,7 +280,7 @@ export function DataTable() {
 
   // 新增：刷新数据的方法
   const refreshTable = React.useCallback(() => {
-    setIsLoading(true);
+    // setIsLoading(true);
     setError(null);
     fetch("/api/admin/client/list")
       .then((res) => {
