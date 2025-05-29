@@ -23,6 +23,7 @@ export const routes: RouteObject[] = [
     children: [
       { index: true, element: React.createElement(Admin) },
       { path: "settings", element: React.createElement(Settings) },
+      { path: "account", element: React.createElement(lazy(() => import("./pages/admin/account"))) },
     ],
   },
   {
