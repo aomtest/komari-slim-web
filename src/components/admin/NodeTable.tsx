@@ -51,12 +51,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  ChevronDown,
-  Columns2,
-  Copy,
-  PlusIcon,
-} from "lucide-react";
+import { ChevronDown, Columns2, Copy, PlusIcon } from "lucide-react";
 import {
   Dialog,
   DialogTrigger,
@@ -154,7 +149,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
   {
     accessorKey: "version",
-    header: t("admin.nodeTable.clientVersion",),
+    header: t("admin.nodeTable.clientVersion"),
     cell: ({ row }) => <div className="w-32">{row.getValue("version")}</div>,
   },
   {
@@ -301,7 +296,9 @@ export function DataTable() {
   }, []);
 
   if (isLoading) {
-    return <div className="p-4 text-center">{t("admin.nodeTable.loading")}</div>;
+    return (
+      <div className="p-4 text-center">{t("admin.nodeTable.loading")}</div>
+    );
   }
 
   if (error) {
@@ -316,9 +313,7 @@ export function DataTable() {
       `}
     >
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">
-          {t("admin.nodeTable.nodeList")}
-        </h1>
+        <h1 className="text-2xl font-bold">{t("admin.nodeTable.nodeList")}</h1>
         <Dialog>
           <DialogTrigger asChild>
             <Button>
@@ -331,15 +326,19 @@ export function DataTable() {
               <DialogTitle>{t("admin.nodeTable.addNode")}</DialogTitle>
             </DialogHeader>
             <div className="">
-            <label className="block mb-1">{t("admin.nodeTable.nameOptional")}</label>
-            <Input
-              placeholder={t("admin.nodeTable.namePlaceholder")}
-              value={newNodeName}
-              onChange={(e) => setNewNodeName(e.target.value)}
-            />
+              <label className="block mb-1 text-sm font-medium text-muted-foreground">
+                {t("admin.nodeTable.nameOptional")}
+              </label>
+              <Input
+                placeholder={t("admin.nodeTable.namePlaceholder")}
+                value={newNodeName}
+                onChange={(e) => setNewNodeName(e.target.value)}
+              />
             </div>
             <DialogFooter>
-              <Button onClick={handleAddNode}>{t("admin.nodeTable.submit")}</Button>
+              <Button onClick={handleAddNode}>
+                {t("admin.nodeTable.submit")}
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -412,7 +411,9 @@ export function DataTable() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm">
                     <Columns2 />
-                    <span className="hidden lg:inline">{t("admin.nodeTable.customColumns")}</span>
+                    <span className="hidden lg:inline">
+                      {t("admin.nodeTable.customColumns")}
+                    </span>
                     <span className="lg:hidden"></span>
                     <ChevronDown />
                   </Button>

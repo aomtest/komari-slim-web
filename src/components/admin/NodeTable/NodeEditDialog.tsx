@@ -71,7 +71,7 @@ export function EditDialog({ item }: { item: z.infer<typeof schema> }) {
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div>
-            <label className="block mb-1">
+            <label className="block mb-1 text-sm font-medium text-muted-foreground">
               {t("admin.nodeEdit.name", "名称")}
             </label>
             <Input
@@ -82,7 +82,7 @@ export function EditDialog({ item }: { item: z.infer<typeof schema> }) {
             />
           </div>
           <div>
-            <label className="block mb-1">
+            <label className="block mb-1 text-sm font-medium text-muted-foreground">
               {t("admin.nodeEdit.token", "Token 令牌")}
             </label>
             <Input
@@ -97,7 +97,7 @@ export function EditDialog({ item }: { item: z.infer<typeof schema> }) {
             />
           </div>
           <div>
-            <label className="block mb-1">
+            <label className="block mb-1 text-sm font-medium text-muted-foreground">
               {t("admin.nodeEdit.remark", "私有备注")}
             </label>
             <Textarea
@@ -113,7 +113,7 @@ export function EditDialog({ item }: { item: z.infer<typeof schema> }) {
             />
           </div>
           <div>
-            <label className="block mb-1">
+            <label className="block mb-1 text-sm font-medium text-muted-foreground">
               {t("admin.nodeEdit.publicRemark", "公开备注")}
             </label>
             <Textarea
