@@ -170,7 +170,7 @@ const TerminalPage = () => {
         term.focus();
         navigator.clipboard.readText().then((text) => {
           const encoder = new TextEncoder();
-          const uint8Array = encoder.encode(text);
+          const uint8Array = encoder.encode(text.replace(/\r?\n/g, "\r"));
           ws.send(uint8Array);
         });
       }
