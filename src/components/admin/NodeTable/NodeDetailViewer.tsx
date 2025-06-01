@@ -214,8 +214,8 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                   id="detail-createdAt"
                   className="bg-muted px-3 py-2 rounded border"
                 >
-                  {item.CreatedAt ? (
-                    new Date(item.CreatedAt).toLocaleString()
+                  {item.created_at ? (
+                    new Date(item.created_at).toLocaleString()
                   ) : (
                     <span className="text-muted-foreground">-</span>
                   )}
@@ -229,8 +229,8 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                   id="detail-updatedAt"
                   className="bg-muted px-3 py-2 rounded border"
                 >
-                  {item.UpdatedAt ? (
-                    new Date(item.UpdatedAt).toLocaleString()
+                  {item.updated_at ? (
+                    new Date(item.updated_at).toLocaleString()
                   ) : (
                     <span className="text-muted-foreground">-</span>
                   )}

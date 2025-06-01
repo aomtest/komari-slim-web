@@ -5,6 +5,7 @@ import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Theme } from "@radix-ui/themes"
 import { ThemeContext as AppThemeContext } from "@/contexts/ThemeContext"
+import { useSystemTheme } from "@/hooks/useSystemTheme"
 
 function DropdownMenu({
   ...props
@@ -38,19 +39,19 @@ function DropdownMenuContent({
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Content>) {
   const { appearance, color } = React.useContext(AppThemeContext);
-
+  const resolvedAppearance = useSystemTheme(appearance);
   return (
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.Content
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
         className={cn(
-          "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border p-1 shadow-md",
+          "bg-accent-1 text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border p-1 shadow-md",
           className
         )}
         {...props}
       >
-        <Theme appearance={appearance === 'inherit' ? undefined : appearance} accentColor={color}>
+        <Theme appearance={resolvedAppearance} accentColor={color}>
           {children}
         </Theme>
       </DropdownMenuPrimitive.Content>
@@ -235,6 +236,7 @@ function DropdownMenuSubContent({
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.SubContent>) {
   const { appearance, color } = React.useContext(AppThemeContext);
+  const resolvedAppearance = useSystemTheme(appearance);
   return (
     <DropdownMenuPrimitive.SubContent
       data-slot="dropdown-menu-sub-content"
@@ -244,7 +246,7 @@ function DropdownMenuSubContent({
       )}
       {...props}
     >
-      <Theme appearance={appearance === 'inherit' ? undefined : appearance} accentColor={color}>
+      <Theme appearance={resolvedAppearance} accentColor={color}>
         {children}
       </Theme>
     </DropdownMenuPrimitive.SubContent>

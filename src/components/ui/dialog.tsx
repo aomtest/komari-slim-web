@@ -7,6 +7,7 @@ import { XIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Theme } from "@radix-ui/themes";
 import { ThemeContext as AppThemeContext } from "@/contexts/ThemeContext";
+import { useSystemTheme } from "@/hooks/useSystemTheme";
 
 function Dialog({
   ...props
@@ -54,12 +55,13 @@ function DialogContent({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content>) {
   const { appearance, color } = React.useContext(AppThemeContext);
+  const resolvedAppearance = useSystemTheme(appearance);
 
   return (
     <DialogPortal data-slot="dialog-portal">
       <DialogOverlay />
       <Theme
-        appearance={appearance === "inherit" ? undefined : appearance}
+        appearance={resolvedAppearance}
         accentColor={color}
       >
         <DialogPrimitive.Content

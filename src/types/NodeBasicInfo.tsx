@@ -34,9 +34,9 @@ export interface NodeBasicInfo {
   /** 过期时间 */
   expired_at: string;
   /** 创建时间 */
-  CreatedAt: string;
+  created_at: string;
   /** 更新时间 */
-  UpdatedAt: string;
+  updated_at: string;
 }
 
 export interface NodeResponse {

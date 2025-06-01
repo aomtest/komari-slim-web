@@ -194,10 +194,10 @@ export default function InstancePage() {
               {t("nodeCard.last_updated")}
             </Text>
             <Text size="2">
-              {node?.UpdatedAt
+              {node?.updated_at
                 ? new Date(
                     live_data?.data.data[uuid ?? ""]?.updated_at ||
-                      node.UpdatedAt
+                      node.updated_at
                   ).toLocaleString()
                 : "-"}
             </Text>
