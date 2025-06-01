@@ -14,11 +14,12 @@ const TerminalPage = () => {
   const terminalRef = useRef<HTMLDivElement>(null);
   const terminalInstance = useRef<Terminal | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
+  const heartbeatIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const params = new URLSearchParams(window.location.search);
   const uuid = params.get("uuid");
   const [callout, setCallout] = useState(false);
   const [t] = useTranslation();
-
+  var firstBinary = useRef(false);
   useEffect(() => {
     if (uuid === null) {
       window.location.href = "/";
@@ -29,8 +30,12 @@ const TerminalPage = () => {
         if (data.length === 0) {
           alert(t("terminal.no_active_connection"));
         }
-        const client = data.find((item: { uuid: string }) => item.uuid === uuid);
-        document.title = `${t("terminal.title")} - ${client?.name || t("terminal.title")}`;
+        const client = data.find(
+          (item: { uuid: string }) => item.uuid === uuid
+        );
+        document.title = `${t("terminal.title")} - ${
+          client?.name || t("terminal.title")
+        }`;
       });
   }, [t, uuid]);
   useEffect(() => {
@@ -61,12 +66,33 @@ const TerminalPage = () => {
     // 连接WebSocket
     const ws = new WebSocket(`./api/admin/client/${uuid}/terminal`);
     ws.binaryType = "arraybuffer";
-    wsRef.current = ws;
-
-    // 发送终端尺寸
+    wsRef.current = ws; // 发送终端尺寸
     ws.onopen = () => {
       handleResize(); // 撑满窗口区域
       handleResize(); // resize
+      startHeartbeat();
+    };
+
+    // 心跳发送
+    const startHeartbeat = () => {
+      heartbeatIntervalRef.current = setInterval(() => {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(
+            JSON.stringify({
+              type: "heartbeat",
+              timestamp: new Date().toISOString(),
+            })
+          );
+        }
+      }, 30000);
+    };
+
+    // 停止心跳
+    const stopHeartbeat = () => {
+      if (heartbeatIntervalRef.current) {
+        clearInterval(heartbeatIntervalRef.current);
+        heartbeatIntervalRef.current = null;
+      }
     };
 
     // 接收服务器数据
@@ -77,10 +103,16 @@ const TerminalPage = () => {
       } else {
         term.write(event.data);
       }
+      // 建立连接后resize一次
+      if (!firstBinary.current && event.data instanceof ArrayBuffer) {
+        firstBinary.current = true;
+        handleResize();
+      }
+    }; // 连接关闭
+    ws.onclose = () => {
+      stopHeartbeat();
+      term.write(`\n ${t("terminal.disconnect")}`);
     };
-
-    // 连接关闭
-    ws.onclose = () => term.write(`\n ${t("terminal.disconnect")}`);
 
     // 处理用户输入并发送到服务器
     term.onData((data) => {
@@ -121,7 +153,7 @@ const TerminalPage = () => {
 
     // 处理右键菜单
     const handleContextMenu = (e: MouseEvent) => {
-      if (e.ctrlKey || ws.readyState !== WebSocket.OPEN){
+      if (e.ctrlKey || ws.readyState !== WebSocket.OPEN) {
         return;
       }
       const selection = window.getSelection();
@@ -137,16 +169,16 @@ const TerminalPage = () => {
         e.preventDefault();
         term.focus();
         navigator.clipboard.readText().then((text) => {
-            const encoder = new TextEncoder();
-            const uint8Array = encoder.encode(text);
-            ws.send(uint8Array);
+          const encoder = new TextEncoder();
+          const uint8Array = encoder.encode(text);
+          ws.send(uint8Array);
         });
       }
     };
 
-    document.addEventListener("contextmenu", handleContextMenu);
-    // 清理函数
+    document.addEventListener("contextmenu", handleContextMenu); // 清理函数
     return () => {
+      stopHeartbeat();
       term.dispose();
       if (
         ws.readyState === WebSocket.OPEN ||
