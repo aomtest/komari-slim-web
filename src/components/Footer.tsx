@@ -2,6 +2,22 @@ import { Box, Flex, Text } from '@radix-ui/themes';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  
+  // 格式化 build 时间
+  const formatBuildTime = (isoString: string) => {
+    const date = new Date(isoString);
+    return date.toLocaleString('zh-CN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      timeZone: 'Asia/Shanghai'
+    }) + ' (GMT+8)';
+  };
+
+  const buildTime = typeof __BUILD_TIME__ !== 'undefined' ? __BUILD_TIME__ : null;
 
   return (
     <Box
@@ -27,9 +43,11 @@ const Footer = () => {
           <Text size="2" color="gray">
             © {currentYear} Komari Monitor. All rights reserved.
           </Text>
-          <Text size="2" color="gray">
-            
-          </Text>
+          {buildTime && (
+            <Text size="1" color="gray">
+              Build Time: {formatBuildTime(buildTime)}
+            </Text>
+          )}
         </Flex>
 
       </Flex>

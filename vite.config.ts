@@ -10,6 +10,8 @@ import * as path from "path";
 import dotenv from "dotenv";
 
 export default defineConfig(({ mode }) => {
+  const buildTime = new Date().toISOString();
+  
   const baseConfig: UserConfig = {
     plugins: [
       react(),
@@ -19,6 +21,9 @@ export default defineConfig(({ mode }) => {
         extensions: ["tsx", "jsx"],
       }),
     ],
+    define: {
+      __BUILD_TIME__: JSON.stringify(buildTime),
+    },
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
