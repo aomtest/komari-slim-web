@@ -182,5 +182,10 @@
       "saveSuccess": "保存成功",
       "saveError": "保存失败"
     }
+  },
+  "theme": {
+    "light": "浅色",
+    "dark": "深色",
+    "system": "跟随系统"
   }
 }

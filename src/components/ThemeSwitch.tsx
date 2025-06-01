@@ -2,6 +2,7 @@ import { DropdownMenu, IconButton } from "@radix-ui/themes";
 import { useContext, type ReactNode } from "react";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { SunIcon } from "@radix-ui/react-icons";
+import { useTranslation } from "react-i18next";
 
 interface ThemeSwitchProps {
   icon?: ReactNode;
@@ -18,26 +19,21 @@ const ThemeSwitch = ({
       <SunIcon />
     </IconButton>
   ),
-  content = {
-    light: "Light",
-    dark: "Dark",
-    system: "System",
-  },
 }: ThemeSwitchProps = {}) => {
   const { setAppearance } = useContext(ThemeContext);
-
+  const [t] = useTranslation();
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>{icon}</DropdownMenu.Trigger>
       <DropdownMenu.Content>
         <DropdownMenu.Item onSelect={() => setAppearance("light")}>
-          {content.light}
+          {t("theme.light", "Light")}
         </DropdownMenu.Item>
         <DropdownMenu.Item onSelect={() => setAppearance("dark")}>
-          {content.dark}
+          {t("theme.dark", "Dark")}
         </DropdownMenu.Item>
-        <DropdownMenu.Item onSelect={() => setAppearance("inherit")}>
-          {content.system}
+        <DropdownMenu.Item onSelect={() => setAppearance("system")}>
+          {t("theme.system", "System")}
         </DropdownMenu.Item>
       </DropdownMenu.Content>
     </DropdownMenu.Root>

@@ -10,6 +10,7 @@ import {
   type Colors,
 } from "./contexts/ThemeContext";
 import { useLocalStorage } from "./hooks/useLocalStorage";
+import { useSystemTheme } from "./hooks/useSystemTheme";
 import { BrowserRouter } from "react-router-dom";
 import "./i18n/config"; // Import i18next config
 import { Suspense } from "react";
@@ -24,6 +25,10 @@ const App = () => {
     "color",
     THEME_DEFAULTS.color
   );
+  
+  // Use the system theme hook to resolve "system" to actual theme
+  const resolvedAppearance = useSystemTheme(appearance);
+  
   const themeContextValue = useMemo(
     () => ({
       appearance,
@@ -37,7 +42,7 @@ const App = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <ThemeContext.Provider value={themeContextValue}>
-        <Theme appearance={appearance} accentColor={color} scaling="110%">
+        <Theme appearance={resolvedAppearance} accentColor={color} scaling="110%">
           {routing}
         </Theme>
       </ThemeContext.Provider>

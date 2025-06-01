@@ -182,5 +182,10 @@
       "saveError": "Saving failed",
       "saveSuccess": "Save successfully"
     }
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
   }
 }
