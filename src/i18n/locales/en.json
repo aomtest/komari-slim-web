@@ -187,5 +187,7 @@
     "light": "Light",
     "dark": "Dark",
     "system": "System"
-  }
+  },
+  "copy_success": "Copied!",
+  "copy": "Copy"
 }
