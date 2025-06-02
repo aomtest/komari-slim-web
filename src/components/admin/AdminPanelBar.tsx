@@ -13,15 +13,17 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
 import ColorSwitch from "../ColorSwitch";
-import {
-  TablerAdjustments,
-  TablerServer,
-  TablerUserCircle,
-  TablerUsers,
-} from "../Icones/Tabler";
 import LanguageSwitch from "../Language";
 import ThemeSwitch from "../ThemeSwitch";
 import { useIsMobile } from "@/hooks/use-mobile";
+import menuConfig from "../../config/menuConfig.json";
+import type { MenuItem } from "../../types/menu";
+import { iconMap } from "../../utils/iconHelper";
+import { ChevronDownIcon } from "@radix-ui/react-icons";
+import { TablerMenu2 } from "../Icones/Tabler";
+
+// 将JSON配置转换为类型安全的菜单项数组
+const menuItems = (menuConfig as { menu: MenuItem[] }).menu;
 
 interface AdminPanelBarProps {
   content: ReactNode;
@@ -29,6 +31,9 @@ interface AdminPanelBarProps {
 
 const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [openSubMenus, setOpenSubMenus] = useState<{ [key: string]: boolean }>({
+    // 默认所有子菜单关闭
+  });
   const isMobile = useIsMobile();
   const ishttps = window.location.protocol === "https:";
   const [t] = useTranslation();
@@ -92,7 +97,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
           height: "100vh",
           width: "100vw",
           overflow: "auto",
-          backgroundColor: "var(--accent-3)",
+          backgroundColor: "var(--accent-1)",
         }}
       >
         {/* Navbar */}
@@ -102,15 +107,22 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
           animate={{ y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
-          <Flex gap="3" p="2" justify="between" align="center">
+          <Flex
+            gap="3"
+            p="2"
+            justify="between"
+            align="center"
+            className="border-b-1"
+          >
             <Flex gap="3" align="center">
-              <Button
-                variant="soft"
+              <IconButton
+                variant="ghost"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                style={{ display: isMobile && sidebarOpen ? "none" : "flex" }}
+                
+                style={{ display: isMobile && sidebarOpen ? "none" : "flex",color: "var(--gray-11)" }}
               >
-                <HamburgerMenuIcon />
-              </Button>
+                <TablerMenu2 />
+              </IconButton>
               <Link to="/">
                 <Strong>Komari</Strong>
               </Link>
@@ -134,26 +146,29 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
             animate={sidebarOpen ? "open" : "closed"}
             exit="closed"
             style={{
-              backgroundColor: "var(--accent-3)",
+              backgroundColor: "var(--accent-1)",
               height: "100%",
               position: isMobile ? "absolute" : "relative",
               zIndex: isMobile ? 10 : 1,
               overflowY: "auto",
-              overflowX: "hidden", // 防止内容在动画时溢出
+              overflowX: "hidden",
             }}
           >
-            {/* 关闭按钮 */}
             <Flex
               gap="3"
-              p="4"
+              className="p-2 border-r-2"
               direction="column"
               justify="start"
               align="start"
-              style={{ height: "100%", minWidth: "240px" }} // 确保内容区域有最小宽度
+              style={{ height: "100%", minWidth: "240px" }}
             >
+              {/* 关闭按钮 */}
               <IconButton
                 variant="soft"
-                style={{ display: isMobile ? "flex" : "none" }}
+                style={{
+                  display: isMobile ? "flex" : "none",
+                  margin: "8px 0px 0px 8px",
+                }}
                 onClick={() => setSidebarOpen(false)}
               >
                 <Cross1Icon />
@@ -161,35 +176,93 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
               {/* 侧边连链接 */}
               <Flex
                 direction="column"
-                gap={{ md: "2", initial: "2" }}
-                justify={{ md: "start", initial: "start" }}
-                className="h-full md:mt-0 mt-6"
+                gap="2"
+                className="h-full md:mt-0 mt-6 "
                 style={{ width: "100%" }}
               >
-                <SidebarItem
-                  to="/admin"
-                  icon={<TablerServer />}
-                  children={t("server")}
-                  onClick={() => isMobile && setSidebarOpen(false)}
-                />
-                <SidebarItem
-                  to="/admin/settings"
-                  icon={<TablerAdjustments />}
-                  children={t("settings")}
-                  onClick={() => isMobile && setSidebarOpen(false)}
-                />
-                <SidebarItem
-                  to="/admin/sessions"
-                  icon={<TablerUsers />}
-                  children={t("sessions")}
-                  onClick={() => isMobile && setSidebarOpen(false)}
-                />
-                <SidebarItem
-                  to="/admin/account"
-                  icon={<TablerUserCircle />}
-                  children={t("account")}
-                  onClick={() => isMobile && setSidebarOpen(false)}
-                />
+                {menuItems.map((item) => {
+                  const IconComp = iconMap[item.icon];
+                  const isOpen = openSubMenus[item.path];
+                  if (item.children && item.children.length) {
+                    return (
+                      <div key={item.path}>
+                        <Flex
+                          className="p-2 gap-2 border-l-[4px] border-transparent cursor-pointer"
+                          align="center"
+                          onClick={() =>
+                            setOpenSubMenus((prev) => ({
+                              ...prev,
+                              [item.path]: !prev[item.path],
+                            }))
+                          }
+                        >
+                          <IconComp className="opacity-70" />
+                          <Text
+                            className="text-base"
+                            weight="medium"
+                            style={{
+                              flex: 1,
+                            }}
+                          >
+                            {t(item.labelKey)}
+                          </Text>
+
+                          <ChevronDownIcon
+                            style={{
+                              transform: isOpen
+                                ? "rotate(180deg)"
+                                : "rotate(0deg)",
+                              transition: "transform 0.2s",
+                            }}
+                          />
+                        </Flex>
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={
+                            isOpen
+                              ? { height: "auto", opacity: 1 }
+                              : { height: 0, opacity: 0 }
+                          }
+                          transition={{ duration: 0.2 }}
+                          style={{ overflow: "hidden" }}
+                        >
+                          <Flex
+                            direction="column"
+                            className="ml-4"
+                          >
+                            {item.children.map((child: MenuItem) => {
+                              const ChildIcon = iconMap[child.icon];
+                              return (
+                                <SidebarItem
+                                  key={child.path}
+                                  to={child.path}
+                                  icon={
+                                    <ChildIcon
+                                      style={{ color: "var(--gray11)" }}
+                                    />
+                                  }
+                                  children={t(child.labelKey)}
+                                  onClick={() =>
+                                    isMobile && setSidebarOpen(false)
+                                  }
+                                />
+                              );
+                            })}
+                          </Flex>
+                        </motion.div>
+                      </div>
+                    );
+                  }
+                  return (
+                    <SidebarItem
+                      key={item.path}
+                      to={item.path}
+                      icon={<IconComp style={{ color: "var(--gray11)" }} />}
+                      children={t(item.labelKey)}
+                      onClick={() => isMobile && setSidebarOpen(false)}
+                    />
+                  );
+                })}
               </Flex>
             </Flex>
           </motion.div>
@@ -210,7 +283,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
             style={{
               backgroundColor: "var(--accent-1)",
               height: "100%",
-              borderRadius: "8px 8px 0 0",
+              borderRadius: "0",
               padding: "16px",
               overflowY: "auto",
               boxSizing: "border-box",
@@ -266,46 +339,36 @@ const SidebarItem = ({
     <Link
       to={to}
       onClick={onClick}
-      className="hover:bg-accent-5 rounded-sm transition-all duration-200"
+      className="group overflow-hidden transition-colors duration-200"
     >
       <Flex
-        px="3"
-        py="2"
+        className="p-2 gap-2"
+        align="center"
         style={{
-          display: "flex",
-          justifyContent: "start",
-          alignItems: "center",
-          gap: "8px",
+          borderLeft: isActive
+            ? "4px solid var(--accent-8)"
+            : "4px solid transparent",
           borderRadius: "6px",
-          backgroundColor: isActive ? "var(--accent-6)" : "transparent",
-          transition: "all 0.2s ease",
+          backgroundColor: isActive ? "var(--accent-4)" : "transparent",
+          color: isActive ? "var(--accent-10)" : "inherit",
+          transition: "background-color 0.2s, border-color 0.2s",
         }}
       >
         <span
           style={{
-            color: isActive ? "var(--accent-12)" : "inherit",
+            color: isActive ? "var(--accent-10)" : "inherit",
             opacity: isActive ? 1 : 0.7,
           }}
         >
           {icon}
         </span>
         <Text
-          size="3"
+          className="text-base"
           weight={isActive ? "bold" : "medium"}
-          style={{
-            color: isActive ? "var(--accent-12)" : "inherit",
-          }}
+          style={{ flex: 1 }}
         >
           {children}
         </Text>
-        {isActive && (
-          <div
-            className="ml-auto h-4 w-1 rounded-sm"
-            style={{
-              backgroundColor: "var(--accent-9)",
-            }}
-          />
-        )}
       </Flex>
     </Link>
   );

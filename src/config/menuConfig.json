@@ -1,0 +1,31 @@
+{
+  "menu": [
+    {
+      "labelKey": "server",
+      "path": "/admin",
+      "icon": "TablerServer"
+    },
+    {
+      "labelKey": "settings",
+      "path": "/admin/settings",
+      "icon": "TablerAdjustments",
+      "children": [
+        {
+          "labelKey": "settings_general",
+          "path": "/admin/settings/general",
+          "icon": "TablerAdjustments"
+        }
+      ]
+    },
+    {
+      "labelKey": "sessions",
+      "path": "/admin/sessions",
+      "icon": "TablerUsers"
+    },
+    {
+      "labelKey": "account",
+      "path": "/admin/account",
+      "icon": "TablerUserCircle"
+    }
+  ]
+}
