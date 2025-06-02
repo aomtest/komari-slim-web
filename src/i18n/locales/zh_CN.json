@@ -10,7 +10,21 @@
   "markup": "备注",
   "panel_welcome": "Hi {{username}} ! 欢迎使用 Komari.",
   "account": "账户",
-  "settings": "设置",
+  "settings": {
+    "title": "设置",
+    "custom": "自定义",
+    "sso": "单点登录",
+    "general": "通用",
+    "site": "站点",
+    "save_settings": "保存设置",
+    "settings_saved": "设置已保存",
+    "settings_save_failed": "保存设置失败"
+  },
+  "sessions": {
+    "title": "会话",
+    "active_sessions": "活动会话",
+    "logout": "登出"
+  },
   "edit": "编辑",
   "token": "令牌",
   "save": "保存",
@@ -18,6 +32,7 @@
   "current_time": "当前时间",
   "region_overview": "点亮地区",
   "traffic_overview": "流量概览",
+  "documentation": "文档",
   "account_settings": {
     "title": "账户设置",
     "username": "用户名",
@@ -189,5 +204,7 @@
     "system": "跟随系统"
   },
   "copy_success": "已复制到剪贴板",
-  "copy": "复制"
+  "copy": "复制",
+  "page_not_found": "真不巧，网页被小鞠吃掉了。",
+  "go_to_home": "回到主页"
 }

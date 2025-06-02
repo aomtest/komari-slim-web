@@ -6,19 +6,34 @@
       "icon": "TablerServer"
     },
     {
-      "labelKey": "settings",
+      "labelKey": "settings.title",
       "path": "/admin/settings",
-      "icon": "TablerAdjustments",
+      "icon": "TablerSettings2",
       "children": [
         {
-          "labelKey": "settings_general",
+          "labelKey": "settings.site",
+          "path": "/admin/settings/site",
+          "icon": "TablerHome"
+        },
+        {
+          "labelKey": "settings.custom",
+          "path": "/admin/settings/custom",
+          "icon": "TablerCode"
+        },
+        {
+          "labelKey": "settings.sso",
+          "path": "/admin/settings/sso",
+          "icon": "TablerCircleArrowDownRight"
+        },
+        {
+          "labelKey": "settings.general",
           "path": "/admin/settings/general",
-          "icon": "TablerAdjustments"
+          "icon": "TablerDots"
         }
       ]
     },
     {
-      "labelKey": "sessions",
+      "labelKey": "sessions.title",
       "path": "/admin/sessions",
       "icon": "TablerUsers"
     },
@@ -26,6 +41,10 @@
       "labelKey": "account",
       "path": "/admin/account",
       "icon": "TablerUserCircle"
+    },{
+      "labelKey": "documentation",
+      "path": "https://komari-monitor.github.io/komari-document",
+      "icon": "TablerBook2"
     }
   ]
 }

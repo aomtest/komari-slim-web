@@ -1,12 +1,11 @@
-import { Cross1Icon, ExitIcon, HamburgerMenuIcon } from "@radix-ui/react-icons";
+import { Cross1Icon, ExitIcon } from "@radix-ui/react-icons";
 import {
-  Button,
   Callout,
   Flex,
   Grid,
   IconButton,
   Strong,
-  Text,
+  Text
 } from "@radix-ui/themes";
 import { AnimatePresence, motion } from "framer-motion"; // 引入 Framer Motion
 import { useEffect, useState, type ReactNode } from "react";
@@ -37,6 +36,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
   const isMobile = useIsMobile();
   const ishttps = window.location.protocol === "https:";
   const [t] = useTranslation();
+  const location = useLocation();
   // Handle responsive behavior
   useEffect(() => {
     const handleResize = () => setSidebarOpen(!isMobile);
@@ -45,6 +45,19 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
     return () => window.removeEventListener("resize", handleResize);
   }, [isMobile]);
 
+  // 初次加载时根据当前路径自动展开子菜单
+  useEffect(() => {
+    const newState: { [key: string]: boolean } = {};
+    menuItems.forEach((item) => {
+      if (item.children) {
+        newState[item.path] = item.children.some((child) =>
+          location.pathname === child.path || location.pathname.startsWith(child.path)
+        );
+      }
+    });
+    setOpenSubMenus(newState);
+  }, []);
+  
   // 侧边栏动画变体
   const sidebarVariants = {
     open: {

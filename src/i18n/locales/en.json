@@ -10,7 +10,21 @@
   "markup": "Markup",
   "panel_welcome": "Hi {{username}}! Welcome to Komari.",
   "account": "Account",
-  "settings": "Settings",
+  "settings": {
+    "title": "Settings",
+    "custom": "Custom",
+    "sso": "Single Sign-On",
+    "general": "General",
+    "site": "Site",
+    "save_settings": "Save Settings",
+    "settings_saved": "Settings Saved",
+    "settings_save_failed": "Failed to Save Settings"
+  },
+  "sessions": {
+    "title": "Sessions",
+    "active_sessions": "Active Sessions",
+    "logout": "Logout"
+  },
   "edit": "Edit",
   "token": "Token",
   "save": "Save",
@@ -18,6 +32,7 @@
   "current_time": "Current Time",
   "region_overview": "Region",
   "traffic_overview": "Traffic Overview",
+  "documentation": "Documentation",
   "account_settings": {
     "title": "Account Settings",
     "username": "Username",
@@ -189,5 +204,7 @@
     "system": "System"
   },
   "copy_success": "Copied!",
-  "copy": "Copy"
+  "copy": "Copy",
+  "page_not_found": "The server cannot find the specific page you're trying to access.",
+  "go_to_home": "Go to home"
 }
