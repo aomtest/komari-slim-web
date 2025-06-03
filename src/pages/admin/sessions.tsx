@@ -89,22 +89,22 @@ export default function Sessions() {
   }
 
   if (!sessions) {
-    return <div>加载中...</div>;
+    return <div>{t("sessions.loading")}</div>;
   }
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-semibold mb-4">会话管理</h1>
+      <h1 className="text-2xl font-semibold mb-4">{t("sessions.title")}</h1>
       <div className="mb-4">
         <Dialog>
           <DialogTrigger>
             <Button variant="destructive" size="sm">
-              删除全部会话
+              {t("sessions.delete_all")}
             </Button>
           </DialogTrigger>
           <DialogContent>
-            <DialogTitle>删除全部会话</DialogTitle>
+            <DialogTitle>{t("sessions.delete_all")}</DialogTitle>
             <DialogDescription>
-              此操作将删除所有会话，是否继续？
+              {t("sessions.delete_all_desc")}
             </DialogDescription>
             <DialogFooter>
               <DialogTrigger>
@@ -114,7 +114,7 @@ export default function Sessions() {
               </DialogTrigger>
               <DialogTrigger>
                 <Button variant="secondary">
-                  {t("admin.nodeTable.cancel")}
+                  {t("sessions.cancel")}
                 </Button>
               </DialogTrigger>
             </DialogFooter>
@@ -125,10 +125,10 @@ export default function Sessions() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>会话 ID</TableHead>
-              <TableHead>创建时间</TableHead>
-              <TableHead>过期时间</TableHead>
-              <TableHead>操作</TableHead>
+              <TableHead>{t("sessions.session_id")}</TableHead>
+              <TableHead>{t("sessions.created_at")}</TableHead>
+              <TableHead>{t("sessions.expires_at")}</TableHead>
+              <TableHead>{t("sessions.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -139,7 +139,9 @@ export default function Sessions() {
                   <TableCell>
                     {s.Session}
                     {isCurrent && (
-                      <span className="ml-2 text-sm text-blue-600">(当前)</span>
+                      <span className="ml-2 text-sm text-blue-600">
+                        {t("sessions.current")}
+                      </span>
                     )}
                   </TableCell>
                   <TableCell>
@@ -150,13 +152,13 @@ export default function Sessions() {
                     <Dialog>
                       <DialogTrigger>
                         <Button variant="destructive" size="sm">
-                          删除
+                          {t("delete")}
                         </Button>
                       </DialogTrigger>
                       <DialogContent>
-                        <DialogTitle>确认删除</DialogTitle>
+                        <DialogTitle>{t("sessions.confirm_delete")}</DialogTitle>
                         <DialogDescription>
-                          确定要删除此会话吗？
+                          {t("sessions.delete_one_desc")}
                         </DialogDescription>
                         <DialogFooter>
                           <DialogTrigger>
@@ -169,7 +171,7 @@ export default function Sessions() {
                           </DialogTrigger>
                           <DialogTrigger>
                             <Button variant="secondary">
-                              {t("admin.nodeTable.cancel")}
+                              {t("sessions.cancel")}
                             </Button>
                           </DialogTrigger>
                         </DialogFooter>

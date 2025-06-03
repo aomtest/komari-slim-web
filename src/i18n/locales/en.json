@@ -23,7 +23,18 @@
   "sessions": {
     "title": "Sessions",
     "active_sessions": "Active Sessions",
-    "logout": "Logout"
+    "logout": "Logout",
+    "loading": "Loading...",
+    "delete_all": "Delete All Sessions",
+    "delete_all_desc": "This will delete all sessions. Continue?",
+    "confirm_delete": "Confirm Deletion",
+    "delete_one_desc": "Are you sure you want to delete this session?",
+    "session_id": "Session ID",
+    "created_at": "Created At",
+    "expires_at": "Expires At",
+    "actions": "Actions",
+    "current": "(Current)",
+    "cancel": "Cancel"
   },
   "edit": "Edit",
   "token": "Token",
