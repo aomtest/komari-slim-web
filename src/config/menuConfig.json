@@ -41,7 +41,13 @@
       "labelKey": "account",
       "path": "/admin/account",
       "icon": "TablerUserCircle"
-    },{
+    },
+    {
+      "labelKey": "about",
+      "path": "/admin/about",
+      "icon": "TablerAt"
+    },
+    {
       "labelKey": "documentation",
       "path": "https://komari-monitor.github.io/komari-document",
       "icon": "TablerBook2"

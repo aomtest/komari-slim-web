@@ -10,6 +10,7 @@ import {
   TablerCode,
   TablerCircleArrowDownRight,
   TablerDots,
+  TablerAt,
 } from "@/components/Icones/Tabler";
 
 // Map icon names defined in menuConfig.json to their components
@@ -26,5 +27,6 @@ export const iconMap: Record<
   TablerHome,
   TablerCode,
   TablerCircleArrowDownRight,
-  TablerDots
+  TablerDots,
+  TablerAt
 };
