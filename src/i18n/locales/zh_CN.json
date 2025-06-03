@@ -10,6 +10,7 @@
   "markup": "备注",
   "panel_welcome": "Hi {{username}} ! 欢迎使用 Komari.",
   "account": "账户",
+  "about": "关于",
   "settings": {
     "title": "设置",
     "custom": "自定义",

@@ -10,6 +10,7 @@
   "markup": "Markup",
   "panel_welcome": "Hi {{username}}! Welcome to Komari.",
   "account": "Account",
+  "about": "About",
   "settings": {
     "title": "Settings",
     "custom": "Custom",
