@@ -5,7 +5,7 @@ import {
   Grid,
   IconButton,
   Strong,
-  Text
+  Text,
 } from "@radix-ui/themes";
 import { AnimatePresence, motion } from "framer-motion"; // 引入 Framer Motion
 import { useEffect, useState, type ReactNode } from "react";
@@ -37,6 +37,26 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
   const ishttps = window.location.protocol === "https:";
   const [t] = useTranslation();
   const location = useLocation();
+  // 获取版本信息
+  const [versionInfo, setVersionInfo] = useState<{
+    hash: string;
+    version: string;
+  } | null>(null);
+  useEffect(() => {
+    const fetchVersionInfo = async () => {
+      try {
+        const response = await fetch("/api/version");
+        const data = await response.json();
+        if (data.status === "success") {
+          setVersionInfo({ hash: data.hash, version: data.version });
+        }
+      } catch (error) {
+        console.error("Failed to fetch version info:", error);
+      }
+    };
+
+    fetchVersionInfo();
+  }, []);
   // Handle responsive behavior
   useEffect(() => {
     const handleResize = () => setSidebarOpen(!isMobile);
@@ -50,14 +70,16 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
     const newState: { [key: string]: boolean } = {};
     menuItems.forEach((item) => {
       if (item.children) {
-        newState[item.path] = item.children.some((child) =>
-          location.pathname === child.path || location.pathname.startsWith(child.path)
+        newState[item.path] = item.children.some(
+          (child) =>
+            location.pathname === child.path ||
+            location.pathname.startsWith(child.path)
         );
       }
     });
     setOpenSubMenus(newState);
   }, []);
-  
+
   // 侧边栏动画变体
   const sidebarVariants = {
     open: {
@@ -131,14 +153,19 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
               <IconButton
                 variant="ghost"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                
-                style={{ display: isMobile && sidebarOpen ? "none" : "flex",color: "var(--gray-11)" }}
+                style={{
+                  display: isMobile && sidebarOpen ? "none" : "flex",
+                  color: "var(--gray-11)",
+                }}
               >
                 <TablerMenu2 />
               </IconButton>
               <Link to="/">
-                <Strong>Komari</Strong>
+                <label className="text-xl font-bold">Komari</label>
               </Link>
+              <label className="text-sm text-muted-foreground self-end overflow-hidden">
+                {versionInfo && `${versionInfo.version} (${versionInfo.hash})`}
+              </label>
             </Flex>
             <Flex gap="3" align="center">
               <ThemeSwitch />
@@ -239,10 +266,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                           transition={{ duration: 0.2 }}
                           style={{ overflow: "hidden" }}
                         >
-                          <Flex
-                            direction="column"
-                            className="ml-4 gap-1"
-                          >
+                          <Flex direction="column" className="ml-4 gap-1">
                             {item.children.map((child: MenuItem) => {
                               const ChildIcon = iconMap[child.icon];
                               return (

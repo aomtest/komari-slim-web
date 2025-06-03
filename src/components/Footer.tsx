@@ -1,4 +1,5 @@
 import { Box, Flex, Text } from '@radix-ui/themes';
+import { useEffect, useState } from 'react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -18,7 +19,23 @@ const Footer = () => {
   };
 
   const buildTime = typeof __BUILD_TIME__ !== 'undefined' ? __BUILD_TIME__ : null;
+  const [versionInfo, setVersionInfo] = useState<{ hash: string; version: string } | null>(null);
 
+  useEffect(() => {
+    const fetchVersionInfo = async () => {
+      try {
+        const response = await fetch('/api/version');
+        const data = await response.json();
+        if (data.status === 'success') {
+          setVersionInfo({ hash: data.hash, version: data.version });
+        }
+      } catch (error) {
+        console.error('Failed to fetch version info:', error);
+      }
+    };
+
+    fetchVersionInfo();
+  }, []);
   return (
     <Box
       style={{
@@ -48,6 +65,9 @@ const Footer = () => {
               Build Time: {formatBuildTime(buildTime)}
             </Text>
           )}
+          <Text size="1" color="gray">
+            {versionInfo && `${versionInfo.version} (${versionInfo.hash})`}
+          </Text>
         </Flex>
 
       </Flex>
