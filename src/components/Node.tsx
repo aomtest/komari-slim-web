@@ -201,7 +201,13 @@ const Node = ({ basic, live, online }: NodeProps) => {
               <Text size="2" color="gray">
                 {t("nodeCard.uptime")}
               </Text>
-              <Text size="2">{formatUptime(liveData.uptime, t)}</Text>
+              {online ? (
+                <Text size="2">{formatUptime(liveData.uptime, t)}</Text>
+              ) : (
+                <Text size="2" color="gray">
+                  -
+                </Text>
+              )}
             </Flex>
           </Flex>
         </Flex>
