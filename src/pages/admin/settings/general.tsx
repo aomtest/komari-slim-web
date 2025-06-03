@@ -35,7 +35,7 @@ export default function GeneralSettings() {
         description={t("settings.geoip.provider_description")}
         defaultValue={settings.geo_ip_provider}
         options={[
-          { value: "mmbd" },
+          { value: "mmdb" },
           { value: "ip-api.com", disabled: true },
           { value: "ipinfo.io", disabled: true },
         ]}
