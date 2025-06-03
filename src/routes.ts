@@ -39,6 +39,9 @@ export const routes: RouteObject[] = [
       },
       {
         path: "settings",
+        element: React.createElement(
+          lazy(() => import("./pages/admin/settings/_layout"))
+        ),
         children: [
           {
             path: "site",

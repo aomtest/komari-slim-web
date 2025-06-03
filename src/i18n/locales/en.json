@@ -13,10 +13,38 @@
   "about": "About",
   "settings": {
     "title": "Settings",
-    "custom": "Custom",
-    "sso": "Single Sign-On",
-    "general": "General",
-    "site": "Site",
+    "custom": {
+      "title": "Custom",
+      "header": "Custom Header",
+      "header_description": "Add custom HTML/CSS/JavaScript to the site header. This will be loaded on all pages."
+    },
+    "sso": {
+      "title": "Single Sign-On",
+      "enable": "Enable Single Sign-On",
+      "enable_description": "Allow users to login with third-party accounts (like GitHub)",
+      "client_id": "Client ID",
+      "client_id_description": "OAuth application client ID",
+      "client_secret": "Client Secret",
+      "client_secret_description": "OAuth application client secret"
+    },
+    "general": {
+      "title": "General"
+    },
+    "site": {
+      "title": "Site",
+      "name": "Site Name",
+      "name_description": "Set the name of the control panel site",
+      "description": "Site Description",
+      "description_description": "Set the description for the control panel site",
+      "cros": "Allow Cross-Origin Requests",
+      "cros_description": "Allow API requests from other domains"
+    },
+    "geoip": {
+      "enable_title": "Enable GeoIP",
+      "enable_description": "Display node geographic locations on the map",
+      "provider_title": "GeoIP Provider",
+      "provider_description": "Choose which service provides geographic location data"
+    },
     "save_settings": "Save Settings",
     "settings_saved": "Settings Saved",
     "settings_save_failed": "Failed to Save Settings"
@@ -178,7 +206,19 @@
       "submit": "submit",
       "terminal": "terminal",
       "submitting": "wait",
-      "searchByName": "Find the server"
+      "searchByName": "Find the server",
+      "installCommand": "Install command",
+      "installOptions": "Install options",
+      "disableWebSsh": "Disable WenSSH",
+      "disableAutoUpdate": "Disable auto update",
+      "ignoreUnsafeCert": "Ignore unsafe cert",
+      "ghproxy": "Github proxy",
+      "ghproxy_placeholder": "GitHub proxy, leave empty if no proxy is needed",
+      "install_dir": "Installation directory",
+      "install_dir_placeholder": "Installation directory, leave empty to use the default directory (/opt/komari-agent)",
+      "serviceName": "Service name",
+      "serviceName_placeholder": "Service name, leave empty to use the default name (komari-agent)",
+      "generatedCommand": "Command"
     },
     "nodeDetail": {
       "arch": "Architecture",
@@ -220,5 +260,6 @@
   "copy_success": "Copied!",
   "copy": "Copy",
   "page_not_found": "The server cannot find the specific page you're trying to access.",
-  "go_to_home": "Go to home"
+  "go_to_home": "Go to home",
+  "select": "Select"
 }

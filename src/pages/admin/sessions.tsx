@@ -33,11 +33,17 @@ export default function Sessions() {
   const [sessions, setSessions] = React.useState<Resp | null>(null);
   React.useEffect(() => {
     fetch("/api/admin/session/get")
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status} ${response.statusText}`);
+        }
+        return response.json();
+      })
       .then((data: Resp) => {
         setSessions(data);
       })
       .catch((error) => {
+        console.error("Error fetching sessions:", error);
         toast.error(error.message);
       });
   }, []);
@@ -72,16 +78,23 @@ export default function Sessions() {
       });
   }
   function deleteAllSessions() {
-    if (!window.confirm("删除全部会话将导致您被登出，是否继续？")) return;
-    fetch("/api/admin/session/remove/all")
+    fetch("/api/admin/session/remove/all", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    })
       .then((response) => {
         if (!response.ok) {
-          toast.error("删除全部失败");
+          toast.error("Error:" + response.status);
           return;
         }
-        response.json().then(() => {
-          window.location.href = "/"; // 登出
-        });
+        response
+          .json()
+          .then(() => {
+            window.location.href = "/"; // 登出
+          })
+          .catch((error) => {
+            toast.error("Error parsing JSON:" + error);
+          });
       })
       .catch((error) => {
         toast.error(error.message);
@@ -113,9 +126,7 @@ export default function Sessions() {
                 </Button>
               </DialogTrigger>
               <DialogTrigger>
-                <Button variant="secondary">
-                  {t("sessions.cancel")}
-                </Button>
+                <Button variant="secondary">{t("sessions.cancel")}</Button>
               </DialogTrigger>
             </DialogFooter>
           </DialogContent>
@@ -156,7 +167,9 @@ export default function Sessions() {
                         </Button>
                       </DialogTrigger>
                       <DialogContent>
-                        <DialogTitle>{t("sessions.confirm_delete")}</DialogTitle>
+                        <DialogTitle>
+                          {t("sessions.confirm_delete")}
+                        </DialogTitle>
                         <DialogDescription>
                           {t("sessions.delete_one_desc")}
                         </DialogDescription>

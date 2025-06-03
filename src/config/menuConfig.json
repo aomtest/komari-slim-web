@@ -11,22 +11,22 @@
       "icon": "TablerSettings2",
       "children": [
         {
-          "labelKey": "settings.site",
+          "labelKey": "settings.site.title",
           "path": "/admin/settings/site",
           "icon": "TablerHome"
         },
         {
-          "labelKey": "settings.custom",
+          "labelKey": "settings.custom.title",
           "path": "/admin/settings/custom",
           "icon": "TablerCode"
         },
         {
-          "labelKey": "settings.sso",
+          "labelKey": "settings.sso.title",
           "path": "/admin/settings/sso",
           "icon": "TablerCircleArrowDownRight"
         },
         {
-          "labelKey": "settings.general",
+          "labelKey": "settings.general.title",
           "path": "/admin/settings/general",
           "icon": "TablerDots"
         }

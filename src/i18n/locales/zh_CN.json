@@ -13,10 +13,38 @@
   "about": "关于",
   "settings": {
     "title": "设置",
-    "custom": "自定义",
-    "sso": "单点登录",
-    "general": "通用",
-    "site": "站点",
+    "custom": {
+      "title": "自定义",
+      "header": "自定义头部",
+      "header_description": "添加自定义 HTML/CSS/JavaScript 到站点头部，这些内容将会在所有页面加载"
+    },
+    "sso": {
+      "title": "单点登录",
+      "enable": "启用单点登录",
+      "enable_description": "允许用户通过第三方账户（如 GitHub）登录",
+      "client_id": "客户端 ID",
+      "client_id_description": "OAuth 应用的客户端 ID",
+      "client_secret": "客户端密钥",
+      "client_secret_description": "OAuth 应用的客户端密钥"
+    },
+    "general": {
+      "title": "通用"
+    },
+    "site": {
+      "title": "站点",
+      "name": "站点名称",
+      "name_description": "设置控制面板的站点名称",
+      "description": "站点描述",
+      "description_description": "设置控制面板的站点描述信息",
+      "cros": "允许跨域请求",
+      "cros_description": "允许来自其他域名的请求访问 API"
+    },
+    "geoip": {
+      "enable_title": "启用地理位置信息",
+      "enable_description": "显示节点的地理位置信息",
+      "provider_title": "地理位置数据提供商",
+      "provider_description": "选择提供地理位置信息的服务商"
+    },
     "save_settings": "保存设置",
     "settings_saved": "设置已保存",
     "settings_save_failed": "保存设置失败"
@@ -178,7 +206,19 @@
       "noResults": "No results",
       "customColumns": "自定义列",
       "submitting": "等待",
-      "searchByName": "查找服务器"
+      "searchByName": "查找服务器",
+      "installCommand": "一键部署指令",
+      "installOptions": "安装选项",
+      "disableWebSsh": "禁用 WebSSH",
+      "disableAutoUpdate": "禁用自动更新",
+      "ignoreUnsafeCert": "忽略不安全证书",
+      "ghproxy": "GitHub 代理",
+      "ghproxy_placeholder": "GitHub 代理，为空则不适用代理",
+      "install_dir": "安装目录",
+      "install_dir_placeholder": "安装目录，为空则使用默认目录(/opt/komari-agent)",
+      "serviceName": "服务名称",
+      "serviceName_placeholder": "服务名称，为空则使用默认名称(komari-agent)",
+      "generatedCommand": "指令"
     },
     "nodeDetail": {
       "machineDetail": "机器详细信息",
@@ -220,5 +260,6 @@
   "copy_success": "已复制到剪贴板",
   "copy": "复制",
   "page_not_found": "真不巧，网页被小鞠吃掉了。",
-  "go_to_home": "回到主页"
+  "go_to_home": "回到主页",
+  "select": "选择"
 }
