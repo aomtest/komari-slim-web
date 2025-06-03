@@ -135,7 +135,11 @@ export default function InstancePage() {
               {t("nodeCard.uptime")}
             </Text>
             <Text size="2">
-              {formatUptime(live_data?.data.data[uuid ?? ""]?.uptime || 0, t)}
+              {
+                live_data?.data.data[uuid ?? ""]?.uptime
+                  ? formatUptime(live_data?.data.data[uuid ?? ""]?.uptime, t)
+                  : "-"
+              }
             </Text>
           </Flex>
         </label>
