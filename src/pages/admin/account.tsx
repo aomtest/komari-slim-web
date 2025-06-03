@@ -126,9 +126,7 @@ const Account = () => {
 
   if (!userInfo) {
     return (
-      <div>
-        {t("account_settings.loading")}
-      </div>
+      <div className="p-4 text-center">{t("account_settings.loading")}</div>
     );
   }
 

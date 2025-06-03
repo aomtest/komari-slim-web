@@ -89,7 +89,7 @@ export default function Sessions() {
   }
 
   if (!sessions) {
-    return <div>{t("sessions.loading")}</div>;
+    return <div className="p-4 text-center">{t("sessions.loading")}</div>;
   }
   return (
     <div className="p-4">
