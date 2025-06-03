@@ -126,8 +126,8 @@ const Account = () => {
 
   if (!userInfo) {
     return (
-      <div className="flex justify-center items-center h-[80vh]">
-        Loading...
+      <div>
+        {t("account_settings.loading")}
       </div>
     );
   }
@@ -193,14 +193,14 @@ const Account = () => {
             {isGithubBound ? (
               <span className="flex items-center gap-2">
                 <span className="inline-block p-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-md text-xs">
-                  已绑定
+                  {t("account_settings.github_bound")}
                 </span>
                 GitHub ID: {userInfo.sso_id.replace("github_", "")}
               </span>
             ) : (
               <span className="flex items-center gap-2">
                 <span className="inline-block p-1 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-md text-xs">
-                  未绑定
+                  {t("account_settings.github_unbound")}
                 </span>
                 {t("account_settings.github_not_bound")}
               </span>
@@ -243,7 +243,7 @@ const Account = () => {
         ) : (
           <Button onClick={handleGithubAuth} disabled={isLoading}>
             <Github className="size-4" />
-            绑定GitHub账户
+            {t("account_settings.bind_github")}
           </Button>
         )}
       </div>

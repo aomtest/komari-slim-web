@@ -71,7 +71,8 @@
     "confirm_unbind": "确认解绑",
     "unbind_github_success": "已成功解绑GitHub账户",
     "unbind_github_failed": "解绑GitHub账户失败",
-    "github_auth_failed": "处理GitHub认证失败"
+    "github_auth_failed": "处理GitHub认证失败",
+    "loading": "加载中..."
   },
   "terminal": {
     "title": "终端",
