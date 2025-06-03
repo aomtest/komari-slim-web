@@ -45,7 +45,10 @@
       "enable_title": "Enable GeoIP",
       "enable_description": "Display node geographic locations on the map",
       "provider_title": "GeoIP Provider",
-      "provider_description": "Choose which service provides geographic location data"
+      "provider_description": "Choose which service provides geographic location data",
+      "test_title": "Test GeoIP",
+      "test_description": "Test selected GeoIP database",
+      "title": "GeoIP"
     },
     "save_settings": "Save Settings",
     "settings_saved": "Settings Saved",

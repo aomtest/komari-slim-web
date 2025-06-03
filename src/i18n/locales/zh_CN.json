@@ -45,7 +45,10 @@
       "enable_title": "启用地理位置信息",
       "enable_description": "显示节点的地理位置信息",
       "provider_title": "地理位置数据提供商",
-      "provider_description": "选择提供地理位置信息的服务商"
+      "provider_description": "选择提供地理位置信息的服务商",
+      "test_title": "测试GeoIP",
+      "test_description": "测试选定的GEOIP数据库",
+      "title": "GeoIP"
     },
     "save_settings": "保存设置",
     "settings_saved": "设置已保存",

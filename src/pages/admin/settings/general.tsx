@@ -1,10 +1,12 @@
 import { useTranslation } from "react-i18next";
-import { Text } from "@radix-ui/themes";
+import { Badge, Flex, IconButton, Text, TextField } from "@radix-ui/themes";
 import { updateSettingsWithToast, useSettings } from "@/lib/api";
 import {
+  SettingCardBase,
   SettingCardSelect,
   SettingCardSwitch,
 } from "@/components/admin/SettingCard";
+import { Search } from "lucide-react";
 export default function GeneralSettings() {
   const { t } = useTranslation();
   const { settings, loading, error } = useSettings();
@@ -19,6 +21,7 @@ export default function GeneralSettings() {
 
   return (
     <>
+      <label className="text-xl font-bold">{t("settings.geoip.title")}</label>
       <SettingCardSwitch
         title={t("settings.geoip.enable_title")}
         description={t("settings.geoip.enable_description")}
@@ -40,6 +43,18 @@ export default function GeneralSettings() {
           await updateSettingsWithToast({ geo_ip_provider: value }, t);
         }}
       />
+      <SettingCardBase
+        title={t("settings.geoip.test_title")}
+        description={t("settings.geoip.test_description")}
+      >
+        <Flex className="w-full gap-2">
+          <TextField.Root className="flex-2/3" placeholder="1.1.1.1 or 2606:4700:4700::1111"></TextField.Root>
+          <IconButton variant="soft"><Search /></IconButton>
+        </Flex>
+        <Text className="self-start">Region <Badge>United States</Badge></Text>
+        <Text className="self-start">ISO Code <Badge>US</Badge></Text>
+        <Text className="self-start">{"(Not Implemented)"}</Text>
+      </SettingCardBase>
     </>
   );
 }
