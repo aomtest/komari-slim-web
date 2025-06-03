@@ -327,7 +327,7 @@ export function DataTable() {
     >
       <div className="flex items-center justify-between mb-4">
         <Input
-          placeholder="查找服务器"
+          placeholder={t("admin.nodeTable.searchByName")}
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("name")?.setFilterValue(event.target.value)

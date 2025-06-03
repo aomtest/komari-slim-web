@@ -164,7 +164,8 @@
       "noData": "没有数据",
       "noResults": "No results",
       "customColumns": "自定义列",
-      "submitting": "等待"
+      "submitting": "等待",
+      "searchByName": "查找服务器"
     },
     "nodeDetail": {
       "machineDetail": "机器详细信息",

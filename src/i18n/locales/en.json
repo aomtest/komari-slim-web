@@ -164,7 +164,8 @@
       "nodeList": "Node list",
       "submit": "submit",
       "terminal": "terminal",
-      "submitting": "wait"
+      "submitting": "wait",
+      "searchByName": "Find the server"
     },
     "nodeDetail": {
       "arch": "Architecture",
