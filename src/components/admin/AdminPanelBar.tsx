@@ -169,7 +169,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
           >
             <Flex
               gap="3"
-              className="p-2 border-r-2"
+              className="p-2 border-r-1"
               direction="column"
               justify="start"
               align="start"
@@ -189,7 +189,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
               {/* 侧边连链接 */}
               <Flex
                 direction="column"
-                gap="2"
+                gap="1"
                 className="h-full md:mt-0 mt-6 "
                 style={{ width: "100%" }}
               >
@@ -200,7 +200,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                     return (
                       <div key={item.path}>
                         <Flex
-                          className="p-2 gap-2 border-l-[4px] border-transparent cursor-pointer"
+                          className="p-2 gap-2 border-l-[4px] border-transparent cursor-pointer hover:bg-accent-3 rounded-md"
                           align="center"
                           onClick={() =>
                             setOpenSubMenus((prev) => ({
@@ -241,7 +241,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                         >
                           <Flex
                             direction="column"
-                            className="ml-4"
+                            className="ml-4 gap-1"
                           >
                             {item.children.map((child: MenuItem) => {
                               const ChildIcon = iconMap[child.icon];
@@ -352,7 +352,7 @@ const SidebarItem = ({
     <Link
       to={to}
       onClick={onClick}
-      className="group overflow-hidden transition-colors duration-200"
+      className="group overflow-hidden transition-colors duration-200 hover:bg-accent-3 rounded-md"
     >
       <Flex
         className="p-2 gap-2"
