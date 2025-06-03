@@ -43,7 +43,7 @@
     },
     "geoip": {
       "enable_title": "Enable GeoIP",
-      "enable_description": "Display node geographic locations on the map",
+      "enable_description": "Display node geographic locations",
       "provider_title": "GeoIP Provider",
       "provider_description": "Choose which service provides geographic location data",
       "test_title": "Test GeoIP",
