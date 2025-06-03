@@ -66,6 +66,7 @@ import { t } from "i18next";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Input } from "../ui/input";
 import { ActionsCell } from "./NodeTable/NodeFunction";
+import { toast } from "sonner";
 import { LoadingIcon } from "../Icones/icon";
 
 const columns: ColumnDef<z.infer<typeof schema>>[] = [
@@ -211,6 +212,7 @@ export function DataTable() {
     fetch("/api/admin/client/list")
       .then((res) => {
         if (!res.ok) {
+          toast.error(t("admin.nodeTable.errorLoadNodeList"));
           throw new Error(`HTTP error! status: ${res.status}`);
         }
         return res.json();
