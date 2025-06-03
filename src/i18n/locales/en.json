@@ -25,7 +25,9 @@
       "client_id": "Client ID",
       "client_id_description": "OAuth application client ID",
       "client_secret": "Client Secret",
-      "client_secret_description": "OAuth application client secret"
+      "client_secret_description": "OAuth application client secret",
+      "provider": "Single Sign-On Provider",
+      "provider_description": "Choose the authentication provider for single sign-on"
     },
     "general": {
       "title": "General"

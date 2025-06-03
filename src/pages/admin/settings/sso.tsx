@@ -30,14 +30,14 @@ export default function SsoSettings() {
       />
       <SettingCardSelect
         title={t("settings.sso.provider")}
-        description={t("settings.sso.provider_description")}
-        defaultValue={"github"}
+        description={t("settings.sso.provider_description") + " [Not Implemented, 暂未实现]"}
+        defaultValue={"Github"}
         OnSave={async (data) => {
           await updateSettingsWithToast({ o_auth_provider: data }, t);
         }}
         options={[
-          { value: "github", label: "GitHub", disabled: true },
-          { value: "google", label: "Google", disabled: true },
+          { value: "github", label: "GitHub"},
+          { value: "google", label: "Google"},
         ]}
       />
       <SettingCardShortTextInput

@@ -78,6 +78,7 @@ export async function updateSettingsWithToast(
     toast.success(t("settings.settings_saved"));
   } catch (error) {
     toast.error(t("settings.settings_save_failed") + ": " + error);
+    throw error;
   }
 }
 

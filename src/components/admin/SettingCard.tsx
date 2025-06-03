@@ -362,18 +362,42 @@ export function SettingCardSelect({
   autoDisabled?: boolean;
 }) {
   const [disabled, setDisabled] = React.useState(false);
+  const [selectedValue, setSelectedValue] = React.useState(defaultValue);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
+  
   const handleSave = (value: string) => {
     if (autoDisabled) setDisabled(true);
+    const previousValue = selectedValue; // 保存之前的值
+    setSelectedValue(value); // 先更新选择的值
+    
     const result: any = buttonRef.current ? OnSave(value, buttonRef.current) : undefined;
     if (autoDisabled) {
       const promise: Promise<any> = result;
       if (promise && typeof promise.then === 'function') {
-        promise.finally(() => setDisabled(false));
+        promise
+          .then(() => {
+            // 成功时不需要额外操作，值已经更新
+          })
+          .catch(() => {
+            // 错误时自动切换回之前的值
+            setSelectedValue(previousValue);
+          })
+          .finally(() => {
+            setDisabled(false);
+          });
       } else {
         setDisabled(false);
       }
     }
+  };
+
+  // 获取要显示的文本，优先显示选择的值对应的标签
+  const getDisplayText = () => {
+    if (selectedValue) {
+      const selectedOption = options.find(option => option.value === selectedValue);
+      return selectedOption?.label || selectedValue;
+    }
+    return label;
   };
 
   return (
@@ -384,7 +408,7 @@ export function SettingCardSelect({
             <DropdownMenu.Root>
               <DropdownMenu.Trigger disabled={disabled}>
                 <Button variant="soft" ref={buttonRef}>
-                  {defaultValue || label}
+                  {getDisplayText()}
                   <DropdownMenu.TriggerIcon />
                 </Button>
               </DropdownMenu.Trigger>
@@ -393,7 +417,7 @@ export function SettingCardSelect({
                   <DropdownMenu.Item
                     disabled={option.disabled}
                     key={option.value}
-                    onClick={() => {
+                    onSelect={() => {
                       handleSave(option.value);
                     }}
                   >
