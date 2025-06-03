@@ -10,7 +10,7 @@ import {
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-interface SettingCardBaseProps {
+interface SettingCardProps {
   title?: string;
   description?: string;
   children?: React.ReactNode;
@@ -18,13 +18,13 @@ interface SettingCardBaseProps {
   direction?: "row" | "column" | "row-reverse" | "column-reverse";
 }
 
-export function SettingCardBase({
+export function SettingCard({
   title = "",
   description = "",
   children,
   className = "",
   direction = "column",
-}: SettingCardBaseProps) {
+}: SettingCardProps) {
   const actionChild = React.Children.toArray(children).find(
     (child) => React.isValidElement(child) && child.type === Action
   );
@@ -69,7 +69,7 @@ function Action({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-SettingCardBase.Action = Action;
+SettingCard.Action = Action;
 
 export function SettingCardSwitch({
   title = "",
@@ -103,8 +103,8 @@ export function SettingCardSwitch({
   };
 
   return (
-    <SettingCardBase title={title} description={description} direction="column">
-      <SettingCardBase.Action>
+    <SettingCard title={title} description={description} direction="column">
+      <SettingCard.Action>
         <Flex direction="row" gap="2" align="center">
           <label>{label}</label>
           <Switch
@@ -114,8 +114,8 @@ export function SettingCardSwitch({
             disabled={disabled}
           />
         </Flex>
-      </SettingCardBase.Action>
-    </SettingCardBase>
+      </SettingCard.Action>
+    </SettingCard>
   );
 }
 
@@ -151,8 +151,8 @@ export function SettingCardButton({
   };
 
   return (
-    <SettingCardBase title={title} description={description} direction="column">
-      <SettingCardBase.Action>
+    <SettingCard title={title} description={description} direction="column">
+      <SettingCard.Action>
         <Flex>
           <Flex direction="row" gap="2" align="center">
             <label>{label}</label>
@@ -161,8 +161,8 @@ export function SettingCardButton({
             </Button>
           </Flex>
         </Flex>
-      </SettingCardBase.Action>
-    </SettingCardBase>
+      </SettingCard.Action>
+    </SettingCard>
   );
 }
 
@@ -198,8 +198,8 @@ export function SettingCardIconButton({
   };
 
   return (
-    <SettingCardBase title={title} description={description} direction="column">
-      <SettingCardBase.Action>
+    <SettingCard title={title} description={description} direction="column">
+      <SettingCard.Action>
         <Flex>
           <Flex direction="row" gap="2" align="center">
             <label>{label}</label>
@@ -208,8 +208,8 @@ export function SettingCardIconButton({
             </IconButton>
           </Flex>
         </Flex>
-      </SettingCardBase.Action>
-    </SettingCardBase>
+      </SettingCard.Action>
+    </SettingCard>
   );
 }
 
@@ -257,8 +257,8 @@ export function SettingCardShortTextInput({
   };
 
   return (
-    <SettingCardBase title={title} description={description}>
-      <SettingCardBase.Action>
+    <SettingCard title={title} description={description}>
+      <SettingCard.Action>
         <Flex>
           <Flex direction="row" gap="2" align="center">
             <Button ref={buttonRef} onClick={handleSave} variant="solid" disabled={disabled}>
@@ -266,7 +266,7 @@ export function SettingCardShortTextInput({
             </Button>
           </Flex>
         </Flex>
-      </SettingCardBase.Action>
+      </SettingCard.Action>
       <TextField.Root
         className="w-full"
         defaultValue={defaultValue}
@@ -274,7 +274,7 @@ export function SettingCardShortTextInput({
         onChange={handleInputChange}
         ref={inputRef}
       />
-    </SettingCardBase>
+    </SettingCard>
   );
 }
 
@@ -322,8 +322,8 @@ export function SettingCardLongTextInput({
   };
 
   return (
-    <SettingCardBase title={title} description={description}>
-      <SettingCardBase.Action>
+    <SettingCard title={title} description={description}>
+      <SettingCard.Action>
         <Flex>
           <Flex direction="row" gap="2" align="center">
             <Button ref={buttonRef} onClick={handleSave} variant="solid" disabled={disabled}>
@@ -331,7 +331,7 @@ export function SettingCardLongTextInput({
             </Button>
           </Flex>
         </Flex>
-      </SettingCardBase.Action>
+      </SettingCard.Action>
       <TextArea
         className="w-full"
         defaultValue={defaultValue}
@@ -340,7 +340,7 @@ export function SettingCardLongTextInput({
         onChange={handleTextAreaChange}
         ref={textAreaRef}
       />
-    </SettingCardBase>
+    </SettingCard>
   );
 }
 
@@ -401,8 +401,8 @@ export function SettingCardSelect({
   };
 
   return (
-    <SettingCardBase title={title} description={description}>
-      <SettingCardBase.Action>
+    <SettingCard title={title} description={description}>
+      <SettingCard.Action>
         <Flex>
           <Flex direction="row" gap="2" align="center">
             <DropdownMenu.Root>
@@ -428,7 +428,7 @@ export function SettingCardSelect({
             </DropdownMenu.Root>
           </Flex>
         </Flex>
-      </SettingCardBase.Action>
-    </SettingCardBase>
+      </SettingCard.Action>
+    </SettingCard>
   );
 }

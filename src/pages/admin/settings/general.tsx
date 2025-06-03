@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Badge, Flex, IconButton, Text, TextField } from "@radix-ui/themes";
 import { updateSettingsWithToast, useSettings } from "@/lib/api";
 import {
-  SettingCardBase,
+  SettingCard,
   SettingCardSelect,
   SettingCardSwitch,
 } from "@/components/admin/SettingCard";
@@ -43,7 +43,7 @@ export default function GeneralSettings() {
           await updateSettingsWithToast({ geo_ip_provider: value }, t);
         }}
       />
-      <SettingCardBase
+      <SettingCard
         title={t("settings.geoip.test_title")}
         description={t("settings.geoip.test_description")}
       >
@@ -54,7 +54,7 @@ export default function GeneralSettings() {
         <Text className="self-start">Region <Badge>United States</Badge></Text>
         <Text className="self-start">ISO Code <Badge>US</Badge></Text>
         <Text className="self-start">{"(Not Implemented)"}</Text>
-      </SettingCardBase>
+      </SettingCard>
     </>
   );
 }
