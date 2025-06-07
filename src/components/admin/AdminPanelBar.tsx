@@ -1,15 +1,9 @@
 import { Cross1Icon, ExitIcon } from "@radix-ui/react-icons";
-import {
-  Callout,
-  Flex,
-  Grid,
-  IconButton,
-  Text,
-} from "@radix-ui/themes";
+import { Callout, Flex, Grid, IconButton, Text } from "@radix-ui/themes";
 import { AnimatePresence, motion } from "framer-motion"; // 引入 Framer Motion
 import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import ColorSwitch from "../ColorSwitch";
 import LanguageSwitch from "../Language";
 import ThemeSwitch from "../ThemeSwitch";
@@ -36,6 +30,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
   const ishttps = window.location.protocol === "https:";
   const [t] = useTranslation();
   const location = useLocation();
+  const navigate = useNavigate();
   // 获取版本信息
   const [versionInfo, setVersionInfo] = useState<{
     hash: string;
@@ -47,7 +42,10 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
         const response = await fetch("/api/version");
         const data = await response.json();
         if (data.status === "success") {
-          setVersionInfo({ hash: data['data'].hash.slice(0, 7), version: data['data'].version });
+          setVersionInfo({
+            hash: data["data"].hash.slice(0, 7),
+            version: data["data"].version,
+          });
         }
       } catch (error) {
         console.error("Failed to fetch version info:", error);
@@ -225,15 +223,39 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                   if (item.children && item.children.length) {
                     return (
                       <div key={item.path}>
+                        {" "}
                         <Flex
                           className="p-2 gap-2 border-l-[4px] border-transparent cursor-pointer hover:bg-accent-3 rounded-md"
                           align="center"
-                          onClick={() =>
+                          onClick={() => {
+                            const currentlyOpen = openSubMenus[item.path];
+                            // 检查当前路径是否已经在该父菜单的子菜单中
+                            const isCurrentlyInThisMenu = item.children?.some(
+                              (child) =>
+                                location.pathname === child.path ||
+                                location.pathname.startsWith(child.path)
+                            );
+
+                            // 切换子菜单的展开状态
                             setOpenSubMenus((prev) => ({
                               ...prev,
                               [item.path]: !prev[item.path],
-                            }))
-                          }
+                            }));
+
+                            // 只有在非展开状态且不在当前菜单组中时才导航到第一个子菜单项
+                            if (
+                              !currentlyOpen &&
+                              !isCurrentlyInThisMenu &&
+                              item.children &&
+                              item.children.length > 0
+                            ) {
+                              navigate(item.children[0].path);
+                              // 如果是移动端，关闭侧边栏
+                              if (isMobile) {
+                                setSidebarOpen(false);
+                              }
+                            }
+                          }}
                         >
                           <IconComp className="opacity-70" />
                           <Text
