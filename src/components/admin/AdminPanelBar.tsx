@@ -47,7 +47,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
         const response = await fetch("/api/version");
         const data = await response.json();
         if (data.status === "success") {
-          setVersionInfo({ hash: data.hash, version: data.version });
+          setVersionInfo({ hash: data['data'].hash.slice(0, 7), version: data['data'].version });
         }
       } catch (error) {
         console.error("Failed to fetch version info:", error);

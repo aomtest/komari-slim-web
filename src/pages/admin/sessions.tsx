@@ -21,10 +21,16 @@ import { useTranslation } from "react-i18next";
 type Resp = {
   current: string;
   data: Array<{
-    UUID: string;
-    Session: string;
-    Expires: string;
-    CreatedAt: string;
+    uuid: string;
+    session: string;
+    user_agent: string;
+    ip: string;
+    login_method: string;
+    latest_online: string;
+    latest_ip: string;
+    last_user_agent: string;
+    expires: string;
+    created_at: string;
   }>;
   status: string;
 };
@@ -39,7 +45,7 @@ export default function Sessions() {
         }
         return response.json();
       })
-      .then((data: Resp) => {
+      .then((data:Resp) => {
         setSessions(data);
       })
       .catch((error) => {
@@ -65,7 +71,7 @@ export default function Sessions() {
           }
           setSessions((prev) => ({
             ...prev!,
-            data: prev?.data.filter((s) => s.Session !== sessionId) || [],
+            data: prev?.data.filter((s) => s.session !== sessionId) || [],
           }));
         } else {
           console.error("Failed to delete session:", data);
@@ -137,28 +143,32 @@ export default function Sessions() {
           <TableHeader>
             <TableRow>
               <TableHead>{t("sessions.session_id")}</TableHead>
+              <TableHead>IP</TableHead>
               <TableHead>{t("sessions.created_at")}</TableHead>
               <TableHead>{t("sessions.expires_at")}</TableHead>
+              <TableHead>{t("sessions.last_login","上次登录")}</TableHead>
               <TableHead>{t("sessions.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {sessions.data.map((s) => {
-              const isCurrent = s.Session === sessions.current;
+              const isCurrent = s.session === sessions.current;
               return (
-                <TableRow key={s.UUID}>
+                <TableRow key={s.uuid}>
                   <TableCell>
-                    {s.Session}
+                    {s.session}
                     {isCurrent && (
                       <span className="ml-2 text-sm text-blue-600">
                         {t("sessions.current")}
                       </span>
                     )}
                   </TableCell>
+                  <TableCell>{s.ip}</TableCell>
                   <TableCell>
-                    {new Date(s.CreatedAt).toLocaleString()}
+                    {new Date(s.created_at).toLocaleString()}
                   </TableCell>
-                  <TableCell>{new Date(s.Expires).toLocaleString()}</TableCell>
+                  <TableCell>{new Date(s.expires).toLocaleString()}</TableCell>
+                  <TableCell>{new Date(s.latest_online).toLocaleString()}</TableCell>
                   <TableCell>
                     <Dialog>
                       <DialogTrigger>
@@ -177,7 +187,7 @@ export default function Sessions() {
                           <DialogTrigger>
                             <Button
                               variant="destructive"
-                              onClick={() => deleteSession(s.Session)}
+                              onClick={() => deleteSession(s.session)}
                             >
                               {t("delete")}
                             </Button>

@@ -8,7 +8,7 @@ import { toast } from "sonner";
 export interface SettingsResponse {
   sitename: string;
   description: string;
-  allow_cros: boolean;
+  allow_cors: boolean;
   geo_ip_enabled: boolean;
   geo_ip_provider: string;
   o_auth_client_id: string;
@@ -35,7 +35,7 @@ export async function getSettings(): Promise<SettingsResponse> {
     const data = await response.json();
 
     // Remove database metadata fields that are not needed for UI
-    const { CreatedAt, UpdatedAt, id, ...settings } = data;
+    const { CreatedAt, UpdatedAt, id, ...settings } = data['data'];
 
     return settings as SettingsResponse;
   } catch (error) {
@@ -105,7 +105,7 @@ export function useSettings() {
   const [settings, setSettings] = React.useState<SettingsResponse>({
     sitename: "",
     description: "",
-    allow_cros: false,
+    allow_cors: false,
     geo_ip_enabled: false,
     geo_ip_provider: "",
     o_auth_client_id: "",

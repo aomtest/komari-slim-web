@@ -43,9 +43,9 @@ export default function SiteSettings() {
       <SettingCardSwitch
         title={t("settings.site.cros")}
         description={t("settings.site.cros_description")}
-        defaultChecked={settings.allow_cros}
+        defaultChecked={settings.allow_cors}
         onChange={async (checked) => {
-          await updateSettingsWithToast({ allow_cros: checked },t);
+          await updateSettingsWithToast({ allow_cors: checked },t);
         }}
       />
     </>
