@@ -148,38 +148,44 @@ export default function SiteSettings() {
                 </Flex>
               </Dialog.Content>
             </Dialog.Root>
-            <Button onClick={async () => {
-              const input = document.createElement('input');
-              input.type = 'file';
-              input.accept = 'image/*';
-              input.onchange = async (e) => {
-                const file = (e.target as HTMLInputElement).files?.[0];
-                if (file) {
-                  const formData = new FormData();
-                  formData.append('favicon', file);
-                  
-                  try {
-                    const response = await fetch('/api/admin/update/favicon', {
-                      method: 'PUT',
-                      body: formData,
-                      headers: {
-                        'Content-Type': 'application/octet-stream'
+            <Button
+              onClick={async () => {
+                const input = document.createElement("input");
+                input.type = "file";
+                input.accept = "image/*";
+                input.onchange = async (e) => {
+                  const file = (e.target as HTMLInputElement).files?.[0];
+                  if (file) {
+                    try {
+                      const response = await fetch(
+                        "/api/admin/update/favicon",
+                        {
+                          method: "PUT",
+                          body: file,
+                          headers: {
+                            "Content-Type": "application/octet-stream",
+                          },
+                        }
+                      );
+                      const data = await response.json();
+                      if (data.status === "success") {
+                        toast.success(
+                          t(
+                            "settings.custom.favicon_update_success",
+                            "已更新 Favicon"
+                          )
+                        );
+                      } else {
+                        toast.error(data.message || "Failed to update Favicon");
                       }
-                    });
-                    
-                    const data = await response.json();
-                    if (data.status === 'success') {
-                      toast.success(t('settings.custom.favicon_update_success', '已更新 Favicon'));
-                    } else {
-                      toast.error(data.message || 'Failed to update Favicon');
+                    } catch (error) {
+                      toast.error("" + error);
                     }
-                  } catch (error) {
-                    toast.error('' + error);
                   }
-                }
-              };
-              input.click();
-            }}>
+                };
+                input.click();
+              }}
+            >
               {t("settings.custom.favicon_change", "更新 Favicon")}
             </Button>
           </Flex>

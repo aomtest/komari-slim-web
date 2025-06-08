@@ -43,6 +43,7 @@ export default function SignOnSettings() {
           t("settings.sso.client_id") + " & " + t("settings.sso.client_secret")
         }
         description={t("settings.sso.client_id_description")}
+        defaultOpen={true}
       >
         <Flex direction="column" gap="2" className="w-full">
           <label className="text-sm font-semibold">
@@ -83,3 +84,4 @@ export default function SignOnSettings() {
     </>
   );
 }
+
