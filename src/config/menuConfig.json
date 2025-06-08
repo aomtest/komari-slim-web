@@ -16,13 +16,8 @@
           "icon": "TablerHome"
         },
         {
-          "labelKey": "settings.custom.title",
-          "path": "/admin/settings/custom",
-          "icon": "TablerCode"
-        },
-        {
-          "labelKey": "settings.sso.title",
-          "path": "/admin/settings/sso",
+          "labelKey": "settings.sign_on.title",
+          "path": "/admin/settings/sign-on",
           "icon": "TablerCircleArrowDownRight"
         },
         {

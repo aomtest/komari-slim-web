@@ -56,9 +56,9 @@ export const routes: RouteObject[] = [
             ),
           },
           {
-            path: "sso",
+            path: "sign-on",
             element: React.createElement(
-              lazy(() => import("./pages/admin/settings/sso"))
+              lazy(() => import("./pages/admin/settings/sign-on"))
             ),
           },
           {

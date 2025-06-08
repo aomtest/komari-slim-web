@@ -18,6 +18,9 @@
       "header": "Custom Header",
       "header_description": "Add custom HTML/CSS/JavaScript to the site header. This will be loaded on all pages."
     },
+    "sign_on": {
+      "title": "Sign-On"
+    },
     "sso": {
       "title": "Single Sign-On",
       "enable": "Enable Single Sign-On",

@@ -9,6 +9,8 @@ import {
 } from "@radix-ui/themes";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { ChevronDownIcon } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion"; // 引入 Framer Motion
 
 interface SettingCardProps {
   title?: string;
@@ -39,10 +41,9 @@ export function SettingCard({
       justify="between"
       align="center"
       wrap="wrap"
-      style={{ borderColor: "var(--gray-a7)" }}
+      style={{ borderColor: "var(--gray-a5)" }}
       className={
-        "border-1 rounded-lg py-2 px-4 bg-[var(--gray-2)] gap-4 min-h-8" +
-        className
+        "border-1 rounded-md py-2 px-4 bg-transparent gap-4 min-h-8" + className
       }
     >
       <Flex
@@ -52,11 +53,11 @@ export function SettingCard({
         align="center"
         wrap="nowrap"
       >
-        <Flex direction="column" gap="1" className="min-h-10">
+        <Flex direction="column" gap="1" className="min-h-10" justify={"center"}>
           <label className="text-base font-medium" style={{ fontWeight: 600 }}>
             {title}
           </label>
-          <label className="text-sm text-muted-foreground">{description}</label>
+          {description && <label className="text-sm text-muted-foreground">{description}</label>}
         </Flex>
         {actionChild}
       </Flex>
@@ -88,14 +89,30 @@ export function SettingCardSwitch({
 }) {
   const switchRef = React.useRef<HTMLButtonElement>(null);
   const [disabled, setDisabled] = React.useState(false);
-
-  const handleChange = (checked: boolean) => {
+  const [checked, setChecked] = React.useState(defaultChecked || false);
+  const handleChange = (c: boolean) => {
     if (autoDisabled) setDisabled(true);
-    const result: any = onChange && switchRef.current ? onChange(checked, switchRef.current) : undefined;
+    const previousValue = checked; // 保存之前的值
+    setChecked(c); // 先更新开关状态
+    const result: any =
+      onChange && switchRef.current
+        ? onChange(c, switchRef.current)
+        : undefined;
+    
     if (autoDisabled) {
       const promise: Promise<any> = result;
-      if (promise && typeof promise.then === 'function') {
-        promise.finally(() => setDisabled(false));
+      if (promise && typeof promise.then === "function") {
+        promise
+          .then(() => {
+            // 成功时不需要额外操作，值已经更新
+          })
+          .catch(() => {
+            // 错误时自动切换回之前的值
+            setChecked(previousValue);
+          })
+          .finally(() => {
+            setDisabled(false);
+          });
       } else {
         setDisabled(false);
       }
@@ -109,7 +126,7 @@ export function SettingCardSwitch({
           <label>{label}</label>
           <Switch
             ref={switchRef}
-            defaultChecked={defaultChecked}
+            checked={checked}
             onCheckedChange={handleChange}
             disabled={disabled}
           />
@@ -142,7 +159,7 @@ export function SettingCardButton({
     const result: any = onClick ? onClick(event.currentTarget) : undefined;
     if (autoDisabled) {
       const promise: Promise<any> = result;
-      if (promise && typeof promise.then === 'function') {
+      if (promise && typeof promise.then === "function") {
         promise.finally(() => setDisabled(false));
       } else {
         setDisabled(false);
@@ -189,7 +206,7 @@ export function SettingCardIconButton({
     const result: any = onClick ? onClick(event.currentTarget) : undefined;
     if (autoDisabled) {
       const promise: Promise<any> = result;
-      if (promise && typeof promise.then === 'function') {
+      if (promise && typeof promise.then === "function") {
         promise.finally(() => setDisabled(false));
       } else {
         setDisabled(false);
@@ -203,7 +220,11 @@ export function SettingCardIconButton({
         <Flex>
           <Flex direction="row" gap="2" align="center">
             <label>{label}</label>
-            <IconButton onClick={handleClick} variant={variant} disabled={disabled}>
+            <IconButton
+              onClick={handleClick}
+              variant={variant}
+              disabled={disabled}
+            >
               {children}
             </IconButton>
           </Flex>
@@ -239,12 +260,13 @@ export function SettingCardShortTextInput({
 
   const handleSave = () => {
     if (autoDisabled) setDisabled(true);
-    const result: any = inputRef.current && buttonRef.current
-      ? OnSave(value, inputRef.current, buttonRef.current)
-      : undefined;
+    const result: any =
+      inputRef.current && buttonRef.current
+        ? OnSave(value, inputRef.current, buttonRef.current)
+        : undefined;
     if (autoDisabled) {
       const promise: Promise<any> = result;
-      if (promise && typeof promise.then === 'function') {
+      if (promise && typeof promise.then === "function") {
         promise.finally(() => setDisabled(false));
       } else {
         setDisabled(false);
@@ -261,7 +283,12 @@ export function SettingCardShortTextInput({
       <SettingCard.Action>
         <Flex>
           <Flex direction="row" gap="2" align="center">
-            <Button ref={buttonRef} onClick={handleSave} variant="solid" disabled={disabled}>
+            <Button
+              ref={buttonRef}
+              onClick={handleSave}
+              variant="solid"
+              disabled={disabled}
+            >
               {label}
             </Button>
           </Flex>
@@ -304,12 +331,13 @@ export function SettingCardLongTextInput({
 
   const handleSave = () => {
     if (autoDisabled) setDisabled(true);
-    const result: any = textAreaRef.current && buttonRef.current
-      ? OnSave(value, textAreaRef.current, buttonRef.current)
-      : undefined;
+    const result: any =
+      textAreaRef.current && buttonRef.current
+        ? OnSave(value, textAreaRef.current, buttonRef.current)
+        : undefined;
     if (autoDisabled) {
       const promise: Promise<any> = result;
-      if (promise && typeof promise.then === 'function') {
+      if (promise && typeof promise.then === "function") {
         promise.finally(() => setDisabled(false));
       } else {
         setDisabled(false);
@@ -326,7 +354,12 @@ export function SettingCardLongTextInput({
       <SettingCard.Action>
         <Flex>
           <Flex direction="row" gap="2" align="center">
-            <Button ref={buttonRef} onClick={handleSave} variant="solid" disabled={disabled}>
+            <Button
+              ref={buttonRef}
+              onClick={handleSave}
+              variant="solid"
+              disabled={disabled}
+            >
               {label}
             </Button>
           </Flex>
@@ -364,16 +397,18 @@ export function SettingCardSelect({
   const [disabled, setDisabled] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState(defaultValue);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
-  
+
   const handleSave = (value: string) => {
     if (autoDisabled) setDisabled(true);
     const previousValue = selectedValue; // 保存之前的值
     setSelectedValue(value); // 先更新选择的值
-    
-    const result: any = buttonRef.current ? OnSave(value, buttonRef.current) : undefined;
+
+    const result: any = buttonRef.current
+      ? OnSave(value, buttonRef.current)
+      : undefined;
     if (autoDisabled) {
       const promise: Promise<any> = result;
-      if (promise && typeof promise.then === 'function') {
+      if (promise && typeof promise.then === "function") {
         promise
           .then(() => {
             // 成功时不需要额外操作，值已经更新
@@ -394,7 +429,9 @@ export function SettingCardSelect({
   // 获取要显示的文本，优先显示选择的值对应的标签
   const getDisplayText = () => {
     if (selectedValue) {
-      const selectedOption = options.find(option => option.value === selectedValue);
+      const selectedOption = options.find(
+        (option) => option.value === selectedValue
+      );
       return selectedOption?.label || selectedValue;
     }
     return label;
@@ -429,6 +466,70 @@ export function SettingCardSelect({
           </Flex>
         </Flex>
       </SettingCard.Action>
+    </SettingCard>
+  );
+}
+
+export function SettingCardLabel({
+  children,
+}: {
+  children: React.ReactNode | null;
+}) {
+  return (
+    <label className="text-xl font-bold" style={{ fontWeight: 600 }}>
+      {children}
+    </label>
+  );
+}
+
+export function SettingCardCollapse({
+  title,
+  description,
+  defaultOpen = false,
+  children,
+}: {
+  title?: string;
+  description?: string;
+  children?: React.ReactNode;
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = React.useState(defaultOpen);
+
+  return (
+    <SettingCard title={title} description={description}>
+      <SettingCard.Action>
+        <IconButton
+          variant="soft"
+          onClick={() => setOpen(!open)}
+          aria-expanded={open}
+          aria-controls="collapsible-content"
+        >
+          <motion.div
+            initial={{ rotate: 0, scale: 1 }}
+            animate={{ rotate: open ? 180 : 0, scale: open ? 1.1 : 1 }}
+            transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+          >
+            <ChevronDownIcon />
+          </motion.div>
+        </IconButton>
+      </SettingCard.Action>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className="w-full p-0 md:p-1" // Ensures the content takes full width
+            layout // Smoothly handles height changes
+            initial={{ height: 0, opacity: 0, y: -10 }}
+            animate={{ height: "auto", opacity: 1, y: 0 }}
+            exit={{ height: 0, opacity: 0, y: -10 }}
+            transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+            style={{ overflow: "hidden" }} // Prevents content clipping during animation
+            id="collapsible-content"
+          >
+            <div className="border-t-1 mb-2" />
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </SettingCard>
   );
 }

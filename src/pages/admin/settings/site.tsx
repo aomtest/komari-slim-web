@@ -1,14 +1,14 @@
 import { useTranslation } from "react-i18next";
-import { Text } from "@radix-ui/themes";
+import { Button, Dialog, Flex, Text } from "@radix-ui/themes";
+import { updateSettingsWithToast, useSettings } from "@/lib/api";
 import {
-  updateSettingsWithToast,
-  useSettings
-} from "@/lib/api";
-import {
+  SettingCardCollapse,
+  SettingCardLabel,
   SettingCardLongTextInput,
   SettingCardShortTextInput,
   SettingCardSwitch,
 } from "@/components/admin/SettingCard";
+import { toast } from "sonner";
 
 export default function SiteSettings() {
   const { t } = useTranslation();
@@ -24,12 +24,13 @@ export default function SiteSettings() {
 
   return (
     <>
+      <SettingCardLabel>站点属性</SettingCardLabel>
       <SettingCardShortTextInput
         title={t("settings.site.name")}
         description={t("settings.site.name_description")}
         defaultValue={settings.sitename || ""}
         OnSave={async (data) => {
-          await updateSettingsWithToast({ sitename: data },t);
+          await updateSettingsWithToast({ sitename: data }, t);
         }}
       />
       <SettingCardLongTextInput
@@ -37,7 +38,7 @@ export default function SiteSettings() {
         description={t("settings.site.description_description")}
         defaultValue={settings.description || ""}
         OnSave={async (data) => {
-          await updateSettingsWithToast({ description: data },t);
+          await updateSettingsWithToast({ description: data }, t);
         }}
       />
       <SettingCardSwitch
@@ -45,9 +46,145 @@ export default function SiteSettings() {
         description={t("settings.site.cros_description")}
         defaultChecked={settings.allow_cors}
         onChange={async (checked) => {
-          await updateSettingsWithToast({ allow_cors: checked },t);
+          await updateSettingsWithToast({ allow_cors: checked }, t);
         }}
       />
+      <SettingCardLabel>个性化</SettingCardLabel>
+      <SettingCardLongTextInput
+        title={t("settings.custom.header")}
+        description={t("settings.custom.header_description")}
+        defaultValue={settings.custom_head || ""}
+        OnSave={async (data) => {
+          await updateSettingsWithToast({ custom_head: data }, t);
+        }}
+      />
+      <SettingCardLongTextInput
+        title={t("settings.custom.body", "自定义 Body")}
+        description={t(
+          "settings.custom.body_description",
+          "在页面底部添加自定义内容"
+        )}
+        defaultValue={settings.custom_body || ""}
+        OnSave={async (data) => {
+          await updateSettingsWithToast({ custom_body: data }, t);
+        }}
+      />
+      <SettingCardCollapse
+        title={t("settings.custom.favicon", "自定义 Favicon")}
+        description={t(
+          "settings.custom.favicon_description",
+          "在浏览器标签页显示的图标"
+        )}
+        defaultOpen={true}
+      >
+        <Flex
+          width={"100%"}
+          justify="between"
+          align="start"
+          direction={"column"}
+          gap="2"
+        >
+          <Flex gap="2" align="center">
+            {t("settings.custom.favicon_current", "当前 Favicon")}
+            <img
+              src="/favicon.ico"
+              alt="Favicon"
+              style={{ width: 32, height: 32 }}
+            />
+          </Flex>
+          <Flex gap="2" align="center">
+            <Dialog.Root>
+              <Dialog.Trigger>
+                <Button color="tomato">
+                  {t("settings.custom.favicon_default", "恢复默认")}
+                </Button>
+              </Dialog.Trigger>
+              <Dialog.Content>
+                <Dialog.Title>
+                  {t("settings.custom.favicon_default", "恢复默认")}
+                </Dialog.Title>
+                <Dialog.Description>
+                  {t(
+                    "settings.custom.favicon_default_description",
+                    "这将恢复默认的 Favicon 图标，是否继续？"
+                  )}
+                </Dialog.Description>
+                <Flex gap="2" justify="end">
+                  <Dialog.Close>
+                    <Button variant="soft">{t("common.cancel", "取消")}</Button>
+                  </Dialog.Close>
+                  <Dialog.Trigger>
+                    <Button
+                      color="red"
+                      onClick={async () => {
+                        fetch("/api/admin/update/favicon", {
+                          method: "POST",
+                        })
+                          .then((response) => {
+                            return response.json();
+                          })
+                          .then((data) => {
+                            if (data.status === "success") {
+                              toast.success(
+                                t(
+                                  "settings.custom.favicon_default_success",
+                                  "已恢复默认 Favicon"
+                                )
+                              );
+                            } else {
+                              toast.error(
+                                data.message || "恢复默认 Favicon 失败"
+                              );
+                            }
+                          })
+                          .catch((error) => {
+                            toast.error("" + error);
+                          });
+                      }}
+                    >
+                      {t("settings.custom.favicon_confirm", "确认")}
+                    </Button>
+                  </Dialog.Trigger>
+                </Flex>
+              </Dialog.Content>
+            </Dialog.Root>
+            <Button onClick={async () => {
+              const input = document.createElement('input');
+              input.type = 'file';
+              input.accept = 'image/*';
+              input.onchange = async (e) => {
+                const file = (e.target as HTMLInputElement).files?.[0];
+                if (file) {
+                  const formData = new FormData();
+                  formData.append('favicon', file);
+                  
+                  try {
+                    const response = await fetch('/api/admin/update/favicon', {
+                      method: 'PUT',
+                      body: formData,
+                      headers: {
+                        'Content-Type': 'application/octet-stream'
+                      }
+                    });
+                    
+                    const data = await response.json();
+                    if (data.status === 'success') {
+                      toast.success(t('settings.custom.favicon_update_success', '已更新 Favicon'));
+                    } else {
+                      toast.error(data.message || 'Failed to update Favicon');
+                    }
+                  } catch (error) {
+                    toast.error('' + error);
+                  }
+                }
+              };
+              input.click();
+            }}>
+              {t("settings.custom.favicon_change", "更新 Favicon")}
+            </Button>
+          </Flex>
+        </Flex>
+      </SettingCardCollapse>
     </>
   );
 }

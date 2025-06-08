@@ -1,16 +1,25 @@
 import { useTranslation } from "react-i18next";
-import { Badge, Flex, IconButton, Text, TextField } from "@radix-ui/themes";
+import {
+  Button,
+  Code,
+  Flex, Text,
+  TextField
+} from "@radix-ui/themes";
 import { updateSettingsWithToast, useSettings } from "@/lib/api";
 import {
-  SettingCard,
+  SettingCardButton,
+  SettingCardCollapse,
   SettingCardSelect,
   SettingCardSwitch,
 } from "@/components/admin/SettingCard";
-import { Search } from "lucide-react";
+import React from "react";
+import { toast } from "sonner";
 export default function GeneralSettings() {
   const { t } = useTranslation();
   const { settings, loading, error } = useSettings();
-
+  const [geoip_testResult, setGeoipTestResult] = React.useState<string | null>(
+    null
+  );
   if (loading) {
     return <Text>{t("sessions.loading")}</Text>;
   }
@@ -43,18 +52,57 @@ export default function GeneralSettings() {
           await updateSettingsWithToast({ geo_ip_provider: value }, t);
         }}
       />
-      <SettingCard
+      <SettingCardButton
+        title={t("settings.geoip.update_title", "更新 GeoIP 数据库")}
+        onClick={async () => {
+          const result = await fetch("/api/admin/update/mmdb",{method: "POST"});
+          const data = await result.json();
+          if (data.status === "success") {
+            toast.success(t("settings.geoip.update_success", "GeoIP 数据库更新成功"));
+          } else {
+            toast.error(data.message || t("settings.geoip.update_error", "更新 GeoIP 数据库失败"));
+          }
+        }}
+      >
+        {t("update", "更新")}
+      </SettingCardButton>
+      <SettingCardCollapse
         title={t("settings.geoip.test_title")}
         description={t("settings.geoip.test_description")}
       >
-        <Flex className="w-full gap-2">
-          <TextField.Root className="flex-2/3" placeholder="1.1.1.1 or 2606:4700:4700::1111"></TextField.Root>
-          <IconButton variant="soft"><Search /></IconButton>
+        <Flex className="w-full gap-2" direction="column">
+          <TextField.Root placeholder="1.1.1.1 or 2606:4700:4700::1111"></TextField.Root>
+          <div>
+            <Button
+              variant="solid"
+              onClick={async () => {
+                const ip = (
+                  document.querySelector(
+                    "input[placeholder]"
+                  ) as HTMLInputElement
+                ).value;
+                const result = await fetch(`/api/admin/test/geoip?ip=${ip}`);
+                const data = await result.json();
+                setGeoipTestResult(
+                  JSON.stringify(data.data, null, 2) || "无结果"
+                );
+              }}
+            >
+              {t("settings.geoip.test_button", "测试")}
+            </Button>
+          </div>{" "}
+          <Flex className="w-full">
+            {geoip_testResult && (
+              <Code
+                className="w-full whitespace-pre-wrap text-sm p-3 rounded-md overflow-auto max-h-96"
+                style={{ display: "block" }}
+              >
+                {geoip_testResult}
+              </Code>
+            )}
+          </Flex>
         </Flex>
-        <Text className="self-start">Region <Badge>United States</Badge></Text>
-        <Text className="self-start">ISO Code <Badge>US</Badge></Text>
-        <Text className="self-start">{"(Not Implemented)"}</Text>
-      </SettingCard>
+      </SettingCardCollapse>
     </>
   );
 }

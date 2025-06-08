@@ -342,7 +342,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
               backgroundColor: "var(--accent-1)",
               height: "100%",
               borderRadius: "0",
-              padding: "16px",
+              padding: isMobile ? "8px" : "16px",
               overflowY: "auto",
               boxSizing: "border-box",
             }}

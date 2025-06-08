@@ -18,6 +18,9 @@
       "header": "自定义头部",
       "header_description": "添加自定义 HTML/CSS/JavaScript 到站点头部，这些内容将会在所有页面加载"
     },
+    "sign_on": {
+      "title": "登录"
+    },
     "sso": {
       "title": "单点登录",
       "enable": "启用单点登录",
