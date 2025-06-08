@@ -44,7 +44,7 @@ const LoginDialog = () => {
       if (res.status === 200) {
         window.open("/admin", "_self");
       } else {
-        setErrorMsg(data.error || "Login failed");
+        setErrorMsg(data.message || "Login failed");
       }
     } catch (err) {
       setErrorMsg("Network error");
