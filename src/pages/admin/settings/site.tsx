@@ -50,6 +50,9 @@ export default function SiteSettings() {
         }}
       />
       <SettingCardLabel>个性化</SettingCardLabel>
+      <label className="text-sm text-muted-foreground -mt-4">
+        {t("settings.custom.note", "个性化内容在使用自定义主题时可能会被覆盖。请确保代码的安全性，避免使用不受信任的内容。")}
+      </label>
       <SettingCardLongTextInput
         title={t("settings.custom.header")}
         description={t("settings.custom.header_description")}
@@ -92,6 +95,9 @@ export default function SiteSettings() {
               style={{ width: 32, height: 32 }}
             />
           </Flex>
+          <label className="text-sm text-muted-foreground">
+            {t("settings.custom.favicon_note", "Favicon 图标的更新速度可能较慢，通常需要清除浏览器缓存后才能看到更改。")}
+          </label>
           <Flex gap="2" align="center">
             <Dialog.Root>
               <Dialog.Trigger>

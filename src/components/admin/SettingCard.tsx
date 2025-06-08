@@ -18,6 +18,7 @@ interface SettingCardProps {
   children?: React.ReactNode;
   className?: string;
   direction?: "row" | "column" | "row-reverse" | "column-reverse";
+  onHeaderClick?: () => void; 
 }
 
 export function SettingCard({
@@ -26,6 +27,7 @@ export function SettingCard({
   children,
   className = "",
   direction = "column",
+  onHeaderClick = () => {},
 }: SettingCardProps) {
   const actionChild = React.Children.toArray(children).find(
     (child) => React.isValidElement(child) && child.type === Action
@@ -52,6 +54,7 @@ export function SettingCard({
         justify="between"
         align="center"
         wrap="nowrap"
+        onClick={onHeaderClick}
       >
         <Flex direction="column" gap="1" className="min-h-10" justify={"center"}>
           <label className="text-base font-medium" style={{ fontWeight: 600 }}>
@@ -496,7 +499,7 @@ export function SettingCardCollapse({
   const [open, setOpen] = React.useState(defaultOpen);
 
   return (
-    <SettingCard title={title} description={description}>
+    <SettingCard title={title} description={description} onHeaderClick={() => setOpen(!open)}>
       <SettingCard.Action>
         <IconButton
           variant="soft"
