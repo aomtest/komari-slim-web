@@ -41,7 +41,7 @@ export default function InstancePage() {
       .catch((err) => console.error("Failed to fetch nodes:", err));
     fetch(`/api/recent/${uuid}`)
       .then((res) => res.json())
-      .then((data) => setRecent(data.slice(-length)))
+      .then((data) => setRecent(data.data.slice(-length)))
       .catch((err) => console.error("Failed to fetch recent data:", err));
   }, [uuid]);
 
