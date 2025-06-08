@@ -1,19 +1,11 @@
 import React from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+
 import { AlertTriangle, Github, Lock, Save, User } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { Dialog, Flex, Button } from "@radix-ui/themes";
 
 interface UserInfo {
   username: string;
@@ -207,37 +199,32 @@ const Account = () => {
         </div>
 
         {isGithubBound ? (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="destructive">
+          <Dialog.Root>
+            <Dialog.Trigger>
+              <Button>
                 {t("account_settings.unbind_github")}
               </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>
-                  {t("account_settings.confirm_unbind")}
-                </DialogTitle>
-                <DialogDescription>
-                  {t("account_settings.unbind_github_warning")}
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <DialogTrigger asChild>
+            </Dialog.Trigger>
+            <Dialog.Title>{t("account_settings.confirm_unbind")}</Dialog.Title>
+            <Dialog.Content>
+              <Dialog.Description>
+                {t("account_settings.unbind_github_warning")}
+              </Dialog.Description>
+              <Flex gap="2" align={"end"}>
+                <Dialog.Trigger>
                   <Button variant="outline">
                     {t("account_settings.cancel")}
                   </Button>
-                </DialogTrigger>
+                </Dialog.Trigger>
                 <Button
-                  variant="destructive"
                   onClick={handleGithubAuth}
                   disabled={isLoading}
                 >
                   {t("account_settings.confirm_unbind")}
                 </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+              </Flex>
+            </Dialog.Content>
+          </Dialog.Root>
         ) : (
           <Button onClick={handleGithubAuth} disabled={isLoading}>
             <Github className="size-4" />

@@ -71,7 +71,12 @@
     "expires_at": "过期时间",
     "actions": "操作",
     "current": "(当前)",
-    "cancel": "取消"
+    "cancel": "取消",
+    "latest_ip": "最后活动IP",
+    "login_method": "登入方式",
+    "last_user_agent": "最后活动UA",
+    "latest_online": "最近在线",
+    "last_login": "上次登录"
   },
   "edit": "编辑",
   "token": "令牌",
@@ -269,5 +274,10 @@
   "copy": "复制",
   "page_not_found": "真不巧，网页被小鞠吃掉了。",
   "go_to_home": "回到主页",
-  "select": "选择"
+  "select": "选择",
+  "close": "关闭",
+  "just_now": "刚刚",
+  "time": {
+    "ago": "前"
+  }
 }

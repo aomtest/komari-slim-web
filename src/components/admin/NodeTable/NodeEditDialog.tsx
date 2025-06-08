@@ -5,20 +5,10 @@ import {
   type ClientFormData,
 } from "@/components/admin/NodeTable/schema/node";
 import { DataTableRefreshContext } from "@/components/admin/NodeTable/schema/DataTableRefreshContext";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Pencil } from "lucide-react";
 import { t } from "i18next";
 import { toast } from "sonner";
+import { Button, Dialog, Flex, IconButton, TextField } from "@radix-ui/themes";
 
 export function EditDialog({ item }: { item: z.infer<typeof schema> }) {
   const [form, setForm] = React.useState<ClientFormData & { weight: number }>({
@@ -59,22 +49,20 @@ export function EditDialog({ item }: { item: z.infer<typeof schema> }) {
       .finally(() => setLoadingCallback(false));
   }
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <Pencil />
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{t("admin.nodeEdit.editInfo", "编辑信息")}</DialogTitle>
-        </DialogHeader>
+    <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Trigger>
+        <IconButton variant="ghost">
+          <Pencil className="p-1" />
+        </IconButton>
+      </Dialog.Trigger>
+      <Dialog.Content>
+        <Dialog.Title>{t("admin.nodeEdit.editInfo", "编辑信息")}</Dialog.Title>
         <div className="flex flex-col gap-4">
           <div>
             <label className="block mb-1 text-sm font-medium text-muted-foreground">
               {t("admin.nodeEdit.name", "名称")}
             </label>
-            <Input
+            <TextField.Root
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               placeholder={t("admin.nodeEdit.namePlaceholder", "请输入名称")}
@@ -85,7 +73,7 @@ export function EditDialog({ item }: { item: z.infer<typeof schema> }) {
             <label className="block mb-1 text-sm font-medium text-muted-foreground">
               {t("admin.nodeEdit.token", "Token 令牌")}
             </label>
-            <Input
+            <TextField.Root
               value={form.token}
               onChange={(e) =>
                 setForm((f) => ({ ...f, token: e.target.value }))
@@ -100,7 +88,7 @@ export function EditDialog({ item }: { item: z.infer<typeof schema> }) {
             <label className="block mb-1 text-sm font-medium text-muted-foreground">
               {t("admin.nodeEdit.remark", "私有备注")}
             </label>
-            <Textarea
+            <TextField.Root
               value={form.remark}
               onChange={(e) =>
                 setForm((f) => ({ ...f, remark: e.target.value }))
@@ -116,7 +104,7 @@ export function EditDialog({ item }: { item: z.infer<typeof schema> }) {
             <label className="block mb-1 text-sm font-medium text-muted-foreground">
               {t("admin.nodeEdit.publicRemark", "公开备注")}
             </label>
-            <Textarea
+            <TextField.Root
               value={form.public_remark}
               onChange={(e) =>
                 setForm((f) => ({ ...f, public_remark: e.target.value }))
@@ -129,7 +117,7 @@ export function EditDialog({ item }: { item: z.infer<typeof schema> }) {
             />
           </div>
         </div>
-        <DialogFooter>
+        <Flex gap="2" align={"start"} className="mt-4">
           <Button
             type="submit"
             className="w-full"
@@ -150,8 +138,8 @@ export function EditDialog({ item }: { item: z.infer<typeof schema> }) {
               ? t("admin.nodeEdit.waiting", "等待...")
               : t("admin.nodeEdit.save", "保存")}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </Flex>
+      </Dialog.Content>
+    </Dialog.Root>
   );
 }

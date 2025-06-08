@@ -1,6 +1,5 @@
 import React from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableHeader,
@@ -9,15 +8,9 @@ import {
   TableHead,
   TableCell,
 } from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { DialogTitle, DialogTrigger } from "@radix-ui/react-dialog";
 import { useTranslation } from "react-i18next";
-
+import { Dialog, Flex, Button } from "@radix-ui/themes";
+import { UserAgentHelper } from "@/utils/UserAgentHelper";
 type Resp = {
   current: string;
   data: Array<{
@@ -28,7 +21,7 @@ type Resp = {
     login_method: string;
     latest_online: string;
     latest_ip: string;
-    last_user_agent: string;
+    latest_user_agent: string;
     expires: string;
     created_at: string;
   }>;
@@ -45,7 +38,7 @@ export default function Sessions() {
         }
         return response.json();
       })
-      .then((data:Resp) => {
+      .then((data: Resp) => {
         setSessions(data);
       })
       .catch((error) => {
@@ -110,43 +103,43 @@ export default function Sessions() {
   if (!sessions) {
     return <div className="p-4 text-center">{t("sessions.loading")}</div>;
   }
+
   return (
     <div className="p-4">
       <h1 className="text-2xl font-semibold mb-4">{t("sessions.title")}</h1>
       <div className="mb-4">
-        <Dialog>
-          <DialogTrigger>
-            <Button variant="destructive" size="sm">
-              {t("sessions.delete_all")}
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogTitle>{t("sessions.delete_all")}</DialogTitle>
-            <DialogDescription>
+        <Dialog.Root>
+          <Dialog.Trigger>
+            <Button color="red">{t("sessions.delete_all")}</Button>
+          </Dialog.Trigger>
+          <Dialog.Content>
+            <Dialog.Title>{t("sessions.delete_all")}</Dialog.Title>
+            <Dialog.Description>
               {t("sessions.delete_all_desc")}
-            </DialogDescription>
-            <DialogFooter>
-              <DialogTrigger>
-                <Button variant="destructive" onClick={deleteAllSessions}>
+            </Dialog.Description>
+            <Flex gap="2" justify={"end"}>
+              <Dialog.Trigger>
+                <Button variant="soft">{t("sessions.cancel")}</Button>
+              </Dialog.Trigger>
+              <Dialog.Trigger>
+                <Button color="red" onClick={deleteAllSessions}>
                   {t("delete")}
                 </Button>
-              </DialogTrigger>
-              <DialogTrigger>
-                <Button variant="secondary">{t("sessions.cancel")}</Button>
-              </DialogTrigger>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+              </Dialog.Trigger>
+            </Flex>
+          </Dialog.Content>
+        </Dialog.Root>
       </div>
       <div className="overflow-hidden rounded-lg">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>{t("sessions.session_id")}</TableHead>
+              <TableHead>UA</TableHead>
               <TableHead>IP</TableHead>
-              <TableHead>{t("sessions.created_at")}</TableHead>
+              <TableHead>Latest IP</TableHead>
               <TableHead>{t("sessions.expires_at")}</TableHead>
-              <TableHead>{t("sessions.last_login","上次登录")}</TableHead>
+              <TableHead>{t("sessions.last_login", "上次登录")}</TableHead>
               <TableHead>{t("sessions.actions")}</TableHead>
             </TableRow>
           </TableHeader>
@@ -156,50 +149,121 @@ export default function Sessions() {
               return (
                 <TableRow key={s.uuid}>
                   <TableCell>
-                    {s.session}
-                    {isCurrent && (
-                      <span className="ml-2 text-sm text-blue-600">
-                        {t("sessions.current")}
-                      </span>
-                    )}
+                    <Dialog.Root>
+                      <Dialog.Trigger>
+                        <label className="hover:underline cursor-pointer">
+                          {s.session.slice(0, 8)}...
+                          {isCurrent && (
+                            <span className="ml-2 text-sm text-blue-600">
+                              {t("sessions.current")}
+                            </span>
+                          )}
+                        </label>
+                      </Dialog.Trigger>
+                      <Dialog.Content>
+                        <Dialog.Title>
+                          {t("sessions.active_sessions")}
+                        </Dialog.Title>
+                        <Flex direction="column" gap="1">
+                          <label className="text-base font-bold">
+                            {t("sessions.session_id")}
+                          </label>
+                          <label className="text-sm">{s.session}</label>
+                          <label className="text-base font-bold">
+                            IP / {t("sessions.latest_ip", "Latest IP")}
+                          </label>
+                          <label className="text-sm">
+                            {s.ip} / {s.latest_ip}
+                          </label>
+                          <label className="text-base font-bold">
+                            User Agent
+                          </label>
+                          <label className="text-sm">{s.user_agent}</label>
+                          <label className="text-sm text-muted-foreground font-bold">
+                            {UserAgentHelper.format(s.user_agent)}
+                          </label>
+                          <label className="text-base font-bold">
+                            {t("sessions.last_user_agent")}
+                          </label>
+                          <label className="text-sm">
+                            {s.latest_user_agent}
+                          </label>
+                          <label className="text-sm text-muted-foreground font-bold">
+                            {UserAgentHelper.format(s.latest_user_agent)}
+                          </label>
+
+                          <label className="text-base font-bold">
+                            {t("sessions.login_method")}
+                          </label>
+                          <label className="text-sm">{s.login_method}</label>
+                          <label className="text-base font-bold">
+                            {t("sessions.latest_online", "Latest Online")}
+                          </label>
+                          <label className="text-sm">
+                            {new Date(s.latest_online).toLocaleString()}
+                            {" "}({formatDuration((Date.now() - new Date(s.latest_online).getTime()),t)})
+                          </label>
+                          <label className="text-base font-bold">
+                            {t("sessions.created_at")}
+                          </label>
+                          <label className="text-sm">
+                            {new Date(s.created_at).toLocaleString()}
+                          </label>
+                          <label className="text-base font-bold">
+                            {t("sessions.expires_at", "Expires At")}
+                          </label>
+                          <label className="text-sm">
+                            {new Date(s.expires).toLocaleString()}
+                          </label>
+                          <Flex justify={"end"}>
+                            <Dialog.Trigger>
+                              <Button variant="soft">{t("close")}</Button>
+                            </Dialog.Trigger>
+                          </Flex>
+                        </Flex>
+                      </Dialog.Content>
+                    </Dialog.Root>
                   </TableCell>
+                  <TableCell>{UserAgentHelper.format(s.user_agent)}</TableCell>
                   <TableCell>{s.ip}</TableCell>
-                  <TableCell>
-                    {new Date(s.created_at).toLocaleString()}
-                  </TableCell>
+                  <TableCell>{s.latest_ip}</TableCell>
                   <TableCell>{new Date(s.expires).toLocaleString()}</TableCell>
-                  <TableCell>{new Date(s.latest_online).toLocaleString()}</TableCell>
                   <TableCell>
-                    <Dialog>
-                      <DialogTrigger>
-                        <Button variant="destructive" size="sm">
-                          {t("delete")}
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogTitle>
+                    {new Date(s.latest_online).toLocaleString()}{" "}({formatDuration((Date.now() - new Date(s.latest_online).getTime()),t)})
+                  </TableCell>
+                  <TableCell>
+                    <Dialog.Root>
+                      {!isCurrent && (
+                        <Dialog.Trigger>
+                          <Button color="red" variant="ghost">
+                            {t("delete")}
+                          </Button>
+                        </Dialog.Trigger>
+                      )}
+                      <Dialog.Content>
+                        <Dialog.Title>
                           {t("sessions.confirm_delete")}
-                        </DialogTitle>
-                        <DialogDescription>
+                        </Dialog.Title>
+                        <Dialog.Description>
                           {t("sessions.delete_one_desc")}
-                        </DialogDescription>
-                        <DialogFooter>
-                          <DialogTrigger>
+                        </Dialog.Description>
+                        <Flex gap="2" justify={"end"}>
+                          <Dialog.Trigger>
+                            <Button variant="soft">
+                              {t("sessions.cancel")}
+                            </Button>
+                          </Dialog.Trigger>
+                          <Dialog.Trigger>
                             <Button
-                              variant="destructive"
+                              color="red"
                               onClick={() => deleteSession(s.session)}
                             >
                               {t("delete")}
                             </Button>
-                          </DialogTrigger>
-                          <DialogTrigger>
-                            <Button variant="secondary">
-                              {t("sessions.cancel")}
-                            </Button>
-                          </DialogTrigger>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
+                          </Dialog.Trigger>
+                        </Flex>
+                      </Dialog.Content>
+                    </Dialog.Root>
                   </TableCell>
                 </TableRow>
               );
@@ -209,4 +273,35 @@ export default function Sessions() {
       </div>
     </div>
   );
+}
+
+function formatDuration(number: number,t:any ): string {
+  const ms = Math.abs(number);
+  const seconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (seconds < 60) {
+    return t("just_now");
+  }
+
+  if (days > 0) {
+    const remainingHours = hours % 24;
+    if (remainingHours > 0) {
+      return `${days}${t("nodeCard.time_day")}${remainingHours}${t("nodeCard.time_hour")}${t("time.ago")}`;
+    }
+    return `${days}${t("nodeCard.time_day")} ${t("time.ago")}`;
+  }
+
+  if (hours > 0) {
+    const remainingMinutes = minutes % 60;
+    if (remainingMinutes > 0) {
+      return `${hours}${t("nodeCard.time_hour")}${remainingMinutes}${t("nodeCard.time_minute")}${t("time.ago")}`;
+    }
+    return `${hours}${t("nodeCard.time_hour")}${t("time.ago")}`;
+  }
+
+  const remainingSeconds = seconds % 60;
+  return `${minutes}${t("nodeCard.time_minute")}${remainingSeconds}${t("nodeCard.time_second")}${t("time.ago")}`;
 }

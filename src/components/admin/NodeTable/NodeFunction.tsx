@@ -2,27 +2,21 @@ import * as React from "react";
 import { z } from "zod";
 import { schema } from "@/components/admin/NodeTable/schema/node";
 import { DataTableRefreshContext } from "@/components/admin/NodeTable/schema/DataTableRefreshContext";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import { Terminal, Trash2, Copy, Link } from "lucide-react";
+import { Terminal, Trash2, Copy, Download } from "lucide-react";
 import { t } from "i18next";
 import type { Row } from "@tanstack/react-table";
 import { EditDialog } from "./NodeEditDialog";
 import {
+  Button,
   Checkbox,
+  Dialog,
   Flex,
-  SegmentedControl, TextArea
+  IconButton,
+  SegmentedControl,
+  TextArea,
+  TextField,
 } from "@radix-ui/themes";
 import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
 
 async function removeClient(uuid: string) {
   await fetch(`/api/admin/client/${uuid}/remove`, {
@@ -58,42 +52,53 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
   const generateCommand = () => {
     const host = window.location.origin;
     const token = row.original.token;
-
-    let baseCommand = "";
-    let options = "";
-
+    let args = ["-e", host, "-t", token];
     // 根据安装选项生成参数
     if (installOptions.disableWebSsh) {
-      options += " --disable-web-ssh";
+      args.push("--disable-web-ssh");
     }
     if (installOptions.disableAutoUpdate) {
-      options += " --disable-auto-update";
+      args.push("--disable-auto-update");
     }
     if (installOptions.ignoreUnsafeCert) {
-      options += " --ignore-unsafe-cert";
+      args.push("--ignore-unsafe-cert");
     }
     if (installOptions.ghproxy) {
       if (!installOptions.ghproxy.startsWith("http")) {
         installOptions.ghproxy = `http://${installOptions.ghproxy}`;
       }
-      options += ` --install-ghproxy ${installOptions.ghproxy}`;
+      args.push(`--install-ghproxy`);
+      args.push(installOptions.ghproxy);
     }
     if (installOptions.dir) {
-      options += ` --install-dir ${installOptions.dir}`;
+      args.push(`--install-dir`);
+      args.push(installOptions.dir);
     }
     if (installOptions.serviceName) {
-      options += ` --install-service-name ${installOptions.serviceName}`;
+      args.push(`--install-service-name`);
+      args.push(installOptions.serviceName);
     }
 
+    let finalCommand = "";
     switch (selectedPlatform) {
       case "linux":
-        baseCommand = `bash <(curl -sL https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/install.sh) -e ${host} -t ${token}`;
+        finalCommand =
+          `bash <(curl -sL https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/install.sh) ` +
+          args.join(" ");
         break;
       case "windows":
-        baseCommand = `powershell -Command "Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/install.ps1' | Invoke-Expression" -Host ${host} -Token ${token}`;
+        finalCommand =
+          `powershell.exe -NoProfile -ExecutionPolicy Bypass -Command ` +
+          `"iwr 'https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/install.ps1'` +
+          ` -UseBasicParsing -OutFile 'install.ps1'; &` +
+          ` '.\\install.ps1'`;
+        args.forEach(arg => {
+          finalCommand += ` '${arg}'`;
+        });
+        finalCommand += `"`;
         break;
     }
-    return baseCommand + options;
+    return finalCommand;
   };
 
   const copyToClipboard = async (text: string) => {
@@ -106,19 +111,17 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
   };
 
   return (
-    <div className="flex gap-2 justify-center">
-      <Dialog>
-        <DialogTrigger>
-          <Button variant="ghost" size="icon">
-            <Link />
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {t("admin.nodeTable.installCommand", "一键部署指令")}
-            </DialogTitle>
-          </DialogHeader>
+    <div className="flex gap-3 justify-center">
+      <Dialog.Root>
+        <Dialog.Trigger>
+          <IconButton variant="ghost">
+            <Download className="p-1" />
+          </IconButton>
+        </Dialog.Trigger>
+        <Dialog.Content>
+          <Dialog.Title>
+            {t("admin.nodeTable.installCommand", "一键部署指令")}
+          </Dialog.Title>
           <div className="flex flex-col gap-4">
             <SegmentedControl.Root
               value={selectedPlatform}
@@ -126,7 +129,7 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
             >
               <SegmentedControl.Item value="linux">Linux</SegmentedControl.Item>
               <SegmentedControl.Item value="windows">
-                Windows (暂未实现)
+                Windows
               </SegmentedControl.Item>
             </SegmentedControl.Root>
 
@@ -206,7 +209,7 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
                 <label className="text-sm font-bold">
                   {t("admin.nodeTable.ghproxy", "GitHub 代理")}
                 </label>
-                <Input
+                <TextField.Root
                   placeholder={t(
                     "admin.nodeTable.ghproxy_placeholder",
                     "GitHub 代理，为空则不适用代理"
@@ -217,11 +220,11 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
                       ghproxy: e.target.value,
                     }))
                   }
-                ></Input>
+                ></TextField.Root>
                 <label className="text-sm font-bold">
                   {t("admin.nodeTable.install_dir", "安装目录")}
                 </label>
-                <Input
+                <TextField.Root
                   placeholder={t(
                     "admin.nodeTable.install_dir_placeholder",
                     "安装目录，为空则使用默认目录(/opt/komari-agent)"
@@ -232,11 +235,11 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
                       dir: e.target.value,
                     }))
                   }
-                ></Input>
+                ></TextField.Root>
                 <label className="text-sm font-bold">
                   {t("admin.nodeTable.serviceName", "服务名称")}
                 </label>
-                <Input
+                <TextField.Root
                   placeholder={t(
                     "admin.nodeTable.serviceName_placeholder",
                     "服务名称，为空则使用默认名称(komari-agent)"
@@ -247,7 +250,7 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
                       serviceName: e.target.value,
                     }))
                   }
-                ></Input>
+                ></TextField.Root>
               </Flex>
             </Flex>
             <Flex direction="column" gap="2">
@@ -266,64 +269,56 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
             <Flex justify="center">
               <Button
                 style={{ width: "100%" }}
-                variant="outline"
                 onClick={() => copyToClipboard(generateCommand())}
               >
-                <Copy />
+                <Copy size={16} />
                 {t("copy")}
               </Button>
             </Flex>
           </div>
-        </DialogContent>
-      </Dialog>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() =>
-          window.open(`/terminal?uuid=${row.original.uuid}`, "_blank")
-        }
-      >
-        <Terminal />
-      </Button>
-      <EditDialog item={row.original} />
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button variant="ghost" size="icon" className="text-destructive">
-            <Trash2 />
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t("admin.nodeTable.confirmDelete")}</DialogTitle>{" "}
-            <DialogDescription>
-              {t("admin.nodeTable.cannotUndo")}
-            </DialogDescription>
-          </DialogHeader>
+        </Dialog.Content>
+      </Dialog.Root>
+      <a href={`/terminal?uuid=${row.original.uuid}`} target="_blank">
+        <IconButton variant="ghost">
+          <Terminal className="p-1" />
+        </IconButton>
+      </a>
 
-          <DialogFooter>
-            <Button variant="outline" asChild>
-              <DialogTrigger>{t("admin.nodeTable.cancel")}</DialogTrigger>
-            </Button>
-            <Button
-              variant="destructive"
-              disabled={removing}
-              onClick={async () => {
-                setRemoving(true);
-                await removeClient(row.original.uuid);
-                setRemoving(false);
-                if (refreshTable) refreshTable();
-              }}
-              asChild
-            >
-              <DialogTrigger>
+      <EditDialog item={row.original} />
+      <Dialog.Root>
+        <Dialog.Trigger>
+          <IconButton variant="ghost" color="red" className="text-destructive">
+            <Trash2 className="p-1" />
+          </IconButton>
+        </Dialog.Trigger>
+        <Dialog.Content>
+          <Dialog.Title>{t("admin.nodeTable.confirmDelete")}</Dialog.Title>
+          <Dialog.Description>
+            {t("admin.nodeTable.cannotUndo")}
+          </Dialog.Description>
+          <Flex gap="2" justify={"end"}>
+            <Dialog.Close>
+              <Button variant="soft">{t("admin.nodeTable.cancel")}</Button>
+            </Dialog.Close>
+            <Dialog.Trigger>
+              <Button
+                disabled={removing}
+                color="red"
+                onClick={async () => {
+                  setRemoving(true);
+                  await removeClient(row.original.uuid);
+                  setRemoving(false);
+                  if (refreshTable) refreshTable();
+                }}
+              >
                 {removing
                   ? t("admin.nodeTable.deleting")
                   : t("admin.nodeTable.confirm")}
-              </DialogTrigger>
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+              </Button>
+            </Dialog.Trigger>
+          </Flex>
+        </Dialog.Content>
+      </Dialog.Root>
     </div>
   );
 }

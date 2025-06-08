@@ -34,9 +34,6 @@ import { z } from "zod";
 import { TableCellViewer } from "./NodeTable/NodeDetailViewer";
 import { DragHandle, DraggableRow } from "./NodeTable/NodeTableDndComponents";
 
-import { Button } from "@/components/ui/button";
-
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -52,22 +49,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ChevronDown, Columns2, Copy, PlusIcon } from "lucide-react";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+
 import type { schema } from "./NodeTable/schema/node";
 import { DataTableRefreshContext } from "./NodeTable/schema/DataTableRefreshContext";
 import { t } from "i18next";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Input } from "../ui/input";
 import { ActionsCell } from "./NodeTable/NodeFunction";
 import { toast } from "sonner";
 import { LoadingIcon } from "../Icones/icon";
+import { Dialog, Flex, Button, IconButton, Checkbox, TextField } from "@radix-ui/themes";
 
 const columns: ColumnDef<z.infer<typeof schema>>[] = [
   {
@@ -80,6 +70,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     header: ({ table }) => (
       <div className="flex items-center justify-center">
         <Checkbox
+          size={"1"}
           checked={
             table.getIsAllRowsSelected() ||
             (table.getIsSomeRowsSelected() && "indeterminate")
@@ -91,6 +82,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     cell: ({ row }) => (
       <div className="flex items-center justify-center">
         <Checkbox
+          size={"1"}
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
         />
@@ -118,31 +110,30 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
           {ipv4 && (
             <div className="flex items-center gap-1">
               <span>{ipv4}</span>
-              <Button
+              <IconButton
                 variant="ghost"
-                size="icon"
-                className="size-5"
                 onClick={() => {
                   navigator.clipboard.writeText(ipv4);
+                  toast.success(t("copy_success"));
                 }}
               >
                 <Copy size={16} />
-              </Button>
+              </IconButton>
             </div>
           )}
           {ipv6 && (
             <div className="flex items-center gap-1">
               <span>{ipv6}</span>
-              <Button
+              <IconButton
                 variant="ghost"
-                size="icon"
                 className="size-5"
                 onClick={() => {
                   navigator.clipboard.writeText(ipv6);
+                  toast.success(t("copy_success"));
                 }}
               >
                 <Copy size={16} />
-              </Button>
+              </IconButton>
             </div>
           )}
         </div>
@@ -327,8 +318,11 @@ export function DataTable() {
         ${!isMobile ? "p-4" : ""}
       `}
     >
+      <h2 className="text-2xl font-bold mb-4">
+        {t("admin.nodeTable.nodeList")}
+      </h2>
       <div className="flex items-center justify-between mb-4">
-        <Input
+        <TextField.Root
           placeholder={t("admin.nodeTable.searchByName")}
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
@@ -336,30 +330,28 @@ export function DataTable() {
           }
           className="max-w-2xs"
         />
-        <Dialog>
-          <DialogTrigger asChild>
+        <Dialog.Root>
+          <Dialog.Trigger>
             <Button>
               <PlusIcon className="lg:mr-1" />
               <span className="hidden lg:inline">
                 {t("admin.nodeTable.addNode")}
               </span>
             </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{t("admin.nodeTable.addNode")}</DialogTitle>
-            </DialogHeader>
+          </Dialog.Trigger>
+          <Dialog.Content>
+            <Dialog.Title>{t("admin.nodeTable.addNode")}</Dialog.Title>
             <div className="">
               <label className="block mb-1 text-sm font-medium text-muted-foreground">
                 {t("admin.nodeTable.nameOptional")}
               </label>
-              <Input
+              <TextField.Root
                 placeholder={t("admin.nodeTable.namePlaceholder")}
                 value={newNodeName}
                 onChange={(e) => setNewNodeName(e.target.value)}
               />
             </div>
-            <DialogFooter>
+            <Flex justify="end" gap="2" className="mt-4">
               <Button onClick={handleAddNode} disabled={isAddingNode}>
                 {isAddingNode ? (
                   <span className="flex items-center gap-1">
@@ -370,9 +362,9 @@ export function DataTable() {
                   t("admin.nodeTable.submit")
                 )}
               </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            </Flex>
+          </Dialog.Content>
+        </Dialog.Root>
       </div>
       <DataTableRefreshContext.Provider value={refreshTable}>
         <div className="w-full flex-col justify-start gap-6">
@@ -440,7 +432,7 @@ export function DataTable() {
               </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
+                  <Button variant="soft">
                     <Columns2 />
                     <span className="hidden lg:inline">
                       {t("admin.nodeTable.customColumns")}

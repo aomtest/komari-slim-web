@@ -3,9 +3,9 @@ import { CSS } from "@dnd-kit/utilities";
 import { type Row, flexRender } from "@tanstack/react-table";
 import { z } from "zod";
 import { schema } from "@/components/admin/NodeTable/schema/node";
-import { Button } from "@/components/ui/button";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { GripVertical } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function DragHandle({ id }: { id: string }) {
   const { attributes, listeners } = useSortable({
@@ -17,7 +17,6 @@ export function DragHandle({ id }: { id: string }) {
       {...attributes}
       {...listeners}
       variant="ghost"
-      size="icon"
       className="text-muted-foreground size-7 hover:bg-transparent"
     >
       <GripVertical className="text-muted-foreground size-3" />

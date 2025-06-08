@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { schema } from "@/components/admin/NodeTable/schema/node";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Button } from "@/components/ui/button";
 import {
   Drawer,
   DrawerClose,
@@ -15,6 +14,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Copy } from "lucide-react";
 import { t } from "i18next";
+import { Button, IconButton } from "@radix-ui/themes";
 
 function formatBytes(bytes?: number | string): string {
   if (!bytes || isNaN(Number(bytes))) return "-";
@@ -31,9 +31,11 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
   return (
     <Drawer direction={isMobile ? "bottom" : "right"}>
       <DrawerTrigger asChild>
-        <Button variant="link" className="text-foreground w-fit px-0 text-left">
+        <div className="h-8 flex items-center">
+          <label className="text-foreground w-fit text-md px-0 text-left hover:underline font-bold">
           {item.name}
-        </Button>
+        </label>
+        </div>
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className="gap-1">
@@ -58,9 +60,8 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                       >
                         {item.ipv4}
                       </span>
-                      <Button
+                      <IconButton
                         variant="ghost"
-                        size="icon"
                         className="size-5"
                         type="button"
                         onClick={() => {
@@ -68,7 +69,7 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                         }}
                       >
                         <Copy size={16} />
-                      </Button>
+                      </IconButton>
                     </div>
                   )}
                   {item.ipv6 && (
@@ -79,9 +80,8 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                       >
                         {item.ipv6}
                       </span>
-                      <Button
+                      <IconButton
                         variant="ghost"
-                        size="icon"
                         className="size-5"
                         type="button"
                         onClick={() => {
@@ -89,7 +89,7 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                         }}
                       >
                         <Copy size={16} />
-                      </Button>
+                      </IconButton>
                     </div>
                   )}
                 </div>
@@ -102,7 +102,9 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                   id="detail-version"
                   className="bg-muted px-3 py-2 rounded border select-text"
                 >
-                  {item.version || <span className="text-muted-foreground">-</span>}
+                  {item.version || (
+                    <span className="text-muted-foreground">-</span>
+                  )}
                 </span>
               </div>
             </div>
@@ -126,7 +128,9 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                   id="detail-arch"
                   className="bg-muted px-3 py-2 rounded border select-text"
                 >
-                  {item.arch || <span className="text-muted-foreground">-</span>}
+                  {item.arch || (
+                    <span className="text-muted-foreground">-</span>
+                  )}
                 </span>
               </div>
             </div>
@@ -139,7 +143,9 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                   id="detail-cpu_name"
                   className="bg-muted px-3 py-2 rounded border select-text"
                 >
-                  {item.cpu_name || <span className="text-muted-foreground">-</span>}
+                  {item.cpu_name || (
+                    <span className="text-muted-foreground">-</span>
+                  )}
                 </span>
               </div>
               <div className="flex flex-col gap-3">
@@ -150,7 +156,9 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                   id="detail-cpu_cores"
                   className="bg-muted px-3 py-2 rounded border select-text"
                 >
-                  {item.cpu_cores?.toString() || <span className="text-muted-foreground">-</span>}
+                  {item.cpu_cores?.toString() || (
+                    <span className="text-muted-foreground">-</span>
+                  )}
                 </span>
               </div>
             </div>
@@ -162,7 +170,9 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                 <span
                   id="detail-mem_total"
                   className="bg-muted px-3 py-2 rounded border select-text"
-                  title={item.mem_total ? String(item.mem_total) + " Bytes" : "-"}
+                  title={
+                    item.mem_total ? String(item.mem_total) + " Bytes" : "-"
+                  }
                 >
                   {formatBytes(item.mem_total)}
                 </span>
@@ -174,7 +184,9 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                 <span
                   id="detail-disk_total"
                   className="bg-muted px-3 py-2 rounded border select-text"
-                  title={item.disk_total ? String(item.disk_total) + " Bytes" : "-"}
+                  title={
+                    item.disk_total ? String(item.disk_total) + " Bytes" : "-"
+                  }
                 >
                   {formatBytes(item.disk_total)}
                 </span>
@@ -188,7 +200,9 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                 id="detail-gpu_name"
                 className="bg-muted px-3 py-2 rounded border select-text"
               >
-                {item.gpu_name || <span className="text-muted-foreground">-</span>}
+                {item.gpu_name || (
+                  <span className="text-muted-foreground">-</span>
+                )}
               </span>
             </div>
             <div className="flex flex-col gap-3">
@@ -211,9 +225,11 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                   id="detail-createdAt"
                   className="bg-muted px-3 py-2 rounded border select-text"
                 >
-                  {item.created_at
-                    ? new Date(item.created_at).toLocaleString()
-                    : <span className="text-muted-foreground">-</span>}
+                  {item.created_at ? (
+                    new Date(item.created_at).toLocaleString()
+                  ) : (
+                    <span className="text-muted-foreground">-</span>
+                  )}
                 </span>
               </div>
               <div className="flex flex-col gap-3">
@@ -224,9 +240,11 @@ export function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                   id="detail-updatedAt"
                   className="bg-muted px-3 py-2 rounded border select-text"
                 >
-                  {item.updated_at
-                    ? new Date(item.updated_at).toLocaleString()
-                    : <span className="text-muted-foreground">-</span>}
+                  {item.updated_at ? (
+                    new Date(item.updated_at).toLocaleString()
+                  ) : (
+                    <span className="text-muted-foreground">-</span>
+                  )}
                 </span>
               </div>
             </div>
