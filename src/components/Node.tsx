@@ -1,6 +1,5 @@
 import { Card, Flex, Text, Badge, Separator } from "@radix-ui/themes";
 import type { LiveData, Record } from "../types/LiveData";
-import type { NodeBasicInfo } from "../types/NodeBasicInfo";
 import UsageBar from "./UsageBar";
 import Flag from "./Flag";
 import { useTranslation } from "react-i18next";
@@ -94,9 +93,9 @@ const Node = ({ basic, live, online }: NodeProps) => {
           margin: "0 auto",
           transition: "all 0.2s ease-in-out",
         }}
-        className="hover:shadow-2xl hover:scale-102 hover:cursor-pointer"
+        className="hover:cursor-pointer hover:shadow-lg hover:bg-accent-2"
       >
-        <Flex direction="column" gap={isMobile ? "2" : "4"}>
+        <Flex direction="column" gap="2">
           <Flex justify="between" align="center" my={isMobile ? "-1" : "0"}>
             <Flex justify="start" align="center">
               <Flag flag={basic.region} />
@@ -120,6 +119,13 @@ const Node = ({ basic, live, online }: NodeProps) => {
                 >
                   {formatUptime(liveData.uptime, t)}
                 </Text>
+                <Flex hidden={isMobile}>
+                  <PriceTags
+                    price={basic.price}
+                    billing_cycle={basic.billing_cycle}
+                    //currency={basic.currency}
+                  />
+                </Flex>
               </Flex>
             </Flex>
 
@@ -128,7 +134,7 @@ const Node = ({ basic, live, online }: NodeProps) => {
             </Badge>
           </Flex>
 
-          <Separator size="4" />
+          <Separator size="4" className="-mt-1" />
 
           <Flex direction="column" gap="2">
             <Flex justify="between" hidden={isMobile}>
@@ -227,6 +233,7 @@ import { Box } from "@radix-ui/themes";
 import type { TFunction } from "i18next";
 import { Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import type { NodeBasicInfo } from "@/contexts/NodeListContext";
 export const NodeGrid = ({ nodes, liveData }: NodeGridProps) => {
   // 确保liveData是有效的
   const onlineNodes = liveData && liveData.online ? liveData.online : [];
@@ -271,5 +278,82 @@ export const NodeGrid = ({ nodes, liveData }: NodeGridProps) => {
         );
       })}
     </Box>
+  );
+};
+
+const PriceTags = ({
+  price = 0,
+  billing_cycle = 30,
+  currency = "￥",
+  expired_at = Date.now() + 30 * 24 * 60 * 60 * 1000,
+}: {
+  expired_at?: string | number;
+  price?: number;
+  billing_cycle?: number;
+  currency?: string;
+}) => {
+  if (price == 0) {
+    return <></>;
+  }
+  return (
+    <Flex gap="1">
+      <Badge color="iris" size="1" variant="soft" className="text-sm">
+        <label className="text-xs">
+          {price}
+          {currency}/
+          {(() => {
+            if (billing_cycle >= 28 && billing_cycle <= 32) {
+              return "Monthly";
+            } else if (billing_cycle >= 87 && billing_cycle <= 95) {
+              return "Quarterly";
+            } else if (billing_cycle >= 175 && billing_cycle <= 185) {
+              return "Semi-annual";
+            } else if (billing_cycle >= 360 && billing_cycle <= 370) {
+              return "Annual";
+            } else if (billing_cycle >= 720 && billing_cycle <= 730) {
+              return "Biennial";
+            } else if (billing_cycle >= 1080 && billing_cycle <= 1100) {
+              return "Triennial";
+            } else {
+              return `${billing_cycle} days`;
+            }
+          })()}
+        </label>
+      </Badge>
+      <Badge
+        color={(() => {
+          const expiredDate = new Date(expired_at);
+          const now = new Date();
+          const diffTime = expiredDate.getTime() - now.getTime();
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+          if (diffDays <= 0 || diffDays <= 7) {
+            return "red";
+          } else if (diffDays <= 15) {
+            return "orange";
+          } else {
+            return "green";
+          }
+        })()}
+        size="1"
+        variant="soft"
+        className="text-sm"
+      >
+        <label className="text-xs">
+          {(() => {
+            const expiredDate = new Date(expired_at);
+            const now = new Date();
+            const diffTime = expiredDate.getTime() - now.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays <= 0) {
+              return "已过期";
+            } else {
+              return `余${diffDays}天`;
+            }
+          })()}
+        </label>
+      </Badge>
+    </Flex>
   );
 };

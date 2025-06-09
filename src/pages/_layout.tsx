@@ -1,6 +1,8 @@
+import { LiveDataProvider } from "@/contexts/LiveDataContext";
 import Footer from "../components/Footer";
 import NavBar from "../components/NavBar";
 import { Outlet } from "react-router-dom";
+import { NodeListProvider } from "@/contexts/NodeListContext";
 
 const IndexLayout = () => {
   // 使用我们的LiveDataContext
@@ -31,7 +33,13 @@ const IndexLayout = () => {
     );
   };
 
-  return <InnerLayout />;
+  return (
+    <LiveDataProvider>
+      <NodeListProvider>
+        <InnerLayout />
+      </NodeListProvider>
+    </LiveDataProvider>
+  );
 };
 
 export default IndexLayout;

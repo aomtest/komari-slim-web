@@ -1,9 +1,9 @@
 import { Callout, Card, Flex, Text } from "@radix-ui/themes";
-import React from "react";
 import { useTranslation } from "react-i18next";
 import { NodeGrid } from "../components/Node";
-import { formatBytes, type NodeResponse } from "../types/NodeBasicInfo";
-import { LiveDataProvider, useLiveData } from "../contexts/LiveDataContext";
+import { formatBytes } from "../types/NodeBasicInfo";
+import { useLiveData } from "../contexts/LiveDataContext";
+import { useNodeList } from "@/contexts/NodeListContext";
 
 const Index = () => {
   const InnerLayout = () => {
@@ -11,14 +11,13 @@ const Index = () => {
     const { live_data } = useLiveData();
     document.title = t("home_title");
     //#region 节点数据
-    const [node, setNode] = React.useState<NodeResponse | null>(null);
-
-    React.useEffect(() => {
-      fetch("./api/nodes")
-        .then((res) => res.json())
-        .then((data) => setNode(data))
-        .catch((err) => console.error(err));
-    }, []);
+    const { nodeList, isLoading, error } = useNodeList();
+    if (isLoading) {
+      return <div>{t("loading")}</div>;
+    }
+    if (error) {
+      return <div>Error: {error}</div>;
+    }
     //#endregion
     return (
       <>
@@ -46,8 +45,7 @@ const Index = () => {
             >
               <Text>{t("current_online")}</Text>
               <Text>
-                {live_data?.data?.online.length ?? 0} /{" "}
-                {node?.data?.length ?? 0}
+                {live_data?.data?.online.length ?? 0} / {nodeList?.length ?? 0}
               </Text>
             </Flex>
             <div
@@ -63,9 +61,9 @@ const Index = () => {
             >
               <Text>{t("region_overview")}</Text>
               <Text>
-                {node?.data
+                {nodeList
                   ? Object.entries(
-                      node.data.reduce((acc, item) => {
+                      nodeList.reduce((acc, item) => {
                         acc[item.region] = (acc[item.region] || 0) + 1;
                         return acc;
                       }, {} as Record<string, number>)
@@ -114,17 +112,13 @@ const Index = () => {
           </div>
         </Card>
         <NodeGrid
-          nodes={node?.data ?? []}
+          nodes={nodeList ?? []}
           liveData={live_data?.data ?? { online: [], data: {} }}
         />{" "}
       </>
     );
   };
-  return (
-    <LiveDataProvider>
-      <InnerLayout />
-    </LiveDataProvider>
-  );
+  return <InnerLayout />;
 };
 
 //#region Callouts

@@ -36,7 +36,6 @@ const LoginDialog = () => {
 
       setErrorMsg("");
       setIsLoading(true);
-      refresh();
       try {
         const res = await fetch("/api/login", {
           method: "POST",
@@ -51,6 +50,7 @@ const LoginDialog = () => {
         });
         const data = await res.json();
         if (res.status === 200) {
+          refresh();
           window.open("/admin", "_self");
         } else {
           setErrorMsg(data.message || "Login failed");

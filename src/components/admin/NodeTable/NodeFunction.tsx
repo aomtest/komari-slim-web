@@ -2,7 +2,7 @@ import * as React from "react";
 import { z } from "zod";
 import { schema } from "@/components/admin/NodeTable/schema/node";
 import { DataTableRefreshContext } from "@/components/admin/NodeTable/schema/DataTableRefreshContext";
-import { Terminal, Trash2, Copy, Download } from "lucide-react";
+import { Terminal, Trash2, Copy, Download, DollarSign } from "lucide-react";
 import { t } from "i18next";
 import type { Row } from "@tanstack/react-table";
 import { EditDialog } from "./NodeEditDialog";
@@ -92,7 +92,7 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
           `"iwr 'https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/install.ps1'` +
           ` -UseBasicParsing -OutFile 'install.ps1'; &` +
           ` '.\\install.ps1'`;
-        args.forEach(arg => {
+        args.forEach((arg) => {
           finalCommand += ` '${arg}'`;
         });
         finalCommand += `"`;
@@ -283,8 +283,23 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
           <Terminal className="p-1" />
         </IconButton>
       </a>
-
+      {/** Edit Button */}
       <EditDialog item={row.original} />
+      {/** Edit Money */}
+      <Dialog.Root> 
+        <Dialog.Trigger>
+          <IconButton variant="ghost">
+           <DollarSign className="p-1" />
+          </IconButton>
+        </Dialog.Trigger>
+        <Dialog.Content>
+          <Dialog.Title>{t("admin.nodeTable.editNodePrice")}</Dialog.Title>
+          <label>
+            123
+          </label>
+        </Dialog.Content>
+      </Dialog.Root>
+      {/** Delete Button */}
       <Dialog.Root>
         <Dialog.Trigger>
           <IconButton variant="ghost" color="red" className="text-destructive">
@@ -322,3 +337,4 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
     </div>
   );
 }
+

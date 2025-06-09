@@ -11,40 +11,28 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import type { NodeBasicInfo } from "../../types/NodeBasicInfo";
 import type { Record } from "../../types/LiveData";
 import Flag from "../../components/Flag";
 import { Flex, Text } from "@radix-ui/themes";
 import { formatBytes, formatUptime } from "../../components/Node";
+import { useNodeList } from "@/contexts/NodeListContext";
 
 export default function InstancePage() {
   const { t } = useTranslation();
   const { live_data, onRefresh } = useLiveData();
   const { uuid } = useParams<{ uuid: string }>();
   const [recent, setRecent] = useState<Record[]>([]);
-  const [node, setNode] = useState<NodeBasicInfo | null>(null);
+  const { nodeList } = useNodeList();
   const length = 180;
   // 初始数据加载
+  const node = nodeList?.find((n) => n.uuid === uuid);
+
   useEffect(() => {
-    fetch("/api/nodes")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data) {
-          const nodes = data.data;
-          if (Array.isArray(nodes)) {
-            const current = nodes.find((n: NodeBasicInfo) => n.uuid === uuid);
-            setNode(current || null);
-            document.title = `${t("instance")}: ${current?.name || uuid}`;
-          }
-        }
-      })
-      .catch((err) => console.error("Failed to fetch nodes:", err));
     fetch(`/api/recent/${uuid}`)
       .then((res) => res.json())
       .then((data) => setRecent(data.data.slice(-length)))
       .catch((err) => console.error("Failed to fetch recent data:", err));
   }, [uuid]);
-
   // 动态追加数据
   useEffect(() => {
     const unsubscribe = onRefresh((resp) => {
@@ -75,7 +63,7 @@ export default function InstancePage() {
 
   return (
     <Flex direction={"column"} gap="2">
-      <div className="flex flex-col gap-2 p-4 bg-accent-2 rounded-lg">
+      <div className="flex flex-col gap-1 md:p-4 p-3 border-0 rounded-md">
         <h1 className="flex items-center flex-wrap">
           <Flag flag={node?.region ?? ""} />
           <Text size="3" weight="bold" wrap="nowrap">
@@ -93,104 +81,77 @@ export default function InstancePage() {
           </Text>
         </h1>
 
-        <label className="flex flex-wrap gap-2">
-          <Flex align={"center"} gap="2">
-            <Text size="2" weight="bold" wrap="nowrap">
-              CPU
-            </Text>
-            <Text size="2">
-              {node?.cpu_name} (x{node?.cpu_cores})
-            </Text>
-          </Flex>
-          <Flex align={"center"} gap="2">
-            <Text size="2" weight="bold" wrap="nowrap">
-              {t("nodeCard.arch")}
-            </Text>
-            <Text size="2">{node?.arch}</Text>
-          </Flex>
-          <Flex align={"center"} gap="2">
-            <Text size="2" weight="bold" wrap="nowrap">
-              {t("nodeCard.virtualization")}
-            </Text>
-            <Text size="2">{node?.virtualization ?? "Unknown"}</Text>
-          </Flex>
+        <label className="flex flex-wrap gap-2 gap-x-8">
+          <UpDownStack
+            className="md:w-64"
+            up="CPU"
+            down={`${node?.cpu_name} (x${node?.cpu_cores})`}
+          />
+          <UpDownStack up={t("nodeCard.arch")} down={node?.arch ?? "Unknown"} />
+          <UpDownStack
+            up={t("nodeCard.virtualization")}
+            down={node?.virtualization ?? "Unknown"}
+          />
         </label>
         <label className="flex flex-wrap gap-2">
-          <Flex align={"center"} gap="2">
-            <Text size="2" weight="bold" wrap="nowrap">
-              GPU
-            </Text>
-            <Text size="2">{node?.gpu_name ?? "Unknown"}</Text>
-          </Flex>
+          <UpDownStack up="GPU" down={node?.gpu_name ?? "Unknown"} />
         </label>
-        <label className="flex flex-wrap gap-2">
-          <Flex align={"center"} gap="2">
-            <Text size="2" weight="bold" wrap="nowrap">
-              {t("nodeCard.os")}
-            </Text>
-            <Text size="2">{node?.os}</Text>
-          </Flex>
-          <Flex align={"center"} gap="2">
-            <Text size="2" weight="bold" wrap="nowrap">
-              {t("nodeCard.uptime")}
-            </Text>
-            <Text size="2">
-              {
-                live_data?.data.data[uuid ?? ""]?.uptime
-                  ? formatUptime(live_data?.data.data[uuid ?? ""]?.uptime, t)
-                  : "-"
-              }
-            </Text>
-          </Flex>
+        <label className="flex flex-wrap gap-2 gap-x-8">
+          <UpDownStack
+            className="md:w-64 w-full"
+            up={t("nodeCard.os")}
+            down={node?.os ?? "Unknown"}
+          />
+          <UpDownStack
+            up={t("nodeCard.uptime")}
+            down={
+              live_data?.data.data[uuid ?? ""]?.uptime
+                ? formatUptime(live_data?.data.data[uuid ?? ""]?.uptime, t)
+                : "-"
+            }
+          />
         </label>
-        <label className="flex flex-wrap gap-2">
-          <Flex align={"center"} gap="2">
-            <Text size="2" weight="bold" wrap="nowrap">
-              {t("nodeCard.networkSpeed")}
-            </Text>
-            <Text size="2">
-              ↑ {formatBytes(live_data?.data.data[uuid ?? ""]?.network.up || 0)}{" "}
-              ↓{" "}
-              {formatBytes(live_data?.data.data[uuid ?? ""]?.network.down || 0)}
-            </Text>
-          </Flex>
-          <Flex align={"center"} gap="2">
-            <Text size="2" weight="bold" wrap="nowrap">
-              {t("nodeCard.totalTraffic")}
-            </Text>
-            <Text size="2">
-              ↑{" "}
-              {formatBytes(
+        <label className="flex flex-wrap gap-2 gap-x-8">
+          <UpDownStack
+            className="md:w-64 w-full"
+            up={t("nodeCard.networkSpeed")}
+            down={` ↑ ${formatBytes(
+              live_data?.data.data[uuid ?? ""]?.network.up || 0
+            )}/s
+              ↓
+              ${formatBytes(
+                live_data?.data.data[uuid ?? ""]?.network.down || 0
+              )}/s`}
+          />
+          <UpDownStack
+            up={t("nodeCard.totalTraffic")}
+            down={`↑
+              ${formatBytes(
                 live_data?.data.data[uuid ?? ""]?.network.totalUp || 0
-              )}{" "}
-              ↓{" "}
-              {formatBytes(
-                live_data?.data.data[uuid ?? ""]?.network.totalDown || 0
               )}
-            </Text>
-          </Flex>
+              ↓
+              ${formatBytes(
+                live_data?.data.data[uuid ?? ""]?.network.totalDown || 0
+              )}`}
+          />
         </label>
         <label className="flex flex-wrap gap-2">
-          <Flex align={"center"} gap="2">
-            <Text size="2" weight="bold" wrap="nowrap">
-              {t("nodeCard.ram")}
-            </Text>
-            <Text size="2">{formatBytes(node?.mem_total || 0)}</Text>
-          </Flex>
-          <Flex align={"center"} gap="2">
-            <Text size="2" weight="bold" wrap="nowrap">
-              {t("nodeCard.swap")}
-            </Text>
-            <Text size="2">{formatBytes(node?.swap_total || 0)}</Text>
-          </Flex>
+          <UpDownStack
+            className="md:w-70 w-full"
+            up={t("nodeCard.ram")}
+            down={formatBytes(node?.mem_total || 0)}
+          />
+          <UpDownStack
+            up={t("nodeCard.swap")}
+            down={formatBytes(node?.swap_total || 0)}
+          />
         </label>
         <label className="flex flex-wrap gap-2">
-          <Flex align={"center"} gap="2">
-            <Text size="2" weight="bold" wrap="nowrap">
-              {t("nodeCard.disk")}
-            </Text>
-            <Text size="2">{formatBytes(node?.disk_total || 0)}</Text>
-          </Flex>
+          <UpDownStack
+            className="md:w-64 w-full"
+            up={t("nodeCard.disk")}
+            down={formatBytes(node?.disk_total || 0)}
+          />
         </label>
         <label className="flex flex-wrap gap-2">
           <Flex align={"center"} gap="2">
@@ -208,7 +169,7 @@ export default function InstancePage() {
           </Flex>
         </label>
       </div>
-
+      <div className="bg-accent-a3 h-0.5 rounded-2xl"/>
       {/* Recharts */}
       <div className="grid w-full items-center justify-center mx-auto h-full gap-4 p-1 md:grid-cols-[repeat(auto-fit,minmax(620px,1fr))] grid-cols-[repeat(auto-fit,minmax(320px,1fr))]">
         <SingleLineChart
@@ -553,3 +514,20 @@ const DoubleLineChart = ({
     </div>
   );
 };
+
+function UpDownStack({
+  up,
+  down,
+  className,
+}: {
+  up: string;
+  down: string;
+  className?: string;
+}) {
+  return (
+    <div className={`flex flex-col gap-0 ${className}`}>
+      <label className="text-base font-bold">{up}</label>
+      <label className="text-sm text-muted-foreground -mt-1">{down}</label>
+    </div>
+  );
+}

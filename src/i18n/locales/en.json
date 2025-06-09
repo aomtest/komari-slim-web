@@ -231,7 +231,8 @@
       "install_dir_placeholder": "Installation directory, leave empty to use the default directory (/opt/komari-agent)",
       "serviceName": "Service name",
       "serviceName_placeholder": "Service name, leave empty to use the default name (komari-agent)",
-      "generatedCommand": "Command"
+      "generatedCommand": "Command",
+      "editNodePrice": "Edit Price"
     },
     "nodeDetail": {
       "arch": "Architecture",
