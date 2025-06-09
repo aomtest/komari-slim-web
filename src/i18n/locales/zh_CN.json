@@ -281,5 +281,11 @@
   "time": {
     "ago": "前"
   },
-  "loading": "加载中..."
+  "loading": "加载中...",
+  "log": {
+    "title": "日志"
+  },
+  "logs": {
+    "title": "日志"
+  }
 }

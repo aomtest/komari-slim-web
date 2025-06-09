@@ -38,6 +38,11 @@
       "icon": "TablerUserCircle"
     },
     {
+      "labelKey": "logs.title",
+      "path": "/admin/logs",
+      "icon": "TablerFileText"
+    },
+    {
       "labelKey": "about",
       "path": "/admin/about",
       "icon": "TablerAt"

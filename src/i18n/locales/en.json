@@ -281,5 +281,11 @@
   "time": {
     "ago": "Ago"
   },
-  "loading": "Loading"
+  "loading": "Loading",
+  "log": {
+    "title": "Log"
+  },
+  "logs": {
+    "title": "Logs"
+  }
 }
