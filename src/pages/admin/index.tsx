@@ -30,7 +30,9 @@ import {
   closestCenter,
   useSensor,
   useSensors,
-  PointerSensor,
+  TouchSensor,
+  MouseSensor,
+  KeyboardSensor,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -74,7 +76,7 @@ const Layout = () => {
   const { nodeDetail, isLoading, error } = useNodeDetails();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedNodes, setSelectedNodes] = useState<string[]>([]);
-
+  
   const filteredNodes = nodeDetail
     .filter((node) =>
       node.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -91,6 +93,7 @@ const Layout = () => {
         setSearchTerm={setSearchTerm}
         selectedNodes={selectedNodes}
       />
+
       <NodeTable
         nodes={filteredNodes}
         selectedNodes={selectedNodes}
@@ -191,6 +194,7 @@ const SortableRow = ({
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: node.uuid });
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -202,9 +206,25 @@ const SortableRow = ({
   return (
     <TableRow ref={setNodeRef} style={style} className="hover:bg-accent-a2">
       <TableCell>
-        <label {...attributes} {...listeners}>
-          <MenuIcon size={16} color="var(--gray-8)" />
-        </label>
+        <div
+          {...attributes}
+          {...listeners}
+          className={`cursor-move p-2 rounded hover:bg-accent-a3 transition-colors ${
+            isMobile ? "touch-manipulation select-none" : ""
+          }`}
+          style={{
+            touchAction: "none", // 禁用移动端的默认手势
+            WebkitUserSelect: "none",
+            userSelect: "none",
+          }}
+          title={
+            isMobile
+              ? t("admin.nodeTable.dragToReorder", "长按拖拽重新排序")
+              : undefined
+          }
+        >
+          <MenuIcon size={isMobile ? 18 : 16} color={"var(--gray-8)"} />
+        </div>
       </TableCell>
       <TableCell>
         <Checkbox
@@ -269,15 +289,37 @@ const NodeTable = ({
   setSelectedNodes: (nodes: string[]) => void;
 }) => {
   const { t } = useTranslation();
-  const sensors = useSensors(useSensor(PointerSensor));
-
+  const sensors = useSensors(
+    useSensor(MouseSensor, {
+      // 需要按住 10px 距离才开始拖拽，避免与点击冲突
+      activationConstraint: {
+        distance: 10,
+      },
+    }),
+    useSensor(TouchSensor, {
+      // 移动端需要按住 5px 距离才开始拖拽，并且延迟 200ms，避免与滚动冲突
+      activationConstraint: {
+        delay: 200,
+        tolerance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {})
+  );
   // 添加 localNodes 状态，实现即时 UI 更新
   const [localNodes, setLocalNodes] = useState<NodeDetail[]>(nodes);
+  const [isDragging, setIsDragging] = useState(false);
   React.useEffect(() => {
     setLocalNodes(nodes);
   }, [nodes]);
+  const handleDragStart = () => {
+    setIsDragging(true);
+    if ("vibrate" in navigator) {
+      navigator.vibrate(50);
+    }
+  };
 
   const handleDragEnd = async (event: any) => {
+    setIsDragging(false);
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
@@ -289,6 +331,10 @@ const NodeTable = ({
 
     // 立即更新 UI
     setLocalNodes(reorderedNodes);
+
+    if ("vibrate" in navigator) {
+      navigator.vibrate([30, 10, 30]);
+    }
 
     try {
       const orderData = reorderedNodes.reduce((acc, node, index) => {
@@ -319,12 +365,16 @@ const NodeTable = ({
         : selectedNodes.filter((id) => id !== uuid)
     );
   };
-
   return (
-    <div className="rounded-md overflow-hidden">
+    <div
+      className={`rounded-md overflow-hidden ${
+        isDragging ? "select-none" : ""
+      }`}
+    >
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
         <Table>
