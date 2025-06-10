@@ -19,6 +19,8 @@ export type NodeDetail = {
   version: string;
   weight: number;
   price: number;
+  remark: string | undefined;
+  public_remark: string;
   billing_cycle: number;
   expired_at: string;
   created_at: string;

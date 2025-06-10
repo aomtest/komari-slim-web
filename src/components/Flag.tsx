@@ -2,6 +2,7 @@ import * as React from "react";
 import { Box } from "@radix-ui/themes";
 interface FlagProps {
   flag: string; // Emoji or region code (e.g., 🇺🇳 or "UN")
+  size?: string; // Optional size prop for future use
 }
 // Utility to convert emoji to Twemoji URL
 const getTwemojiUrl = (emoji: string): string => {
@@ -12,7 +13,7 @@ const getTwemojiUrl = (emoji: string): string => {
   return `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/${codePoints}.svg`;
 };
 
-const Flag = React.memo(({ flag }: FlagProps) => {
+const Flag = React.memo(({ flag, size }: FlagProps) => {
   // Fallback to a default emoji if flag is invalid
   const emoji = flag && /\p{Emoji}/u.test(flag) ? flag : "🌐";
   const twemojiUrl = getTwemojiUrl(emoji);
@@ -20,7 +21,7 @@ const Flag = React.memo(({ flag }: FlagProps) => {
   return (
     <Box
       as="span"
-      className="w-6 h-6 m-2 self-center"
+      className={`m-2 self-center ${size? `w-${size} h-${size}` : "w-6 h-6"}`}
       style={{ display: "inline-flex", alignItems: "center" }}
       aria-label={`Region: ${emoji}`}
     >
