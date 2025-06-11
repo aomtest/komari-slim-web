@@ -14,8 +14,10 @@ import {
   IconButton,
   TextArea,
   SegmentedControl,
+  Select,
 } from "@radix-ui/themes";
 import {
+  CircleDollarSign,
   Copy,
   Download,
   MenuIcon,
@@ -62,6 +64,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { formatBytes } from "@/types/NodeBasicInfo";
+import PriceTags from "@/components/PriceTags";
 
 const NodeDetailsPage = () => {
   return (
@@ -76,7 +79,7 @@ const Layout = () => {
   const { nodeDetail, isLoading, error } = useNodeDetails();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedNodes, setSelectedNodes] = useState<string[]>([]);
-  
+
   const filteredNodes = nodeDetail
     .filter((node) =>
       node.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -246,8 +249,21 @@ const SortableRow = ({
             </Text>
           )}
           {node.ipv6 && (
-            <Text size="2" className="flex items-center gap-1">
-              {node.ipv6}
+            <Text
+              size="2"
+              className="flex items-center gap-1"
+              title={node.ipv6}
+            >
+              {node.ipv6.length > 20
+                ? (() => {
+                    const segments = node.ipv6.split(":");
+                    return segments.length > 3
+                      ? `${segments.slice(0, 2).join(":")}:...${
+                          segments[segments.length - 1]
+                        }`
+                      : node.ipv6;
+                  })()
+                : node.ipv6}
               <IconButton variant="ghost" onClick={() => copy(node.ipv6)}>
                 <Copy size="16" />
               </IconButton>
@@ -267,10 +283,17 @@ const SortableRow = ({
             whiteSpace: "nowrap",
           }}
         >
-          {node.remark && node.remark.length > 25
-            ? `${node.remark.slice(0, 25)}...`
+          {node.remark && node.remark.length > 10
+            ? `${node.remark.slice(0, 10)}...`
             : node.remark}
         </Text>
+      </TableCell>
+      <TableCell>
+        <PriceTags
+          price={node.price}
+          billing_cycle={node.billing_cycle}
+          expired_at={node.expired_at}
+        />
       </TableCell>
       <TableCell>
         <ActionButtons node={node} />
@@ -394,6 +417,7 @@ const NodeTable = ({
               <TableHead>{t("admin.nodeTable.ipAddress")}</TableHead>
               <TableHead>{t("admin.nodeTable.clientVersion")}</TableHead>
               <TableHead>{t("admin.nodeEdit.remark")}</TableHead>
+              <TableHead>{t("admin.nodeTable.billing")}</TableHead>
               <TableHead></TableHead>
             </TableRow>
           </TableHeader>
@@ -442,7 +466,7 @@ const ActionButtons = ({ node }: { node: NodeDetail }) => {
         <Terminal size="18" />
       </IconButton>
       <EditButton node={node} />
-
+      <BillingButton node={node} />
       <DeleteButton node={node} />
     </div>
   );
@@ -1174,5 +1198,115 @@ function DetailView({ node }: { node: NodeDetail }) {
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
+  );
+}
+
+function BillingButton({ node }: { node: NodeDetail }) {
+  const { t } = useTranslation();
+  const { refresh } = useNodeDetails();
+  const [open, setOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const priceRef = React.useRef<HTMLInputElement>(null);
+  const expired_atRef = React.useRef<HTMLInputElement>(null);
+  const [billingCycle, setBillingCycle] = React.useState<string>(
+    node.billing_cycle.toString()
+  );
+
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      const price = parseFloat(priceRef.current?.value || "0");
+      const billingCycleValue = parseInt(billingCycle || "30");
+      const expiredAtValue = expired_atRef.current?.value || "";
+      await fetch(`/api/admin/client/${node.uuid}/edit`, {
+        method: "POST",
+        body: JSON.stringify({
+          price,
+          billing_cycle: billingCycleValue,
+          expired_at: expiredAtValue,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      refresh();
+      setOpen(false);
+    } catch (error) {
+      toast.error("Failed to save billing information:" + error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Trigger>
+        <IconButton
+          variant="ghost"
+          title={t("admin.nodeTable.billing", "账单")}
+        >
+          <CircleDollarSign size="18" />
+        </IconButton>
+      </Dialog.Trigger>
+      <Dialog.Content>
+        <Dialog.Title>{t("admin.nodeTable.billing", "账单")}</Dialog.Title>
+        <Flex direction="column" gap="2">
+          <label className="font-bold">{t("admin.nodeTable.price")}</label>
+          <TextField.Root
+            ref={priceRef}
+            type="number"
+            defaultValue={node.price}
+          />
+          <label className="font-bold">
+            {t("admin.nodeTable.billingCycle")}
+          </label>
+          <Select.Root value={billingCycle} onValueChange={setBillingCycle}>
+            <Select.Trigger></Select.Trigger>
+            <Select.Content>
+              <Select.Item value="30">Monthly/月付</Select.Item>
+              <Select.Item value="90">Quarterly/季付</Select.Item>
+              <Select.Item value="180">Half-yearly/半年付</Select.Item>
+              <Select.Item value="360">Yearly/年付</Select.Item>
+              <Select.Item value="720">Two-year/两年付</Select.Item>
+              <Select.Item value="1080">Three-year/三年付</Select.Item>
+              <Select.Item value="-1">One-time/一次性</Select.Item>
+            </Select.Content>
+          </Select.Root>
+          <Flex gap="2" align="center">
+            <label className="font-bold">
+              {t("admin.nodeTable.expiredAt")}
+            </label>
+          </Flex>
+          <TextField.Root
+            defaultValue={
+              node.expired_at
+                ? new Date(node.expired_at).toISOString().slice(0, 10)
+                : ""
+            }
+            ref={expired_atRef}
+            type="date"
+          >
+            <TextField.Slot side="right">
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  if (expired_atRef.current) {
+                    const futureDate = new Date();
+                    futureDate.setFullYear(futureDate.getFullYear() + 200);
+                    expired_atRef.current.value = futureDate.toISOString().slice(0, 10);
+                  }
+                }}
+              >
+                {t("admin.nodeTable.setToLongTerm", "设置为长期")}
+              </Button>
+            </TextField.Slot>
+          </TextField.Root>
+
+          <Button disabled={saving} onClick={handleSave}>
+            {t("save")}
+          </Button>
+        </Flex>
+      </Dialog.Content>
+    </Dialog.Root>
   );
 }

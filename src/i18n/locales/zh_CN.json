@@ -232,7 +232,13 @@
       "serviceName": "服务名称",
       "serviceName_placeholder": "服务名称，为空则使用默认名称(komari-agent)",
       "generatedCommand": "指令",
-      "editNodePrice": "编辑账单"
+      "editNodePrice": "编辑账单",
+      "billing": "账单",
+      "price": "价格",
+      "currency": "货币",
+      "billingCycle": "计费周期",
+      "expiredAt": "到期时间",
+      "setToLongTerm": "设置为长期"
     },
     "nodeDetail": {
       "machineDetail": "机器详细信息",
@@ -287,5 +293,18 @@
   },
   "logs": {
     "title": "日志"
+  },
+  "common": {
+    "free": "免费",
+    "monthly": "月",
+    "quarterly": "季",
+    "semi_annual": "半年",
+    "annual": "年",
+    "biennial": "两年",
+    "triennial": "三年",
+    "once": "一次性",
+    "expired": "已到期",
+    "expired_in": "余{{days}}天",
+    "long_term": "长期"
   }
 }

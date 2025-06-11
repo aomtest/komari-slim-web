@@ -232,7 +232,13 @@
       "serviceName": "Service name",
       "serviceName_placeholder": "Service name, leave empty to use the default name (komari-agent)",
       "generatedCommand": "Command",
-      "editNodePrice": "Edit Price"
+      "editNodePrice": "Edit Price",
+      "billing": "Billing",
+      "price": "Price",
+      "currency": "Currency",
+      "billingCycle": "Billing cycle",
+      "expiredAt": "Expired at",
+      "setToLongTerm": "Set to Long term"
     },
     "nodeDetail": {
       "arch": "Architecture",
@@ -287,5 +293,18 @@
   },
   "logs": {
     "title": "Logs"
+  },
+  "common": {
+    "free": "Free",
+    "monthly": "Monthly",
+    "quarterly": "Quarterly",
+    "semi_annual": "Semi annual",
+    "annual": "Annual",
+    "biennial": "Biennial",
+    "triennial": "Triennial",
+    "once": "Once",
+    "expired": "Expired",
+    "expired_in": "{{days}} day",
+    "long_term": "Long term"
   }
 }

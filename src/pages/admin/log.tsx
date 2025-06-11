@@ -7,8 +7,9 @@ import {
   TableHead,
   TableCell,
 } from "@/components/ui/table";
-import { Button, Dialog, Flex, TextField } from "@radix-ui/themes";
+import { Button, Dialog, Flex } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
+import NumberPicker from "@/components/ui/number-picker";
 
 interface Log {
   id: number;
@@ -90,24 +91,7 @@ const LogPage = () => {
         <h1 className="text-2xl font-bold">{t("logs.title")}</h1>
         <div className="flex items-center gap-2">
           Limit
-          <TextField.Root
-            defaultValue={limit.toString()}
-            onBlur={(e) => {
-              const value = e.target.value;
-              if (value === "") {
-                e.target.value = "10";
-                setLimit(10);
-                return;
-              }
-              const numValue = Number(value);
-              if (isNaN(numValue) || numValue < 1 || numValue > 100) {
-                e.target.value = "10";
-                setLimit(10);
-                return;
-              }
-              setLimit(numValue);
-            }}
-          ></TextField.Root>
+          <NumberPicker defaultValue={limit} onChange={setLimit} min={1} max={100} />
         </div>
       </div>
       <div className="rounded-lg overflow-hidden">
