@@ -6,18 +6,19 @@ const PriceTags = ({
   billing_cycle = 30,
   currency = "￥",
   expired_at = Date.now() + 30 * 24 * 60 * 60 * 1000,
+  ...props
 }: {
   expired_at?: string | number;
   price?: number;
   billing_cycle?: number;
   currency?: string;
-}) => {
+} & React.ComponentProps<typeof Flex>) => {
   if (price == 0) {
     return <></>;
   }
   const [t] = useTranslation();
   return (
-    <Flex gap="1">
+    <Flex gap="1" {...props}>
       <Badge color="iris" size="1" variant="soft" className="text-sm">
         <label className="text-xs">
           {price == -1 ? t("common.free") : `${currency}${price}`}/
@@ -70,7 +71,8 @@ const PriceTags = ({
 
             if (diffDays <= 0) {
               return t("common.expired");
-            } else if (diffDays > 36500) { // 100 years approximately
+            } else if (diffDays > 36500) {
+              // 100 years approximately
               return t("common.long_term");
             } else {
               return t("common.expired_in", {

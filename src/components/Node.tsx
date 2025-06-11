@@ -119,14 +119,13 @@ const Node = ({ basic, live, online }: NodeProps) => {
                 >
                   {formatUptime(liveData.uptime, t)}
                 </Text>
-                <Flex hidden={isMobile}>
-                  <PriceTags
-                    price={basic.price}
-                    billing_cycle={basic.billing_cycle}
-                    expired_at={basic.expired_at}
-                    //currency={basic.currency}
-                  />
-                </Flex>
+                <PriceTags
+                  hidden={isMobile}
+                  price={basic.price}
+                  billing_cycle={basic.billing_cycle}
+                  expired_at={basic.expired_at}
+                  //currency={basic.currency}
+                />
               </Flex>
             </Flex>
 
@@ -217,6 +216,13 @@ const Node = ({ basic, live, online }: NodeProps) => {
               )}
             </Flex>
           </Flex>
+          <PriceTags
+            hidden={!isMobile}
+            price={basic.price}
+            billing_cycle={basic.billing_cycle}
+            expired_at={basic.expired_at}
+            //currency={basic.currency}
+          />
         </Flex>
       </Card>
     </Link>
@@ -282,4 +288,3 @@ export const NodeGrid = ({ nodes, liveData }: NodeGridProps) => {
     </Box>
   );
 };
-
