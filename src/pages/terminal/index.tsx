@@ -5,12 +5,14 @@ import { WebLinksAddon } from "xterm-addon-web-links";
 import { SearchAddon } from "xterm-addon-search";
 import "xterm/css/xterm.css";
 import "./Terminal.css";
-import { Callout, Flex, IconButton } from "@radix-ui/themes";
+import { Callout, Flex, IconButton, Theme } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import { Cross1Icon } from "@radix-ui/react-icons";
 import { TablerAlertTriangleFilled } from "../../components/Icones/Tabler";
-import CommandClipboard from "@/components/admin/CommandClipboard";
+import CommandClipboardPanel from "@/pages/terminal/CommandClipboard";
 import type { TFunction } from "i18next";
+import { Toaster } from "sonner";
+import { TerminalContext } from '@/contexts/TerminalContext';
 
 // TerminalArea: 主终端区域组件，包含 callout、终端容器 与 开关按钮
 interface TerminalAreaProps {
@@ -32,7 +34,7 @@ const TerminalArea: React.FC<TerminalAreaProps> = ({
   isOpen,
 }) => (
   <div
-    className="relative flex justify-center bg-black md:bg-accent-3 flex-col h-full"
+    className="relative flex justify-center bg-black md:bg-accent-3 flex-col h-full min-w-128"
     style={{ width }}
   >
     <div className="flex justify-center items-center fixed top-2 left-auto right-auto z-10">
@@ -66,7 +68,7 @@ const TerminalArea: React.FC<TerminalAreaProps> = ({
       <div ref={terminalRef} className="h-full w-full" />
     </div>
     <div
-      className="absolute right-0 top-1/2 transform -translate-y-1/2 flex items-center justify-center bg-gray-800 hover:bg-gray-700 text-white cursor-pointer rounded-l-full w-6 h-12 z-20"
+      className="absolute right-0 top-1/2 transform -translate-y-1/2 flex items-center justify-center bg-accent-4 hover:bg-accent-6 text-white cursor-pointer rounded-l-full w-6 h-12 z-20"
       onClick={toggleClipboard}
     >
       {isOpen ? ">" : "<"}
@@ -77,7 +79,7 @@ const TerminalArea: React.FC<TerminalAreaProps> = ({
 // Divider: 拖拽分隔线组件
 const Divider: React.FC<{ onMouseDown: () => void }> = ({ onMouseDown }) => (
   <div
-    className="h-full bg-gray-200 cursor-col-resize"
+    className="h-full bg-accent-2 cursor-col-resize"
     style={{ width: 4 }}
     onMouseDown={onMouseDown}
   />
@@ -85,8 +87,8 @@ const Divider: React.FC<{ onMouseDown: () => void }> = ({ onMouseDown }) => (
 
 // ClipboardPanel: 右侧面板组件
 const ClipboardPanel: React.FC = () => (
-  <div className="h-screen" style={{ flex: 1 }}>
-    <CommandClipboard className="h-full w-full" />
+  <div className="h-screen p-2 min-w-64" style={{ flex: 1 }}>
+    <CommandClipboardPanel className="h-full w-full" />
   </div>
 );
 
@@ -232,12 +234,12 @@ const TerminalPage = () => {
       if (!firstBinary.current && event.data instanceof ArrayBuffer) {
         firstBinary.current = true;
         setTimeout(() => {
-            const term = terminalInstance.current;
-            if (term) {
+          const term = terminalInstance.current;
+          if (term) {
             term.resize(term.cols - 1, term.rows);
-            }
-            handleResize();
-        }, 200);// 延时200毫秒resize渲染，不然总有奇奇怪怪的渲染bug
+          }
+          handleResize();
+        }, 200); // 延时200毫秒resize渲染，不然总有奇奇怪怪的渲染bug
       }
     }; // 连接关闭
     ws.onclose = () => {
@@ -329,20 +331,34 @@ const TerminalPage = () => {
     resizeTerminal();
   }, [isClipboardOpen]);
 
+  // Provide sendCommand to children via context
+  const sendCommand = (cmd: string) => {
+    const ws = wsRef.current;
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      const encoder = new TextEncoder();
+      ws.send(encoder.encode(cmd + "\r"));
+    }
+  };
+
   return (
-    <Flex className="h-screen w-screen" direction="row">
-      <TerminalArea
-        terminalRef={terminalRef}
-        callout={callout}
-        setCallout={setCallout}
-        toggleClipboard={() => setIsClipboardOpen(!isClipboardOpen)}
-        width={isClipboardOpen ? leftWidth : "100%"}
-        t={t}
-        isOpen={isClipboardOpen}
-      />
-      {isClipboardOpen && <Divider onMouseDown={startDragging} />}
-      {isClipboardOpen && <ClipboardPanel />}
-    </Flex>
+    <TerminalContext.Provider value={{ terminal: terminalInstance.current, sendCommand }}>
+      <Theme appearance="dark">
+        <Toaster theme="dark" />
+        <Flex className="h-screen w-screen" direction="row">
+          <TerminalArea
+            terminalRef={terminalRef}
+            callout={callout}
+            setCallout={setCallout}
+            toggleClipboard={() => setIsClipboardOpen(!isClipboardOpen)}
+            width={isClipboardOpen ? leftWidth : "100%"}
+            t={t}
+            isOpen={isClipboardOpen}
+          />
+          {isClipboardOpen && <Divider onMouseDown={startDragging} />}
+          {isClipboardOpen && <ClipboardPanel />}
+        </Flex>
+      </Theme>
+    </TerminalContext.Provider>
   );
 };
 
