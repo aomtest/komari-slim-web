@@ -212,7 +212,7 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
                 <TextField.Root
                   placeholder={t(
                     "admin.nodeTable.ghproxy_placeholder",
-                    "GitHub 代理，为空则不适用代理"
+                    "GitHub 代理，为空则不使用代理"
                   )}
                   onChange={(e) =>
                     setInstallOptions((prev) => ({

@@ -728,7 +728,7 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
                 <TextField.Root
                   placeholder={t(
                     "admin.nodeTable.ghproxy_placeholder",
-                    "GitHub 代理，为空则不适用代理"
+                    "GitHub 代理，为空则不使用代理"
                   )}
                   value={installOptions.ghproxy}
                   onChange={(e) =>
