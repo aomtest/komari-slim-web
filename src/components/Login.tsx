@@ -22,7 +22,7 @@ const LoginDialog = () => {
     const [twoFac, setTwoFac] = React.useState("");
     const [errorMsg, setErrorMsg] = React.useState("");
     const [isLoading, setIsLoading] = React.useState(false);
-    const [require2Fac /*, setRequire2Fac*/] = React.useState(true); // Assuming 2FA is initially hidden
+    const [require2FA, setRequire2FA] = React.useState(false);
 
     // Validate inputs
     const isFormValid = username.trim() !== "" && password.trim() !== "";
@@ -45,7 +45,7 @@ const LoginDialog = () => {
           body: JSON.stringify({
             username,
             password,
-            ...(twoFac && !require2Fac ? { twoFac } : {}),
+            ...(twoFac && !account?.["2fa_enabled"] ? { "2fa_code": twoFac } : {}),
           }),
         });
         const data = await res.json();
@@ -53,6 +53,10 @@ const LoginDialog = () => {
           refresh();
           window.open("/admin", "_self");
         } else {
+          if (data.message === "2FA code is required") {
+            setRequire2FA(true);
+            return
+          }
           setErrorMsg(data.message || "Login failed");
         }
       } catch (err) {
@@ -135,7 +139,7 @@ const LoginDialog = () => {
                   disabled={isLoading}
                 />
               </label>
-              <label hidden={require2Fac}>
+              <label hidden={!require2FA}>
                 <Text as="div" size="2" mb="1" weight="bold">
                   {t("login.two_factor")}
                 </Text>

@@ -1,238 +1,329 @@
 import React from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
-import { AlertTriangle, Github, Lock, Save, User } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { Dialog, Flex, Button } from "@radix-ui/themes";
-
-interface UserInfo {
-  username: string;
-  uuid: string;
-  sso_id: string;
-}
+import { AccountProvider, useAccount } from "@/contexts/AccountContext";
+import { Button, Dialog, Flex, Skeleton, TextField } from "@radix-ui/themes";
 
 const Account = () => {
+  return (
+    <AccountProvider>
+      <InnerLayout />
+    </AccountProvider>
+  );
+};
+
+const InnerLayout = () => {
   const { t } = useTranslation();
-  const [userInfo, setUserInfo] = React.useState<UserInfo | null>(null);
-  const [username, setUsername] = React.useState("");
-  const [isLoading, setIsLoading] = React.useState(false);
+  const { account, loading, error } = useAccount();
+  const [usernameSaving, setUsernameSaving] = React.useState(false);
+  const [passwordSaving, setPasswordSaving] = React.useState(false);
+  if (loading) {
+    return <div>{t("loading")}</div>;
+  }
+  if (error) {
+    return <div>{error.message}</div>;
+  }
 
-  // 获取用户信息
-  const fetchUserInfo = async () => {
-    try {
-      const response = await fetch("/api/me");
-      const data = await response.json();
-      setUserInfo(data);
-      setUsername(data.username);
-    } catch (error) {
-      console.error("获取用户信息失败:", error);
-      toast.error(t("account_settings.get_user_info_failed"));
-    }
-  };
-
-  React.useEffect(() => {
-    fetchUserInfo();
-  }, []);
-
-  // 更新用户名
-  const handleUpdateUsername = async () => {
-    if (!username.trim()) {
-      toast.error(t("account_settings.username_empty"));
-      return;
-    }
-
-    if (username === userInfo?.username) {
-      toast.info(t("account_settings.username_unchanged"));
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      // 调用更新用户名的API
-      const response = await fetch("/api/me/update-username", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username }),
-      });
-
-      if (response.ok) {
-        toast.success(t("account_settings.username_update_success"));
-        fetchUserInfo(); // 刷新用户信息
-      } else {
-        const error = await response.json();
-        toast.error(
-          `${t("account_settings.username_update_failed")}: ${
-            error.message || t("未知错误")
-          }`
-        );
-      }
-    } catch (error) {
-      console.error("更新用户名失败:", error);
-      toast.error(t("account_settings.username_update_failed"));
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // 检查是否绑定GitHub
-  const isGithubBound = React.useMemo(() => {
-    return userInfo?.sso_id?.startsWith("github_") || false;
-  }, [userInfo?.sso_id]);
-
-  // 处理GitHub绑定/解绑
-  const handleGithubAuth = async () => {
-    setIsLoading(true);
-    try {
-      if (isGithubBound) {
-        // 解绑GitHub
-        const response = await fetch("/api/admin/oauth2/unbind", {
-          method: "POST",
-        });
-
-        if (response.ok) {
-          toast.success(t("account_settings.unbind_github_success"));
-          fetchUserInfo(); // 刷新用户信息
-        } else {
-          const error = await response.json();
-          toast.error(
-            `${t("account_settings.unbind_github_failed")}: ${
-              error.message || t("未知错误")
-            }`
-          );
+  function handleSubmitUsernameChange(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setUsernameSaving(true);
+    fetch("/api/admin/update/user", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        uuid: account?.uuid,
+        username: (event.currentTarget as HTMLFormElement).username.value,
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to update username");
         }
-      } else {
-        // 绑定GitHub，通常需要重定向到GitHub授权页面
-        window.location.href = "/api/admin/oauth2/bind";
-      }
-    } catch (error) {
-      console.error("处理GitHub认证失败:", error);
-      toast.error(t("account_settings.github_auth_failed"));
-    } finally {
-      setIsLoading(false);
+        return response.json();
+      })
+      .then(() => {
+        toast.success(t("common.updated_successfully"));
+      })
+      .catch((error) => {
+        toast.error(error.message);
+      })
+      .finally(() => {
+        setUsernameSaving(false);
+      });
+  }
+  function changePassword(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget as HTMLFormElement;
+    const password = form.password.value;
+    const password_repeat = form.password_repeat.value;
+    if (!password || !password_repeat) {
+      toast.error(t("account.password_empty_error"));
+      return;
     }
-  };
-
-  if (!userInfo) {
-    return (
-      <div className="p-4 text-center">{t("account_settings.loading")}</div>
-    );
+    if (password !== password_repeat) {
+      toast.error(t("account.password_mismatch_error"));
+      return;
+    }
+    if (password.length < 8) {
+      toast.error(t("account.password_too_short_error"));
+      return;
+    }
+    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+      toast.error(t("account.password_strength_error"));
+      return;
+    }
+    setPasswordSaving(true);
+    fetch("/api/admin/update/user", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        uuid: account?.uuid,
+        password: password,
+      }),
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.message || "Failed to update password");
+        }
+        return response.json();
+      })
+      .then(() => {
+        toast.success(t("common.updated_successfully"));
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 2000);
+      })
+      .catch((error) => {
+        toast.error(error.message);
+      })
+      .finally(() => {
+        setPasswordSaving(false);
+      });
   }
 
   return (
-    <div className="max-w-xl p-4">
-      {/* 用户名设置 */}
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <User className="size-5" />
-          {t("account_settings.username_settings")}
-        </h2>
-        <div className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="username">{t("account_settings.username")}</Label>
-            <Input
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder={t("account_settings.enter_new_username")}
-            />
-          </div>
-          <Button
-            onClick={handleUpdateUsername}
-            disabled={isLoading || username === userInfo.username}
-          >
-            <Save className="size-4" />
-            {t("account_settings.save_username")}
-          </Button>
-        </div>
-      </div>
+    <Flex gap="4" direction="row" className="p-4" wrap="wrap">
+      <Flex gap="2" direction="column" className="md:basis-1/2 w-full">
+        <label className="text-2xl font-bold">{t("account.title")}</label>
+        <label className="text-lg">
+          {t("account.greeting", { username: account?.username })}
+        </label>
+        <form
+          className="flex gap-2 flex-col"
+          onSubmit={handleSubmitUsernameChange}
+        >
+          <label className="font-bold" htmlFor="username">
+            {t("account.change_username_title")}
+          </label>
 
-      {/* 密码设置 */}
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <Lock className="size-5" />
-          {t("account_settings.password_settings")}
-        </h2>
-        <div className="bg-yellow-100 dark:bg-yellow-900/30 border-l-4 border-yellow-500 p-4 flex gap-3 text-yellow-800 dark:text-yellow-200 mb-4">
-          <AlertTriangle className="size-5 shrink-0 mt-0.5" />
+          <TextField.Root
+            className="max-w-128"
+            id="username"
+            name="username"
+            defaultValue={account?.username}
+          ></TextField.Root>
           <div>
-            <p className="font-medium">
-              {t("account_settings.password_cli_only")}
-            </p>
-            <p className="text-sm mt-1 text-yellow-700 dark:text-yellow-300">
-              {t("account_settings.password_cli_instructions")}
-            </p>
-            <pre className="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/50 rounded text-xs overflow-x-auto">
-              ./komari chpasswd -u USERNAME -p NEW_PASSWORD
-            </pre>
+            <Button disabled={usernameSaving} type="submit">
+              {t("account.change_username_button")}
+            </Button>
           </div>
-        </div>
-      </div>
-
-      {/* GitHub账户绑定/解绑 */}
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <Github className="size-5" />
-          {t("account_settings.github_account")}
-        </h2>
-        <div className="p-4 bg-[var(--accent-2)] rounded-lg mb-4">
-          <p>
-            {isGithubBound ? (
-              <span className="flex items-center gap-2">
-                <span className="inline-block p-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-md text-xs">
-                  {t("account_settings.github_bound")}
-                </span>
-                GitHub ID: {userInfo.sso_id.replace("github_", "")}
-              </span>
-            ) : (
-              <span className="flex items-center gap-2">
-                <span className="inline-block p-1 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-md text-xs">
-                  {t("account_settings.github_unbound")}
-                </span>
-                {t("account_settings.github_not_bound")}
-              </span>
-            )}
-          </p>
-        </div>
-
-        {isGithubBound ? (
-          <Dialog.Root>
-            <Dialog.Trigger>
-              <Button>
-                {t("account_settings.unbind_github")}
-              </Button>
-            </Dialog.Trigger>
-            <Dialog.Title>{t("account_settings.confirm_unbind")}</Dialog.Title>
-            <Dialog.Content>
-              <Dialog.Description>
-                {t("account_settings.unbind_github_warning")}
-              </Dialog.Description>
-              <Flex gap="2" align={"end"}>
-                <Dialog.Trigger>
-                  <Button variant="outline">
-                    {t("account_settings.cancel")}
-                  </Button>
-                </Dialog.Trigger>
-                <Button
-                  onClick={handleGithubAuth}
-                  disabled={isLoading}
-                >
-                  {t("account_settings.confirm_unbind")}
-                </Button>
-              </Flex>
-            </Dialog.Content>
-          </Dialog.Root>
+        </form>
+        <form onSubmit={changePassword} className="flex flex-col gap-2">
+          <label className="font-bold" htmlFor="old_password">
+            {t("account.change_password_title")}
+          </label>
+          <label htmlFor="password">{t("account.new_password")}</label>
+          <TextField.Root
+            className="max-w-128"
+            id="password"
+            name="password"
+            type="password"
+          ></TextField.Root>
+          <label htmlFor="password_repeat">
+            {t("account.new_password_repeat")}
+          </label>
+          <TextField.Root
+            className="max-w-128"
+            id="password_repeat"
+            name="password_repeat"
+            type="password"
+          ></TextField.Root>
+          <div>
+            <Button disabled={passwordSaving} type="submit">
+              {t("account.change_password_button")}
+            </Button>
+          </div>
+        </form>
+      </Flex>
+      <Flex direction="column" className="md:basis-5/12">
+        <label className="font-bold text-2xl">2FA</label>
+        {account?.["2fa_enabled"] ? (
+          <TwoFactorEnabled />
         ) : (
-          <Button onClick={handleGithubAuth} disabled={isLoading}>
-            <Github className="size-4" />
-            {t("account_settings.bind_github")}
-          </Button>
+          <TwoFactorDisabled></TwoFactorDisabled>
         )}
+      </Flex>
+    </Flex>
+  );
+};
+const TwoFactorDisabled = () => {
+  const { t } = useTranslation();
+  const { refresh } = useAccount();
+  const [saving, setSaving] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [qrcode, setQRCode] = React.useState<string | null>(null);
+  const [code, setCode] = React.useState<string>("");
+
+  React.useEffect(() => {
+    if (isOpen) {
+      setIsLoading(true);
+      fetch("/api/admin/2fa/generate")
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(t("account.qr_fetch_error"));
+          }
+          return response.blob();
+        })
+        .then((blob) => {
+          const url = URL.createObjectURL(blob);
+          setQRCode(url);
+        })
+        .catch((err) => toast.error(err.message))
+        .finally(() => setIsLoading(false));
+    }
+  }, [isOpen]);
+
+  const handleEnable2fa = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!code) {
+      toast.error(t("account.otp_empty_error"));
+      return;
+    }
+    setSaving(true);
+    fetch(`/api/admin/2fa/enable?code=${encodeURIComponent(code)}`, {
+      method: "POST",
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(
+            data.message || `Failed to enable 2FA (${res.status})`
+          );
+        }
+        return res.json();
+      })
+      .then(() => {
+        toast.success(t("common.updated_successfully"));
+        setIsOpen(false);
+        refresh();
+      })
+      .catch((err) => toast.error(err.message))
+      .finally(() => setSaving(false));
+  };
+
+  return (
+    <Flex direction="column" gap="2">
+      <label className="text-lg font-bold">{t("account.2fa_disabled")}</label>
+      <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
+        <Dialog.Trigger>
+          <div>
+            <Button className="w-full">{t("account.enable_2fa")}</Button>
+          </div>
+        </Dialog.Trigger>
+        <Dialog.Content>
+          <Dialog.Title>{t("account.enable_2fa")}</Dialog.Title>
+          <Flex direction="column" gap="2">
+            <label>{t("account.2fa_qr_code_hint")}</label>
+            <div className="flex justify-center">
+              {isLoading ? (
+                <Skeleton width="200px" height="200px" />
+              ) : (
+                <img src={qrcode!} alt="2FA QR Code" width={200} height={200} />
+              )}
+            </div>
+            <label>{t("account.2fa_otp_input_prompt")}</label>
+            <form className="flex flex-col gap-2" onSubmit={handleEnable2fa}>
+              <TextField.Root
+                type="number"
+                name="code"
+                placeholder="000000"
+                value={code}
+                onChange={(e) => setCode((e.target as HTMLInputElement).value)}
+              />
+              <Button disabled={saving} type="submit">
+                {t("account.enable_2fa")}
+              </Button>
+            </form>
+          </Flex>
+        </Dialog.Content>
+      </Dialog.Root>
+    </Flex>
+  );
+};
+
+const TwoFactorEnabled = () => {
+  const { t } = useTranslation();
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [saving, setSaving] = React.useState(false);
+  const { refresh } = useAccount();
+  const disable2fa = () => {
+    setSaving(true);
+    fetch("/api/admin/2fa/disable", {
+      method: "POST",
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.message || "Failed to disable 2FA");
+        }
+        return response.json();
+      })
+      .then(() => {
+        toast.success(t("common.updated_successfully"));
+        setIsOpen(false);
+        refresh();
+      })
+      .catch((error) => {
+        toast.error(error.message);
+      })
+      .finally(() => {
+        setSaving(false);
+      });
+  };
+  return (
+    <Flex direction="column" gap="2">
+      <label>{t("account.2fa_enabled")}</label>
+      <div>
+        <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
+          <Dialog.Trigger>
+            <Button className="ml-2" color="red">
+              {t("account.disable_2fa")}
+            </Button>
+          </Dialog.Trigger>
+          <Dialog.Content>
+            <Dialog.Title>{t("account.disable_2fa")}</Dialog.Title>
+            <Dialog.Description>
+              {t("account.disable_2fa_confirmation")}
+            </Dialog.Description>
+            <Flex gap="2" justify="end" className="mt-4">
+              <Button variant="soft" onClick={() => setIsOpen(false)}>
+                {t("common.cancel")}
+              </Button>
+              <Button disabled={saving} color="red" onClick={disable2fa}>
+                {t("common.confirm")}
+              </Button>
+            </Flex>
+          </Dialog.Content>
+        </Dialog.Root>
       </div>
-    </div>
+    </Flex>
   );
 };
 

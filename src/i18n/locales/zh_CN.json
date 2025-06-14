@@ -9,7 +9,29 @@
   "not_implemented": "这个功能目前还没做",
   "markup": "备注",
   "panel_welcome": "Hi {{username}} ! 欢迎使用 Komari.",
-  "account": "账户",
+  "account": {
+    "title": "账户",
+    "greeting": "{{username}}，您今天想做什么？",
+    "change_username_button": "修改用户名",
+    "change_password_button": "更改密码",
+    "change_password_title": "修改密码",
+    "new_password_repeat": "重复新密码",
+    "new_password": "新密码",
+    "change_username_title": "更改用户名",
+    "password_empty_error": "不允许空密码",
+    "password_mismatch_error": "两次输入的密码不一致",
+    "password_too_short_error": "密码长度必须至少8位",
+    "password_strength_error": "密码必须包含大写，小写字母和数字",
+    "2fa_disabled": "双重身份验证已禁用",
+    "enable_2fa": "开启双重身份验证",
+    "2fa_qr_code_hint": "使用您的身份验证应用扫描此二维码以设置双重身份验证",
+    "2fa_otp_input_prompt": "请输入您的身份验证应用生成的动态口令",
+    "qr_fetch_error": "无法加载二维码",
+    "otp_empty_error": "空验证码",
+    "2fa_enabled": "双重身份验证已启用",
+    "disable_2fa": "禁用",
+    "disable_2fa_confirmation": "您确定禁用2FA吗？"
+  },
   "about": "关于",
   "settings": {
     "title": "设置",
@@ -322,7 +344,8 @@
     "updated_successfully": "成功更新",
     "edit": "编辑",
     "update": "更新",
-    "execute": "执行"
+    "execute": "执行",
+    "confirm": "确认"
   },
   "command_clipboard": {
     "title": "命令剪贴板"

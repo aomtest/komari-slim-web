@@ -9,7 +9,29 @@
   "not_implemented": "Not Implemented",
   "markup": "Markup",
   "panel_welcome": "Hi {{username}}! Welcome to Komari.",
-  "account": "Account",
+  "account": {
+    "title": "Account",
+    "greeting": "Hello~ {{username}}, What do you want to do today?",
+    "change_username_title": "Change username",
+    "change_username_button": "Change",
+    "change_password_button": "Change Password",
+    "change_password_title": "Change Password",
+    "new_password": "New password",
+    "new_password_repeat": "Repeat Password",
+    "password_empty_error": "Empty password is not allowed",
+    "password_mismatch_error": "Passwords do not match",
+    "password_too_short_error": "Password must be at least 8 characters long",
+    "password_strength_error": "Password must contain uppercase, lowercase letters, and numbers",
+    "2fa_disabled": "Two-factor authentication is disabled",
+    "enable_2fa": "Enable 2FA",
+    "2fa_qr_code_hint": "Scan this QR code with your authenticator app to set up two-factor authentication",
+    "2fa_otp_input_prompt": "Please enter the one-time password from your authenticator app",
+    "qr_fetch_error": "Unable to load qrcode",
+    "otp_empty_error": "Empty otp code",
+    "2fa_enabled": "Two-factor authentication is enabled",
+    "disable_2fa": "Disable 2FA",
+    "disable_2fa_confirmation": "Are you sure to disable 2fa?"
+  },
   "about": "About",
   "settings": {
     "title": "Settings",
@@ -322,7 +344,8 @@
     "updated_successfully": "Updated successfully",
     "edit": "Edit",
     "update": "Update",
-    "execute": "Execute"
+    "execute": "Execute",
+    "confirm": "Confirm"
   },
   "command_clipboard": {
     "title": "Command Clipboard"

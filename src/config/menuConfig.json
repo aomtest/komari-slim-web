@@ -33,7 +33,7 @@
       "icon": "TablerUsers"
     },
     {
-      "labelKey": "account",
+      "labelKey": "account.title",
       "path": "/admin/account",
       "icon": "TablerUserCircle"
     },
