@@ -71,15 +71,11 @@ export const routes: RouteObject[] = [
       },
       {
         path: "about",
-        element: React.createElement(
-          lazy(() => import("./pages/admin/about"))
-        ),
+        element: React.createElement(lazy(() => import("./pages/admin/about"))),
       },
       {
         path: "logs",
-        element: React.createElement(
-          lazy(() => import("./pages/admin/log"))
-        ),
+        element: React.createElement(lazy(() => import("./pages/admin/log"))),
       },
     ],
   },
@@ -87,7 +83,10 @@ export const routes: RouteObject[] = [
     path: "/terminal",
     element: React.createElement(lazy(() => import("./pages/terminal"))),
   },
-
+  {
+    path: "/manage/*",
+    element: React.createElement(lazy(() => import("./pages/manage"))),
+  },
   // Catch-all 404 route
   { path: "*", element: React.createElement(NotFound) },
 ];
