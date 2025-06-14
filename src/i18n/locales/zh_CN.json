@@ -238,7 +238,9 @@
       "currency": "货币",
       "billingCycle": "计费周期",
       "expiredAt": "到期时间",
-      "setToLongTerm": "设置为长期"
+      "setToLongTerm": "设置为长期",
+      "invalidPrice": "价格无效",
+      "priceTips": "0不显示，-1表示免费"
     },
     "nodeDetail": {
       "machineDetail": "机器详细信息",

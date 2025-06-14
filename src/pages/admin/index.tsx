@@ -293,6 +293,7 @@ const SortableRow = ({
           price={node.price}
           billing_cycle={node.billing_cycle}
           expired_at={node.expired_at}
+          currency={node.currency}
         />
       </TableCell>
       <TableCell>
@@ -1206,24 +1207,35 @@ function BillingButton({ node }: { node: NodeDetail }) {
   const { refresh } = useNodeDetails();
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
-  const priceRef = React.useRef<HTMLInputElement>(null);
-  const expired_atRef = React.useRef<HTMLInputElement>(null);
   const [billingCycle, setBillingCycle] = React.useState<string>(
     node.billing_cycle.toString()
   );
 
-  const handleSave = async () => {
+  const [currency, setCurrency] = React.useState<string>(node.currency || "$");
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
       setSaving(true);
-      const price = parseFloat(priceRef.current?.value || "0");
-      const billingCycleValue = parseInt(billingCycle || "30");
-      const expiredAtValue = expired_atRef.current?.value || "";
+      const formData = new FormData(e.target as HTMLFormElement);
+      const priceValue = formData.get("price") as string || "0";
+      const price = parseFloat(priceValue);
+
+      if (isNaN(price) || (price < 0 && price !== -1)) {
+        toast.error(t("admin.nodeTable.invalidPrice"));
+        return;
+      }
+      const billingCycleValue = parseInt(formData.get("billingCycle") as string || "30");
+      const expiredAtValue = formData.get("expiredAt") as string || "";
+      const currencyValue = formData.get("currency") as string || "$";
+      
       await fetch(`/api/admin/client/${node.uuid}/edit`, {
         method: "POST",
         body: JSON.stringify({
           price,
           billing_cycle: billingCycleValue,
           expired_at: expiredAtValue,
+          currency: currencyValue,
         }),
         headers: {
           "Content-Type": "application/json",
@@ -1250,63 +1262,81 @@ function BillingButton({ node }: { node: NodeDetail }) {
       </Dialog.Trigger>
       <Dialog.Content>
         <Dialog.Title>{t("admin.nodeTable.billing", "账单")}</Dialog.Title>
-        <Flex direction="column" gap="2">
-          <label className="font-bold">{t("admin.nodeTable.price")}</label>
-          <TextField.Root
-            ref={priceRef}
-            type="number"
-            defaultValue={node.price}
-          />
-          <label className="font-bold">
-            {t("admin.nodeTable.billingCycle")}
-          </label>
-          <Select.Root value={billingCycle} onValueChange={setBillingCycle}>
-            <Select.Trigger></Select.Trigger>
-            <Select.Content>
-              <Select.Item value="30">Monthly/月付</Select.Item>
-              <Select.Item value="90">Quarterly/季付</Select.Item>
-              <Select.Item value="180">Half-yearly/半年付</Select.Item>
-              <Select.Item value="360">Yearly/年付</Select.Item>
-              <Select.Item value="720">Two-year/两年付</Select.Item>
-              <Select.Item value="1080">Three-year/三年付</Select.Item>
-              <Select.Item value="-1">One-time/一次性</Select.Item>
-            </Select.Content>
-          </Select.Root>
-          <Flex gap="2" align="center">
+        <form onSubmit={handleSave}>
+          <Flex direction="column" gap="2">
             <label className="font-bold">
-              {t("admin.nodeTable.expiredAt")}
+              <label>{t("admin.nodeTable.price")}</label>
+              <label className="text-muted-foreground text-sm ml-1 font-medium">{t("admin.nodeTable.priceTips")}</label>
             </label>
-          </Flex>
-          <TextField.Root
-            defaultValue={
-              node.expired_at
-                ? new Date(node.expired_at).toISOString().slice(0, 10)
-                : ""
-            }
-            ref={expired_atRef}
-            type="date"
-          >
-            <TextField.Slot side="right">
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  if (expired_atRef.current) {
-                    const futureDate = new Date();
-                    futureDate.setFullYear(futureDate.getFullYear() + 200);
-                    expired_atRef.current.value = futureDate.toISOString().slice(0, 10);
-                  }
-                }}
-              >
-                {t("admin.nodeTable.setToLongTerm", "设置为长期")}
-              </Button>
-            </TextField.Slot>
-          </TextField.Root>
+            <TextField.Root
+              name="price"
+              defaultValue={node.price}
+            />
+            
+            <label className="font-bold">
+              {t("admin.nodeTable.currency", "货币")}
+            </label>
+            <TextField.Root
+              name="currency"
+              defaultValue={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+            />
+            
+            <label className="font-bold">
+              {t("admin.nodeTable.billingCycle")}
+            </label>
+            <Select.Root name="billingCycle" value={billingCycle} onValueChange={setBillingCycle}>
+              <Select.Trigger></Select.Trigger>
+              <Select.Content>
+                <Select.Item value="30">{t('common.monthly')}</Select.Item>
+                <Select.Item value="90">{t('common.quarterly')}</Select.Item>
+                <Select.Item value="180">{t('common.semi_annual')}</Select.Item>
+                <Select.Item value="360">{t('common.annual')}</Select.Item>
+                <Select.Item value="720">{t('common.biennial')}</Select.Item>
+                <Select.Item value="1080">{t('common.triennial')}</Select.Item>
+                <Select.Item value="-1">{t('common.once')}</Select.Item>
+              </Select.Content>
+            </Select.Root>
+            
+            <Flex gap="2" align="center">
+              <label className="font-bold">
+                {t("admin.nodeTable.expiredAt")}
+              </label>
+            </Flex>
+            <TextField.Root
+              name="expiredAt"
+              defaultValue={
+                node.expired_at
+                  ? new Date(node.expired_at).toISOString().slice(0, 10)
+                  : ""
+              }
+              type="date"
+            >
+              <TextField.Slot side="right">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => {
+                    const dateInput = document.querySelector('input[name="expiredAt"]') as HTMLInputElement;
+                    if (dateInput) {
+                      const futureDate = new Date();
+                      futureDate.setFullYear(futureDate.getFullYear() + 200);
+                      dateInput.value = futureDate.toISOString().slice(0, 10);
+                    }
+                  }}
+                >
+                  {t("admin.nodeTable.setToLongTerm", "设置为长期")}
+                </Button>
+              </TextField.Slot>
+            </TextField.Root>
 
-          <Button disabled={saving} onClick={handleSave}>
-            {t("save")}
-          </Button>
-        </Flex>
+            <Button type="submit" disabled={saving}>
+              {t("save")}
+            </Button>
+          </Flex>
+        </form>
       </Dialog.Content>
     </Dialog.Root>
+
   );
 }

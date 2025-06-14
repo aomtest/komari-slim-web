@@ -238,7 +238,9 @@
       "currency": "Currency",
       "billingCycle": "Billing cycle",
       "expiredAt": "Expired at",
-      "setToLongTerm": "Set to Long term"
+      "setToLongTerm": "Set to Long term",
+      "invalidPrice": "Invalid price",
+      "priceTips": "0 is not displayed, -1 means free"
     },
     "nodeDetail": {
       "arch": "Architecture",

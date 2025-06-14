@@ -33,6 +33,7 @@ export type NodeBasicInfo = {
   price: number;
   /** 账单周期（天）*/
   billing_cycle: number;
+  currency: string;
   /** 过期时间 */
   expired_at: string;
   /** 创建时间 */
