@@ -305,6 +305,24 @@
     "once": "一次性",
     "expired": "已到期",
     "expired_in": "余{{days}}天",
-    "long_term": "长期"
+    "long_term": "长期",
+    "have_been_omitted": "{{count}}已省略",
+    "added_successfully": "成功添加",
+    "add": "添加",
+    "name": "名称",
+    "content": "内容",
+    "remark": "备注",
+    "weight": "权重",
+    "deleted_successfully": "已删除",
+    "delete": "删除",
+    "confirm_delete": "确认删除",
+    "cancel": "取消",
+    "updated_successfully": "成功更新",
+    "edit": "编辑",
+    "update": "更新",
+    "execute": "执行"
+  },
+  "command_clipboard": {
+    "title": "命令剪贴板"
   }
 }

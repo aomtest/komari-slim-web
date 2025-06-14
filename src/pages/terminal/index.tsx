@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import { WebLinksAddon } from "xterm-addon-web-links";
@@ -10,60 +10,26 @@ import { useTranslation } from "react-i18next";
 import { Cross1Icon } from "@radix-ui/react-icons";
 import { TablerAlertTriangleFilled } from "../../components/Icones/Tabler";
 import CommandClipboardPanel from "@/pages/terminal/CommandClipboard";
-import type { TFunction } from "i18next";
 import { Toaster } from "sonner";
-import { TerminalContext } from '@/contexts/TerminalContext';
-
-// TerminalArea: 主终端区域组件，包含 callout、终端容器 与 开关按钮
+import { TerminalContext } from "@/contexts/TerminalContext";
+import { motion } from "framer-motion";
+import throttle from "lodash/throttle";
 interface TerminalAreaProps {
   terminalRef: React.RefObject<HTMLDivElement | null>;
-  callout: boolean;
-  setCallout: (b: boolean) => void;
   toggleClipboard: () => void;
   width: number | string;
-  t: TFunction;
   isOpen: boolean;
 }
 const TerminalArea: React.FC<TerminalAreaProps> = ({
   terminalRef,
-  callout,
-  setCallout,
   toggleClipboard,
   width,
-  t,
   isOpen,
 }) => (
   <div
     className="relative flex justify-center bg-black md:bg-accent-3 flex-col h-full min-w-128"
     style={{ width }}
   >
-    <div className="flex justify-center items-center fixed top-2 left-auto right-auto z-10">
-      <Callout.Root
-        hidden={!callout}
-        className="mx-auto"
-        variant="soft"
-        color="red"
-      >
-        <Callout.Icon>
-          <TablerAlertTriangleFilled />
-        </Callout.Icon>
-        <Callout.Text>
-          <Flex align="center">
-            <span>{t("warn_https")}</span>
-            <IconButton
-              variant="ghost"
-              size="1"
-              className="ml-4"
-              onClick={() => {
-                setCallout(false);
-              }}
-            >
-              <Cross1Icon />
-            </IconButton>
-          </Flex>
-        </Callout.Text>
-      </Callout.Root>
-    </div>
     <div className="m-0 md:p-4 p-0 w-full h-full bg-black">
       <div ref={terminalRef} className="h-full w-full" />
     </div>
@@ -76,16 +42,17 @@ const TerminalArea: React.FC<TerminalAreaProps> = ({
   </div>
 );
 
-// Divider: 拖拽分隔线组件
-const Divider: React.FC<{ onMouseDown: () => void }> = ({ onMouseDown }) => (
+const Divider: React.FC<{
+  onMouseDown: (e: React.MouseEvent | React.TouchEvent) => void;
+}> = ({ onMouseDown }) => (
   <div
-    className="h-full bg-accent-2 cursor-col-resize"
-    style={{ width: 4 }}
+    className="h-full bg-accent-2 cursor-col-resize hover:bg-accent-4"
+    style={{ width: 8 }}
     onMouseDown={onMouseDown}
+    onTouchStart={onMouseDown}
   />
 );
 
-// ClipboardPanel: 右侧面板组件
 const ClipboardPanel: React.FC = () => (
   <div className="h-screen p-2 min-w-64" style={{ flex: 1 }}>
     <CommandClipboardPanel className="h-full w-full" />
@@ -101,14 +68,15 @@ const TerminalPage = () => {
   const uuid = params.get("uuid");
   const [callout, setCallout] = useState(false);
   const [t] = useTranslation();
-  var firstBinary = useRef(false);
+  const firstBinary = useRef(false);
   const [isClipboardOpen, setIsClipboardOpen] = useState(false);
-  // 添加分隔线相关状态和函数
   const [leftWidth, setLeftWidth] = useState<number>(window.innerWidth * 0.7);
   const draggingRef = useRef(false);
   const fitAddonRef = useRef<any>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const resizeTerminal = () => {
+  // 使用 useCallback 确保 resizeTerminal 引用稳定
+  const resizeTerminal = useCallback(() => {
     fitAddonRef.current?.fit();
     const term = terminalInstance.current;
     const ws = wsRef.current;
@@ -121,31 +89,64 @@ const TerminalPage = () => {
         })
       );
     }
-  };
+  }, []);
 
-  const startDragging = () => {
-    draggingRef.current = true;
-  };
-  const stopDragging = () => {
+  const startDragging = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
+      e.preventDefault();
+      draggingRef.current = true;
+      document.body.style.userSelect = "none";
+    },
+    []
+  );
+
+  const stopDragging = useCallback(() => {
     if (draggingRef.current) {
       draggingRef.current = false;
+      document.body.style.userSelect = "";
       resizeTerminal();
     }
-  };
-  const onMouseMove = (e: MouseEvent) => {
-    if (draggingRef.current) {
-      setLeftWidth(e.clientX);
-    }
-  };
+  }, [resizeTerminal]);
+
+  // 限制resize onMouseMove 调用频率
+  const onMouseMove = useCallback(
+    throttle((e: MouseEvent | TouchEvent) => {
+      if (!draggingRef.current || !containerRef.current) return;
+
+      const containerRect = containerRef.current.getBoundingClientRect();
+      let clientX: number;
+
+      if (e instanceof MouseEvent) {
+        clientX = e.clientX;
+      } else {
+        clientX = e.touches[0].clientX;
+      }
+
+      const newLeftWidth = clientX - containerRect.left;
+      const minWidth = 300;
+      const maxWidth = containerRect.width - 300;
+
+      if (newLeftWidth >= minWidth && newLeftWidth <= maxWidth) {
+        setLeftWidth(newLeftWidth);
+      }
+    }, 1000 / 60), // （60fps）
+    []
+  );
 
   useEffect(() => {
     document.addEventListener("mousemove", onMouseMove);
     document.addEventListener("mouseup", stopDragging);
+    document.addEventListener("touchmove", onMouseMove);
+    document.addEventListener("touchend", stopDragging);
+
     return () => {
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseup", stopDragging);
+      document.removeEventListener("touchmove", onMouseMove);
+      document.removeEventListener("touchend", stopDragging);
+      onMouseMove.cancel(); // 清理 throttle
     };
-  }, []);
+  }, [onMouseMove, stopDragging]);
 
   useEffect(() => {
     if (uuid === null) {
@@ -165,9 +166,9 @@ const TerminalPage = () => {
         }`;
       });
   }, [t, uuid]);
+
   useEffect(() => {
     setCallout(window.location.protocol !== "https:");
-    // 初始化终端
     if (!terminalRef.current) return;
 
     const term = new Terminal({
@@ -191,16 +192,15 @@ const TerminalPage = () => {
     term.open(terminalRef.current);
     terminalInstance.current = term;
 
-    // 连接WebSocket
     const ws = new WebSocket(`./api/admin/client/${uuid}/terminal`);
     ws.binaryType = "arraybuffer";
-    wsRef.current = ws; // 发送终端尺寸
+    wsRef.current = ws;
+
     ws.onopen = () => {
-      handleResize(); // 撑满窗口区域
+      resizeTerminal();
       startHeartbeat();
     };
 
-    // 心跳发送
     const startHeartbeat = () => {
       heartbeatIntervalRef.current = setInterval(() => {
         if (ws.readyState === WebSocket.OPEN) {
@@ -211,10 +211,9 @@ const TerminalPage = () => {
             })
           );
         }
-      }, 30000);
+      }, 10000);
     };
 
-    // 停止心跳
     const stopHeartbeat = () => {
       if (heartbeatIntervalRef.current) {
         clearInterval(heartbeatIntervalRef.current);
@@ -222,7 +221,6 @@ const TerminalPage = () => {
       }
     };
 
-    // 接收服务器数据
     ws.onmessage = (event) => {
       if (event.data instanceof ArrayBuffer) {
         const uint8Array = new Uint8Array(event.data);
@@ -230,7 +228,6 @@ const TerminalPage = () => {
       } else {
         term.write(event.data);
       }
-      // 建立连接后resize一次
       if (!firstBinary.current && event.data instanceof ArrayBuffer) {
         firstBinary.current = true;
         setTimeout(() => {
@@ -238,16 +235,16 @@ const TerminalPage = () => {
           if (term) {
             term.resize(term.cols - 1, term.rows);
           }
-          handleResize();
-        }, 200); // 延时200毫秒resize渲染，不然总有奇奇怪怪的渲染bug
+          resizeTerminal();
+        }, 200);
       }
-    }; // 连接关闭
+    };
+
     ws.onclose = () => {
       stopHeartbeat();
       term.write(`\n ${t("terminal.disconnect")}`);
     };
 
-    // 处理用户输入并发送到服务器
     term.onData((data) => {
       if (ws.readyState === WebSocket.OPEN) {
         const encoder = new TextEncoder();
@@ -256,24 +253,11 @@ const TerminalPage = () => {
       }
     });
 
-    // 处理窗口大小变化
     const handleResize = () => {
-      fitAddon.fit();
-      // 发送新的尺寸到服务器
-      const dimensions = { cols: term.cols, rows: term.rows };
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(
-          JSON.stringify({
-            type: "resize",
-            cols: dimensions.cols,
-            rows: dimensions.rows,
-          })
-        );
-      }
+      resizeTerminal();
     };
     window.addEventListener("resize", handleResize);
 
-    // 处理搜索快捷键
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey) {
         if (e.key === "f" || e.key === "d") {
@@ -284,7 +268,6 @@ const TerminalPage = () => {
     };
     document.addEventListener("keydown", handleKeyDown);
 
-    // 处理右键菜单
     const handleContextMenu = (e: MouseEvent) => {
       if (e.ctrlKey || ws.readyState !== WebSocket.OPEN) {
         return;
@@ -309,7 +292,8 @@ const TerminalPage = () => {
       }
     };
 
-    document.addEventListener("contextmenu", handleContextMenu); // 清理函数
+    document.addEventListener("contextmenu", handleContextMenu);
+
     return () => {
       stopHeartbeat();
       term.dispose();
@@ -323,35 +307,69 @@ const TerminalPage = () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("contextmenu", handleContextMenu);
     };
-  }, [t, uuid]);
+  }, [t, uuid, resizeTerminal]);
 
-  // 当右侧面板开关变化时，触发终端 resize
+  // 移除对 leftWidth 的直接依赖，改用防抖
   useEffect(() => {
     if (!fitAddonRef.current) return;
-    resizeTerminal();
-  }, [isClipboardOpen]);
+    const debouncedResize = setTimeout(() => {
+      resizeTerminal();
+    }, 100);
+    return () => clearTimeout(debouncedResize);
+  }, [isClipboardOpen, resizeTerminal]);
 
-  // Provide sendCommand to children via context
-  const sendCommand = (cmd: string) => {
+  const sendCommand = useCallback((cmd: string) => {
     const ws = wsRef.current;
     if (ws && ws.readyState === WebSocket.OPEN) {
       const encoder = new TextEncoder();
       ws.send(encoder.encode(cmd + "\r"));
     }
-  };
+  }, []);
 
   return (
-    <TerminalContext.Provider value={{ terminal: terminalInstance.current, sendCommand }}>
+    <TerminalContext.Provider
+      value={{ terminal: terminalInstance.current, sendCommand }}
+    >
       <Theme appearance="dark">
         <Toaster theme="dark" />
-        <Flex className="h-screen w-screen" direction="row">
+        <div className="absolute inset-x-0 top-4 flex justify-center items-center z-30">
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            hidden={!callout}
+          >
+            <Callout.Root
+              color="red"
+              size="2"
+              className="bg-red-50 backdrop-blur-sm border-2 border-red-800 rounded-lg"
+            >
+              <Callout.Icon>
+                <TablerAlertTriangleFilled className="text-red-700" />
+              </Callout.Icon>
+              <Callout.Text className="text-red-400 font-medium">
+                <Flex align="center" justify="between" gap="3">
+                  <span>{t("warn_https")}</span>
+                  <IconButton
+                    variant="soft"
+                    color="red"
+                    size="1"
+                    className="hover:bg-red-200/50 transition-colors"
+                    onClick={() => setCallout(false)}
+                  >
+                    <Cross1Icon />
+                  </IconButton>
+                </Flex>
+              </Callout.Text>
+            </Callout.Root>
+          </motion.div>
+        </div>
+        <Flex className="h-screen w-screen" direction="row" ref={containerRef}>
           <TerminalArea
             terminalRef={terminalRef}
-            callout={callout}
-            setCallout={setCallout}
             toggleClipboard={() => setIsClipboardOpen(!isClipboardOpen)}
-            width={isClipboardOpen ? leftWidth : "100%"}
-            t={t}
+            width={isClipboardOpen ? `${leftWidth}px` : "100%"}
             isOpen={isClipboardOpen}
           />
           {isClipboardOpen && <Divider onMouseDown={startDragging} />}

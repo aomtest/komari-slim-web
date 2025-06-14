@@ -13,6 +13,7 @@ import { useLocalStorage } from "./hooks/useLocalStorage";
 import { useSystemTheme } from "./hooks/useSystemTheme";
 import { BrowserRouter } from "react-router-dom";
 import "./i18n/config"; // Import i18next config
+import ErrorBoundary from "./components/ErrorBoundary";
 import { Suspense } from "react";
 import { useRoutes } from "react-router-dom";
 import { routes } from "./routes";
@@ -25,10 +26,10 @@ const App = () => {
     "color",
     THEME_DEFAULTS.color
   );
-  
+
   // Use the system theme hook to resolve "system" to actual theme
   const resolvedAppearance = useSystemTheme(appearance);
-  
+
   const themeContextValue = useMemo(
     () => ({
       appearance,
@@ -51,9 +52,11 @@ const App = () => {
 };
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </StrictMode>
+  <ErrorBoundary>
+    <StrictMode>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </StrictMode>
+  </ErrorBoundary>
 );

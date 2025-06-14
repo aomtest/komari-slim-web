@@ -5,6 +5,7 @@ export type CommandClipboard = {
   text: string;
   name: string;
   remark: string;
+  weight: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -14,8 +15,8 @@ interface CommandClipboardContextType {
   loading: boolean;
   error: Error | null;
   refresh: () => Promise<void>;
-  addCommand: (name: string, text: string, markup: string) => Promise<void>;
-  updateCommand: (id: number, name: string, text: string, markup: string) => Promise<void>;
+  addCommand: (name: string, text: string, remark: string, weight: number) => Promise<void>;
+  updateCommand: (id: number, name: string, text: string, remark: string, weight: number) => Promise<void>;
   deleteCommand: (id:number) => Promise<void>;
 }
 
@@ -49,14 +50,14 @@ export const CommandClipboardProvider: React.FC<{
       setLoading(false);
     }
   };
-  const addCommand = async (name: string, text: string, markup: string) => {
+  const addCommand = async (name: string, text: string, remark: string, weight: number) => {
     try {
       const response = await fetch("/api/admin/clipboard", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, text, markup }),
+        body: JSON.stringify({ name, text, remark, weight }),
       });
       if (!response.ok) {
         throw new Error("Failed to add command");
@@ -73,7 +74,8 @@ export const CommandClipboardProvider: React.FC<{
     id: number,
     name: string,
     text: string,
-    remark: string
+    remark: string,
+    weight: number
   ) => {
     try {
       const response = await fetch(`/api/admin/clipboard/${id}`, {
@@ -81,7 +83,7 @@ export const CommandClipboardProvider: React.FC<{
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, text, remark }),
+        body: JSON.stringify({ name, text, remark, weight }),
       });
       if (!response.ok) {
         throw new Error("Failed to update command");

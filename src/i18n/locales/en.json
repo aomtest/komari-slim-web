@@ -305,6 +305,24 @@
     "once": "Once",
     "expired": "Expired",
     "expired_in": "{{days}} day",
-    "long_term": "Long term"
+    "long_term": "Long term",
+    "have_been_omitted": "{{count}} has been omitted",
+    "added_successfully": "Added successfully ",
+    "add": "Add",
+    "name": "Name",
+    "content": "Content",
+    "remark": "Remark",
+    "weight": "Weight",
+    "deleted_successfully": "Deleted",
+    "delete": "Delete",
+    "confirm_delete": "Confirm delete",
+    "cancel": "Cancel",
+    "updated_successfully": "Updated successfully",
+    "edit": "Edit",
+    "update": "Update",
+    "execute": "Execute"
+  },
+  "command_clipboard": {
+    "title": "Command Clipboard"
   }
 }
