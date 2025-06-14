@@ -248,7 +248,7 @@
       "disableAutoUpdate": "禁用自动更新",
       "ignoreUnsafeCert": "忽略不安全证书",
       "ghproxy": "GitHub 代理",
-      "ghproxy_placeholder": "GitHub 代理，为空则不适用代理",
+      "ghproxy_placeholder": "GitHub 代理，为空则不使用代理",
       "install_dir": "安装目录",
       "install_dir_placeholder": "安装目录，为空则使用默认目录(/opt/komari-agent)",
       "serviceName": "服务名称",
