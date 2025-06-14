@@ -1,6 +1,7 @@
 import {
   SettingCardCollapse,
   SettingCardLabel,
+  SettingCardSelect,
   SettingCardSwitch,
 } from "@/components/admin/SettingCard";
 import { updateSettingsWithToast, useSettings } from "@/lib/api";
@@ -37,6 +38,14 @@ export default function SignOnSettings() {
         onChange={async (checked) => {
           await updateSettingsWithToast({ o_auth_enabled: checked }, t);
         }}
+      />
+      <SettingCardSelect
+        title={t("settings.sso.provider")}
+        description={t("settings.sso.provider_description")}
+        options={[
+          { value: "github", label: "GitHub" },
+        ]}
+        defaultValue="github"
       />
       <SettingCardCollapse
         title={
@@ -84,4 +93,3 @@ export default function SignOnSettings() {
     </>
   );
 }
-

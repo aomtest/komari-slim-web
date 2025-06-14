@@ -3,7 +3,15 @@ import React from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { AccountProvider, useAccount } from "@/contexts/AccountContext";
-import { Button, Dialog, Flex, Skeleton, TextField } from "@radix-ui/themes";
+import {
+  Badge,
+  Button,
+  Dialog,
+  Flex,
+  Skeleton,
+  TextField,
+} from "@radix-ui/themes";
+import { Github } from "lucide-react";
 
 const Account = () => {
   return (
@@ -15,7 +23,7 @@ const Account = () => {
 
 const InnerLayout = () => {
   const { t } = useTranslation();
-  const { account, loading, error } = useAccount();
+  const { account, loading, error, refresh } = useAccount();
   const [usernameSaving, setUsernameSaving] = React.useState(false);
   const [passwordSaving, setPasswordSaving] = React.useState(false);
   if (loading) {
@@ -106,7 +114,37 @@ const InnerLayout = () => {
         setPasswordSaving(false);
       });
   }
+  function isGithubBound() {
+    return account?.sso_id?.startsWith("github_") || false;
+  }
+  const handleGithubAuth = async () => {
+    try {
+      if (isGithubBound()) {
+        // 解绑GitHub
+        const response = await fetch("/api/admin/oauth2/unbind", {
+          method: "POST",
+        });
 
+        if (response.ok) {
+          toast.success(t("account_settings.unbind_github_success"));
+          refresh(); // 刷新用户信息
+        } else {
+          const error = await response.json();
+          toast.error(
+            `${t("account_settings.unbind_github_failed")}: ${
+              error.message || t("未知错误")
+            }`
+          );
+        }
+      } else {
+        window.location.href = "/api/admin/oauth2/bind";
+      }
+    } catch (error) {
+      console.error("处理GitHub认证失败:", error);
+      toast.error(t("account_settings.github_auth_failed"));
+    } finally {
+    }
+  };
   return (
     <Flex gap="4" direction="row" className="p-4" wrap="wrap">
       <Flex gap="2" direction="column" className="md:basis-1/2 w-full">
@@ -161,13 +199,75 @@ const InnerLayout = () => {
           </div>
         </form>
       </Flex>
-      <Flex direction="column" className="md:basis-5/12">
+      <Flex direction="column" className="md:basis-5/12 gap-2">
         <label className="font-bold text-2xl">2FA</label>
         {account?.["2fa_enabled"] ? (
           <TwoFactorEnabled />
         ) : (
           <TwoFactorDisabled></TwoFactorDisabled>
         )}
+        <label className="font-bold text-2xl mt-2">
+          {t("settings.sso.title")}
+        </label>
+
+        {/* GitHub账户绑定/解绑 */}
+        <div className="mb-8 flex flex-col gap-4">
+          <label className="text-xl font-semibold flex items-center gap-2">
+            <Github className="size-5" />
+            {t("account_settings.github_account")}
+          </label>
+          <div className="p-4 bg-[var(--accent-2)] rounded-lg">
+            <p>
+              {isGithubBound() ? (
+                <div className="flex items-center gap-2">
+                  <Badge color="green">
+                    {t("account_settings.github_bound")}
+                  </Badge>
+                  GitHub ID: {account?.sso_id.replace("github_", "")}
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Badge color="gray">
+                    {t("account_settings.github_unbound")}
+                  </Badge>
+                  {t("account_settings.github_not_bound")}
+                </div>
+              )}
+            </p>
+          </div>
+          <div>
+            {isGithubBound() ? (
+              <Dialog.Root>
+                <Dialog.Trigger>
+                  <Button>{t("account_settings.unbind_github")}</Button>
+                </Dialog.Trigger>
+                <Dialog.Content>
+                  <Dialog.Title>
+                    {t("account_settings.confirm_unbind")}
+                  </Dialog.Title>
+                  <Dialog.Description>
+                    {t("account_settings.unbind_github_warning")}
+                  </Dialog.Description>
+                  <Flex gap="2" justify="end" className="mt-4">
+                    <Dialog.Close>
+                      <Button variant="soft">
+                        {t("account_settings.cancel")}
+                      </Button>
+                    </Dialog.Close>
+                    <Button color="red" onClick={handleGithubAuth}>
+                      {t("account_settings.confirm_unbind")}
+                    </Button>
+                  </Flex>
+                </Dialog.Content>
+              </Dialog.Root>
+            ) : (
+              <Button onClick={handleGithubAuth}>
+                <Github className="size-4" />
+                {t("account_settings.bind_github")}
+              </Button>
+            )}
+          </div>
+        </div>
       </Flex>
     </Flex>
   );
