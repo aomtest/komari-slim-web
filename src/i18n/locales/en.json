@@ -56,7 +56,8 @@
       "client_secret": "Client Secret",
       "client_secret_description": "OAuth application client secret",
       "provider": "Single Sign-On Provider",
-      "provider_description": "Choose the authentication provider for single sign-on"
+      "provider_description": "Choose the authentication provider for single sign-on",
+      "callback_url_tips": "Configure your SSO provider with this callback URL: {{url}}"
     },
     "general": {
       "title": "General"
@@ -86,7 +87,18 @@
     },
     "settings_saved": "Settings Saved",
     "settings_save_failed": "Failed to Save Settings",
-    "title": "Settings"
+    "title": "Settings",
+    "notification": {
+      "title": "Notifications",
+      "telegram_chat_id_error": "Chat ID must be a number",
+      "enable": "Enable Notifications",
+      "enable_description": "Enable to get updates via your preferred method.",
+      "method": "Delivery Method",
+      "method_description": "Pick your preferred platform for alerts.",
+      "telegram_title": "Telegram Configuration",
+      "telegram_description": "Configure your Telegram bot to get alerts directly in your chat.",
+      "telegram_bot_token": "Telegram Bot Token"
+    }
   },
   "sessions": {
     "title": "Sessions",
@@ -332,9 +344,29 @@
     "error": "Error",
     "server": "Server",
     "about": "About",
-    "documentation": "Documentation"
+    "documentation": "Documentation",
+    "status": "Status",
+    "action": "Action",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "search": "Search",
+    "selected": "{{count}} selected",
+    "save": "Save"
   },
   "command_clipboard": {
     "title": "Command Clipboard"
+  },
+  "notification": {
+    "title": "Notification",
+    "offline": {
+      "title": "Offline",
+      "full_title": "Offline Alerts Configuration",
+      "tips": "To prevent frequent notifications, we use a cooldown period and a grace period:</br> </br> <b>Cooldown Period</b>: After an offline notification is sent, no further notifications will be sent during this time, even if the client goes offline again.</br> <b>Grace Period</b>: If a client goes offline and doesn't reconnect within this time, an offline notification will be sent.",
+      "cooldown": "Cooldown Period",
+      "grace_period": "Grace Period"
+    },
+    "load": {
+      "title": "Load"
+    }
   }
 }

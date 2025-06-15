@@ -257,7 +257,9 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                             }
                           }}
                         >
-                          <IconComp className="opacity-70" />
+                          <IconComp
+                            className="flex w-4 h-5 items-center justify-center opacity-70"
+                          />
                           <Text
                             className="text-base"
                             weight="medium"
@@ -392,7 +394,6 @@ const SidebarItem = ({
   const isActive =
     location.pathname === to ||
     (to !== "/admin" && location.pathname.startsWith(to));
-
   return (
     <Link
       to={to}
@@ -417,6 +418,7 @@ const SidebarItem = ({
             color: isActive ? "var(--accent-10)" : "inherit",
             opacity: isActive ? 1 : 0.7,
           }}
+          className="flex w-4 h-5 items-center justify-center"
         >
           {icon}
         </span>

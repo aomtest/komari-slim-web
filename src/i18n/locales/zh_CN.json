@@ -56,7 +56,8 @@
       "client_secret": "客户端密钥",
       "client_secret_description": "OAuth 应用的客户端密钥",
       "provider": "单登录提供商",
-      "provider_description": "选择用于单点登录的身份验证提供商"
+      "provider_description": "选择用于单点登录的身份验证提供商",
+      "callback_url_tips": "回调地址：{{url}}"
     },
     "general": {
       "title": "通用"
@@ -68,7 +69,8 @@
       "description_description": "设置控制面板的站点描述信息",
       "cros": "允许跨域请求",
       "cros_description": "允许来自其他域名的请求访问 API",
-      "title": "站点"
+      "title": "站点",
+      "custom": "自定义"
     },
     "geoip": {
       "enable_title": "启用地理位置信息",
@@ -85,7 +87,18 @@
     },
     "settings_saved": "设置已保存",
     "settings_save_failed": "保存设置失败",
-    "title": "设置"
+    "title": "设置",
+    "notification": {
+      "title": "通知",
+      "enable": "开启通知",
+      "enable_description": "通过首选方式获取及时通知。",
+      "method": "通知渠道",
+      "method_description": "选择您偏好的通知平台",
+      "telegram_title": "Telegram 配置",
+      "telegram_description": "配置您的 Telegram 机器人以在聊天中直接接收提醒。",
+      "telegram_bot_token": "Telegram 机器人令牌",
+      "telegram_chat_id_error": "Chat ID 不可为空"
+    }
   },
   "sessions": {
     "title": "会话管理",
@@ -331,9 +344,29 @@
     "error": "错误",
     "about": "关于",
     "documentation": "文档",
-    "server": "服务器"
+    "server": "服务器",
+    "status": "状态",
+    "action": "操作",
+    "enabled": "启用",
+    "disabled": "禁用",
+    "search": "搜索",
+    "selected": "{{count}}选择",
+    "save": "保存"
   },
   "command_clipboard": {
     "title": "命令剪贴板"
+  },
+  "notification": {
+    "offline": {
+      "full_title": "离线通知设置",
+      "tips": "为了避免频繁发送通知，我们设置了冷静期和宽限期：</br> </br> <b>冷静期</b>：如果已经发送了一次离线通知，在这段时间内，即使客户端再次离线，也不会重复发送通知。</br> <b>宽限期</b>：客户端离线后，如果在这段时间内没有重新上线，就会发送离线通知",
+      "cooldown": "冷静期",
+      "grace_period": "宽限期",
+      "title": "离线通知"
+    },
+    "load": {
+      "title": "负载通知"
+    },
+    "title": "通知"
   }
 }

@@ -18,7 +18,7 @@ interface SettingCardProps {
   children?: React.ReactNode;
   className?: string;
   direction?: "row" | "column" | "row-reverse" | "column-reverse";
-  onHeaderClick?: () => void; 
+  onHeaderClick?: () => void;
 }
 
 export function SettingCard({
@@ -45,7 +45,7 @@ export function SettingCard({
       wrap="wrap"
       style={{ borderColor: "var(--gray-a5)" }}
       className={
-        "border-1 rounded-md py-2 px-4 bg-transparent gap-4 min-h-8" + className
+        "border-1 rounded-md py-2 px-4 bg-transparent  min-h-8" + className
       }
     >
       <Flex
@@ -56,11 +56,20 @@ export function SettingCard({
         wrap="nowrap"
         onClick={onHeaderClick}
       >
-        <Flex direction="column" gap="1" className="min-h-10" justify={"center"}>
+        <Flex
+          direction="column"
+          gap="1"
+          className="min-h-10"
+          justify={"center"}
+        >
           <label className="text-base font-medium" style={{ fontWeight: 600 }}>
             {title}
           </label>
-          {description && <label className="text-sm text-muted-foreground">{description}</label>}
+          {description && (
+            <label className="text-sm text-muted-foreground">
+              {description}
+            </label>
+          )}
         </Flex>
         {actionChild}
       </Flex>
@@ -101,7 +110,7 @@ export function SettingCardSwitch({
       onChange && switchRef.current
         ? onChange(c, switchRef.current)
         : undefined;
-    
+
     if (autoDisabled) {
       const promise: Promise<any> = result;
       if (promise && typeof promise.then === "function") {
@@ -244,6 +253,7 @@ export function SettingCardShortTextInput({
   defaultValue = "",
   OnSave = () => {},
   autoDisabled = true,
+  isSaving,
 }: {
   title?: string;
   description?: string;
@@ -255,14 +265,16 @@ export function SettingCardShortTextInput({
     buttonElement: HTMLButtonElement
   ) => void;
   autoDisabled?: boolean;
+  isSaving?: boolean;
 }) {
   const [disabled, setDisabled] = React.useState(false);
+  const savingState = isSaving !== undefined ? isSaving : disabled;
   const [value, setValue] = React.useState(defaultValue);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
 
   const handleSave = () => {
-    if (autoDisabled) setDisabled(true);
+    if (isSaving === undefined && autoDisabled) setDisabled(true);
     const result: any =
       inputRef.current && buttonRef.current
         ? OnSave(value, inputRef.current, buttonRef.current)
@@ -270,9 +282,9 @@ export function SettingCardShortTextInput({
     if (autoDisabled) {
       const promise: Promise<any> = result;
       if (promise && typeof promise.then === "function") {
-        promise.finally(() => setDisabled(false));
+        promise.finally(() => isSaving === undefined && setDisabled(false));
       } else {
-        setDisabled(false);
+        isSaving === undefined && setDisabled(false);
       }
     }
   };
@@ -290,7 +302,7 @@ export function SettingCardShortTextInput({
               ref={buttonRef}
               onClick={handleSave}
               variant="solid"
-              disabled={disabled}
+              disabled={savingState}
             >
               {label}
             </Button>
@@ -315,6 +327,7 @@ export function SettingCardLongTextInput({
   defaultValue = "",
   OnSave = () => {},
   autoDisabled = true,
+  isSaving,
 }: {
   title?: string;
   description?: string;
@@ -326,14 +339,16 @@ export function SettingCardLongTextInput({
     buttonElement: HTMLButtonElement
   ) => void;
   autoDisabled?: boolean;
+  isSaving?: boolean;
 }) {
   const [disabled, setDisabled] = React.useState(false);
+  const savingState = isSaving !== undefined ? isSaving : disabled;
   const [value, setValue] = React.useState(defaultValue);
   const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
 
   const handleSave = () => {
-    if (autoDisabled) setDisabled(true);
+    if (isSaving === undefined && autoDisabled) setDisabled(true);
     const result: any =
       textAreaRef.current && buttonRef.current
         ? OnSave(value, textAreaRef.current, buttonRef.current)
@@ -341,9 +356,9 @@ export function SettingCardLongTextInput({
     if (autoDisabled) {
       const promise: Promise<any> = result;
       if (promise && typeof promise.then === "function") {
-        promise.finally(() => setDisabled(false));
+        promise.finally(() => isSaving === undefined && setDisabled(false));
       } else {
-        setDisabled(false);
+        isSaving === undefined && setDisabled(false);
       }
     }
   };
@@ -361,7 +376,7 @@ export function SettingCardLongTextInput({
               ref={buttonRef}
               onClick={handleSave}
               variant="solid"
-              disabled={disabled}
+              disabled={savingState}
             >
               {label}
             </Button>
@@ -388,6 +403,7 @@ export function SettingCardSelect({
   options = [],
   OnSave = () => {},
   autoDisabled = true,
+  isSaving,
 }: {
   title?: string;
   description?: string;
@@ -396,13 +412,15 @@ export function SettingCardSelect({
   options?: { value: string; label?: string; disabled?: boolean }[];
   OnSave?: (value: string, buttonElement: HTMLButtonElement) => void;
   autoDisabled?: boolean;
+  isSaving?: boolean;
 }) {
   const [disabled, setDisabled] = React.useState(false);
+  const savingState = isSaving !== undefined ? isSaving : disabled;
   const [selectedValue, setSelectedValue] = React.useState(defaultValue);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
 
   const handleSave = (value: string) => {
-    if (autoDisabled) setDisabled(true);
+    if (isSaving === undefined && autoDisabled) setDisabled(true);
     const previousValue = selectedValue; // 保存之前的值
     setSelectedValue(value); // 先更新选择的值
 
@@ -421,10 +439,10 @@ export function SettingCardSelect({
             setSelectedValue(previousValue);
           })
           .finally(() => {
-            setDisabled(false);
+            isSaving === undefined && setDisabled(false);
           });
       } else {
-        setDisabled(false);
+        isSaving === undefined && setDisabled(false);
       }
     }
   };
@@ -446,7 +464,7 @@ export function SettingCardSelect({
         <Flex>
           <Flex direction="row" gap="2" align="center">
             <DropdownMenu.Root>
-              <DropdownMenu.Trigger disabled={disabled}>
+              <DropdownMenu.Trigger disabled={savingState}>
                 <Button variant="soft" ref={buttonRef}>
                   {getDisplayText()}
                   <DropdownMenu.TriggerIcon />
@@ -499,7 +517,11 @@ export function SettingCardCollapse({
   const [open, setOpen] = React.useState(defaultOpen);
 
   return (
-    <SettingCard title={title} description={description} onHeaderClick={() => setOpen(!open)}>
+    <SettingCard
+      title={title}
+      description={description}
+      onHeaderClick={() => setOpen(!open)}
+    >
       <SettingCard.Action>
         <IconButton
           variant="soft"
@@ -528,7 +550,7 @@ export function SettingCardCollapse({
             style={{ overflow: "hidden" }} // Prevents content clipping during animation
             id="collapsible-content"
           >
-            <div className="border-t-1 mb-2" />
+            <div className="border-t-1 my-2" />
             {children}
           </motion.div>
         )}

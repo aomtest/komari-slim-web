@@ -62,9 +62,32 @@ export const routes: RouteObject[] = [
             ),
           },
           {
+            path: "notification",
+            element: React.createElement(
+              lazy(() => import("./pages/admin/settings/notification"))
+            ),
+          },
+          {
             path: "general",
             element: React.createElement(
               lazy(() => import("./pages/admin/settings/general"))
+            ),
+          },
+        ],
+      },
+      {
+        path:"notification",
+        children: [
+          {
+            path: "offline",
+            element: React.createElement(
+              lazy(() => import("./pages/admin/notification/offline"))
+            ),
+          },
+          {
+            path: "load",
+            element: React.createElement(
+              lazy(() => import("./pages/admin/notification/load"))
             ),
           },
         ],

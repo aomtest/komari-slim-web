@@ -3,54 +3,76 @@
     {
       "labelKey": "common.server",
       "path": "/admin",
-      "icon": "TablerServer"
+      "icon": "Server"
     },
     {
       "labelKey": "settings.title",
       "path": "/admin/settings",
-      "icon": "TablerSettings2",
+      "icon": "Bolt",
       "children": [
         {
           "labelKey": "settings.site.title",
           "path": "/admin/settings/site",
-          "icon": "TablerHome"
+          "icon": "Home"
         },
         {
           "labelKey": "settings.sign_on.title",
           "path": "/admin/settings/sign-on",
-          "icon": "TablerCircleArrowDownRight"
+          "icon": "CircleArrowRight"
+        },
+        {
+          "labelKey": "settings.notification.title",
+          "path": "/admin/settings/notification",
+          "icon": "MessageCircleMore"
         },
         {
           "labelKey": "settings.general.title",
           "path": "/admin/settings/general",
-          "icon": "TablerDots"
+          "icon": "Ellipsis"
+        }
+      ]
+    },
+    {
+      "labelKey": "notification.title",
+      "path": "/admin/notification",
+      "icon": "Bell",
+      "children": [
+        {
+          "labelKey": "notification.offline.title",
+          "path": "/admin/notification/offline",
+          "icon": "Unplug"
+        },
+        {
+          "labelKey": "notification.load.title",
+          "path": "/admin/notification/load",
+          "icon": "TrendingUp"
         }
       ]
     },
     {
       "labelKey": "sessions.title",
       "path": "/admin/sessions",
-      "icon": "TablerUsers"
+      "icon": "Users"
     },
     {
       "labelKey": "account.title",
       "path": "/admin/account",
-      "icon": "TablerUserCircle"
+      "icon": "UserCircle"
     },
     {
       "labelKey": "logs.title",
       "path": "/admin/logs",
-      "icon": "TablerFileText"
+      "icon": "FileText"
     },
     {
       "labelKey": "common.about",
       "path": "/admin/about",
-      "icon": "TablerAt"
+      "icon": "AtSign"
     },
     {
       "labelKey": "common.documentation",
       "path": "https://komari-monitor.github.io/komari-document",
-      "icon": "TablerBook2"
+      "icon": "Book"
     }
   ]
 }

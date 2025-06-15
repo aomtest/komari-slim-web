@@ -1,19 +1,16 @@
 import {
-  SettingCardCollapse,
   SettingCardLabel,
   SettingCardSelect,
   SettingCardSwitch,
 } from "@/components/admin/SettingCard";
 import { updateSettingsWithToast, useSettings } from "@/lib/api";
-import { Button, Flex, Text, TextField } from "@radix-ui/themes";
-import React from "react";
+import { Text } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
+import { SettingCardMultiInputCollapse } from "@/components/admin/SettingCardMultiInput";
 
 export default function SignOnSettings() {
   const { t } = useTranslation();
   const { settings, loading, error } = useSettings();
-  const sso_id_input = React.useRef<HTMLInputElement>(null);
-  const sso_secret_input = React.useRef<HTMLInputElement>(null);
   if (loading) {
     return <Text>{t("sessions.loading")}</Text>;
   }
@@ -42,54 +39,43 @@ export default function SignOnSettings() {
       <SettingCardSelect
         title={t("settings.sso.provider")}
         description={t("settings.sso.provider_description")}
-        options={[
-          { value: "github", label: "GitHub" },
-        ]}
+        options={[{ value: "github", label: "GitHub" }]}
         defaultValue="github"
       />
-      <SettingCardCollapse
+      <SettingCardMultiInputCollapse
         title={
           t("settings.sso.client_id") + " & " + t("settings.sso.client_secret")
         }
         description={t("settings.sso.client_id_description")}
         defaultOpen={true}
+        items={[
+          {
+            tag: "o_auth_client_id",
+            label: t("settings.sso.client_id"),
+            type: "short",
+            defaultValue: settings.o_auth_client_id,
+          },
+          {
+            tag: "o_auth_client_secret",
+            label: t("settings.sso.client_secret"),
+            type: "short",
+            defaultValue: settings.o_auth_client_secret,
+          },
+        ]}
+        onSave={async (values) => {
+          await updateSettingsWithToast(
+            {
+              o_auth_client_id: values.o_auth_client_id,
+              o_auth_client_secret: values.o_auth_client_secret,
+            },
+            t
+          );
+        }}
       >
-        <Flex direction="column" gap="2" className="w-full">
-          <label className="text-sm font-semibold">
-            {t("settings.sso.client_id")}
-          </label>
-          <TextField.Root
-            ref={sso_id_input}
-            defaultValue={settings.o_auth_client_id}
-          ></TextField.Root>
-          <label className="text-sm font-semibold">
-            {t("settings.sso.client_secret")}
-          </label>
-          <TextField.Root
-            ref={sso_secret_input}
-            defaultValue={settings.o_auth_client_secret}
-          ></TextField.Root>
-          <div>
-            <Button
-              variant="solid"
-              className="mt-2"
-              onClick={async (e) => {
-                const b = e.target as HTMLButtonElement;
-                b.disabled = true;
-                const id = sso_id_input.current?.value;
-                const secret = sso_secret_input.current?.value;
-                await updateSettingsWithToast(
-                  { o_auth_client_id: id, o_auth_client_secret: secret },
-                  t
-                );
-                b.disabled = false;
-              }}
-            >
-              {t("save")}
-            </Button>
-          </div>
-        </Flex>
-      </SettingCardCollapse>
+        <label className="text-sm text-muted-foreground">
+          {t("settings.sso.callback_url_tips", { url: window.location.origin + "/api/oauth_callback" })}
+        </label>
+      </SettingCardMultiInputCollapse>
     </>
   );
 }
