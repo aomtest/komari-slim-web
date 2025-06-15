@@ -3,7 +3,7 @@ import { Callout, Flex, Grid, IconButton, Text } from "@radix-ui/themes";
 import { AnimatePresence, motion } from "framer-motion"; // 引入 Framer Motion
 import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation /*useNavigate*/ } from "react-router-dom";
 import ColorSwitch from "../ColorSwitch";
 import LanguageSwitch from "../Language";
 import ThemeSwitch from "../ThemeSwitch";
@@ -30,7 +30,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
   const ishttps = window.location.protocol === "https:";
   const [t] = useTranslation();
   const location = useLocation();
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   // 获取版本信息
   const [versionInfo, setVersionInfo] = useState<{
     hash: string;
@@ -249,7 +249,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                               item.children &&
                               item.children.length > 0
                             ) {
-                              navigate(item.children[0].path);
+                              //navigate(item.children[0].path);
                               // 如果是移动端，关闭侧边栏
                               if (isMobile) {
                                 setSidebarOpen(false);

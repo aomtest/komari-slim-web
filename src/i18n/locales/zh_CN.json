@@ -68,7 +68,7 @@
       "description_description": "设置控制面板的站点描述信息",
       "cros": "允许跨域请求",
       "cros_description": "允许来自其他域名的请求访问 API",
-      "title": "地点"
+      "title": "站点"
     },
     "geoip": {
       "enable_title": "启用地理位置信息",

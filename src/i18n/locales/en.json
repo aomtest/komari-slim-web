@@ -30,7 +30,7 @@
       "header": "Custom Header",
       "header_description": "Add custom HTML/CSS/JavaScript to the site header. This will be loaded on all pages.",
       "note": "Personalized content may be overwritten when using a custom theme. Please make sure the code is secure and avoid using untrusted content.",
-      "body": "Customize Body",
+      "body": "Custom Body",
       "body_description": "Add custom content to the bottom of the page",
       "favicon": "Customize Favicon",
       "favicon_description": "Icons displayed in browser tabs",
@@ -68,7 +68,8 @@
       "description_description": "Set the description for the control panel site",
       "cros": "Allow Cross-Origin Requests",
       "cros_description": "Allow API requests from other domains",
-      "title": "Site"
+      "title": "Site",
+      "custom": "Customize"
     },
     "geoip": {
       "enable_title": "Enable GeoIP",

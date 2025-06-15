@@ -24,7 +24,7 @@ export default function SiteSettings() {
 
   return (
     <>
-      <SettingCardLabel>站点属性</SettingCardLabel>
+      <SettingCardLabel>{t("settings.site.title")}</SettingCardLabel>
       <SettingCardShortTextInput
         title={t("settings.site.name")}
         description={t("settings.site.name_description")}
@@ -49,7 +49,7 @@ export default function SiteSettings() {
           await updateSettingsWithToast({ allow_cors: checked }, t);
         }}
       />
-      <SettingCardLabel>个性化</SettingCardLabel>
+      <SettingCardLabel>{t("settings.site.custom")}</SettingCardLabel>
       <label className="text-sm text-muted-foreground -mt-4">
         {t("settings.custom.note", "个性化内容在使用自定义主题时可能会被覆盖。请确保代码的安全性，避免使用不受信任的内容。")}
       </label>
