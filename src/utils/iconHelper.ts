@@ -1,15 +1,35 @@
 import React from "react";
 import {
-  TablerServer,
-} from "@/components/Icones/Tabler";
-import * as LucideIcons from "lucide-react";
+  Bolt,
+  Home,
+  CircleArrowRight,
+  MessageCircleMore,
+  Ellipsis,
+  Bell,
+  Unplug,
+  TrendingUp,
+  Users,
+  UserCircle,
+  FileText,
+  AtSign,
+  Book,
+  Server
+} from "lucide-react";
+
 // Map icon names defined in menuConfig.json to their components
-export const iconMap: Record<
-  string,
-  React.ComponentType<any>
-> = {
-  TablerServer,
-  ...Object.fromEntries(
-    Object.entries(LucideIcons).filter(([key]) => key !== 'createLucideIcon')
-  ),
+export const iconMap: Record<string, React.ComponentType<any>> = {
+  Server,
+  Bolt,
+  Home,
+  CircleArrowRight,
+  MessageCircleMore,
+  Ellipsis,
+  Bell,
+  Unplug,
+  TrendingUp,
+  Users,
+  UserCircle,
+  FileText,
+  AtSign,
+  Book,
 };
