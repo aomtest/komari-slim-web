@@ -58,14 +58,17 @@
       "provider": "Single Sign-On Provider",
       "provider_description": "Choose the authentication provider for single sign-on"
     },
-    "general": {},
+    "general": {
+      "title": "General"
+    },
     "site": {
       "name": "Site Name",
       "name_description": "Set the name of the control panel site",
       "description": "Site Description",
       "description_description": "Set the description for the control panel site",
       "cros": "Allow Cross-Origin Requests",
-      "cros_description": "Allow API requests from other domains"
+      "cros_description": "Allow API requests from other domains",
+      "title": "Site"
     },
     "geoip": {
       "enable_title": "Enable GeoIP",
@@ -81,7 +84,8 @@
       "test_button": "test"
     },
     "settings_saved": "Settings Saved",
-    "settings_save_failed": "Failed to Save Settings"
+    "settings_save_failed": "Failed to Save Settings",
+    "title": "Settings"
   },
   "sessions": {
     "title": "Sessions",
@@ -324,7 +328,10 @@
     "update": "Update",
     "execute": "Execute",
     "confirm": "Confirm",
-    "error": "Error"
+    "error": "Error",
+    "server": "Server",
+    "about": "About",
+    "documentation": "Documentation"
   },
   "command_clipboard": {
     "title": "Command Clipboard"

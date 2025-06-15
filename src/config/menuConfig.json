@@ -1,7 +1,7 @@
 {
   "menu": [
     {
-      "labelKey": "server",
+      "labelKey": "common.server",
       "path": "/admin",
       "icon": "TablerServer"
     },
@@ -43,12 +43,12 @@
       "icon": "TablerFileText"
     },
     {
-      "labelKey": "about",
+      "labelKey": "common.about",
       "path": "/admin/about",
       "icon": "TablerAt"
     },
     {
-      "labelKey": "documentation",
+      "labelKey": "common.documentation",
       "path": "https://komari-monitor.github.io/komari-document",
       "icon": "TablerBook2"
     }

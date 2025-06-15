@@ -58,14 +58,17 @@
       "provider": "单登录提供商",
       "provider_description": "选择用于单点登录的身份验证提供商"
     },
-    "general": {},
+    "general": {
+      "title": "通用"
+    },
     "site": {
       "name": "站点名称",
       "name_description": "设置控制面板的站点名称",
       "description": "站点描述",
       "description_description": "设置控制面板的站点描述信息",
       "cros": "允许跨域请求",
-      "cros_description": "允许来自其他域名的请求访问 API"
+      "cros_description": "允许来自其他域名的请求访问 API",
+      "title": "地点"
     },
     "geoip": {
       "enable_title": "启用地理位置信息",
@@ -81,7 +84,8 @@
       "test_button": "测试"
     },
     "settings_saved": "设置已保存",
-    "settings_save_failed": "保存设置失败"
+    "settings_save_failed": "保存设置失败",
+    "title": "设置"
   },
   "sessions": {
     "title": "会话管理",
@@ -324,7 +328,10 @@
     "update": "更新",
     "execute": "执行",
     "confirm": "确认",
-    "error": "错误"
+    "error": "错误",
+    "about": "关于",
+    "documentation": "文档",
+    "server": "服务器"
   },
   "command_clipboard": {
     "title": "命令剪贴板"
