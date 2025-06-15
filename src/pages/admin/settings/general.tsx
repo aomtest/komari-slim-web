@@ -64,7 +64,7 @@ export default function GeneralSettings() {
           }
         }}
       >
-        {t("update", "更新")}
+        {t("common.update", "更新")}
       </SettingCardButton>
       <SettingCardCollapse
         title={t("settings.geoip.test_title")}

@@ -1,14 +1,7 @@
 {
   "warn_https": "The current connection is not HTTPS! Your sensitive data is at serious risk. Take immediate action to secure the connection!",
   "warn_websocket": "WebSocket is not connected!",
-  "server": "Server",
-  "name": "Name",
-  "ip_address": "IP Address",
-  "client_version": "Client Version",
   "delete": "Delete",
-  "not_implemented": "Not Implemented",
-  "markup": "Markup",
-  "panel_welcome": "Hi {{username}}! Welcome to Komari.",
   "account": {
     "title": "Account",
     "greeting": "Hello~ {{username}}, What do you want to do today?",
@@ -32,16 +25,27 @@
     "disable_2fa": "Disable 2FA",
     "disable_2fa_confirmation": "Are you sure to disable 2fa?"
   },
-  "about": "About",
   "settings": {
-    "title": "Settings",
     "custom": {
-      "title": "Custom",
       "header": "Custom Header",
-      "header_description": "Add custom HTML/CSS/JavaScript to the site header. This will be loaded on all pages."
+      "header_description": "Add custom HTML/CSS/JavaScript to the site header. This will be loaded on all pages.",
+      "note": "Personalized content may be overwritten when using a custom theme. Please make sure the code is secure and avoid using untrusted content.",
+      "body": "Customize Body",
+      "body_description": "Add custom content to the bottom of the page",
+      "favicon": "Customize Favicon",
+      "favicon_description": "Icons displayed in browser tabs",
+      "favicon_current": "Current Favicon",
+      "favicon_note": "Favicon icons can be slow to update and it is often necessary to clear your browser's cache to see the changes.",
+      "favicon_default": "Restore Default",
+      "favicon_default_description": "This will restore the default Favicon icon, do you want to continue?",
+      "favicon_default_success": "Default favicon has been restored",
+      "favicon_confirm": "Confirm",
+      "favicon_update_success": "updated favicon",
+      "favicon_change": "update favicon"
     },
     "sign_on": {
-      "title": "Sign-On"
+      "title": "Sign-On",
+      "disable_password": "Disable password login"
     },
     "sso": {
       "title": "Single Sign-On",
@@ -54,11 +58,8 @@
       "provider": "Single Sign-On Provider",
       "provider_description": "Choose the authentication provider for single sign-on"
     },
-    "general": {
-      "title": "General"
-    },
+    "general": {},
     "site": {
-      "title": "Site",
       "name": "Site Name",
       "name_description": "Set the name of the control panel site",
       "description": "Site Description",
@@ -73,16 +74,18 @@
       "provider_description": "Choose which service provides geographic location data",
       "test_title": "Test GeoIP",
       "test_description": "Test selected GeoIP database",
-      "title": "GeoIP"
+      "title": "GeoIP",
+      "update_title": "Updating the GeoIP database",
+      "update_success": "GeoIP database update successful",
+      "update_error": "Failed to update GeoIP database",
+      "test_button": "test"
     },
-    "save_settings": "Save Settings",
     "settings_saved": "Settings Saved",
     "settings_save_failed": "Failed to Save Settings"
   },
   "sessions": {
     "title": "Sessions",
     "active_sessions": "Active Sessions",
-    "logout": "Logout",
     "loading": "Loading...",
     "delete_all": "Delete All Sessions",
     "delete_all_desc": "This will delete all sessions. Continue?",
@@ -100,43 +103,24 @@
     "latest_online": "Latest Online",
     "last_login": "Last Seen"
   },
-  "edit": "Edit",
-  "token": "Token",
   "save": "Save",
   "current_online": "Current Online",
   "current_time": "Current Time",
   "region_overview": "Region",
   "traffic_overview": "Traffic Overview",
-  "documentation": "Documentation",
   "account_settings": {
-    "title": "Account Settings",
-    "username": "Username",
-    "username_settings": "Username Settings",
-    "enter_new_username": "Enter new username",
-    "save_username": "Save Username",
-    "username_empty": "Username cannot be empty",
-    "username_unchanged": "Username unchanged",
-    "username_update_success": "Username updated successfully",
-    "username_update_failed": "Failed to update username",
-    "get_user_info_failed": "Failed to get user information",
-    "password": "Password",
-    "password_settings": "Password Settings",
-    "password_cli_only": "Password can only be reset via command line",
-    "password_cli_instructions": "Please use the following command to reset password:",
     "github_account": "GitHub Account",
     "github_bound": "Bound",
     "github_unbound": "Unbound",
     "github_not_bound": "GitHub account not bound",
     "bind_github": "Bind GitHub Account",
     "unbind_github": "Unbind GitHub Account",
-    "confirm_unbind_github": "Confirm unbind GitHub account",
     "unbind_github_warning": "After unbinding, you will not be able to log in with your GitHub account. Are you sure you want to unbind?",
     "cancel": "Cancel",
     "confirm_unbind": "Confirm Unbind",
     "unbind_github_success": "Successfully unbound GitHub account",
     "unbind_github_failed": "Failed to unbind GitHub account",
-    "github_auth_failed": "Failed to process GitHub authentication",
-    "loading": "Loading..."
+    "github_auth_failed": "Failed to process GitHub authentication"
   },
   "terminal": {
     "title": "Terminal",
@@ -169,9 +153,7 @@
     "password": "Password",
     "two_factor": "Two-Factor Authentication",
     "password_placeholder": "Enter your password",
-    "login_with_github": "Login with GitHub",
-    "error_required_fields": "Username and password are required",
-    "login_button": "Login"
+    "login_with_github": "Login with GitHub"
   },
   "color": {
     "gray": "Gray",
@@ -203,10 +185,8 @@
   },
   "chart": {
     "cpu_usage": "CPU Usage",
-    "ram_used": "Ram Used",
     "swap_used": "Swap Used",
     "process": "Processes",
-    "network": "Network Speed",
     "network_up": "Upload",
     "network_down": "Download",
     "connections": "Connections",
@@ -215,7 +195,6 @@
     "mem_used": "Ram",
     "disk_used": "Disk"
   },
-  "instance": "Instance",
   "home_title": "Komari Monitor",
   "admin": {
     "nodeTable": {
@@ -226,7 +205,6 @@
       "confirm": "confirm",
       "confirmDelete": "Confirm deletion",
       "customColumns": "Custom columns",
-      "delete": "delete",
       "deleting": "Delete...",
       "errorLoadNodeList": "Unable to load the node list",
       "errorRefreshNodeList": "Failed to refresh the list",
@@ -239,7 +217,6 @@
       "noResults": "No results",
       "nodeList": "Node list",
       "submit": "submit",
-      "terminal": "terminal",
       "submitting": "wait",
       "searchByName": "Find the server",
       "installCommand": "Install command",
@@ -262,7 +239,8 @@
       "expiredAt": "Expired at",
       "setToLongTerm": "Set to Long term",
       "invalidPrice": "Invalid price",
-      "priceTips": "0 is not displayed, -1 means free"
+      "priceTips": "0 is not displayed, -1 means free",
+      "dragToReorder": "Long press and drag to reorder"
     },
     "nodeDetail": {
       "arch": "Architecture",
@@ -345,7 +323,8 @@
     "edit": "Edit",
     "update": "Update",
     "execute": "Execute",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "error": "Error"
   },
   "command_clipboard": {
     "title": "Command Clipboard"
