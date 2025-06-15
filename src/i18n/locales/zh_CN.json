@@ -1,14 +1,7 @@
 {
   "warn_https": "当前连接不是 HTTPS！您的敏感数据存在严重风险。请立即采取措施确保连接安全！",
   "warn_websocket": "WebSocket 未连接！",
-  "server": "服务器",
-  "name": "名称",
-  "ip_address": "IP 地址",
-  "client_version": "客户端版本",
   "delete": "删除",
-  "not_implemented": "这个功能目前还没做",
-  "markup": "备注",
-  "panel_welcome": "Hi {{username}} ! 欢迎使用 Komari.",
   "account": {
     "title": "账户",
     "greeting": "{{username}}，您今天想做什么？",
@@ -32,16 +25,27 @@
     "disable_2fa": "禁用",
     "disable_2fa_confirmation": "您确定禁用2FA吗？"
   },
-  "about": "关于",
   "settings": {
-    "title": "设置",
     "custom": {
-      "title": "自定义",
       "header": "自定义头部",
-      "header_description": "添加自定义 HTML/CSS/JavaScript 到站点头部，这些内容将会在所有页面加载"
+      "header_description": "添加自定义 HTML/CSS/JavaScript 到站点头部，这些内容将会在所有页面加载",
+      "note": "个性化内容在使用自定义主题时可能会被覆盖。请确保代码的安全性，避免使用不受信任的内容。",
+      "body": "自定义 Body",
+      "body_description": "在页面底部添加自定义内容",
+      "favicon": "自定义 Favicon",
+      "favicon_description": "在浏览器标签页显示的图标",
+      "favicon_current": "当前 Favicon",
+      "favicon_note": "Favicon 图标的更新速度可能较慢，通常需要清除浏览器缓存后才能看到更改。",
+      "favicon_default": "恢复默认",
+      "favicon_default_description": "这将恢复默认的 Favicon 图标，是否继续？",
+      "favicon_default_success": "已恢复默认 Favicon",
+      "favicon_confirm": "确认",
+      "favicon_update_success": "已更新 Favicon",
+      "favicon_change": "更新 Favicon"
     },
     "sign_on": {
-      "title": "登录"
+      "title": "登录",
+      "disable_password": "禁止密码登录"
     },
     "sso": {
       "title": "单点登录",
@@ -54,11 +58,8 @@
       "provider": "单登录提供商",
       "provider_description": "选择用于单点登录的身份验证提供商"
     },
-    "general": {
-      "title": "通用"
-    },
+    "general": {},
     "site": {
-      "title": "站点",
       "name": "站点名称",
       "name_description": "设置控制面板的站点名称",
       "description": "站点描述",
@@ -73,16 +74,18 @@
       "provider_description": "选择提供地理位置信息的服务商",
       "test_title": "测试GeoIP",
       "test_description": "测试选定的GEOIP数据库",
-      "title": "GeoIP"
+      "title": "GeoIP",
+      "update_title": "更新 GeoIP 数据库",
+      "update_success": "GeoIP 数据库更新成功",
+      "update_error": "更新 GeoIP 数据库失败",
+      "test_button": "测试"
     },
-    "save_settings": "保存设置",
     "settings_saved": "设置已保存",
     "settings_save_failed": "保存设置失败"
   },
   "sessions": {
     "title": "会话管理",
     "active_sessions": "活动会话",
-    "logout": "登出",
     "loading": "加载中...",
     "delete_all": "删除全部会话",
     "delete_all_desc": "此操作将删除所有会话，是否继续？",
@@ -100,43 +103,24 @@
     "latest_online": "最近在线",
     "last_login": "上次登录"
   },
-  "edit": "编辑",
-  "token": "令牌",
   "save": "保存",
   "current_online": "当前在线",
   "current_time": "当前时间",
   "region_overview": "点亮地区",
   "traffic_overview": "流量概览",
-  "documentation": "文档",
   "account_settings": {
-    "title": "账户设置",
-    "username": "用户名",
-    "username_settings": "用户名设置",
-    "enter_new_username": "输入新用户名",
-    "save_username": "保存用户名",
-    "username_empty": "用户名不能为空",
-    "username_unchanged": "用户名未更改",
-    "username_update_success": "用户名更新成功",
-    "username_update_failed": "更新用户名失败",
-    "get_user_info_failed": "获取用户信息失败",
-    "password": "密码",
-    "password_settings": "密码设置",
-    "password_cli_only": "密码只能通过命令行重置",
-    "password_cli_instructions": "请使用以下命令重置密码：",
     "github_account": "GitHub账户",
     "github_bound": "已绑定",
     "github_unbound": "未绑定",
     "github_not_bound": "未绑定GitHub账户",
     "bind_github": "绑定GitHub账户",
     "unbind_github": "解绑GitHub账户",
-    "confirm_unbind_github": "确认解绑GitHub账户",
     "unbind_github_warning": "解绑后，您将无法使用GitHub账户登录。确定要解绑吗？",
     "cancel": "取消",
     "confirm_unbind": "确认解绑",
     "unbind_github_success": "已成功解绑GitHub账户",
     "unbind_github_failed": "解绑GitHub账户失败",
-    "github_auth_failed": "处理GitHub认证失败",
-    "loading": "加载中..."
+    "github_auth_failed": "处理GitHub认证失败"
   },
   "terminal": {
     "title": "终端",
@@ -169,9 +153,7 @@
     "password": "密码",
     "two_factor": "双因素认证",
     "password_placeholder": "请输入您的密码",
-    "login_with_github": "使用 GitHub 登录",
-    "error_required_fields": "用户名和密码是必填项",
-    "login_button": "登录"
+    "login_with_github": "使用 GitHub 登录"
   },
   "color": {
     "gray": "灰色",
@@ -211,18 +193,13 @@
     "udp_connections": "UDP",
     "mem_used": "内存",
     "swap_used": "虚拟内存",
-    "disk_used": "磁盘",
-    "network": "网络",
-    "ram_used": "内存"
+    "disk_used": "磁盘"
   },
-  "instance": "实例",
   "home_title": "Komari Monitor",
   "admin": {
     "nodeTable": {
       "nodeList": "节点列表",
       "addNode": "添加节点",
-      "terminal": "终端",
-      "delete": "删除",
       "confirmDelete": "确认删除",
       "cannotUndo": "这个操作将无法恢复！",
       "cancel": "取消",
@@ -262,7 +239,8 @@
       "expiredAt": "到期时间",
       "setToLongTerm": "设置为长期",
       "invalidPrice": "价格无效",
-      "priceTips": "0不显示，-1表示免费"
+      "priceTips": "0不显示，-1表示免费",
+      "dragToReorder": "长按拖拽重新排序"
     },
     "nodeDetail": {
       "machineDetail": "机器详细信息",
@@ -345,7 +323,8 @@
     "edit": "编辑",
     "update": "更新",
     "execute": "执行",
-    "confirm": "确认"
+    "confirm": "确认",
+    "error": "错误"
   },
   "command_clipboard": {
     "title": "命令剪贴板"

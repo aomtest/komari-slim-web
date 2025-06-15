@@ -132,7 +132,7 @@ const Header = ({
       refresh();
     } catch (error) {
       toast.error(
-        `${t("error", "Error")}: ${
+        `${t("common.error", "Error")}: ${
           error instanceof Error ? error.message : String(error)
         }`
       );
