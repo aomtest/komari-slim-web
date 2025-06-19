@@ -66,6 +66,7 @@ import {
 import { formatBytes } from "@/types/NodeBasicInfo";
 import PriceTags from "@/components/PriceTags";
 import Loading from "@/components/loading";
+import Tips from "@/components/ui/tips";
 
 const NodeDetailsPage = () => {
   return (
@@ -443,14 +444,6 @@ const NodeTable = ({
     </div>
   );
 };
-type InstallOptions = {
-  disableWebSsh: boolean;
-  disableAutoUpdate: boolean;
-  ignoreUnsafeCert: boolean;
-  ghproxy: string;
-  dir: string;
-  serviceName: string;
-};
 
 type Platform = "linux" | "windows";
 const ActionButtons = ({ node }: { node: NodeDetail }) => {
@@ -521,7 +514,15 @@ function DeleteButton({ node }: { node: NodeDetail }) {
     </Dialog.Root>
   );
 }
-
+type InstallOptions = {
+  disableWebSsh: boolean;
+  disableAutoUpdate: boolean;
+  ignoreUnsafeCert: boolean;
+  memoryModeAvailable: boolean;
+  ghproxy: string;
+  dir: string;
+  serviceName: string;
+};
 function GenerateCommandButton({ node }: { node: NodeDetail }) {
   const [selectedPlatform, setSelectedPlatform] =
     React.useState<Platform>("linux");
@@ -529,6 +530,7 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
     disableWebSsh: false,
     disableAutoUpdate: false,
     ignoreUnsafeCert: false,
+    memoryModeAvailable: false,
     ghproxy: "",
     dir: "",
     serviceName: "",
@@ -552,6 +554,9 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
     }
     if (installOptions.ignoreUnsafeCert) {
       args.push("--ignore-unsafe-cert");
+    }
+    if (installOptions.memoryModeAvailable) {
+      args.push("--memory-mode-available");
     }
     if (enableGhproxy && installOptions.ghproxy) {
       const finalUrl = (
@@ -629,7 +634,7 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
               {t("admin.nodeTable.installOptions", "安装选项")}
             </label>
             <div className="grid grid-cols-2 gap-2">
-              <Flex gap="2">
+              <Flex gap="2" align="center">
                 <Checkbox
                   checked={installOptions.disableWebSsh}
                   onCheckedChange={(checked) => {
@@ -648,10 +653,10 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
                     }));
                   }}
                 >
-                  {t("admin.nodeTable.disableWebSsh", "禁用 WebSSH")}
+                  {t("admin.nodeTable.disableWebSsh")}
                 </label>
               </Flex>
-              <Flex gap="2">
+              <Flex gap="2" align="center">
                 <Checkbox
                   checked={installOptions.disableAutoUpdate}
                   onCheckedChange={(checked) => {
@@ -673,7 +678,7 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
                   {t("admin.nodeTable.disableAutoUpdate", "禁用自动更新")}
                 </label>
               </Flex>
-              <Flex gap="2">
+              <Flex gap="2" align="center">
                 <Checkbox
                   checked={installOptions.ignoreUnsafeCert}
                   onCheckedChange={(checked) => {
@@ -695,7 +700,32 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
                   {t("admin.nodeTable.ignoreUnsafeCert", "忽略不安全证书")}
                 </label>
               </Flex>
-            </div>{" "}
+              <Flex gap="2" align="center">
+                <Checkbox
+                  checked={installOptions.memoryModeAvailable}
+                  onCheckedChange={(checked) => {
+                    setInstallOptions((prev) => ({
+                      ...prev,
+                      memoryModeAvailable: Boolean(checked),
+                    }));
+                  }}
+                />
+                <label
+                  className="text-sm font-normal"
+                  onClick={() => {
+                    setInstallOptions((prev) => ({
+                      ...prev,
+                      memoryModeAvailable: !prev.memoryModeAvailable,
+                    }));
+                  }}
+                >
+                  {t("admin.nodeTable.memoryModeAvailable", "监测可用内存")}
+                </label>
+                <Tips size="14">
+                  {t("admin.nodeTable.memoryModeAvailable_tip")}
+                </Tips>
+              </Flex>
+            </div>
             <Flex direction="column" gap="2">
               <Flex gap="2" align="center">
                 <Checkbox

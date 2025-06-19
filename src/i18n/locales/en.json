@@ -238,7 +238,7 @@
       "searchByName": "Find the server",
       "installCommand": "Install command",
       "installOptions": "Install options",
-      "disableWebSsh": "Disable WenSSH",
+      "disableWebSsh": "Disable remote control",
       "disableAutoUpdate": "Disable auto update",
       "ignoreUnsafeCert": "Ignore unsafe cert",
       "ghproxy": "Github proxy",
@@ -257,7 +257,9 @@
       "setToLongTerm": "Set to Long term",
       "invalidPrice": "Invalid price",
       "priceTips": "0 is not displayed, -1 means free",
-      "dragToReorder": "Long press and drag to reorder"
+      "dragToReorder": "Long press and drag to reorder",
+      "memoryModeAvailable": "Monitor available memory",
+      "memoryModeAvailable_tip": "The Agent monitors and reports used memory by default. Selecting this option will monitor and report available memory."
     },
     "nodeDetail": {
       "arch": "Architecture",
