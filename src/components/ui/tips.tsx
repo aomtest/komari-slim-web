@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Info } from "lucide-react";
+import { Button, Dialog } from "@radix-ui/themes";
+import { useTranslation } from "react-i18next";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface TipsProps {
   size?: string;
@@ -9,17 +12,8 @@ interface TipsProps {
 
 const Tips: React.FC<TipsProps> = ({ size = "16", children }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  // Detect if device is mobile
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+  const isMobile = useIsMobile();
+  const [t] = useTranslation();
 
   const handleInteraction = () => {
     if (isMobile) {
@@ -43,19 +37,31 @@ const Tips: React.FC<TipsProps> = ({ size = "16", children }) => {
       >
         <Info size={size} />
       </div>
-      {isOpen && (
-        <motion.div
-          className={`absolute z-10 top-full mt-2 left-1/2 -translate-x-1/2 bg-[var(--gray-4)] rounded-md p-1 text-sm min-w-48`}
-          variants={popupVariants}
-          initial="hidden"
-          animate="visible"
-          exit="hidden"
-          transition={{ duration: 0.2, ease: "easeOut" }}
-        >
-          <div className="relative">
-            {children}
-          </div>
-        </motion.div>
+      {isMobile ? (
+        <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
+          <Dialog.Content>
+            <Dialog.Title>Tips</Dialog.Title>
+            <div className="flex flex-col gap-2">{children}</div>
+            <Dialog.Close>
+              <div className="flex justify-end mt-4">
+                <Button>{t("common.close")}</Button>
+              </div>
+            </Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Root>
+      ) : (
+        isOpen && (
+          <motion.div
+            className={`absolute z-10 top-full mt-2 left-1/2 -translate-x-1/2 bg-[var(--accent-3)] border-2 border-accent-5 rounded-md p-1 text-sm min-w-64`}
+            variants={popupVariants}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          >
+            <div className="relative">{children}</div>
+          </motion.div>
+        )
       )}
     </div>
   );

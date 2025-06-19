@@ -353,7 +353,8 @@
     "disabled": "Disabled",
     "search": "Search",
     "selected": "{{count}} selected",
-    "save": "Save"
+    "save": "Save",
+    "close": "Close"
   },
   "command_clipboard": {
     "title": "Command Clipboard"
@@ -365,7 +366,8 @@
       "full_title": "Offline Alerts Configuration",
       "tips": "To prevent frequent notifications, we use a cooldown period and a grace period:</br> </br> <b>Cooldown Period</b>: After an offline notification is sent, no further notifications will be sent during this time, even if the client goes offline again.</br> <b>Grace Period</b>: If a client goes offline and doesn't reconnect within this time, an offline notification will be sent.",
       "cooldown": "Cooldown Period",
-      "grace_period": "Grace Period"
+      "grace_period": "Grace Period",
+      "batch_edit": "Batch Edit"
     },
     "load": {
       "title": "Load"
