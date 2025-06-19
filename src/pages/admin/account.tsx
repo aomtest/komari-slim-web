@@ -12,6 +12,7 @@ import {
   TextField,
 } from "@radix-ui/themes";
 import { Github } from "lucide-react";
+import Loading from "@/components/loading";
 
 const Account = () => {
   return (
@@ -27,7 +28,7 @@ const InnerLayout = () => {
   const [usernameSaving, setUsernameSaving] = React.useState(false);
   const [passwordSaving, setPasswordSaving] = React.useState(false);
   if (loading) {
-    return <div>{t("loading")}</div>;
+    return <Loading />;
   }
   if (error) {
     return <div>{error.message}</div>;

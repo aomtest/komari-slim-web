@@ -1,4 +1,5 @@
 import LanguageSwitch from "@/components/Language";
+import Loading from "@/components/loading";
 import {
   CommandClipboardProvider,
   useCommandClipboard,
@@ -25,7 +26,7 @@ const CommandClipboardPanel = ({ ...props }: { [key: string]: any }) => {
     const { t } = useTranslation();
     const { commands, loading, error } = useCommandClipboard();
     if (loading) {
-      return <div>Loading commands...</div>;
+      return <Loading />;
     }
     if (error) {
       return <div>Error loading commands: {error.message}</div>;

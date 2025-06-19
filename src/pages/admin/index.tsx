@@ -65,6 +65,7 @@ import {
 } from "@/components/ui/drawer";
 import { formatBytes } from "@/types/NodeBasicInfo";
 import PriceTags from "@/components/PriceTags";
+import Loading from "@/components/loading";
 
 const NodeDetailsPage = () => {
   return (
@@ -75,18 +76,18 @@ const NodeDetailsPage = () => {
 };
 
 const Layout = () => {
-  const { t } = useTranslation();
   const { nodeDetail, isLoading, error } = useNodeDetails();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedNodes, setSelectedNodes] = useState<string[]>([]);
+  const filteredNodes = Array.isArray(nodeDetail)
+    ? nodeDetail
+        .filter((node) =>
+          node.name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .sort((a, b) => a.weight - b.weight)
+    : [];
 
-  const filteredNodes = nodeDetail
-    .filter((node) =>
-      node.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .sort((a, b) => a.weight - b.weight);
-
-  if (isLoading) return <div>{t("loading")}</div>;
+  if (isLoading) return <Loading text="" />;
   if (error) return <div>{error}</div>;
 
   return (
@@ -1218,17 +1219,19 @@ function BillingButton({ node }: { node: NodeDetail }) {
     try {
       setSaving(true);
       const formData = new FormData(e.target as HTMLFormElement);
-      const priceValue = formData.get("price") as string || "0";
+      const priceValue = (formData.get("price") as string) || "0";
       const price = parseFloat(priceValue);
 
       if (isNaN(price) || (price < 0 && price !== -1)) {
         toast.error(t("admin.nodeTable.invalidPrice"));
         return;
       }
-      const billingCycleValue = parseInt(formData.get("billingCycle") as string || "30");
-      const expiredAtValue = formData.get("expiredAt") as string || "";
-      const currencyValue = formData.get("currency") as string || "$";
-      
+      const billingCycleValue = parseInt(
+        (formData.get("billingCycle") as string) || "30"
+      );
+      const expiredAtValue = (formData.get("expiredAt") as string) || "";
+      const currencyValue = (formData.get("currency") as string) || "$";
+
       await fetch(`/api/admin/client/${node.uuid}/edit`, {
         method: "POST",
         body: JSON.stringify({
@@ -1266,13 +1269,12 @@ function BillingButton({ node }: { node: NodeDetail }) {
           <Flex direction="column" gap="2">
             <label className="font-bold">
               <label>{t("admin.nodeTable.price")}</label>
-              <label className="text-muted-foreground text-sm ml-1 font-medium">{t("admin.nodeTable.priceTips")}</label>
+              <label className="text-muted-foreground text-sm ml-1 font-medium">
+                {t("admin.nodeTable.priceTips")}
+              </label>
             </label>
-            <TextField.Root
-              name="price"
-              defaultValue={node.price}
-            />
-            
+            <TextField.Root name="price" defaultValue={node.price} />
+
             <label className="font-bold">
               {t("admin.nodeTable.currency", "货币")}
             </label>
@@ -1281,23 +1283,27 @@ function BillingButton({ node }: { node: NodeDetail }) {
               defaultValue={currency}
               onChange={(e) => setCurrency(e.target.value)}
             />
-            
+
             <label className="font-bold">
               {t("admin.nodeTable.billingCycle")}
             </label>
-            <Select.Root name="billingCycle" value={billingCycle} onValueChange={setBillingCycle}>
+            <Select.Root
+              name="billingCycle"
+              value={billingCycle}
+              onValueChange={setBillingCycle}
+            >
               <Select.Trigger></Select.Trigger>
               <Select.Content>
-                <Select.Item value="30">{t('common.monthly')}</Select.Item>
-                <Select.Item value="90">{t('common.quarterly')}</Select.Item>
-                <Select.Item value="180">{t('common.semi_annual')}</Select.Item>
-                <Select.Item value="360">{t('common.annual')}</Select.Item>
-                <Select.Item value="720">{t('common.biennial')}</Select.Item>
-                <Select.Item value="1080">{t('common.triennial')}</Select.Item>
-                <Select.Item value="-1">{t('common.once')}</Select.Item>
+                <Select.Item value="30">{t("common.monthly")}</Select.Item>
+                <Select.Item value="90">{t("common.quarterly")}</Select.Item>
+                <Select.Item value="180">{t("common.semi_annual")}</Select.Item>
+                <Select.Item value="360">{t("common.annual")}</Select.Item>
+                <Select.Item value="720">{t("common.biennial")}</Select.Item>
+                <Select.Item value="1080">{t("common.triennial")}</Select.Item>
+                <Select.Item value="-1">{t("common.once")}</Select.Item>
               </Select.Content>
             </Select.Root>
-            
+
             <Flex gap="2" align="center">
               <label className="font-bold">
                 {t("admin.nodeTable.expiredAt")}
@@ -1317,7 +1323,9 @@ function BillingButton({ node }: { node: NodeDetail }) {
                   type="button"
                   variant="ghost"
                   onClick={() => {
-                    const dateInput = document.querySelector('input[name="expiredAt"]') as HTMLInputElement;
+                    const dateInput = document.querySelector(
+                      'input[name="expiredAt"]'
+                    ) as HTMLInputElement;
                     if (dateInput) {
                       const futureDate = new Date();
                       futureDate.setFullYear(futureDate.getFullYear() + 200);
@@ -1337,6 +1345,5 @@ function BillingButton({ node }: { node: NodeDetail }) {
         </form>
       </Dialog.Content>
     </Dialog.Root>
-
   );
 }

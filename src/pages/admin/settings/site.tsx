@@ -9,13 +9,14 @@ import {
   SettingCardSwitch,
 } from "@/components/admin/SettingCard";
 import { toast } from "sonner";
+import Loading from "@/components/loading";
 
 export default function SiteSettings() {
   const { t } = useTranslation();
   const { settings, loading, error } = useSettings();
 
   if (loading) {
-    return <Text>{t("sessions.loading")}</Text>;
+    return <Loading />;
   }
 
   if (error) {

@@ -5,13 +5,14 @@ import {
   useSettings,
 } from "@/lib/api";
 import { SettingCardLongTextInput } from "@/components/admin/SettingCard";
+import Loading from "@/components/loading";
 
 export default function CustomSettings() {
   const { t } = useTranslation();
   const { settings, loading, error } = useSettings();
 
   if (loading) {
-    return <Text>{t("sessions.loading")}</Text>;
+    return <Loading />;
   }
 
   if (error) {

@@ -7,13 +7,14 @@ import {
 } from "@/components/admin/SettingCard";
 import { SettingCardMultiInputCollapse } from "@/components/admin/SettingCardMultiInput";
 import { toast } from "sonner";
+import Loading from "@/components/loading";
 
 const NotificationSettings = () => {
   const { t } = useTranslation();
   const { settings, loading, error } = useSettings();
 
   if (loading) {
-    return <Text>{t("sessions.loading")}</Text>;
+    return <Loading />;
   }
 
   if (error) {

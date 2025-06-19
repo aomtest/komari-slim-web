@@ -10,6 +10,7 @@ import {
 import { Button, Dialog, Flex } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import NumberPicker from "@/components/ui/number-picker";
+import Loading from "@/components/loading";
 
 interface Log {
   id: number;
@@ -79,7 +80,7 @@ const LogPage = () => {
   if (totalPages > 1) pageNumbers.push(totalPages);
 
   if (loading) {
-    return <div>Loading logs...</div>;
+    return <Loading />;
   }
   if (error) {
     return <div>Error: {error}</div>;

@@ -17,6 +17,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { Suspense } from "react";
 import { useRoutes } from "react-router-dom";
 import { routes } from "./routes";
+import Loading from "./components/loading";
 const App = () => {
   const [appearance, setAppearance] = useLocalStorage<Appearance>(
     "appearance",
@@ -41,7 +42,7 @@ const App = () => {
   );
   const routing = useRoutes(routes);
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<Loading />}>
       <ThemeContext.Provider value={themeContextValue}>
         <Theme appearance={resolvedAppearance} accentColor={color} scaling="110%">
           {routing}

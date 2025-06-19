@@ -14,6 +14,7 @@ import {
 } from "@/components/admin/SettingCard";
 import React from "react";
 import { toast } from "sonner";
+import Loading from "@/components/loading";
 export default function GeneralSettings() {
   const { t } = useTranslation();
   const { settings, loading, error } = useSettings();
@@ -21,7 +22,7 @@ export default function GeneralSettings() {
     null
   );
   if (loading) {
-    return <Text>{t("sessions.loading")}</Text>;
+    return <Loading  text="creeper?"  />;
   }
 
   if (error) {

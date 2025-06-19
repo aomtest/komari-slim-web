@@ -28,6 +28,7 @@ import {
   TextField,
 } from "@radix-ui/themes";
 import { toast } from "sonner";
+import Loading from "@/components/loading";
 
 const OfflinePage = () => {
   return (
@@ -87,7 +88,7 @@ const InnerLayout = () => {
   };
 
   if (onLoading || onNodeLoading) {
-    return <div>Loading...</div>;
+    return <Loading text="(o゜▽゜)o☆" />;
   }
   if (onError || onNodeError) {
     return <div>Error: {onError?.message || onNodeError}</div>;

@@ -3,6 +3,7 @@ import {
   SettingCardShortTextInput,
   SettingCardSwitch,
 } from "@/components/admin/SettingCard";
+import Loading from "@/components/loading";
 import { updateSettingsWithToast, useSettings } from "@/lib/api";
 import { Text } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
@@ -12,7 +13,7 @@ export default function SsoSettings() {
   const { settings, loading, error } = useSettings();
 
   if (loading) {
-    return <Text>{t("sessions.loading")}</Text>;
+    return <Loading />;
   }
 
   if (error) {

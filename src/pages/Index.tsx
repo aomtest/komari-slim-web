@@ -4,6 +4,7 @@ import { NodeGrid } from "../components/Node";
 import { formatBytes } from "../types/NodeBasicInfo";
 import { useLiveData } from "../contexts/LiveDataContext";
 import { useNodeList } from "@/contexts/NodeListContext";
+import Loading from "@/components/loading";
 
 const Index = () => {
   const InnerLayout = () => {
@@ -13,7 +14,7 @@ const Index = () => {
     //#region 节点数据
     const { nodeList, isLoading, error } = useNodeList();
     if (isLoading) {
-      return <div>{t("loading")}</div>;
+      return <Loading />;
     }
     if (error) {
       return <div>Error: {error}</div>;

@@ -11,6 +11,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { Dialog, Flex, Button } from "@radix-ui/themes";
 import { UserAgentHelper } from "@/utils/UserAgentHelper";
+import Loading from "@/components/loading";
 type Resp = {
   current: string;
   data: Array<{
@@ -101,7 +102,7 @@ export default function Sessions() {
   }
 
   if (!sessions) {
-    return <div className="p-4 text-center">{t("sessions.loading")}</div>;
+    return <Loading />;
   }
 
   return (

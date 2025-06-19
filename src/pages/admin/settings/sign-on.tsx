@@ -7,12 +7,13 @@ import { updateSettingsWithToast, useSettings } from "@/lib/api";
 import { Text } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import { SettingCardMultiInputCollapse } from "@/components/admin/SettingCardMultiInput";
+import Loading from "@/components/loading";
 
 export default function SignOnSettings() {
   const { t } = useTranslation();
   const { settings, loading, error } = useSettings();
   if (loading) {
-    return <Text>{t("sessions.loading")}</Text>;
+    return <Loading text="ssssssssing on" />;
   }
   if (error) {
     return <Text color="red">{error}</Text>;

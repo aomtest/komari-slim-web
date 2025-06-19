@@ -58,6 +58,7 @@ import { ActionsCell } from "./NodeTable/NodeFunction";
 import { toast } from "sonner";
 import { LoadingIcon } from "../Icones/icon";
 import { Dialog, Flex, Button, IconButton, Checkbox, TextField } from "@radix-ui/themes";
+import Loading from "../loading";
 
 const columns: ColumnDef<z.infer<typeof schema>>[] = [
   {
@@ -303,7 +304,7 @@ export function DataTable() {
 
   if (isLoading) {
     return (
-      <div className="p-4 text-center">{t("admin.nodeTable.loading")}</div>
+      <Loading />
     );
   }
 
