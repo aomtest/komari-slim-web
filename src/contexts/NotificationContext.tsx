@@ -5,6 +5,7 @@ export type OfflineNotification = {
   enable: boolean;
   cooldown: number;
   grace_period: number;
+  last_notified: string;
 };
 
 interface OfflineNotificationContextType {

@@ -20,6 +20,7 @@ import React from "react";
 import { Pencil, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
+  Badge,
   Button,
   Dialog,
   Flex,
@@ -46,7 +47,11 @@ const NotificationEditForm = ({
   onCancel,
 }: {
   initialValues: { enable: boolean; cooldown: number; grace_period: number };
-  onSubmit: (values: { enable: boolean; cooldown: number; grace_period: number }) => void;
+  onSubmit: (values: {
+    enable: boolean;
+    cooldown: number;
+    grace_period: number;
+  }) => void;
   loading?: boolean;
   onCancel?: () => void;
 }) => {
@@ -56,7 +61,7 @@ const NotificationEditForm = ({
   const [grace, setGrace] = React.useState(initialValues.grace_period);
   return (
     <form
-      onSubmit={e => {
+      onSubmit={(e) => {
         e.preventDefault();
         onSubmit({ enable: enabled, cooldown: 3000, grace_period: grace });
       }}
@@ -78,19 +83,26 @@ const NotificationEditForm = ({
         id="cooldown"
         name="cooldown"
       /> */}
-      <label htmlFor="grace_period">{t("notification.offline.grace_period")}</label>
+      <label htmlFor="grace_period">
+        {t("notification.offline.grace_period")}
+      </label>
       <TextField.Root
         type="number"
         min={0}
         value={grace}
-        onChange={e => setGrace(Number(e.target.value))}
+        onChange={(e) => setGrace(Number(e.target.value))}
         id="grace_period"
         name="grace_period"
       />
       <Flex gap="2" justify="end" className="mt-4">
         {onCancel && (
           <Dialog.Close>
-            <Button variant="soft" color="gray" type="button" onClick={onCancel}>
+            <Button
+              variant="soft"
+              color="gray"
+              type="button"
+              onClick={onCancel}
+            >
               {t("common.cancel")}
             </Button>
           </Dialog.Close>
@@ -116,10 +128,18 @@ const InnerLayout = () => {
   const { t } = useTranslation();
   const [batchLoading, setBatchLoading] = React.useState(false);
   const [batchDialogOpen, setBatchDialogOpen] = React.useState(false);
-  const [batchForm, setBatchForm] = React.useState({ enable: true, cooldown: 1800, grace_period: 300 });
+  const [batchForm, setBatchForm] = React.useState({
+    enable: true,
+    cooldown: 1800,
+    grace_period: 300,
+  });
 
   // 批量修改
-  const handleBatchEdit = (values: { enable: boolean; cooldown: number; grace_period: number }) => {
+  const handleBatchEdit = (values: {
+    enable: boolean;
+    cooldown: number;
+    grace_period: number;
+  }) => {
     setBatchLoading(true);
     const payload = selected.map((id) => ({
       client: id,
@@ -134,7 +154,9 @@ const InnerLayout = () => {
     })
       .then((res) => {
         if (!res.ok) {
-          toast.error("Failed to update offline notifications: " + res.statusText);
+          toast.error(
+            "Failed to update offline notifications: " + res.statusText
+          );
         } else {
           toast.success(t("common.updated_successfully"));
         }
@@ -195,7 +217,9 @@ const InnerLayout = () => {
               variant="soft"
               onClick={() => {
                 // 默认取第一个选中项的配置作为初始值
-                const first = offlineNotification.find(n => n.client === selected[0]);
+                const first = offlineNotification.find(
+                  (n) => n.client === selected[0]
+                );
                 setBatchForm({
                   enable: first?.enable ?? true,
                   cooldown: first?.cooldown ?? 1800,
@@ -265,6 +289,7 @@ const OfflineNotificationTable = ({
             <TableHead>{t("common.status")}</TableHead>
             {/* <TableHead>{t("notification.offline.cooldown")}</TableHead> */}
             <TableHead>{t("notification.offline.grace_period")}</TableHead>
+            <TableHead>{t("notification.offline.last_notified")}</TableHead>
             <TableHead>{t("common.action")}</TableHead>
           </TableRow>
         </TableHeader>
@@ -287,9 +312,19 @@ const OfflineNotificationTable = ({
               </TableCell>
               <TableCell>{node.name}</TableCell>
               <TableCell>
-                {offlineNotification.find((n) => n.client === node.uuid)?.enable
-                  ? t("common.enabled")
-                  : t("common.disabled")}
+                <Badge
+                  color={
+                    offlineNotification.find((n) => n.client === node.uuid)
+                      ?.enable
+                      ? "green"
+                      : "red"
+                  }
+                >
+                  {offlineNotification.find((n) => n.client === node.uuid)
+                    ?.enable
+                    ? t("common.enabled")
+                    : t("common.disabled")}
+                </Badge>
               </TableCell>
               {/* <TableCell>
                 {offlineNotification.find((n) => n.client === node.uuid)
@@ -298,8 +333,20 @@ const OfflineNotificationTable = ({
               </TableCell> */}
               <TableCell>
                 {offlineNotification.find((n) => n.client === node.uuid)
-                  ?.grace_period || 300}{" "}
+                  ?.grace_period || 300}
                 {t("nodeCard.time_second")}
+              </TableCell>
+              <TableCell>
+                {(() => {
+                  const lastNotified = offlineNotification.find(
+                    (n) => n.client === node.uuid
+                  )?.last_notified;
+                  if (!lastNotified) return "-";
+                  const date = new Date(lastNotified);
+                  if (date.getFullYear() < 3)
+                    return t("notification.offline.never_triggered");
+                  return date.toLocaleString();
+                })()}
               </TableCell>
               <TableCell>
                 <ActionButtons
@@ -343,7 +390,7 @@ const ActionButtons = ({
               grace_period: offlineNotifications?.grace_period ?? 300,
             }}
             loading={editSaving}
-            onSubmit={values => {
+            onSubmit={(values) => {
               setEditSaving(true);
               fetch("/api/admin/notification/offline/edit", {
                 method: "POST",
@@ -358,7 +405,8 @@ const ActionButtons = ({
                 .then((res) => {
                   if (!res.ok) {
                     toast.error(
-                      "Failed to save offline notification settings: " + res.statusText
+                      "Failed to save offline notification settings: " +
+                        res.statusText
                     );
                   }
                   toast.success(t("common.updated_successfully"));
@@ -370,7 +418,10 @@ const ActionButtons = ({
                   setEditSaving(false);
                 })
                 .catch((error) => {
-                  console.error("Error saving offline notification settings:", error);
+                  console.error(
+                    "Error saving offline notification settings:",
+                    error
+                  );
                   toast.error(t("common.error", { message: error.message }));
                 });
             }}

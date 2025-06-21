@@ -306,7 +306,8 @@
   "close": "关闭",
   "just_now": "刚刚",
   "time": {
-    "ago": "前"
+    "ago": "前",
+    "second": "秒"
   },
   "loading": "加载中...",
   "log": {
@@ -372,5 +373,9 @@
       "title": "负载通知"
     },
     "title": "通知"
+  },
+  "ping": {
+    "title": "延迟监测",
+    "target": "目标"
   }
 }

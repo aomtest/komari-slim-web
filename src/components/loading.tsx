@@ -6,7 +6,7 @@ type LoadingProps = {
 const Loading = ({ text, children }: LoadingProps) => {
   return (
     <div className="flex items-center justify-center flex-col">
-        <img src="/assets/logo.png" alt="Loading" className="h-16 mb-4" />
+        <video src="/assets/BlueArchive-loading.webm" autoPlay loop controls={false} className="h-16 mb-4" />
         <p className="text-lg font-bold">Loading...</p>
         <p className="text-sm text-muted-foreground mb-4">
             {text}

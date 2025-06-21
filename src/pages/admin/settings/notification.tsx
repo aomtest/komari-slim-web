@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Text } from "@radix-ui/themes";
 import { updateSettingsWithToast, useSettings } from "@/lib/api";
 import {
+  SettingCardButton,
   SettingCardSelect,
   SettingCardSwitch,
 } from "@/components/admin/SettingCard";
@@ -70,7 +71,7 @@ const NotificationSettings = () => {
                 "Chat ID must be a number"
               )
             );
-            return
+            return;
           }
           await updateSettingsWithToast(
             {
@@ -81,6 +82,31 @@ const NotificationSettings = () => {
           );
         }}
       />
+      <SettingCardButton
+        title={t("settings.notification.test_title")}
+        description={t("settings.notification.test_description")}
+        onClick={async () => {
+          try {
+        const res = await fetch('/api/admin/test/message');
+        let data;
+        try {
+          data = await res.json();
+        } catch {
+          toast.error(t("common.error"));
+          return;
+        }
+        if (data && data.message && data.code !== 200) {
+          toast.error(data.message);
+          return;
+        }
+        toast.success(t("common.success"));
+      } catch (error) {
+        toast.error(t("common.error") + ": " + (error instanceof Error ? error.message : String(error)));
+          }
+        }}
+      >
+        GO
+      </SettingCardButton>
     </>
   );
 };

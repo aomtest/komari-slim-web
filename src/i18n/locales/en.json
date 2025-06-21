@@ -97,7 +97,9 @@
       "method_description": "Pick your preferred platform for alerts.",
       "telegram_title": "Telegram Configuration",
       "telegram_description": "Configure your Telegram bot to get alerts directly in your chat.",
-      "telegram_bot_token": "Telegram Bot Token"
+      "telegram_bot_token": "Telegram Bot Token",
+      "test_title": "Send test message",
+      "test_description": "Send a test message"
     }
   },
   "sessions": {
@@ -306,7 +308,8 @@
   "close": "Close",
   "just_now": "Just now",
   "time": {
-    "ago": "Ago"
+    "ago": "Ago",
+    "second": "Second"
   },
   "loading": "Loading",
   "log": {
@@ -354,7 +357,11 @@
     "search": "Search",
     "selected": "{{count}} selected",
     "save": "Save",
-    "close": "Close"
+    "close": "Close",
+    "success": "Success",
+    "select": "Select",
+    "done": "Done",
+    "none": "None"
   },
   "command_clipboard": {
     "title": "Command Clipboard"
@@ -367,10 +374,18 @@
       "tips": "To prevent frequent notifications, we use a grace period:</br> <b>Grace Period</b>: If a client goes offline and doesn't reconnect within this time, an offline notification will be sent.",
       "cooldown": "Cooldown Period",
       "grace_period": "Grace Period",
-      "batch_edit": "Batch Edit"
+      "batch_edit": "Batch Edit",
+      "last_notified": "Last notified",
+      "never_triggered": "Never triggered"
     },
     "load": {
       "title": "Load"
     }
+  },
+  "ping": {
+    "title": "Latency",
+    "target": "Target",
+    "type": "Type",
+    "interval": "Interval"
   }
 }

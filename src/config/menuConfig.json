@@ -50,6 +50,11 @@
       ]
     },
     {
+      "labelKey": "ping.title",
+      "path": "/admin/ping",
+      "icon": "Activity"
+    },
+    {
       "labelKey": "sessions.title",
       "path": "/admin/sessions",
       "icon": "Users"
