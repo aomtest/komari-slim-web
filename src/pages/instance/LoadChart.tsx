@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Card, Flex, SegmentedControl } from "@radix-ui/themes";
 import { formatBytes } from "../../components/Node";
 import { useNodeList } from "@/contexts/NodeListContext";
-import { type RecordFormat } from "@/utils/RecordHelper";
+import fillMissingTimePoints, { type RecordFormat } from "@/utils/RecordHelper";
 import {
   ChartContainer,
   ChartTooltip,
@@ -140,9 +140,8 @@ const LoadChart = ({ data = [] }: LoadChartProps) => {
   };
   const live_data = all_live_data?.data?.data[uuid ?? ""];
   const timeFormatter = (value: any, index: number) => {
-    if (index === chartData.length - 1) return "now";
-    if (index === 0) {
-      if (hoursView === t("common.real_time") || hoursView === "real-time") {
+    if (index === 0 || index === chartData.length - 1) {
+      if (presetViews[0].label === hoursView || hoursView === "real-time" || hoursView === t("common.real_time")) {
         return new Date(value).toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
@@ -183,10 +182,27 @@ const LoadChart = ({ data = [] }: LoadChartProps) => {
       </Flex>
     );
   };
+  const minute = 60;
+  const hour = minute * 60;
   const chartData =
     hoursView === t("common.real_time") || hoursView === "real-time"
       ? data
-      : remoteData || [];
+      : hoursView === presetViews[0].label
+      ? fillMissingTimePoints(remoteData ?? [], minute, hour * 4, minute * 2)
+      : (() => {
+          const selectedHours =
+            presetViews.find((v) => v.label === hoursView)?.hours ||
+            avaliableView.find((v) => v.label === hoursView)?.hours ||
+            24;
+          const interval = selectedHours > 120 ? hour : minute * 15;
+          const maxGap = interval * 2;
+          return fillMissingTimePoints(
+            remoteData ?? [],
+            interval,
+            hour * selectedHours,
+            maxGap
+          );
+        })();
 
   return (
     <Flex direction="column" align="center" gap="4" className="w-full">

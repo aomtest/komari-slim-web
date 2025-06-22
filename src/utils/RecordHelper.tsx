@@ -47,3 +47,62 @@ export function liveDataToRecords(client: string, liveData: Record[]): RecordFor
     connections_udp: data.connections.udp ?? 0,
   }));
 }
+
+export default function fillMissingTimePoints<T extends { time?: string; updated_at?: string }>(
+  data: T[],
+  intervalSec: number = 10,
+  totalSeconds: number = 180,
+  matchToleranceSec?: number
+): T[] {
+  if (!data.length) return [];
+  // 按时间升序排序
+  const getTime = (item: T) => new Date(item.time ?? item.updated_at ?? "").getTime();
+  const sorted = [...data].sort((a, b) => getTime(a) - getTime(b));
+  const end = getTime(sorted[sorted.length - 1]);
+  const interval = intervalSec * 1000;
+  const start = end - totalSeconds * 1000 + interval;
+  const timePoints: number[] = [];
+  for (let t = start; t <= end; t += interval) {
+    timePoints.push(t);
+  }
+  const zeroTemplate = deepZeroFill(sorted[sorted.length - 1]);
+  let dataIdx = 0;
+  const matchToleranceMs = (matchToleranceSec ?? intervalSec) * 1000;
+  const filled: T[] = timePoints.map((t) => {
+    let found: T | undefined = undefined;
+    while (
+      dataIdx < sorted.length &&
+      getTime(sorted[dataIdx]) < t - matchToleranceMs
+    ) {
+      dataIdx++;
+    }
+    if (
+      dataIdx < sorted.length &&
+      Math.abs(getTime(sorted[dataIdx]) - t) <= matchToleranceMs
+    ) {
+      found = sorted[dataIdx];
+    }
+    if (found) {
+      return { ...found, time: new Date(t).toISOString() };
+    }
+    return { ...zeroTemplate, time: new Date(t).toISOString() } as T;
+  });
+  return filled;
+}
+
+// 递归补0工具
+function deepZeroFill(obj: any): any {
+  if (obj === null || obj === undefined) return 0;
+  if (typeof obj === "number") return 0;
+  if (typeof obj === "string" || typeof obj === "boolean") return obj;
+  if (Array.isArray(obj)) return obj.map(deepZeroFill);
+  if (typeof obj === "object") {
+    const res: any = {};
+    for (const k in obj) {
+      if (k === "updated_at" || k === "time") continue;
+      res[k] = deepZeroFill(obj[k]);
+    }
+    return res;
+  }
+  return 0;
+}

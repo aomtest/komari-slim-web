@@ -54,8 +54,6 @@ export default function InstancePage() {
     // 清理订阅
     return unsubscribe;
   }, [onRefresh, uuid]);
-
-  const filledRecent = fillMissingTimePoints(recent, 2, 60 * 5, 5);
   // #region 布局
   return (
     <Flex className="items-center" direction={"column"} gap="2">
@@ -92,13 +90,12 @@ export default function InstancePage() {
       </SegmentedControl.Root>
       {/* Recharts */}
       {chartView === "load" ? (
-        <LoadChart data={liveDataToRecords(uuid ?? "", filledRecent)} />
+        <LoadChart data={liveDataToRecords(uuid ?? "", recent)} />
       ) : (
         <Flex justify="center" direction={"column"} align="center" gap="2">
           <span>Work in progress...</span>
           <span>马上见面</span>
         </Flex>
-        
       )}
       <div className="grid w-full items-center justify-center mx-auto h-full gap-4 p-1 md:grid-cols-[repeat(auto-fit,minmax(620px,1fr))] grid-cols-[repeat(auto-fit,minmax(320px,1fr))]"></div>
     </Flex>
@@ -198,70 +195,70 @@ const DetailsGrid = () => {
     </div>
   );
 };
-// 递归补0工具
-function deepZeroFill(obj: any): any {
-  if (obj === null || obj === undefined) return 0;
-  if (typeof obj === "number") return 0;
-  if (typeof obj === "string" || typeof obj === "boolean") return obj;
-  if (Array.isArray(obj)) return obj.map(deepZeroFill);
-  if (typeof obj === "object") {
-    const res: any = {};
-    for (const k in obj) {
-      if (k === "updated_at") continue;
-      res[k] = deepZeroFill(obj[k]);
-    }
-    return res;
-  }
-  return 0;
-}
+// // 递归补0工具
+// function deepZeroFill(obj: any): any {
+//   if (obj === null || obj === undefined) return 0;
+//   if (typeof obj === "number") return 0;
+//   if (typeof obj === "string" || typeof obj === "boolean") return obj;
+//   if (Array.isArray(obj)) return obj.map(deepZeroFill);
+//   if (typeof obj === "object") {
+//     const res: any = {};
+//     for (const k in obj) {
+//       if (k === "updated_at") continue;
+//       res[k] = deepZeroFill(obj[k]);
+//     }
+//     return res;
+//   }
+//   return 0;
+// }
 
-function fillMissingTimePoints<T extends { updated_at: string }>(
-  data: T[],
-  intervalSec: number = 10,
-  totalSeconds: number = 180,
-  matchToleranceSec?: number
-): T[] {
-  if (!data.length) return [];
-  // 按时间升序排序
-  const sorted = [...data].sort(
-    (a, b) =>
-      new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime()
-  );
-  const end = new Date(sorted[sorted.length - 1].updated_at).getTime();
-  const interval = intervalSec * 1000;
-  const start = end - totalSeconds * 1000 + interval;
-  const timePoints: number[] = [];
-  for (let t = start; t <= end; t += interval) {
-    timePoints.push(t);
-  }
-  // 生成补齐后的数据：允许时间点在 matchToleranceMs 容忍范围内匹配原始数据
-  const zeroTemplate = deepZeroFill(sorted[sorted.length - 1]);
-  let dataIdx = 0;
-  const matchToleranceMs = (matchToleranceSec ?? intervalSec) * 1000;
-  const filled: T[] = timePoints.map((t) => {
-    // 找到最近的原始数据点（在 matchToleranceMs 容忍范围内）
-    let found: T | undefined = undefined;
-    while (
-      dataIdx < sorted.length &&
-      new Date(sorted[dataIdx].updated_at).getTime() < t - matchToleranceMs
-    ) {
-      dataIdx++;
-    }
-    if (
-      dataIdx < sorted.length &&
-      Math.abs(new Date(sorted[dataIdx].updated_at).getTime() - t) <=
-        matchToleranceMs
-    ) {
-      found = sorted[dataIdx];
-    }
-    if (found) {
-      return { ...found, updated_at: new Date(t).toISOString() };
-    }
-    // 没有数据，递归补0
-    return { ...zeroTemplate, updated_at: new Date(t).toISOString() } as T;
-  });
-  return filled;
-}
+// function fillMissingTimePoints<T extends { updated_at: string }>(
+//   data: T[],
+//   intervalSec: number = 10,
+//   totalSeconds: number = 180,
+//   matchToleranceSec?: number
+// ): T[] {
+//   if (!data.length) return [];
+//   // 按时间升序排序
+//   const sorted = [...data].sort(
+//     (a, b) =>
+//       new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime()
+//   );
+//   const end = new Date(sorted[sorted.length - 1].updated_at).getTime();
+//   const interval = intervalSec * 1000;
+//   const start = end - totalSeconds * 1000 + interval;
+//   const timePoints: number[] = [];
+//   for (let t = start; t <= end; t += interval) {
+//     timePoints.push(t);
+//   }
+//   // 生成补齐后的数据：允许时间点在 matchToleranceMs 容忍范围内匹配原始数据
+//   const zeroTemplate = deepZeroFill(sorted[sorted.length - 1]);
+//   let dataIdx = 0;
+//   const matchToleranceMs = (matchToleranceSec ?? intervalSec) * 1000;
+//   const filled: T[] = timePoints.map((t) => {
+//     // 找到最近的原始数据点（在 matchToleranceMs 容忍范围内）
+//     let found: T | undefined = undefined;
+//     while (
+//       dataIdx < sorted.length &&
+//       new Date(sorted[dataIdx].updated_at).getTime() < t - matchToleranceMs
+//     ) {
+//       dataIdx++;
+//     }
+//     if (
+//       dataIdx < sorted.length &&
+//       Math.abs(new Date(sorted[dataIdx].updated_at).getTime() - t) <=
+//         matchToleranceMs
+//     ) {
+//       found = sorted[dataIdx];
+//     }
+//     if (found) {
+//       return { ...found, updated_at: new Date(t).toISOString() };
+//     }
+//     // 没有数据，递归补0
+//     return { ...zeroTemplate, updated_at: new Date(t).toISOString() } as T;
+//   });
+//   return filled;
+// }
 
 function UpDownStack({
   up,
@@ -279,5 +276,3 @@ function UpDownStack({
     </div>
   );
 }
-
-
