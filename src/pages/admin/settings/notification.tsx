@@ -31,17 +31,20 @@ const NotificationSettings = () => {
         description={t("settings.notification.enable_description")}
         defaultChecked={settings.notification_enabled}
         onChange={async (checked) => {
-          await updateSettingsWithToast(
-            { notification_enabled: checked, telegram_enabled: checked },
-            t
-          );
+          await updateSettingsWithToast({ notification_enabled: checked }, t);
         }}
       />
       <SettingCardSelect
         title={t("settings.notification.method")}
         description={t("settings.notification.method_description")}
-        defaultValue={"telegram"}
-        options={[{ value: "telegram", label: "Telegram" }]}
+        defaultValue={settings.notification_method}
+        options={[
+          { value: "telegram", label: "Telegram" },
+          { value: "none", label: t("common.none") },
+        ]}
+        OnSave={async (value) => {
+          await updateSettingsWithToast({ notification_method: value }, t);
+        }}
       />
       <SettingCardMultiInputCollapse
         title={t("settings.notification.telegram_title")}
@@ -87,21 +90,27 @@ const NotificationSettings = () => {
         description={t("settings.notification.test_description")}
         onClick={async () => {
           try {
-        const res = await fetch('/api/admin/test/message');
-        let data;
-        try {
-          data = await res.json();
-        } catch {
-          toast.error(t("common.error"));
-          return;
-        }
-        if (data && data.message && data.code !== 200) {
-          toast.error(data.message);
-          return;
-        }
-        toast.success(t("common.success"));
-      } catch (error) {
-        toast.error(t("common.error") + ": " + (error instanceof Error ? error.message : String(error)));
+            const res = await fetch("/api/admin/test/sendMessage", {
+              method: "POST",
+            });
+            let data;
+            try {
+              data = await res.json();
+            } catch {
+              toast.error(t("common.error"));
+              return;
+            }
+            if (data && data.message && data.code !== 200) {
+              toast.error(data.message);
+              return;
+            }
+            toast.success(t("common.success"));
+          } catch (error) {
+            toast.error(
+              t("common.error") +
+                ": " +
+                (error instanceof Error ? error.message : String(error))
+            );
           }
         }}
       >

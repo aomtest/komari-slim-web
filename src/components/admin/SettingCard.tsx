@@ -295,27 +295,23 @@ export function SettingCardShortTextInput({
 
   return (
     <SettingCard title={title} description={description}>
-      <SettingCard.Action>
-        <Flex>
-          <Flex direction="row" gap="2" align="center">
-            <Button
-              ref={buttonRef}
-              onClick={handleSave}
-              variant="solid"
-              disabled={savingState}
-            >
-              {label}
-            </Button>
-          </Flex>
-        </Flex>
-      </SettingCard.Action>
-      <TextField.Root
-        className="w-full"
-        defaultValue={defaultValue}
-        value={value}
-        onChange={handleInputChange}
-        ref={inputRef}
-      />
+      <Flex direction="column" className="w-full mt-1" gap="2" align="start">
+        <TextField.Root
+          className="w-full"
+          defaultValue={defaultValue}
+          value={value}
+          onChange={handleInputChange}
+          ref={inputRef}
+        />
+        <Button
+          ref={buttonRef}
+          onClick={handleSave}
+          variant="solid"
+          disabled={savingState}
+        >
+          {label}
+        </Button>
+      </Flex>
     </SettingCard>
   );
 }
@@ -369,28 +365,24 @@ export function SettingCardLongTextInput({
 
   return (
     <SettingCard title={title} description={description}>
-      <SettingCard.Action>
-        <Flex>
-          <Flex direction="row" gap="2" align="center">
-            <Button
-              ref={buttonRef}
-              onClick={handleSave}
-              variant="solid"
-              disabled={savingState}
-            >
-              {label}
-            </Button>
-          </Flex>
-        </Flex>
-      </SettingCard.Action>
-      <TextArea
-        className="w-full"
-        defaultValue={defaultValue}
-        resize="vertical"
-        value={value}
-        onChange={handleTextAreaChange}
-        ref={textAreaRef}
-      />
+      <Flex direction="column" className="w-full mt-1" gap="2" align="start">
+        <TextArea
+          className="w-full"
+          defaultValue={defaultValue}
+          resize="vertical"
+          value={value}
+          onChange={handleTextAreaChange}
+          ref={textAreaRef}
+        />
+        <Button
+          ref={buttonRef}
+          onClick={handleSave}
+          variant="solid"
+          disabled={savingState}
+        >
+          {label}
+        </Button>
+      </Flex>
     </SettingCard>
   );
 }

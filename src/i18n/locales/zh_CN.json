@@ -358,7 +358,8 @@
     "selected": "{{count}}选择",
     "save": "保存",
     "close": "关闭",
-    "real_time": "实时"
+    "real_time": "实时",
+    "none": "无"
   },
   "command_clipboard": {
     "title": "命令剪贴板"
