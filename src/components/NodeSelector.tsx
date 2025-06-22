@@ -48,6 +48,11 @@ const NodeSelector: React.FC<NodeSelectorProps> = ({
     allUuids.length > 0 && allUuids.every((uuid) => value.includes(uuid));
   const isIndeterminate = value.length > 0 && value.length < allUuids.length;
 
+  // 新增：找出 value 里 nodeDetail 没有的 uuid
+  const orphanUuids = value.filter(
+    (uuid) => !nodeDetail.some((node) => node.uuid === uuid)
+  );
+
   const checkAllRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     if (checkAllRef.current) {
@@ -112,6 +117,21 @@ const NodeSelector: React.FC<NodeSelectorProps> = ({
                   />
                 </TableCell>
                 <TableCell>{node.name}</TableCell>
+              </TableRow>
+            ))}
+            {/* 新增：渲染孤立 uuid */}
+            {orphanUuids.map((uuid) => (
+              <TableRow key={uuid}>
+                <TableCell>
+                  <Checkbox
+                    checked={value.includes(uuid)}
+                    onCheckedChange={(checked) =>
+                      handleCheck(uuid, !!checked)
+                    }
+                    aria-label={`Select ${uuid}`}
+                  />
+                </TableCell>
+                <TableCell>{uuid}</TableCell>
               </TableRow>
             ))}
           </TableBody>

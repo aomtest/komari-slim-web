@@ -174,17 +174,24 @@ const Row = ({ task }: { task: PingTask }) => {
       <TableCell>
         <Flex gap="2" align="center">
           {task.clients && task.clients.length > 0
-            ? task.clients
-                .map((uuid) => {
+            ? (() => {
+                const names = task.clients.map((uuid) => {
                   const name =
                     nodeDetail.find((node) => node.uuid === uuid)?.name || uuid;
-                  return name.length > 40 ? name.slice(0, 40) + "..." : name;
-                })
-                .join(", ")
+                  return name;
+                });
+                const joined = names.join(", ");
+                return joined.length > 40
+                  ? joined.slice(0, 40) + "..."
+                  : joined;
+              })()
             : t("common.none")}
           <NodeSelectorDialog
-            value={task.clients ?? []}
-            onChange={(uuids) => submitEdit({ ...form, clients: uuids })}
+            value={form.clients ?? []}
+            onChange={(uuids) => {
+              setForm((f) => ({ ...f, clients: uuids }));
+              submitEdit({ ...form, clients: uuids });
+            }}
           >
             <IconButton variant="ghost">
               <MoreHorizontal size="16" />
@@ -308,7 +315,7 @@ const Row = ({ task }: { task: PingTask }) => {
   );
 };
 
-const AddButton = () => {
+const AddButton: React.FC = () => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
   const [selected, setSelected] = React.useState<string[]>([]);
@@ -316,11 +323,9 @@ const AddButton = () => {
   const [selectedType, setSelectedType] = React.useState<
     "icmp" | "tcp" | "http"
   >("icmp");
-
   const [saving, setSaving] = React.useState(false);
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const payload = {
       name: e.currentTarget.ping_name.value,
       type: selectedType,
@@ -424,4 +429,5 @@ const AddButton = () => {
     </Dialog.Root>
   );
 };
+
 export default PingTask;

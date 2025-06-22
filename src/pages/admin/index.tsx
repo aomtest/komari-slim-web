@@ -1007,7 +1007,7 @@ function DetailView({ node }: { node: NodeDetail }) {
       <DrawerTrigger asChild>
         <div className="h-8 flex items-center hover:underline cursor-pointer font-bold text-base">
           <Flag flag={node.region} size="6" />
-          {node.name}
+            {node.name.length > 25 ? node.name.slice(0, 25) + "..." : node.name}
         </div>
       </DrawerTrigger>
       <DrawerContent>
