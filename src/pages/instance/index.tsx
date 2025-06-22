@@ -9,6 +9,7 @@ import { formatBytes, formatUptime } from "../../components/Node";
 import { useNodeList } from "@/contexts/NodeListContext";
 import { liveDataToRecords } from "@/utils/RecordHelper";
 import LoadChart from "./LoadChart";
+import PingChart from "./PingChart";
 
 export default function InstancePage() {
   const { t } = useTranslation();
@@ -92,10 +93,7 @@ export default function InstancePage() {
       {chartView === "load" ? (
         <LoadChart data={liveDataToRecords(uuid ?? "", recent)} />
       ) : (
-        <Flex justify="center" direction={"column"} align="center" gap="2">
-          <span>Work in progress...</span>
-          <span>马上见面</span>
-        </Flex>
+        <PingChart uuid={uuid ?? ""} />
       )}
       <div className="grid w-full items-center justify-center mx-auto h-full gap-4 p-1 md:grid-cols-[repeat(auto-fit,minmax(620px,1fr))] grid-cols-[repeat(auto-fit,minmax(320px,1fr))]"></div>
     </Flex>
