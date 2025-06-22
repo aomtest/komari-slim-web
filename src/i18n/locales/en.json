@@ -163,7 +163,9 @@
     "time_second": "s",
     "swap": "Swap",
     "last_updated": "Last Update",
-    "virtualization": "Virtualization"
+    "virtualization": "Virtualization",
+    "load": "Load",
+    "ping": "Ping"
   },
   "login": {
     "title": "Login",
@@ -212,7 +214,9 @@
     "tcp_connections": "TCP",
     "udp_connections": "UDP",
     "mem_used": "Ram",
-    "disk_used": "Disk"
+    "disk_used": "Disk",
+    "hours": "{{count}} Hours",
+    "days": "{{count}} Day"
   },
   "home_title": "Komari Monitor",
   "admin": {
@@ -361,7 +365,8 @@
     "success": "Success",
     "select": "Select",
     "done": "Done",
-    "none": "None"
+    "none": "None",
+    "real_time": "RealTime"
   },
   "command_clipboard": {
     "title": "Command Clipboard"

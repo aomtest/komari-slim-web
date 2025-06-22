@@ -210,7 +210,9 @@
     "udp_connections": "UDP",
     "mem_used": "内存",
     "swap_used": "虚拟内存",
-    "disk_used": "磁盘"
+    "disk_used": "磁盘",
+    "hours": "{{count}} 小时",
+    "days": "{{count}} 天"
   },
   "home_title": "Komari Monitor",
   "admin": {
@@ -355,7 +357,8 @@
     "search": "搜索",
     "selected": "{{count}}选择",
     "save": "保存",
-    "close": "关闭"
+    "close": "关闭",
+    "real_time": "实时"
   },
   "command_clipboard": {
     "title": "命令剪贴板"

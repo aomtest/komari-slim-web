@@ -18,6 +18,7 @@ import { Suspense } from "react";
 import { useRoutes } from "react-router-dom";
 import { routes } from "./routes";
 import Loading from "./components/loading";
+import { PublicInfoProvider } from "./contexts/PublicInfoContext";
 const App = () => {
   const [appearance, setAppearance] = useLocalStorage<Appearance>(
     "appearance",
@@ -44,8 +45,12 @@ const App = () => {
   return (
     <Suspense fallback={<Loading />}>
       <ThemeContext.Provider value={themeContextValue}>
-        <Theme appearance={resolvedAppearance} accentColor={color} scaling="110%">
-          {routing}
+        <Theme
+          appearance={resolvedAppearance}
+          accentColor={color}
+          scaling="110%"
+        >
+          <PublicInfoProvider>{routing}</PublicInfoProvider>
         </Theme>
       </ThemeContext.Provider>
     </Suspense>
