@@ -64,9 +64,9 @@
     },
     "site": {
       "name": "Site Name",
-      "name_description": "Set the name of the control panel site",
+      "name_description": "Set the name of the site",
       "description": "Site Description",
-      "description_description": "Set the description for the control panel site",
+      "description_description": "Set your site's description for meta info and social media cards.",
       "cros": "Allow Cross-Origin Requests",
       "cros_description": "Allow API requests from other domains",
       "title": "Site",

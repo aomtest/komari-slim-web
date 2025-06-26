@@ -64,9 +64,9 @@
     },
     "site": {
       "name": "站点名称",
-      "name_description": "设置控制面板的站点名称",
+      "name_description": "设置站点名称",
       "description": "站点描述",
-      "description_description": "设置控制面板的站点描述信息",
+      "description_description": "设置网站描述，用于元信息及社交媒体卡片。",
       "cros": "允许跨域请求",
       "cros_description": "允许来自其他域名的请求访问 API",
       "title": "站点",
