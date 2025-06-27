@@ -4,6 +4,7 @@ import { updateSettingsWithToast, useSettings } from "@/lib/api";
 import {
   SettingCardButton,
   SettingCardSelect,
+  SettingCardShortTextInput,
   SettingCardSwitch,
 } from "@/components/admin/SettingCard";
 import { SettingCardMultiInputCollapse } from "@/components/admin/SettingCardMultiInput";
@@ -124,6 +125,37 @@ const NotificationSettings = () => {
       >
         GO
       </SettingCardButton>
+      <label className="text-xl font-bold">
+        {t("admin.notification.expire_title")}
+      </label>
+      <SettingCardSwitch
+        defaultChecked={settings.expire_notification_enabled}
+        title={t("admin.notification.expire_enable")}
+        description={t("admin.notification.expire_enable_description")}
+        onChange={async (checked) => {
+          await updateSettingsWithToast(
+            { expire_notification_enabled: checked },
+            t
+          );
+        }}
+      />
+      <SettingCardShortTextInput
+        number
+        title={t("admin.notification.expire_time")}
+        description={t("admin.notification.expire_time_description")}
+        defaultValue={settings.expire_notification_lead_days}
+        OnSave={async (value) => {
+          const numValue = Number(value);
+          if (isNaN(numValue) || numValue < 0) {
+            toast.error("Please enter a valid non-negative number");
+            return;
+          }
+          await updateSettingsWithToast(
+            { expire_notification_lead_days: numValue },
+            t
+          );
+        }}
+      />
     </>
   );
 };

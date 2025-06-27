@@ -309,6 +309,13 @@
       "waiting": "wait...",
       "saveError": "Saving failed",
       "saveSuccess": "Save successfully"
+    },
+    "notification": {
+      "expire_title": "Expire notification",
+      "expire_enable": "Enable Expiration Reminder",
+      "expire_enable_description": "If enabled, the system will send reminder notifications before expiration.",
+      "expire_time": "Days in Advance to Remind",
+      "expire_time_description": "Set how many days in advance to start sending reminder notifications before expiration."
     }
   },
   "theme": {
