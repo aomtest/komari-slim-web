@@ -74,7 +74,7 @@ const LoadChart = ({ data = [] }: LoadChartProps) => {
     const maxPreset = presetViews[presetViews.length - 1];
     if (max_record_preserve_time > maxPreset.hours) {
       avaliableView.push({
-        label: `${max_record_preserve_time} ${t("chart.hours", {
+        label: `${t("chart.hours", {
           count: max_record_preserve_time,
         })}`,
         hours: max_record_preserve_time,
@@ -85,7 +85,7 @@ const LoadChart = ({ data = [] }: LoadChartProps) => {
     ) {
       // 如果不是预设但大于4小时，显示具体小时
       avaliableView.push({
-        label: `${max_record_preserve_time} ${t("chart.hours", {
+        label: `${t("chart.hours", {
           count: max_record_preserve_time,
         })}`,
         hours: max_record_preserve_time,

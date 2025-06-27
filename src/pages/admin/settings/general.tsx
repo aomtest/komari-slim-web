@@ -63,9 +63,10 @@ export default function GeneralSettings() {
         description={t("settings.geoip.provider_description")}
         defaultValue={settings.geo_ip_provider}
         options={[
-          { value: "mmdb" },
-          { value: "ip-api.com", disabled: true },
-          { value: "ipinfo.io", disabled: true },
+          { value: "empty", label: t("common.none") },
+          { value: "mmdb", label: "MaxMind" },
+          { value: "ip-api", label: "ip-api.com" },
+          { value: "geojs.io", label: "geojs.io" },
         ]}
         OnSave={async (value) => {
           await updateSettingsWithToast({ geo_ip_provider: value }, t);
