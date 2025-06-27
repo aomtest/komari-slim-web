@@ -97,7 +97,21 @@
       "telegram_title": "Telegram 配置",
       "telegram_description": "配置您的 Telegram 机器人以在聊天中直接接收提醒。",
       "telegram_bot_token": "Telegram 机器人令牌",
-      "telegram_chat_id_error": "Chat ID 不可为空"
+      "telegram_chat_id_error": "Chat ID 不可为空",
+      "telegram_endpoint": "请求端点",
+      "test_description": "发送测试消息",
+      "test_title": "发送测试消息"
+    },
+    "record": {
+      "title": "历史记录",
+      "enabled": "开启历史记录",
+      "enabled_description": "记录服务器历史负载详情和Ping记录等",
+      "record_preserve_time_description": "Komari将会按照设定的小时数保存记录，过期清理",
+      "record_preserve_time": "保存时间",
+      "record_preserve_time_label": "负载数据保存时间",
+      "ping_record_preserve_time": "Ping数据保存时间",
+      "invalid_preserve_time": "无效的时间",
+      "expected_usage": "保存一台服务器的数据预计需要{{space}}磁盘空间（Ping数据取决于设置的时间间隔）"
     }
   },
   "sessions": {
@@ -161,7 +175,9 @@
     "time_second": "秒",
     "swap": "交换",
     "last_updated": "最后上报",
-    "virtualization": "虚拟化"
+    "virtualization": "虚拟化",
+    "load": "加载",
+    "ping": "Ping"
   },
   "login": {
     "title": "登录",
@@ -359,7 +375,10 @@
     "save": "保存",
     "close": "关闭",
     "real_time": "实时",
-    "none": "无"
+    "none": "无",
+    "done": "完毕",
+    "select": "选择",
+    "success": "成功"
   },
   "command_clipboard": {
     "title": "命令剪贴板"
@@ -371,7 +390,9 @@
       "cooldown": "冷静期",
       "grace_period": "宽限期",
       "title": "离线通知",
-      "batch_edit": "批量修改"
+      "batch_edit": "批量修改",
+      "last_notified": "最后通知",
+      "never_triggered": "从未触发"
     },
     "load": {
       "title": "负载通知"
@@ -380,6 +401,8 @@
   },
   "ping": {
     "title": "延迟监测",
-    "target": "目标"
+    "target": "目标",
+    "interval": "间隔",
+    "type": "类型"
   }
 }

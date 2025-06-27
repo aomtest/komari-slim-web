@@ -52,6 +52,13 @@ const NotificationSettings = () => {
         defaultOpen={true}
         items={[
           {
+            tag: "telegram_endpoint",
+            label: t("settings.notification.telegram_endpoint"),
+            type: "short",
+            placeholder: "https://api.telegram.org/bot",
+            defaultValue: settings.telegram_endpoint || "",
+          },
+          {
             tag: "telegram_bot_token",
             label: t("settings.notification.telegram_bot_token"),
             type: "short",
@@ -80,6 +87,7 @@ const NotificationSettings = () => {
             {
               telegram_bot_token: values.telegram_bot_token,
               telegram_chat_id: values.telegram_chat_id,
+              telegram_endpoint: values.telegram_endpoint,
             },
             t
           );

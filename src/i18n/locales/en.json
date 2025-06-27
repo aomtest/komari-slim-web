@@ -99,7 +99,19 @@
       "telegram_description": "Configure your Telegram bot to get alerts directly in your chat.",
       "telegram_bot_token": "Telegram Bot Token",
       "test_title": "Send test message",
-      "test_description": "Send a test message"
+      "test_description": "Send a test message",
+      "telegram_endpoint": "Endpoint"
+    },
+    "record": {
+      "title": "Record",
+      "enabled": "Enable Record",
+      "enabled_description": "Log server historical load details and Ping records,etc.",
+      "record_preserve_time": "Preserve time",
+      "record_preserve_time_description": "Komari will store records for a set number of hours and clean them up upon expiration.",
+      "record_preserve_time_label": "Load data retention period",
+      "ping_record_preserve_time": "Ping data retention period",
+      "invalid_preserve_time": "Invalid time",
+      "expected_usage": "Storing data for one server is estimated to require {{space}} disk space (Ping data depends on the set time interval)"
     }
   },
   "sessions": {

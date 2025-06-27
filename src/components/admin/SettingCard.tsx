@@ -251,6 +251,7 @@ export function SettingCardShortTextInput({
   description = "",
   label = useTranslation().t("save"),
   defaultValue = "",
+  number = false,
   OnSave = () => {},
   autoDisabled = true,
   isSaving,
@@ -259,6 +260,7 @@ export function SettingCardShortTextInput({
   description?: string;
   label?: string;
   defaultValue?: string;
+  number?: boolean;
   OnSave?: (
     value: string,
     inputElement: HTMLInputElement,
@@ -301,6 +303,7 @@ export function SettingCardShortTextInput({
           defaultValue={defaultValue}
           value={value}
           onChange={handleInputChange}
+          type={number ? "number" : "text"}
           ref={inputRef}
         />
         <Button

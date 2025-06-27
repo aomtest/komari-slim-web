@@ -10,6 +10,7 @@ interface InputItem {
   placeholder?: string;
   defaultValue?: string;
   disabled?: boolean;
+  number?: boolean;
 }
 
 type OnSaveHandler = (values: Record<string, string>) => Promise<any> | any;
@@ -22,6 +23,7 @@ export function SettingCardMultiInputCollapse({
   onSave,
   isSaving,
   children,
+  onChange, // 新增 onChange
 }: {
   title?: string;
   description?: string;
@@ -32,6 +34,8 @@ export function SettingCardMultiInputCollapse({
   isSaving?: boolean;
   /** 在保存按钮之前渲染的额外节点 */
   children?: React.ReactNode;
+  /** 输入值变化时的回调 */
+  onChange?: (values: Record<string, string>) => void;
 }) {
   const { t } = useTranslation();
   const [values, setValues] = React.useState<Record<string, string>>(
@@ -45,7 +49,11 @@ export function SettingCardMultiInputCollapse({
   const savingState = isSaving !== undefined ? isSaving : saving;
 
   const handleChange = (tag: string, value: string) => {
-    setValues((prev) => ({ ...prev, [tag]: value }));
+    setValues((prev) => {
+      const newValues = { ...prev, [tag]: value };
+      if (onChange) onChange(newValues);
+      return newValues;
+    });
   };
 
   const handleSave = async () => {
@@ -81,6 +89,7 @@ export function SettingCardMultiInputCollapse({
                 value={values[item.tag]}
                 placeholder={item.placeholder}
                 disabled={item.disabled}
+                type={item.number ? "number" : "text"}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   handleChange(item.tag, e.target.value)
                 }
