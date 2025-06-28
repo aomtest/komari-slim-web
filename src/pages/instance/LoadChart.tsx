@@ -141,11 +141,7 @@ const LoadChart = ({ data = [] }: LoadChartProps) => {
   const live_data = all_live_data?.data?.data[uuid ?? ""];
   const timeFormatter = (value: any, index: number) => {
     if (index === 0 || index === chartData.length - 1) {
-      if (
-        presetViews[0].label === hoursView ||
-        hoursView === "real-time" ||
-        hoursView === t("common.real_time")
-      ) {
+      if (presetViews[0].label === hoursView || hoursView === "real-time" || hoursView === t("common.real_time")) {
         return new Date(value).toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
@@ -331,9 +327,9 @@ const LoadChart = ({ data = [] }: LoadChartProps) => {
             <AreaChart
               data={chartData.map((item) => ({
                 time: item.time,
-                ram: (item.ram ?? 0 / (node?.mem_total ?? 1)) * 100,
+                ram: ((item.ram ?? 0) / (node?.mem_total ?? 1)) * 100,
                 ram_raw: item.ram,
-                swap: (item.swap ?? 0 / (node?.swap_total ?? 1)) * 100,
+                swap: ((item.swap ?? 0) / (node?.swap_total ?? 1)) * 100,
                 swap_raw: item.swap,
                 client: item.client,
               }))}
