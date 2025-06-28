@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/chart";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
 import { useTranslation } from "react-i18next";
+import fillMissingTimePoints from "@/utils/RecordHelper";
 
 interface PingRecord {
   client: string;
@@ -46,12 +47,14 @@ interface MiniPingChartProps {
   uuid: string;
   width?: string | number;
   height?: string | number;
+  hours?: number; // Add hours as an optional prop
 }
 
 const MiniPingChart = ({
   uuid,
   width = "100%",
   height = 300,
+  hours = 12,
 }: MiniPingChartProps) => {
   const [remoteData, setRemoteData] = useState<PingRecord[] | null>(null);
   const [tasks, setTasks] = useState<TaskInfo[]>([]);
@@ -59,12 +62,13 @@ const MiniPingChart = ({
   const [error, setError] = useState<string | null>(null);
   const [hiddenLines, setHiddenLines] = useState<Record<string, boolean>>({});
   const [t] = useTranslation();
+
   useEffect(() => {
     if (!uuid) return;
 
     setLoading(true);
     setError(null);
-    fetch(`/api/records/ping?uuid=${uuid}&hours=${12}`)
+    fetch(`/api/records/ping?uuid=${uuid}&hours=${hours}`)
       .then((res) => {
         if (!res.ok) throw new Error(res.statusText);
         return res.json();
@@ -82,7 +86,7 @@ const MiniPingChart = ({
         setError(err.message || "Error");
         setLoading(false);
       });
-  }, [uuid]);
+  }, [uuid, hours]);
 
   const chartData = useMemo(() => {
     const data = remoteData || [];
@@ -110,7 +114,8 @@ const MiniPingChart = ({
       (a: any, b: any) =>
         new Date(a.time).getTime() - new Date(b.time).getTime()
     );
-    return full;
+    const full1 = fillMissingTimePoints(full, 60, null, 120);
+    return full1;
   }, [remoteData]);
 
   const timeFormatter = (value: any, index: number) => {

@@ -10,6 +10,7 @@ import {
   ChartLegend,
 } from "@/components/ui/chart";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
+import fillMissingTimePoints from "@/utils/RecordHelper";
 
 interface PingRecord {
   client: string;
@@ -31,7 +32,7 @@ interface PingApiResp {
   };
 }
 
-const MAX_POINTS = 1000;
+//const MAX_POINTS = 1000;
 const colors = [
   "#F38181",
   "#347433",
@@ -82,21 +83,32 @@ const PingChart = ({ uuid }: { uuid: string }) => {
   }
 
   // 默认视图设为1小时
-  const [view, setView] = useState<string>(
+  const initialView =
     avaliableView.find((v) => v.hours === 1)?.label ||
-      avaliableView[0]?.label ||
-      ""
-  );
+    avaliableView[0]?.label ||
+    "";
+  const [view, setView] = useState<string>(initialView);
+  const [hours, setHours] = useState<number>(
+    avaliableView.find((v) => v.label === initialView)?.hours || 1
+  ); // Add hours state
+
   const [remoteData, setRemoteData] = useState<PingRecord[] | null>(null);
   const [tasks, setTasks] = useState<TaskInfo[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // 拉取历史数据
+  // Update hours state when view changes
   useEffect(() => {
     const selected = avaliableView.find((v) => v.label === view);
+    if (selected && selected.hours !== undefined) {
+      setHours(selected.hours);
+    }
+  }, [view, avaliableView]);
+
+  // 拉取历史数据
+  useEffect(() => {
     if (!uuid) return;
-    if (!selected || !selected.hours) {
+    if (!hours) { // Use hours directly
       setRemoteData(null);
       setError(null);
       setLoading(false);
@@ -104,7 +116,7 @@ const PingChart = ({ uuid }: { uuid: string }) => {
     }
     setLoading(true);
     setError(null);
-    fetch(`/api/records/ping?uuid=${uuid}&hours=${selected.hours}`)
+    fetch(`/api/records/ping?uuid=${uuid}&hours=${hours}`) // Use hours directly
       .then((res) => {
         if (!res.ok) throw new Error(res.statusText);
         return res.json();
@@ -122,17 +134,18 @@ const PingChart = ({ uuid }: { uuid: string }) => {
         setError(err.message || "Error");
         setLoading(false);
       });
-  }, [view, uuid]);
+  }, [hours, uuid]); // Depend on hours
 
   // 组装图表数据
   const chartData = useMemo(() => {
     const data = remoteData || [];
     if (!data.length) return [];
     // 限制最大点数
-    const sliced = data.slice(-MAX_POINTS);
+    //const sliced = data.slice(-MAX_POINTS);
     const grouped: Record<string, any> = {};
     const timeKeys: number[] = [];
-    for (const rec of sliced) {
+    //for (const rec of sliced) {
+    for (const rec of data) {
       const t = new Date(rec.time).getTime();
       let foundKey = null;
       for (const key of timeKeys) {
@@ -148,18 +161,24 @@ const PingChart = ({ uuid }: { uuid: string }) => {
       }
       grouped[useKey][rec.task_id] = rec.value;
     }
-    const full =  Object.values(grouped).sort(
+    const full = Object.values(grouped).sort(
       (a: any, b: any) =>
         new Date(a.time).getTime() - new Date(b.time).getTime()
     );
-    return full
+    const full1 = fillMissingTimePoints(
+      full,
+      60,
+      hours * 60 * 60,
+      120
+    );
+    return full1;
   }, [remoteData]);
 
   // 时间格式化
   const timeFormatter = (value: any, index: number) => {
     if (!chartData.length) return "";
     if (index === 0 || index === chartData.length - 1) {
-      if (view === t("common.real_time") || view === "real-time") {
+      if (hours < 24) { // Use hours for conditional formatting
         return new Date(value).toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
@@ -174,7 +193,7 @@ const PingChart = ({ uuid }: { uuid: string }) => {
   };
   const lableFormatter = (value: any) => {
     const date = new Date(value);
-    if (view === t("common.real_time") || view === "real-time") {
+    if (hours < 24) { // Use hours for conditional formatting
       return date.toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
@@ -227,7 +246,16 @@ const PingChart = ({ uuid }: { uuid: string }) => {
   return (
     <Flex direction="column" align="center" gap="4" className="w-full">
       <div>
-        <SegmentedControl.Root value={view} onValueChange={setView}>
+        <SegmentedControl.Root
+          value={view}
+          onValueChange={(newView) => {
+            setView(newView);
+            const selected = avaliableView.find((v) => v.label === newView);
+            if (selected && selected.hours !== undefined) {
+              setHours(selected.hours);
+            }
+          }}
+        >
           {avaliableView.map((v) => (
             <SegmentedControl.Item
               key={v.label}
@@ -258,10 +286,7 @@ const PingChart = ({ uuid }: { uuid: string }) => {
             }}
           >
             {latestValues.map((task) => (
-              <div
-                key={task.id}
-                className="flex flex-row items-center rounded"
-              >
+              <div key={task.id} className="flex flex-row items-center rounded">
                 <div
                   className="w-1 h-6 rounded-xs "
                   style={{ backgroundColor: task.color }}
