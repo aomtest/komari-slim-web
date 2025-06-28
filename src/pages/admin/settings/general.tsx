@@ -66,7 +66,7 @@ export default function GeneralSettings() {
           { value: "empty", label: t("common.none") },
           { value: "mmdb", label: "MaxMind" },
           { value: "ip-api", label: "ip-api.com" },
-          { value: "geojs.io", label: "geojs.io" },
+          { value: "geojs", label: "geojs.io" },
         ]}
         OnSave={async (value) => {
           await updateSettingsWithToast({ geo_ip_provider: value }, t);
