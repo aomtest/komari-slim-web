@@ -10,6 +10,7 @@ import type { LiveData, Record } from "../types/LiveData";
 import UsageBar from "./UsageBar";
 import Flag from "./Flag";
 import { useTranslation } from "react-i18next";
+import Tips from "./ui/tips";
 
 function formatOs(os: string): string {
   const patterns = [
@@ -136,12 +137,12 @@ const Node = ({ basic, live, online }: NodeProps) => {
               </Flex>
             </Link>
           </Flex>
-
           <Flex gap="2" align="center">
+            {live?.message && <Tips color="#CE282E">{live.message}</Tips>}
             <MiniPingChartFloat
               uuid={basic.uuid}
               trigger={
-                <IconButton variant="soft" size="1">
+                <IconButton variant="ghost" size="1">
                   <TrendingUp size="14" />
                 </IconButton>
               }
