@@ -75,7 +75,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
       }
     });
     setOpenSubMenus(newState);
-  }, []);
+  }, [location.pathname]);
 
   // 侧边栏动画变体
   const sidebarVariants = {
@@ -391,9 +391,53 @@ const SidebarItem = ({
   children: ReactNode;
 }) => {
   const location = useLocation();
+  const isExternalLink = to.startsWith("http://") || to.startsWith("https://");
   const isActive =
-    location.pathname === to ||
-    (to !== "/admin" && location.pathname.startsWith(to));
+    !isExternalLink &&
+    (location.pathname === to ||
+      (to !== "/admin" && location.pathname.startsWith(to)));
+
+  if (isExternalLink) {
+    return (
+      <a
+        href={to}
+        onClick={onClick}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group overflow-hidden transition-colors duration-200 hover:bg-accent-3 rounded-md"
+      >
+        <Flex
+          className="p-2 gap-2"
+          align="center"
+          style={{
+            borderLeft: "4px solid transparent",
+            borderRadius: "6px",
+            backgroundColor: "transparent",
+            color: "inherit",
+            transition: "background-color 0.2s, border-color 0.2s",
+          }}
+        >
+          <span
+            style={{
+              color: "inherit",
+              opacity: 0.7,
+            }}
+            className="flex w-4 h-5 items-center justify-center"
+          >
+            {icon}
+          </span>
+          <Text
+            className="text-base"
+            weight="medium"
+            style={{ flex: 1 }}
+          >
+            {children}
+          </Text>
+        </Flex>
+      </a>
+    );
+  }
+
   return (
     <Link
       to={to}
