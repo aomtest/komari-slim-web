@@ -10,11 +10,17 @@ import {
 import { SettingCardMultiInputCollapse } from "@/components/admin/SettingCardMultiInput";
 import { toast } from "sonner";
 import Loading from "@/components/loading";
+import React from "react";
 
 const NotificationSettings = () => {
   const { t } = useTranslation();
   const { settings, loading, error } = useSettings();
-
+  const [emailHost, setEmailHost] = React.useState(settings.email_host || "");
+  const [emailPort, setEmailPort] = React.useState(settings.email_port || "");
+  React.useEffect(() => {
+    setEmailHost(settings.email_host || "");
+    setEmailPort(settings.email_port || "");
+  }, [settings.email_host, settings.email_port]);
   if (loading) {
     return <Loading />;
   }
@@ -22,6 +28,7 @@ const NotificationSettings = () => {
   if (error) {
     return <Text color="red">{error}</Text>;
   }
+
   return (
     <>
       <label className="text-xl font-bold">
@@ -143,6 +150,10 @@ const NotificationSettings = () => {
             defaultValue: settings.email_receiver || "",
           },
         ]}
+        onChange={(values) => {
+          setEmailHost(values.email_host);
+          setEmailPort(values.email_port);
+        }}
         onSave={async (values) => {
           const port = Number(values.email_port);
           if (isNaN(port) || port <= 0) {
@@ -170,6 +181,11 @@ const NotificationSettings = () => {
             await updateSettingsWithToast({ email_use_ssl: checked }, t);
           }}
         />
+        <label className="-mt-2 text-sm text-gray-500">
+          {t("settings.notification.smtp_tips", {
+            command: `telnet ${emailHost} ${emailPort}`,
+          })}
+        </label>
       </SettingCardMultiInputCollapse>
       <SettingCardButton
         title={t("settings.notification.test_title")}

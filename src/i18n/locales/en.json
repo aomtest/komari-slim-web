@@ -110,7 +110,8 @@
       "smtp_password": "Password",
       "smtp_sender": "Sender Email",
       "smtp_receiver": "Receiver Email",
-      "smtp_ssl": "Enable SSL"
+      "smtp_ssl": "Enable SSL",
+      "smtp_tips": "Please test whether the server running Komari can send emails first. You can use '{{command}}' to test."
     },
     "record": {
       "title": "Record",

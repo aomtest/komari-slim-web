@@ -110,7 +110,8 @@
       "smtp_password": "密码",
       "smtp_sender": "发件人邮箱",
       "smtp_receiver": "收件人邮箱",
-      "smtp_ssl": "启用 SSL"
+      "smtp_ssl": "启用 SSL",
+      "smtp_tips": "请先测试运行 Komari 的服务器 IP 是否能发送邮件，可使用 \"{{command}}\" 进行测试。"
     },
     "record": {
       "title": "历史记录",
