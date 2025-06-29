@@ -161,7 +161,8 @@
     "confirm_unbind": "Confirm Unbind",
     "unbind_github_success": "Successfully unbound GitHub account",
     "unbind_github_failed": "Failed to unbind GitHub account",
-    "github_auth_failed": "Failed to process GitHub authentication"
+    "github_auth_failed": "Failed to process GitHub authentication",
+    "download_backup": "Download backup"
   },
   "terminal": {
     "title": "Terminal",

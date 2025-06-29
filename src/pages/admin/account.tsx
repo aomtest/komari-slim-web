@@ -148,7 +148,7 @@ const InnerLayout = () => {
   };
   return (
     <Flex gap="4" direction="row" className="p-4" wrap="wrap">
-      <Flex gap="2" direction="column" className="md:basis-1/2 w-full">
+      <Flex gap="2" direction="column" className="w-full">
         <label className="text-2xl font-bold">{t("account.title")}</label>
         <label className="text-lg">
           {t("account.greeting", { username: account?.username })}
@@ -268,6 +268,15 @@ const InnerLayout = () => {
               </Button>
             )}
           </div>
+        </div>
+        <div>
+          <Button
+            onClick={() => {
+              window.open("/api/admin/download/backup", "_blank");
+            }}
+          >
+            {t("account_settings.download_backup")}
+          </Button>
         </div>
       </Flex>
     </Flex>
