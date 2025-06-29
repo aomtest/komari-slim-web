@@ -100,7 +100,17 @@
       "telegram_bot_token": "Telegram Bot Token",
       "test_title": "Send test message",
       "test_description": "Send a test message",
-      "telegram_endpoint": "Endpoint"
+      "telegram_endpoint": "Endpoint",
+      "email": "Email",
+      "smtp_title": "SMTP Configuration",
+      "smtp_description": "Configure SMTP mail info to send email notifications.",
+      "smtp_host": "SMTP Host",
+      "smtp_port": "Port",
+      "smtp_username": "Username",
+      "smtp_password": "Password",
+      "smtp_sender": "Sender Email",
+      "smtp_receiver": "Receiver Email",
+      "smtp_ssl": "Enable SSL"
     },
     "record": {
       "title": "Record",

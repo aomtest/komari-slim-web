@@ -40,17 +40,18 @@ const NotificationSettings = () => {
         description={t("settings.notification.method_description")}
         defaultValue={settings.notification_method}
         options={[
-          { value: "telegram", label: "Telegram" },
           { value: "none", label: t("common.none") },
+          { value: "telegram", label: "Telegram" },
+          { value: "email", label: t("settings.notification.email") },
         ]}
         OnSave={async (value) => {
           await updateSettingsWithToast({ notification_method: value }, t);
         }}
       />
+      {/* Telegram Settings */}
       <SettingCardMultiInputCollapse
         title={t("settings.notification.telegram_title")}
         description={t("settings.notification.telegram_description")}
-        defaultOpen={true}
         items={[
           {
             tag: "telegram_endpoint",
@@ -94,6 +95,82 @@ const NotificationSettings = () => {
           );
         }}
       />
+      {/* SMTP Settings */}
+      <SettingCardMultiInputCollapse
+        title={t("settings.notification.smtp_title")}
+        description={t("settings.notification.smtp_description")}
+        items={[
+          {
+            tag: "email_host",
+            label: t("settings.notification.smtp_host"),
+            type: "short",
+            placeholder: "smtp.example.com",
+            defaultValue: settings.email_host || "",
+          },
+          {
+            tag: "email_port",
+            label: t("settings.notification.smtp_port"),
+            type: "short",
+            number: true,
+            placeholder: "587",
+            defaultValue: settings.email_port || "",
+          },
+          {
+            tag: "email_username",
+            label: t("settings.notification.smtp_username"),
+            type: "short",
+            placeholder: "user@example.com",
+            defaultValue: settings.email_username || "",
+          },
+          {
+            tag: "email_password",
+            label: t("settings.notification.smtp_password"),
+            type: "short",
+            defaultValue: settings.email_password || "",
+          },
+          {
+            tag: "email_sender",
+            label: t("settings.notification.smtp_sender"),
+            type: "short",
+            placeholder: "me@example.com",
+            defaultValue: settings.email_sender,
+          },
+          {
+            tag: "email_receiver",
+            label: t("settings.notification.smtp_receiver"),
+            type: "short",
+            placeholder: "receiver@example.com",
+            defaultValue: settings.email_receiver || "",
+          },
+        ]}
+        onSave={async (values) => {
+          const port = Number(values.email_port);
+          if (isNaN(port) || port <= 0) {
+            toast.error("Please enter a valid port number");
+            return;
+          }
+          await updateSettingsWithToast(
+            {
+              email_host: values.email_host,
+              email_port: port,
+              email_username: values.email_username,
+              email_password: values.email_password,
+              email_sender: values.email_sender,
+              email_receiver: values.email_receiver,
+            },
+            t
+          );
+        }}
+      >
+        <SettingCardSwitch
+          title={t("settings.notification.smtp_ssl")}
+          bordless
+          defaultChecked={settings.email_use_ssl}
+          onChange={async (checked) => {
+            await updateSettingsWithToast({ email_use_ssl: checked }, t);
+          }}
+        />
+      </SettingCardMultiInputCollapse>
       <SettingCardButton
         title={t("settings.notification.test_title")}
         description={t("settings.notification.test_description")}

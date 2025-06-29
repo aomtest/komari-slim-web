@@ -13,10 +13,11 @@ import { ChevronDownIcon } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion"; // 引入 Framer Motion
 
 interface SettingCardProps {
-  title?: string;
-  description?: string;
+  title?: string | React.ReactNode;
+  description?: string | React.ReactNode;
   children?: React.ReactNode;
   className?: string;
+  bordless?: boolean;
   direction?: "row" | "column" | "row-reverse" | "column-reverse";
   onHeaderClick?: () => void;
 }
@@ -27,6 +28,7 @@ export function SettingCard({
   children,
   className = "",
   direction = "column",
+  bordless = false,
   onHeaderClick = () => {},
 }: SettingCardProps) {
   const actionChild = React.Children.toArray(children).find(
@@ -45,7 +47,9 @@ export function SettingCard({
       wrap="wrap"
       style={{ borderColor: "var(--gray-a5)" }}
       className={
-        "border-1 rounded-md py-2 px-4 bg-transparent  min-h-8" + className
+        bordless
+          ? "border-0"
+          : "border-1 rounded-md py-2 px-4 bg-transparent  min-h-8" + className
       }
     >
       <Flex
@@ -85,15 +89,12 @@ function Action({ children }: { children: React.ReactNode }) {
 SettingCard.Action = Action;
 
 export function SettingCardSwitch({
-  title = "",
-  description = "",
   label = "",
   autoDisabled = true,
   defaultChecked,
   onChange,
-}: {
-  title?: string;
-  description?: string;
+  ...props
+}: SettingCardProps & {
   label?: string;
   autoDisabled?: boolean;
   defaultChecked?: boolean;
@@ -104,22 +105,18 @@ export function SettingCardSwitch({
   const [checked, setChecked] = React.useState(defaultChecked || false);
   const handleChange = (c: boolean) => {
     if (autoDisabled) setDisabled(true);
-    const previousValue = checked; // 保存之前的值
-    setChecked(c); // 先更新开关状态
+    const previousValue = checked;
+    setChecked(c);
     const result: any =
       onChange && switchRef.current
         ? onChange(c, switchRef.current)
         : undefined;
-
     if (autoDisabled) {
       const promise: Promise<any> = result;
       if (promise && typeof promise.then === "function") {
         promise
-          .then(() => {
-            // 成功时不需要额外操作，值已经更新
-          })
+          .then(() => {})
           .catch(() => {
-            // 错误时自动切换回之前的值
             setChecked(previousValue);
           })
           .finally(() => {
@@ -130,9 +127,8 @@ export function SettingCardSwitch({
       }
     }
   };
-
   return (
-    <SettingCard title={title} description={description} direction="column">
+    <SettingCard {...props} direction="column">
       <SettingCard.Action>
         <Flex direction="row" gap="2" align="center">
           <label>{label}</label>
@@ -149,16 +145,13 @@ export function SettingCardSwitch({
 }
 
 export function SettingCardButton({
-  title = "",
-  description = "",
   label = "",
   variant = "solid",
   children,
   onClick,
   autoDisabled = true,
-}: {
-  title?: string;
-  description?: string;
+  ...props
+}: SettingCardProps & {
   label?: string;
   variant?: "solid" | "soft" | "outline" | "ghost";
   children?: React.ReactNode;
@@ -178,9 +171,8 @@ export function SettingCardButton({
       }
     }
   };
-
   return (
-    <SettingCard title={title} description={description} direction="column">
+    <SettingCard {...props} direction="column">
       <SettingCard.Action>
         <Flex>
           <Flex direction="row" gap="2" align="center">
@@ -196,16 +188,13 @@ export function SettingCardButton({
 }
 
 export function SettingCardIconButton({
-  title = "",
-  description = "",
   label = "",
   variant = "solid",
   children,
   onClick,
   autoDisabled = true,
-}: {
-  title?: string;
-  description?: string;
+  ...props
+}: SettingCardProps & {
   label?: string;
   variant?: "solid" | "soft" | "outline" | "ghost";
   children?: React.ReactNode;
@@ -225,9 +214,8 @@ export function SettingCardIconButton({
       }
     }
   };
-
   return (
-    <SettingCard title={title} description={description} direction="column">
+    <SettingCard {...props} direction="column">
       <SettingCard.Action>
         <Flex>
           <Flex direction="row" gap="2" align="center">
@@ -255,6 +243,7 @@ export function SettingCardShortTextInput({
   OnSave = () => {},
   autoDisabled = true,
   isSaving,
+  bordless = false,
 }: {
   title?: string;
   description?: string;
@@ -268,6 +257,7 @@ export function SettingCardShortTextInput({
   ) => void;
   autoDisabled?: boolean;
   isSaving?: boolean;
+  bordless?: boolean;
 }) {
   const [disabled, setDisabled] = React.useState(false);
   const savingState = isSaving !== undefined ? isSaving : disabled;
@@ -296,7 +286,7 @@ export function SettingCardShortTextInput({
   };
 
   return (
-    <SettingCard title={title} description={description}>
+    <SettingCard title={title} description={description} bordless={bordless}>
       <Flex direction="column" className="w-full mt-1" gap="2" align="start">
         <TextField.Root
           className="w-full"
@@ -327,6 +317,7 @@ export function SettingCardLongTextInput({
   OnSave = () => {},
   autoDisabled = true,
   isSaving,
+  bordless = false,
 }: {
   title?: string;
   description?: string;
@@ -339,6 +330,7 @@ export function SettingCardLongTextInput({
   ) => void;
   autoDisabled?: boolean;
   isSaving?: boolean;
+  bordless?: boolean;
 }) {
   const [disabled, setDisabled] = React.useState(false);
   const savingState = isSaving !== undefined ? isSaving : disabled;
@@ -367,7 +359,7 @@ export function SettingCardLongTextInput({
   };
 
   return (
-    <SettingCard title={title} description={description}>
+    <SettingCard title={title} description={description} bordless={bordless}>
       <Flex direction="column" className="w-full mt-1" gap="2" align="start">
         <TextArea
           className="w-full"
@@ -399,6 +391,7 @@ export function SettingCardSelect({
   OnSave = () => {},
   autoDisabled = true,
   isSaving,
+  bordless = false,
 }: {
   title?: string;
   description?: string;
@@ -408,6 +401,7 @@ export function SettingCardSelect({
   OnSave?: (value: string, buttonElement: HTMLButtonElement) => void;
   autoDisabled?: boolean;
   isSaving?: boolean;
+  bordless?: boolean;
 }) {
   const [disabled, setDisabled] = React.useState(false);
   const savingState = isSaving !== undefined ? isSaving : disabled;
@@ -454,7 +448,7 @@ export function SettingCardSelect({
   };
 
   return (
-    <SettingCard title={title} description={description}>
+    <SettingCard title={title} description={description} bordless={bordless}>
       <SettingCard.Action>
         <Flex>
           <Flex direction="row" gap="2" align="center">
@@ -503,11 +497,13 @@ export function SettingCardCollapse({
   description,
   defaultOpen = false,
   children,
+  bordless = false,
 }: {
   title?: string;
   description?: string;
   children?: React.ReactNode;
   defaultOpen?: boolean;
+  bordless?: boolean;
 }) {
   const [open, setOpen] = React.useState(defaultOpen);
 
@@ -516,6 +512,7 @@ export function SettingCardCollapse({
       title={title}
       description={description}
       onHeaderClick={() => setOpen(!open)}
+      bordless={bordless}
     >
       <SettingCard.Action>
         <IconButton
@@ -553,3 +550,12 @@ export function SettingCardCollapse({
     </SettingCard>
   );
 }
+
+// Header slot for SettingCardCollapse
+SettingCardCollapse.Header = function Header({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <div>{children}</div>;
+};

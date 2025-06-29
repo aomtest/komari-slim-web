@@ -67,6 +67,16 @@ export function SettingCardMultiInputCollapse({
 
   return (
     <SettingCardCollapse title={title} description={description} defaultOpen={defaultOpen}>
+      {/* 渲染 Header slot */}
+      {React.Children.map(children, (child) => {
+        if (
+          React.isValidElement(child) &&
+          child.type === SettingCardCollapse.Header
+        ) {
+          return child;
+        }
+        return null;
+      })}
       <Flex direction="column" gap="2" className="w-full">
         {items.map((item) => (
           <React.Fragment key={item.tag}>
@@ -98,8 +108,16 @@ export function SettingCardMultiInputCollapse({
             )}
           </React.Fragment>
         ))}
-        {/* 渲染额外 children */}
-        {children}
+        {/* 渲染除 Header 外的 children */}
+        {React.Children.map(children, (child) => {
+          if (
+            React.isValidElement(child) &&
+            child.type === SettingCardCollapse.Header
+          ) {
+            return null;
+          }
+          return child;
+        })}
         <div>
           <Button variant="solid" className="mt-2" onClick={handleSave} disabled={savingState}>
             {t("save")}
