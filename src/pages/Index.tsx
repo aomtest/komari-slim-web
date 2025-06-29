@@ -10,7 +10,7 @@ const Index = () => {
   const InnerLayout = () => {
     const [t] = useTranslation();
     const { live_data } = useLiveData();
-    document.title = t("home_title");
+    //document.title = t("home_title");
     //#region 节点数据
     const { nodeList, isLoading, error } = useNodeList();
     if (isLoading) {

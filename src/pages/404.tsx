@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 const NotFound: React.FC = () => {
   React.useEffect(() => {
-    document.title = "404 - Page Not Found";
+    //document.title = "404 - Page Not Found";
   }, []);
   const [t] = useTranslation();
   return (
