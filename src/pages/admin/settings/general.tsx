@@ -67,6 +67,7 @@ export default function GeneralSettings() {
           { value: "mmdb", label: "MaxMind" },
           { value: "ip-api", label: "ip-api.com" },
           { value: "geojs", label: "geojs.io" },
+          { value: "ipinfo", label: "ipinfo.io" },
         ]}
         OnSave={async (value) => {
           await updateSettingsWithToast({ geo_ip_provider: value }, t);
