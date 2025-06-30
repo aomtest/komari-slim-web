@@ -173,6 +173,17 @@
   "nodeCard": {
     "os": "操作系统",
     "arch": "架构",
+    "name": "节点名称",
+    "status": "状态",
+    "price": "价格",
+    "actions": "操作",
+    "totalNodes": "共 {{total}} 个服务器，{{online}} 个在线",
+    "networkTraffic": "网络/流量",
+    "basicInfo": "基本信息",
+    "resourceUsage": "资源使用",
+    "monitoring": "监控信息",
+    "chart": "图表",
+    "clickToViewPing": "点击查看延迟图表",
     "online": "在线",
     "offline": "离线",
     "cpu": "CPU",
@@ -423,5 +434,17 @@
     "target": "目标",
     "interval": "间隔",
     "type": "类型"
+  },
+  "search": {
+    "placeholder": "搜索节点名称、地区、系统...",
+    "results": "找到 {{count}} 个服务器，共 {{total}} 个",
+    "no_results": "未找到匹配的服务器",
+    "try_different": "尝试不同的搜索关键词"
+  },
+  "view": {
+    "mode": "显示模式"
+  },
+  "nodes": {
+    "empty": "暂无服务器数据"
   }
 }

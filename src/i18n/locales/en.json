@@ -173,6 +173,17 @@
   "nodeCard": {
     "os": "OS",
     "arch": "Architecture",
+    "name": "Node Name",
+    "status": "Status",
+    "price": "Price",
+    "actions": "Actions",
+    "totalNodes": "{{total}} servers total, {{online}} online",
+    "networkTraffic": "Network/Traffic",
+    "basicInfo": "Basic Info",
+    "resourceUsage": "Resource Usage",
+    "monitoring": "Monitoring",
+    "chart": "Chart",
+    "clickToViewPing": "Click to view ping chart",
     "online": "Online",
     "offline": "Offline",
     "cpu": "CPU",
@@ -423,5 +434,17 @@
     "target": "Target",
     "type": "Type",
     "interval": "Interval"
+  },
+  "search": {
+    "placeholder": "Search nodes by name, region, OS...",
+    "results": "Found {{count}} server out of {{total}}",
+    "no_results": "No matching servers found",
+    "try_different": "Try different search keywords"
+  },
+  "view": {
+    "mode": "View Mode"
+  },
+  "nodes": {
+    "empty": "No server data available"
   }
 }

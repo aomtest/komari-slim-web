@@ -1,6 +1,6 @@
 import { Callout, Card, Flex, Text } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
-import { NodeGrid } from "../components/Node";
+import NodeDisplay from "../components/NodeDisplay";
 import { formatBytes } from "../types/NodeBasicInfo";
 import { useLiveData } from "../contexts/LiveDataContext";
 import { useNodeList } from "@/contexts/NodeListContext";
@@ -112,10 +112,10 @@ const Index = () => {
             </Flex>
           </div>
         </Card>
-        <NodeGrid
+        <NodeDisplay
           nodes={nodeList ?? []}
           liveData={live_data?.data ?? { online: [], data: {} }}
-        />{" "}
+        />
       </>
     );
   };
