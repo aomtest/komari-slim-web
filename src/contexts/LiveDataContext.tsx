@@ -36,7 +36,12 @@ export const LiveDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     let reconnectTimeout: number;
 
     const connect = () => {
-      ws = new WebSocket("/api/clients");
+      ws = new WebSocket(
+        window.location.protocol.replace("http", "ws") +
+        "//" +
+        window.location.host +
+        "/api/clients"
+      );
       ws.onopen = () => {
         // 连接成功时，隐藏 Callout
         setShowCallout(true);
