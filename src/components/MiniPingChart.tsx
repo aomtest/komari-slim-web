@@ -240,7 +240,7 @@ const MiniPingChart = ({
                   dot={false}
                   isAnimationActive={false}
                   strokeWidth={2}
-                  connectNulls={true}
+                  connectNulls={false}
                   hide={!!hiddenLines[task.id]}
                 />
               ))}

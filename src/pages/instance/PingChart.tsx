@@ -356,7 +356,7 @@ const PingChart = ({ uuid }: { uuid: string }) => {
                   dot={false}
                   isAnimationActive={false}
                   strokeWidth={2}
-                  connectNulls={true}
+                  connectNulls={false}
                   hide={!!hiddenLines[task.id]}
                 />
               ))}
