@@ -20,6 +20,7 @@ interface PingRecord {
 interface TaskInfo {
   id: number;
   name: string;
+  interval: number;
 }
 interface PingApiResp {
   status: string;
@@ -31,7 +32,7 @@ interface PingApiResp {
   };
 }
 
-const MAX_POINTS = 1000;
+//const MAX_POINTS = 1000;
 const colors = [
   "#F38181",
   "#347433",
@@ -91,10 +92,10 @@ const MiniPingChart = ({
   const chartData = useMemo(() => {
     const data = remoteData || [];
     if (!data.length) return [];
-    const sliced = data.slice(-MAX_POINTS);
+    //const sliced = data.slice(-MAX_POINTS);
     const grouped: Record<string, any> = {};
     const timeKeys: number[] = [];
-    for (const rec of sliced) {
+    for (const rec of data) {
       const t = new Date(rec.time).getTime();
       let foundKey = null;
       for (const key of timeKeys) {
@@ -114,7 +115,7 @@ const MiniPingChart = ({
       (a: any, b: any) =>
         new Date(a.time).getTime() - new Date(b.time).getTime()
     );
-    const full1 = fillMissingTimePoints(full, 60, null, 120);
+    const full1 = fillMissingTimePoints(full, tasks[0]?.interval || 60, null, tasks[0]?.interval * 1.2 || 72);
     return full1;
   }, [remoteData]);
 

@@ -21,6 +21,7 @@ interface PingRecord {
 interface TaskInfo {
   id: number;
   name: string;
+  interval: number;
 }
 interface PingApiResp {
   status: string;
@@ -167,9 +168,9 @@ const PingChart = ({ uuid }: { uuid: string }) => {
     );
     const full1 = fillMissingTimePoints(
       full,
-      60,
+      tasks[0]?.interval || 60,
       hours * 60 * 60,
-      120
+      tasks[0]?.interval ? tasks[0]?.interval * 1.2 : 60 * 1.2 
     );
     return full1;
   }, [remoteData]);

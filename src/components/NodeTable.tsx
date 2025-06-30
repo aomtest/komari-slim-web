@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
-import { Badge, Flex, Text, IconButton } from "@radix-ui/themes";
+import { Badge, Flex, IconButton } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
@@ -17,8 +17,10 @@ import { formatBytes, formatUptime } from "./Node";
 import UsageBar from "./UsageBar";
 import Flag from "./Flag";
 import PriceTags from "./PriceTags";
-import MiniPingChartFloat from "./MiniPingChartFloat";
 import Tips from "./ui/tips";
+import { DetailsGrid } from "./DetailsGrid";
+import MiniPingChart from "./MiniPingChart";
+import { getOSImage } from "@/utils";
 
 interface NodeTableProps {
   nodes: NodeBasicInfo[];
@@ -81,6 +83,7 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
             <TableHead className="w-[200px] min-w-[150px]">
               {t("nodeCard.name")}
             </TableHead>
+            <TableHead>OS</TableHead>
             <TableHead className="max-w-[128px]">
               {t("nodeCard.status")}
             </TableHead>
@@ -125,7 +128,6 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
                       </IconButton>
                     </div>
                   </TableCell>
-
                   <TableCell className="node-name-cell">
                     <Flex align="center" gap="1">
                       <Flag flag={node.region} />
@@ -150,6 +152,10 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
                         </Flex>
                       </Link>
                     </Flex>
+                  </TableCell>
+
+                  <TableCell className="w-4">
+                    <img src={getOSImage(node.os)} alt={node.os} className="w-5 h-5 mr-2" />
                   </TableCell>
 
                   <TableCell>
@@ -205,19 +211,15 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
                   <TableCell>
                     <Flex direction="column" gap="1">
                       <Flex direction="column" gap="1">
-                        <Text size="2">
-                          ↑{formatBytes(nodeData.network.up)}/s ↓
-                          {formatBytes(nodeData.network.down)}/s
-                        </Text>
+                        <label>↑{formatBytes(nodeData.network.up)}/s</label>
+                        <label>↓{formatBytes(nodeData.network.down)}/s</label>
                       </Flex>
                     </Flex>
                   </TableCell>
                   <TableCell>
                     <Flex direction="column" gap="1">
-                      <Text size="2">
-                        {formatBytes(nodeData.network.totalUp)} /{" "}
-                        {formatBytes(nodeData.network.totalDown)}
-                      </Text>
+                      <label>↑{formatBytes(nodeData.network.totalUp)}</label>
+                      <label>↓{formatBytes(nodeData.network.totalDown)}</label>
                     </Flex>
                   </TableCell>
                 </TableRow>
@@ -225,7 +227,7 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
                 {/* 展开的详细信息行 */}
                 {isExpanded && (
                   <TableRow className="expanded-row">
-                    <TableCell colSpan={9} className="bg-accent-1">
+                    <TableCell colSpan={10} className="bg-accent-1">
                       <div className="expand-content">
                         <ExpandedNodeDetails node={node} nodeData={nodeData} />
                       </div>
@@ -247,165 +249,13 @@ interface ExpandedNodeDetailsProps {
   nodeData: Record;
 }
 
-const ExpandedNodeDetails: React.FC<ExpandedNodeDetailsProps> = ({
-  node,
-  nodeData,
-}) => {
-  const [t] = useTranslation();
-
+const ExpandedNodeDetails: React.FC<ExpandedNodeDetailsProps> = ({ node }) => {
   return (
     <div className="p-4 space-y-4">
-      <Flex direction="column" gap="3">
-        {/* 基本信息 */}
-        <div>
-          <Text size="3" weight="bold" className="mb-2 block">
-            {t("nodeCard.basicInfo", { defaultValue: "基本信息" })}
-          </Text>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div>
-              <Text size="1" color="gray">
-                {t("nodeCard.os")}
-              </Text>
-              <Text size="2" weight="medium">
-                {node.os} - {node.arch}
-              </Text>
-            </div>
-            <div>
-              <Text size="1" color="gray">
-                CPU
-              </Text>
-              <Text size="2" weight="medium">
-                {node.cpu_name}
-              </Text>
-              <Text size="1" color="gray">
-                ({node.cpu_cores} 核心)
-              </Text>
-            </div>
-            <div>
-              <Text size="1" color="gray">
-                GPU
-              </Text>
-              <Text size="2" weight="medium">
-                {node.gpu_name || "Unknown"}
-              </Text>
-            </div>
-            <div>
-              <Text size="1" color="gray">
-                {t("nodeCard.virtualization")}
-              </Text>
-              <Text size="2" weight="medium">
-                {node.virtualization || "Unknown"}
-              </Text>
-            </div>
-          </div>
-        </div>
-
-        {/* 资源使用情况 */}
-        <div>
-          <Text size="3" weight="bold" className="mb-2 block">
-            {t("nodeCard.resourceUsage", { defaultValue: "资源使用" })}
-          </Text>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Flex justify="between" align="center" className="mb-1">
-                <Text size="2" color="gray">
-                  {t("nodeCard.ram")}
-                </Text>
-                <Text size="2">
-                  {formatBytes(nodeData.ram.used)} /{" "}
-                  {formatBytes(node.mem_total)}
-                </Text>
-              </Flex>
-              <UsageBar
-                label=""
-                value={
-                  node.mem_total
-                    ? (nodeData.ram.used / node.mem_total) * 100
-                    : 0
-                }
-              />
-            </div>
-            <div>
-              <Flex justify="between" align="center" className="mb-1">
-                <Text size="2" color="gray">
-                  {t("nodeCard.disk")}
-                </Text>
-                <Text size="2">
-                  {formatBytes(nodeData.disk.used)} /{" "}
-                  {formatBytes(node.disk_total)}
-                </Text>
-              </Flex>
-              <UsageBar
-                label=""
-                value={
-                  node.disk_total
-                    ? (nodeData.disk.used / node.disk_total) * 100
-                    : 0
-                }
-              />
-            </div>
-            <div>
-              <Flex justify="between" align="center" className="mb-1">
-                <Text size="2" color="gray">
-                  {t("nodeCard.swap")}
-                </Text>
-                <Text size="2">{formatBytes(node.swap_total)}</Text>
-              </Flex>
-            </div>
-          </div>
-        </div>
-
-        {/* Ping 图表和其他信息 */}
-        <div>
-          <Text size="3" weight="bold" className="mb-2 block">
-            {t("nodeCard.monitoring", { defaultValue: "监控信息" })}
-          </Text>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Text size="2" color="gray" className="mb-2 block">
-                {t("nodeCard.ping")}{" "}
-                {t("nodeCard.chart", { defaultValue: "图表" })}
-              </Text>
-              <MiniPingChartFloat
-                uuid={node.uuid}
-                trigger={
-                  <div className="w-full h-24 bg-accent-2 rounded-md flex items-center justify-center cursor-pointer hover:bg-accent-3 transition-colors">
-                    <Text size="2" color="gray">
-                      {t("nodeCard.clickToViewPing", {
-                        defaultValue: "点击查看延迟图表",
-                      })}
-                    </Text>
-                  </div>
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <div>
-                <Text size="1" color="gray">
-                  {t("nodeCard.last_updated")}
-                </Text>
-                <Text size="2" weight="medium">
-                  {nodeData.updated_at
-                    ? new Date(nodeData.updated_at).toLocaleString()
-                    : "-"}
-                </Text>
-              </div>
-              <div>
-                <Text size="1" color="gray">
-                  UUID
-                </Text>
-                <Text
-                  size="2"
-                  weight="medium"
-                  className="font-mono text-xs break-all"
-                >
-                  {node.uuid}
-                </Text>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Flex>
+      <DetailsGrid gap="0" uuid={node.uuid} />
+      <div>
+        <MiniPingChart hours={24} uuid={node.uuid} />
+      </div>
     </div>
   );
 };

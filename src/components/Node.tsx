@@ -141,6 +141,7 @@ const Node = ({ basic, live, online }: NodeProps) => {
             {live?.message && <Tips color="#CE282E">{live.message}</Tips>}
             <MiniPingChartFloat
               uuid={basic.uuid}
+              hours={24}
               trigger={
                 <IconButton variant="ghost" size="1">
                   <TrendingUp size="14" />
@@ -160,9 +161,14 @@ const Node = ({ basic, live, online }: NodeProps) => {
             <Text size="2" color="gray">
               OS
             </Text>
-            <Text size="2">
-              {formatOs(basic.os)} - {basic.arch}
-            </Text>
+            <Flex align="center">
+              <img
+                src={getOSImage(basic.os)}
+                alt={basic.os}
+                className="w-5 h-5 mr-2"
+              />
+              <Text size="2">{formatOs(basic.os)} / {basic.arch}</Text>
+            </Flex>
           </Flex>
           <Flex className="md:flex-col flex-row md:gap-1 gap-4">
             {/* CPU Usage */}
@@ -262,6 +268,7 @@ import type { NodeBasicInfo } from "@/contexts/NodeListContext";
 import PriceTags from "./PriceTags";
 import { TrendingUp } from "lucide-react";
 import MiniPingChartFloat from "./MiniPingChartFloat";
+import { getOSImage } from "@/utils";
 export const NodeGrid = ({ nodes, liveData }: NodeGridProps) => {
   // 确保liveData是有效的
   const onlineNodes = liveData && liveData.online ? liveData.online : [];

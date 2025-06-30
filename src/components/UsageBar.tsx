@@ -44,9 +44,9 @@ const UsageBar = ({ value, label, compact = false }: UsageBarProps) => {
             transition={{ duration: 0.5, ease: 'easeOut' }}
           />
         </Box>
-        <Text size="1" color="gray" style={{ fontSize: '11px' }}>
+        <label color="gray" className='text-sm'>
           {clampedValue.toFixed(1)}%
-        </Text>
+        </label>
       </Box>
     );
   }

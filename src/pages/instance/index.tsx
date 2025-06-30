@@ -5,11 +5,11 @@ import { useTranslation } from "react-i18next";
 import type { Record } from "../../types/LiveData";
 import Flag from "../../components/Flag";
 import { Flex, SegmentedControl, Text } from "@radix-ui/themes";
-import { formatBytes, formatUptime } from "../../components/Node";
 import { useNodeList } from "@/contexts/NodeListContext";
 import { liveDataToRecords } from "@/utils/RecordHelper";
 import LoadChart from "./LoadChart";
 import PingChart from "./PingChart";
+import { DetailsGrid } from "@/components/DetailsGrid";
 
 export default function InstancePage() {
   const { t } = useTranslation();
@@ -75,7 +75,7 @@ export default function InstancePage() {
             {node?.uuid}
           </Text>
         </h1>
-        <DetailsGrid />
+        <DetailsGrid uuid={uuid ?? ""} />
       </div>
       <SegmentedControl.Root
         radius="full"
@@ -100,99 +100,7 @@ export default function InstancePage() {
   );
 }
 // #region 详情网格
-const DetailsGrid = () => {
-  const { t } = useTranslation();
 
-  const { uuid } = useParams<{ uuid: string }>();
-  const { nodeList } = useNodeList();
-  const { live_data } = useLiveData();
-  const node = nodeList?.find((n) => n.uuid === uuid);
-
-  return (
-    <div className="grid grid-cols-2 gap-4 basis-full">
-      <UpDownStack
-        className="md:w-128"
-        up="CPU"
-        down={`${node?.cpu_name} (x${node?.cpu_cores})`}
-      />
-      <label className="flex flex-wrap gap-2 gap-x-8">
-        <UpDownStack up={t("nodeCard.arch")} down={node?.arch ?? "Unknown"} />
-
-        <UpDownStack
-          up={t("nodeCard.virtualization")}
-          down={node?.virtualization ?? "Unknown"}
-        />
-      </label>
-      <UpDownStack up="GPU" down={node?.gpu_name ?? "Unknown"} />
-      <UpDownStack
-        className="md:w-64 w-full"
-        up={t("nodeCard.os")}
-        down={node?.os ?? "Unknown"}
-      />
-
-      <UpDownStack
-        className="md:w-64 w-full"
-        up={t("nodeCard.networkSpeed")}
-        down={` ↑ ${formatBytes(
-          live_data?.data.data[uuid ?? ""]?.network.up || 0
-        )}/s
-              ↓
-              ${formatBytes(
-                live_data?.data.data[uuid ?? ""]?.network.down || 0
-              )}/s`}
-      />
-      <UpDownStack
-        up={t("nodeCard.totalTraffic")}
-        down={`↑
-              ${formatBytes(
-                live_data?.data.data[uuid ?? ""]?.network.totalUp || 0
-              )}
-              ↓
-              ${formatBytes(
-                live_data?.data.data[uuid ?? ""]?.network.totalDown || 0
-              )}`}
-      />
-      <UpDownStack
-        className="md:w-70 w-full"
-        up={t("nodeCard.ram")}
-        down={formatBytes(node?.mem_total || 0)}
-      />
-      <UpDownStack
-        up={t("nodeCard.swap")}
-        down={formatBytes(node?.swap_total || 0)}
-      />
-      <UpDownStack
-        className="md:w-64 w-full"
-        up={t("nodeCard.disk")}
-        down={formatBytes(node?.disk_total || 0)}
-      />
-      <div />
-      <UpDownStack
-        up={t("nodeCard.uptime")}
-        down={
-          live_data?.data.data[uuid ?? ""]?.uptime
-            ? formatUptime(live_data?.data.data[uuid ?? ""]?.uptime, t)
-            : "-"
-        }
-      />
-      <label className="flex flex-wrap gap-2">
-        <Flex align={"center"} gap="2">
-          <Text size="2" weight="bold" wrap="nowrap">
-            {t("nodeCard.last_updated")}
-          </Text>
-          <Text size="2">
-            {node?.updated_at
-              ? new Date(
-                  live_data?.data.data[uuid ?? ""]?.updated_at ||
-                    node.updated_at
-                ).toLocaleString()
-              : "-"}
-          </Text>
-        </Flex>
-      </label>
-    </div>
-  );
-};
 // // 递归补0工具
 // function deepZeroFill(obj: any): any {
 //   if (obj === null || obj === undefined) return 0;
@@ -258,19 +166,4 @@ const DetailsGrid = () => {
 //   return filled;
 // }
 
-function UpDownStack({
-  up,
-  down,
-  className,
-}: {
-  up: string;
-  down: string;
-  className?: string;
-}) {
-  return (
-    <div className={`flex flex-col gap-0 ${className}`}>
-      <label className="text-base font-bold">{up}</label>
-      <label className="text-sm text-muted-foreground -mt-1">{down}</label>
-    </div>
-  );
-}
+
