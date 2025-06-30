@@ -60,6 +60,9 @@ export default defineConfig(({ mode }) => {
         process.env[k] = envConfig[k];
       }
     }
+    if (!process.env.VITE_API_TARGET) {
+      process.env.VITE_API_TARGET = "http://127.0.0.1:25774";
+    }
     baseConfig.server = {
       proxy: {
         "/api": {
