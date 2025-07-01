@@ -10,7 +10,10 @@ const osImageMap: Record<string, string> = {
   'debian': '/assets/os-debian.svg',
   'ubuntu': '/assets/os-ubuntu.svg',
   'windows': '/assets/os-windows.svg',
-  'unknown': '/assets/TablerHelp.svg'
+  'unknown': '/assets/TablerHelp.svg',
+  'arch': '/assets/os-arch.svg',
+  'kail': '/assets/os-kail.svg',
+  'istore': '/assets/os-istore.png'
 };
 
 // 操作系统关键词匹配模式
@@ -38,6 +41,18 @@ const osPatterns: Array<{ keywords: string[], image: string }> = [
   {
     keywords: ['windows', 'win', 'microsoft', 'ms'],
     image: osImageMap.windows
+  },
+  {
+    keywords: ['arch', 'archlinux', 'arch linux'],
+    image: osImageMap.arch
+  },
+  {
+    keywords: ['kail', 'kali', 'kali linux'],
+    image: osImageMap.kail
+  },
+  {
+    keywords: ['istore', 'istoreos', 'istore os'],
+    image: osImageMap.istore
   },
   {
     keywords: ['unknown'],
@@ -97,6 +112,9 @@ export function getOSName(osString: string): string {
   if (normalizedInput.includes('debian')) return 'Debian';
   if (normalizedInput.includes('ubuntu')) return 'Ubuntu';
   if (normalizedInput.includes('windows') || normalizedInput.includes('win')) return 'Windows';
+  if (normalizedInput.includes('arch')) return 'Arch Linux';
+  if (normalizedInput.includes('kail') || normalizedInput.includes('kali')) return 'Kali Linux';
+  if (normalizedInput.includes('istore')) return 'iStoreOS';
 
   return 'Unknown';
 }
