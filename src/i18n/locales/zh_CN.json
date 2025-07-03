@@ -308,7 +308,9 @@
       "priceTips": "0不显示，-1表示免费",
       "dragToReorder": "长按拖拽重新排序",
       "memoryModeAvailable": "监测可用内存",
-      "memoryModeAvailable_tip": "Agent 默认监测并上报已用内存，勾选此选项将监测并上报可用内存。"
+      "memoryModeAvailable_tip": "Agent 默认监测并上报已用内存，勾选此选项将监测并上报可用内存。",
+      "includeNics": "只监测特定网卡",
+      "excludeNics": "排除特定网卡"
     },
     "nodeDetail": {
       "machineDetail": "机器详细信息",

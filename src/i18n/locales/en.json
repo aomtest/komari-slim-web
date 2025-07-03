@@ -308,7 +308,9 @@
       "priceTips": "0 is not displayed, -1 means free",
       "dragToReorder": "Long press and drag to reorder",
       "memoryModeAvailable": "Monitor available memory",
-      "memoryModeAvailable_tip": "The Agent monitors and reports used memory by default. Selecting this option will monitor and report available memory."
+      "memoryModeAvailable_tip": "The Agent monitors and reports used memory by default. Selecting this option will monitor and report available memory.",
+      "includeNics": "Specific network interfaces only.",
+      "excludeNics": "Exclude specific network interfaces."
     },
     "nodeDetail": {
       "arch": "Architecture",

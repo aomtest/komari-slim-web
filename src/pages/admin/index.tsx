@@ -771,10 +771,11 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
               </Flex>
               {enableGhproxy && (
                 <TextField.Root
-                  placeholder={t(
-                    "admin.nodeTable.ghproxy_placeholder",
-                    "GitHub 代理，为空则不使用代理"
-                  )}
+                  // placeholder={t(
+                  //   "admin.nodeTable.ghproxy_placeholder",
+                  //   "GitHub 代理，为空则不使用代理"
+                  // )}
+                  placeholder="https://ghfast.top/"
                   value={installOptions.ghproxy}
                   onChange={(e) =>
                     setInstallOptions((prev) => ({
@@ -902,10 +903,11 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
               </Flex>
               {enableIncludeNics && (
                 <TextField.Root
-                  placeholder={t(
-                    "admin.nodeTable.includeNics_placeholder",
-                    "多个网卡使用逗号隔开"
-                  )}
+                  // placeholder={t(
+                  //   "admin.nodeTable.includeNics_placeholder",
+                  //   "多个网卡使用逗号隔开"
+                  // )}
+                  placeholder="eth0,eth1"
                   value={installOptions.includeNics}
                   onChange={(e) =>
                     setInstallOptions((prev) => ({
@@ -945,10 +947,11 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
               </Flex>
               {enableExcludeNics && (
                 <TextField.Root
-                  placeholder={t(
-                    "admin.nodeTable.excludeNics_placeholder",
-                    "多个网卡使用逗号隔开"
-                  )}
+                  // placeholder={t(
+                  //   "admin.nodeTable.excludeNics_placeholder",
+                  //   "多个网卡使用逗号隔开"
+                  // )}
+                  placeholder="lo"
                   value={installOptions.excludeNics}
                   onChange={(e) =>
                     setInstallOptions((prev) => ({
