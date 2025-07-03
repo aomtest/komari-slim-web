@@ -256,7 +256,8 @@
     "swap_used": "虚拟内存",
     "disk_used": "磁盘",
     "hours": "{{count}} 小时",
-    "days": "{{count}} 天"
+    "days": "{{count}} 天",
+    "cutPeak": "削峰"
   },
   "home_title": "Komari Monitor",
   "admin": {

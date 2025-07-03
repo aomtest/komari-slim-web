@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Flex, SegmentedControl, Card } from "@radix-ui/themes";
+import { Flex, SegmentedControl, Card, Switch } from "@radix-ui/themes";
 import { usePublicInfo } from "@/contexts/PublicInfoContext";
 import Loading from "@/components/loading";
 import {
@@ -10,7 +10,7 @@ import {
   ChartLegend,
 } from "@/components/ui/chart";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
-import fillMissingTimePoints from "@/utils/RecordHelper";
+import fillMissingTimePoints, { cutPeakValues } from "@/utils/RecordHelper";
 
 interface PingRecord {
   client: string;
@@ -97,6 +97,7 @@ const PingChart = ({ uuid }: { uuid: string }) => {
   const [tasks, setTasks] = useState<TaskInfo[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cutPeak, setCutPeak] = useState(false); // 削峰开关，默认关闭
 
   // Update hours state when view changes
   useEffect(() => {
@@ -109,7 +110,8 @@ const PingChart = ({ uuid }: { uuid: string }) => {
   // 拉取历史数据
   useEffect(() => {
     if (!uuid) return;
-    if (!hours) { // Use hours directly
+    if (!hours) {
+      // Use hours directly
       setRemoteData(null);
       setError(null);
       setLoading(false);
@@ -141,10 +143,10 @@ const PingChart = ({ uuid }: { uuid: string }) => {
   const chartData = useMemo(() => {
     const data = remoteData || [];
     if (!data.length) return [];
-    // 限制最大点数
-    //const sliced = data.slice(-MAX_POINTS);
+    
     const grouped: Record<string, any> = {};
     const timeKeys: number[] = [];
+
     //for (const rec of sliced) {
     for (const rec of data) {
       const t = new Date(rec.time).getTime();
@@ -162,24 +164,33 @@ const PingChart = ({ uuid }: { uuid: string }) => {
       }
       grouped[useKey][rec.task_id] = rec.value;
     }
-    const full = Object.values(grouped).sort(
+    
+    let full = Object.values(grouped).sort(
       (a: any, b: any) =>
         new Date(a.time).getTime() - new Date(b.time).getTime()
     );
+    
+    // 如果开启削峰，应用削峰处理
+    if (cutPeak && tasks.length > 0) {
+      const taskKeys = tasks.map(task => String(task.id));
+      full = cutPeakValues(full, taskKeys);
+    }
+    
     const full1 = fillMissingTimePoints(
       full,
       tasks[0]?.interval || 60,
       hours * 60 * 60,
-      tasks[0]?.interval ? tasks[0]?.interval * 1.2 : 60 * 1.2 
+      tasks[0]?.interval ? tasks[0]?.interval * 1.2 : 60 * 1.2
     );
     return full1;
-  }, [remoteData]);
+  }, [remoteData, cutPeak, tasks, hours]);
 
   // 时间格式化
   const timeFormatter = (value: any, index: number) => {
     if (!chartData.length) return "";
     if (index === 0 || index === chartData.length - 1) {
-      if (hours < 24) { // Use hours for conditional formatting
+      if (hours < 24) {
+        // Use hours for conditional formatting
         return new Date(value).toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
@@ -194,7 +205,8 @@ const PingChart = ({ uuid }: { uuid: string }) => {
   };
   const lableFormatter = (value: any) => {
     const date = new Date(value);
-    if (hours < 24) { // Use hours for conditional formatting
+    if (hours < 24) {
+      // Use hours for conditional formatting
       return date.toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
@@ -268,6 +280,7 @@ const PingChart = ({ uuid }: { uuid: string }) => {
           ))}
         </SegmentedControl.Root>
       </div>
+
       {loading && (
         <div style={{ textAlign: "center", width: "100%" }}>
           <Loading />
@@ -357,12 +370,20 @@ const PingChart = ({ uuid }: { uuid: string }) => {
                   isAnimationActive={false}
                   strokeWidth={2}
                   connectNulls={false}
+                  type={cutPeak ? "basis" : "linear"}
                   hide={!!hiddenLines[task.id]}
                 />
               ))}
             </LineChart>
           </ChartContainer>
         )}
+        {/* Cut Peak 开关 */}
+        <div className="flex items-center gap-2" style={{ display: loading ? "none" : "flex" }}>
+          <Switch id="cut-peak" checked={cutPeak} onCheckedChange={setCutPeak} />
+          <label htmlFor="cut-peak" className="text-sm font-medium">
+            {t("chart.cutPeak")}
+          </label>
+        </div>
       </Card>
     </Flex>
   );

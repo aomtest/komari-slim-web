@@ -256,7 +256,8 @@
     "mem_used": "Ram",
     "disk_used": "Disk",
     "hours": "{{count}} Hours",
-    "days": "{{count}} Day"
+    "days": "{{count}} Day",
+    "cutPeak": "Cut Peak"
   },
   "home_title": "Komari Monitor",
   "admin": {

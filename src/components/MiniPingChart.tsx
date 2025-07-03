@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
-import { Card } from "@radix-ui/themes";
+import { Card, Switch } from "@radix-ui/themes";
 import Loading from "@/components/loading";
 import {
   ChartContainer,
@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/chart";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
 import { useTranslation } from "react-i18next";
-import fillMissingTimePoints from "@/utils/RecordHelper";
+import fillMissingTimePoints, { cutPeakValues } from "@/utils/RecordHelper";
 
 interface PingRecord {
   client: string;
@@ -63,7 +63,7 @@ const MiniPingChart = ({
   const [error, setError] = useState<string | null>(null);
   const [hiddenLines, setHiddenLines] = useState<Record<string, boolean>>({});
   const [t] = useTranslation();
-
+  const [cutPeak, setCutPeak] = useState(false);
   useEffect(() => {
     if (!uuid) return;
 
@@ -95,6 +95,7 @@ const MiniPingChart = ({
     //const sliced = data.slice(-MAX_POINTS);
     const grouped: Record<string, any> = {};
     const timeKeys: number[] = [];
+    
     for (const rec of data) {
       const t = new Date(rec.time).getTime();
       let foundKey = null;
@@ -111,13 +112,21 @@ const MiniPingChart = ({
       }
       grouped[useKey][rec.task_id] = rec.value;
     }
-    const full = Object.values(grouped).sort(
+    
+    let full = Object.values(grouped).sort(
       (a: any, b: any) =>
         new Date(a.time).getTime() - new Date(b.time).getTime()
     );
+    
+    // 如果开启削峰，应用削峰处理
+    if (cutPeak && tasks.length > 0) {
+      const taskKeys = tasks.map(task => String(task.id));
+      full = cutPeakValues(full, taskKeys);
+    }
+    
     const full1 = fillMissingTimePoints(full, tasks[0]?.interval || 60, null, tasks[0]?.interval * 1.2 || 72);
     return full1;
-  }, [remoteData]);
+  }, [remoteData, cutPeak, tasks]);
 
   const timeFormatter = (value: any, index: number) => {
     if (!chartData.length) return "";
@@ -158,7 +167,7 @@ const MiniPingChart = ({
   }, []);
 
   return (
-    <Card style={{ width, height }} className="flex flex-col">
+    <Card style={{ width, height}} className="flex flex-col">
       {loading && (
         <div
           style={{
@@ -241,6 +250,7 @@ const MiniPingChart = ({
                   isAnimationActive={false}
                   strokeWidth={2}
                   connectNulls={false}
+                  type={cutPeak ? "basisOpen" : "linear"}
                   hide={!!hiddenLines[task.id]}
                 />
               ))}
@@ -248,6 +258,9 @@ const MiniPingChart = ({
           </ChartContainer>
         )
       )}
+      <div className="-mt-3 flex items-center"  style={{ display: loading ? "none" : "flex" }}>
+        <Switch size="1" checked={cutPeak} onCheckedChange={setCutPeak} /> {t("chart.cutPeak")}
+      </div>
     </Card>
   );
 };
