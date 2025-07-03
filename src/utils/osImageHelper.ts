@@ -24,7 +24,7 @@ const osConfigs: OSConfig[] = [
   {
     name: 'CentOS',
     image: '/assets/os-centos.svg',
-    keywords: ['centos', 'cent os', 'rhel', 'red hat']
+    keywords: ['centos', 'cent os']
   },
   {
     name: 'Debian',
@@ -34,7 +34,7 @@ const osConfigs: OSConfig[] = [
   {
     name: 'Ubuntu',
     image: '/assets/os-ubuntu.svg',
-    keywords: ['ubuntu', 'mint', 'elementary']
+    keywords: ['ubuntu', 'elementary']
   },
   {
     name: 'Windows',
@@ -70,6 +70,36 @@ const osConfigs: OSConfig[] = [
     name: 'Rocky Linux',
     image: '/assets/os-rocky.svg',
     keywords: ['rocky', 'rocky linux']
+  },
+  {
+    name: 'Fedora',
+    image: '/assets/os-fedora.svg',
+    keywords: ['fedora']
+  },
+  {
+    name: 'openSUSE',
+    image: '/assets/os-openSUSE.svg',
+    keywords: ['opensuse', 'suse']
+  },
+  {
+    name: 'Gentoo',
+    image: '/assets/os-gentoo.svg',
+    keywords: ['gentoo']
+  },
+  {
+    name: 'Red Hat',
+    image: '/assets/os-redhat.svg',
+    keywords: ['redhat', 'rhel', 'red hat']
+  },
+  {
+    name: 'Linux Mint',
+    image: '/assets/os-mint.svg',
+    keywords: ['mint', 'linux mint']
+  },
+  {
+    name: 'Manjaro',
+    image: '/assets/os-manjaro-.svg',
+    keywords: ['manjaro']
   }
 ];
 

@@ -12,29 +12,6 @@ import Flag from "./Flag";
 import { useTranslation } from "react-i18next";
 import Tips from "./ui/tips";
 
-function formatOs(os: string): string {
-  const patterns = [
-    { regex: /debian/i, name: "Debian" },
-    { regex: /ubuntu/i, name: "Ubuntu" },
-    { regex: /windows/i, name: "Windows" },
-    { regex: /arch/i, name: "Arch" },
-    { regex: /alpine/i, name: "Alpine" },
-    { regex: /centos/i, name: "CentOS" },
-    { regex: /fedora/i, name: "Fedora" },
-    { regex: /red\s*hat/i, name: "RHEL" },
-    { regex: /opensuse/i, name: "openSUSE" },
-    { regex: /manjaro/i, name: "Manjaro" },
-  ];
-
-  for (const pattern of patterns) {
-    if (pattern.regex.test(os)) {
-      return pattern.name;
-    }
-  }
-
-  return os.split(/[\s/]/)[0];
-}
-
 /** 将字节转换为人类可读的大小 */
 
 /** 格式化秒*/
@@ -167,7 +144,7 @@ const Node = ({ basic, live, online }: NodeProps) => {
                 alt={basic.os}
                 className="w-5 h-5 mr-2"
               />
-              <Text size="2">{formatOs(basic.os)} / {basic.arch}</Text>
+              <Text size="2">{getOSName(basic.os)} / {basic.arch}</Text>
             </Flex>
           </Flex>
           <Flex className="md:flex-col flex-row md:gap-1 gap-4">
@@ -268,7 +245,7 @@ import type { NodeBasicInfo } from "@/contexts/NodeListContext";
 import PriceTags from "./PriceTags";
 import { TrendingUp } from "lucide-react";
 import MiniPingChartFloat from "./MiniPingChartFloat";
-import { getOSImage } from "@/utils";
+import { getOSImage, getOSName } from "@/utils";
 export const NodeGrid = ({ nodes, liveData }: NodeGridProps) => {
   // 确保liveData是有效的
   const onlineNodes = liveData && liveData.online ? liveData.online : [];
