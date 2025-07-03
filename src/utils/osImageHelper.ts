@@ -13,7 +13,9 @@ const osImageMap: Record<string, string> = {
   'unknown': '/assets/TablerHelp.svg',
   'arch': '/assets/os-arch.svg',
   'kail': '/assets/os-kail.svg',
-  'istore': '/assets/os-istore.png'
+  'istore': '/assets/os-istore.png',
+  'openwrt': '/assets/os-openwrt.svg',
+  'nixos': '/assets/os-nix.svg',
 };
 
 // 操作系统关键词匹配模式
@@ -53,6 +55,14 @@ const osPatterns: Array<{ keywords: string[], image: string }> = [
   {
     keywords: ['istore', 'istoreos', 'istore os'],
     image: osImageMap.istore
+  },
+  {
+    keywords: ['openwrt', 'open wrt', 'open-wrt','qwrt'],
+    image: osImageMap.openwrt
+  },
+  {
+    keywords: ['nixos', 'nix os', 'nix'],
+    image: osImageMap.nixos
   },
   {
     keywords: ['unknown'],
@@ -115,6 +125,8 @@ export function getOSName(osString: string): string {
   if (normalizedInput.includes('arch')) return 'Arch Linux';
   if (normalizedInput.includes('kail') || normalizedInput.includes('kali')) return 'Kali Linux';
   if (normalizedInput.includes('istore')) return 'iStoreOS';
+  if (normalizedInput.includes('openwrt')) return 'OpenWrt';
+  if (normalizedInput.includes('nix')) return 'NixOS';
 
   return 'Unknown';
 }
