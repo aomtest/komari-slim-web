@@ -522,6 +522,8 @@ type InstallOptions = {
   ghproxy: string;
   dir: string;
   serviceName: string;
+  includeNics: string;
+  excludeNics: string;
 };
 function GenerateCommandButton({ node }: { node: NodeDetail }) {
   const [selectedPlatform, setSelectedPlatform] =
@@ -534,12 +536,16 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
     ghproxy: "",
     dir: "",
     serviceName: "",
+    includeNics: "",
+    excludeNics: "",
   });
 
   const [enableGhproxy, setEnableGhproxy] = React.useState(false);
   const [enableCustomDir, setEnableCustomDir] = React.useState(false);
   const [enableCustomServiceName, setEnableCustomServiceName] =
     React.useState(false);
+  const [enableIncludeNics, setEnableIncludeNics] = React.useState(false);
+  const [enableExcludeNics, setEnableExcludeNics] = React.useState(false);
 
   const generateCommand = () => {
     const host = window.location.origin;
@@ -574,6 +580,14 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
     if (enableCustomServiceName && installOptions.serviceName) {
       args.push(`--install-service-name`);
       args.push(installOptions.serviceName);
+    }
+    if (enableIncludeNics && installOptions.includeNics) {
+      args.push(`--include-nics`);
+      args.push(installOptions.includeNics);
+    }
+    if (enableExcludeNics && installOptions.excludeNics) {
+      args.push(`--exclude-nics`);
+      args.push(installOptions.excludeNics);
     }
 
     let finalCommand = "";
@@ -858,6 +872,92 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
                   }
                 />
               )}
+              <Flex gap="2" align="center">
+                <Checkbox
+                  checked={enableIncludeNics}
+                  onCheckedChange={(checked) => {
+                    setEnableIncludeNics(Boolean(checked));
+                    if (!checked) {
+                      setInstallOptions((prev) => ({
+                        ...prev,
+                        includeNics: "",
+                      }));
+                    }
+                  }}
+                />
+                <label
+                  className="text-sm font-bold cursor-pointer"
+                  onClick={() => {
+                    setEnableIncludeNics(!enableIncludeNics);
+                    if (enableIncludeNics) {
+                      setInstallOptions((prev) => ({
+                        ...prev,
+                        includeNics: "",
+                      }));
+                    }
+                  }}
+                >
+                  {t("admin.nodeTable.includeNics", "只监测特定网卡")}
+                </label>
+              </Flex>
+              {enableIncludeNics && (
+                <TextField.Root
+                  placeholder={t(
+                    "admin.nodeTable.includeNics_placeholder",
+                    "多个网卡使用逗号隔开"
+                  )}
+                  value={installOptions.includeNics}
+                  onChange={(e) =>
+                    setInstallOptions((prev) => ({
+                      ...prev,
+                      includeNics: e.target.value,
+                    }))
+                  }
+                />
+              )}
+              <Flex gap="2" align="center">
+                <Checkbox
+                  checked={enableExcludeNics}
+                  onCheckedChange={(checked) => {
+                    setEnableExcludeNics(Boolean(checked));
+                    if (!checked) {
+                      setInstallOptions((prev) => ({
+                        ...prev,
+                        excludeNics: "",
+                      }));
+                    }
+                  }}
+                />
+                <label
+                  className="text-sm font-bold cursor-pointer"
+                  onClick={() => {
+                    setEnableExcludeNics(!enableExcludeNics);
+                    if (enableExcludeNics) {
+                      setInstallOptions((prev) => ({
+                        ...prev,
+                        excludeNics: "",
+                      }));
+                    }
+                  }}
+                >
+                  {t("admin.nodeTable.excludeNics", "排除特定网卡")}
+                </label>
+              </Flex>
+              {enableExcludeNics && (
+                <TextField.Root
+                  placeholder={t(
+                    "admin.nodeTable.excludeNics_placeholder",
+                    "多个网卡使用逗号隔开"
+                  )}
+                  value={installOptions.excludeNics}
+                  onChange={(e) =>
+                    setInstallOptions((prev) => ({
+                      ...prev,
+                      excludeNics: e.target.value,
+                    }))
+                  }
+                />
+              )}
             </Flex>
           </Flex>
           <Flex direction="column" gap="2">
@@ -1007,7 +1107,7 @@ function DetailView({ node }: { node: NodeDetail }) {
       <DrawerTrigger asChild>
         <div className="h-8 flex items-center hover:underline cursor-pointer font-bold text-base">
           <Flag flag={node.region} size="6" />
-            {node.name.length > 25 ? node.name.slice(0, 25) + "..." : node.name}
+          {node.name.length > 25 ? node.name.slice(0, 25) + "..." : node.name}
         </div>
       </DrawerTrigger>
       <DrawerContent>
