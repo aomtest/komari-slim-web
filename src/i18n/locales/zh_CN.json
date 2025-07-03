@@ -258,7 +258,8 @@
     "hours": "{{count}} 小时",
     "days": "{{count}} 天",
     "cutPeak": "平滑",
-    "lossRate": "丢包"
+    "lossRate": "丢包",
+    "loss_tips": "丢包率计算算法并不准确，谨慎参考"
   },
   "home_title": "Komari Monitor",
   "admin": {

@@ -14,6 +14,7 @@ import fillMissingTimePoints, {
   cutPeakValues,
   calculateLossRate,
 } from "@/utils/RecordHelper";
+import Tips from "@/components/ui/tips";
 
 interface PingRecord {
   client: string;
@@ -299,6 +300,11 @@ const PingChart = ({ uuid }: { uuid: string }) => {
       )}
       {latestValues.length > 0 ? (
         <Card className="w-full max-w-[900px] mb-2">
+          <Tips className="absolute top-0 right-0 m-2">
+            <label>
+              {t("chart.loss_tips")}
+            </label>
+          </Tips>
           <div
             className="grid gap-2 mb-2 w-full"
             style={{

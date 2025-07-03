@@ -10,10 +10,11 @@ interface TipsProps {
   children?: React.ReactNode;
 }
 
-const Tips: React.FC<TipsProps> = ({
+const Tips: React.FC<TipsProps & React.HTMLAttributes<HTMLDivElement>> = ({
   size = "16",
   color = "gray",
   children,
+  ...props
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
@@ -26,7 +27,7 @@ const Tips: React.FC<TipsProps> = ({
   };
 
   return (
-    <div className="relative inline-block">
+    <div className="relative inline-block" {...props}>
       {isMobile ? (
         <>
           <div
