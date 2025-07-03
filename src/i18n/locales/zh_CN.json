@@ -257,7 +257,8 @@
     "disk_used": "磁盘",
     "hours": "{{count}} 小时",
     "days": "{{count}} 天",
-    "cutPeak": "削峰"
+    "cutPeak": "平滑",
+    "lossRate": "丢包"
   },
   "home_title": "Komari Monitor",
   "admin": {

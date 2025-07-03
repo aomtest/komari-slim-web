@@ -10,7 +10,10 @@ import {
   ChartLegend,
 } from "@/components/ui/chart";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
-import fillMissingTimePoints, { cutPeakValues } from "@/utils/RecordHelper";
+import fillMissingTimePoints, {
+  cutPeakValues,
+  calculateLossRate,
+} from "@/utils/RecordHelper";
 
 interface PingRecord {
   client: string;
@@ -97,7 +100,7 @@ const PingChart = ({ uuid }: { uuid: string }) => {
   const [tasks, setTasks] = useState<TaskInfo[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [cutPeak, setCutPeak] = useState(false); // 削峰开关，默认关闭
+  const [cutPeak, setCutPeak] = useState(false); // 平滑开关，默认关闭
 
   // Update hours state when view changes
   useEffect(() => {
@@ -139,11 +142,10 @@ const PingChart = ({ uuid }: { uuid: string }) => {
       });
   }, [hours, uuid]); // Depend on hours
 
-  // 组装图表数据
-  const chartData = useMemo(() => {
+  const midData = useMemo(() => {
     const data = remoteData || [];
     if (!data.length) return [];
-    
+
     const grouped: Record<string, any> = {};
     const timeKeys: number[] = [];
 
@@ -164,18 +166,11 @@ const PingChart = ({ uuid }: { uuid: string }) => {
       }
       grouped[useKey][rec.task_id] = rec.value;
     }
-    
+
     let full = Object.values(grouped).sort(
       (a: any, b: any) =>
         new Date(a.time).getTime() - new Date(b.time).getTime()
     );
-    
-    // 如果开启削峰，应用削峰处理
-    if (cutPeak && tasks.length > 0) {
-      const taskKeys = tasks.map(task => String(task.id));
-      full = cutPeakValues(full, taskKeys);
-    }
-    
     const full1 = fillMissingTimePoints(
       full,
       tasks[0]?.interval || 60,
@@ -183,6 +178,17 @@ const PingChart = ({ uuid }: { uuid: string }) => {
       tasks[0]?.interval ? tasks[0]?.interval * 1.2 : 60 * 1.2
     );
     return full1;
+  }, [remoteData, cutPeak, tasks, hours]);
+
+  // 组装图表数据
+  const chartData = useMemo(() => {
+    let full = midData;
+    // 如果开启削峰，应用削峰处理
+    if (cutPeak && tasks.length > 0) {
+      const taskKeys = tasks.map((task) => String(task.id));
+      full = cutPeakValues(midData, taskKeys);
+    }
+    return full;
   }, [remoteData, cutPeak, tasks, hours]);
 
   // 时间格式化
@@ -307,9 +313,16 @@ const PingChart = ({ uuid }: { uuid: string }) => {
                 />
                 <div className="flex items-start justify-center ml-1 flex-col">
                   <label className="font-bold text-md -mb-1">{task.name}</label>
-                  <label className="text-sm text-muted-foreground">
-                    {task.value !== null ? `${task.value} ms` : "-"}
-                  </label>
+                  <div className="flex gap-2 text-sm text-muted-foreground">
+                    <span>
+                      {task.value !== null ? `${task.value} ms` : "-"}
+                    </span>
+                    <span>
+                      {chartData && chartData.length > 0
+                        ? `${calculateLossRate(midData, task.id)}%${t("chart.lossRate")}`
+                        : "-"}
+                    </span>
+                  </div>
                 </div>
               </div>
             ))}
@@ -378,8 +391,15 @@ const PingChart = ({ uuid }: { uuid: string }) => {
           </ChartContainer>
         )}
         {/* Cut Peak 开关 */}
-        <div className="flex items-center gap-2" style={{ display: loading ? "none" : "flex" }}>
-          <Switch id="cut-peak" checked={cutPeak} onCheckedChange={setCutPeak} />
+        <div
+          className="flex items-center gap-2"
+          style={{ display: loading ? "none" : "flex" }}
+        >
+          <Switch
+            id="cut-peak"
+            checked={cutPeak}
+            onCheckedChange={setCutPeak}
+          />
           <label htmlFor="cut-peak" className="text-sm font-medium">
             {t("chart.cutPeak")}
           </label>

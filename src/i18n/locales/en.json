@@ -257,7 +257,8 @@
     "disk_used": "Disk",
     "hours": "{{count}} Hours",
     "days": "{{count}} Day",
-    "cutPeak": "Cut Peak"
+    "cutPeak": "Smooth",
+    "lossRate": "Loss"
   },
   "home_title": "Komari Monitor",
   "admin": {
