@@ -167,7 +167,21 @@ export function getAllOSImages(): Record<string, string> {
  * @returns 匹配的操作系统名称
  */
 export function getOSName(osString: string): string {
-  return findOSConfig(osString).name;
+  const config = findOSConfig(osString);
+  
+  // 如果匹配到具体的操作系统，返回其名称
+  if (config !== defaultOSConfig) {
+    return config.name;
+  }
+  
+  // 如果没有匹配到，从输入字符串中提取名称
+  if (!osString) {
+    return 'Unknown';
+  }
+  
+  // 使用空格或斜杠分割，取第一个部分
+  const parts = osString.trim().split(/[\s/]/);
+  return parts[0] || 'Unknown';
 }
 
 /**
