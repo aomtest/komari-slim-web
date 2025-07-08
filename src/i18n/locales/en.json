@@ -365,7 +365,8 @@
   "just_now": "Just now",
   "time": {
     "ago": "Ago",
-    "second": "Second"
+    "second": "Second",
+    "minute": "Minute"
   },
   "loading": "Loading",
   "log": {
@@ -418,7 +419,8 @@
     "select": "Select",
     "done": "Done",
     "none": "None",
-    "real_time": "RealTime"
+    "real_time": "RealTime",
+    "threshold": "Threshold"
   },
   "command_clipboard": {
     "title": "Command Clipboard"
@@ -456,5 +458,8 @@
   },
   "nodes": {
     "empty": "No server data available"
+  },
+  "loadAlert": {
+    "threshold_placeholder": "'80' for 80%"
   }
 }

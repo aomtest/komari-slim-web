@@ -365,7 +365,8 @@
   "just_now": "刚刚",
   "time": {
     "ago": "前",
-    "second": "秒"
+    "second": "秒",
+    "minute": "分钟"
   },
   "loading": "加载中...",
   "log": {
@@ -418,7 +419,8 @@
     "none": "无",
     "done": "完毕",
     "select": "选择",
-    "success": "成功"
+    "success": "成功",
+    "threshold": "阈值"
   },
   "command_clipboard": {
     "title": "命令剪贴板"
@@ -456,5 +458,8 @@
   },
   "nodes": {
     "empty": "暂无服务器数据"
+  },
+  "loadAlert": {
+    "threshold_placeholder": "百分比，例如80代表80%"
   }
 }
