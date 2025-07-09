@@ -2,7 +2,7 @@ import { Box, Flex, Text } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
+  //const currentYear = new Date().getFullYear();
   
   // 格式化 build 时间
   const formatBuildTime = (isoString: string) => {
@@ -58,7 +58,7 @@ const Footer = () => {
         {/* Copyright and ICP Filing */}
         <Flex direction="column" gap="2" align={{ initial: 'center', md: 'start' }}>
           <Text size="2" color="gray">
-            © {currentYear} Komari Monitor. All rights reserved.
+             Powered by Komari Monitor.
           </Text>
           {buildTime && (
             <Text size="1" color="gray">
