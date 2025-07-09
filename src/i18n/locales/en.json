@@ -420,7 +420,9 @@
     "done": "Done",
     "none": "None",
     "real_time": "RealTime",
-    "threshold": "Threshold"
+    "threshold": "Threshold",
+    "group": "Group",
+    "all": "All"
   },
   "command_clipboard": {
     "title": "Command Clipboard"

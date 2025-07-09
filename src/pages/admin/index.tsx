@@ -63,7 +63,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { formatBytes } from "@/types/NodeBasicInfo";
+import { formatBytes } from "@/components/Node";
 import PriceTags from "@/components/PriceTags";
 import Loading from "@/components/loading";
 import Tips from "@/components/ui/tips";
@@ -996,6 +996,7 @@ function EditButton({ node }: { node: NodeDetail }) {
   const [open, setOpen] = useState(false);
   const { refresh } = useNodeDetails();
   const nameRef = React.useRef<HTMLInputElement>(null);
+  const groupRef = React.useRef<HTMLInputElement>(null);
   const publicRemarkRef = React.useRef<HTMLTextAreaElement>(null);
   const privateRemarkRef = React.useRef<HTMLTextAreaElement>(null);
   const [saving, setSaving] = useState(false);
@@ -1008,6 +1009,7 @@ function EditButton({ node }: { node: NodeDetail }) {
           name: nameRef.current?.value,
           remark: privateRemarkRef.current?.value,
           public_remark: publicRemarkRef.current?.value,
+          group: groupRef.current?.value,
         }),
         headers: {
           "Content-Type": "application/json",
@@ -1053,6 +1055,15 @@ function EditButton({ node }: { node: NodeDetail }) {
               value={node.token}
               placeholder={t("admin.nodeEdit.tokenPlaceholder", "请输入 Token")}
               readOnly
+            />
+          </div>
+           <div>
+            <label className="block mb-1 text-sm font-medium text-muted-foreground">
+              {t("common.group")}
+            </label>
+            <TextField.Root
+              defaultValue={node.group}
+              ref={groupRef}
             />
           </div>
           <div>

@@ -1,5 +1,11 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
-import { Flex, Text, IconButton, TextField } from "@radix-ui/themes";
+import {
+  Flex,
+  Text,
+  IconButton,
+  TextField,
+  SegmentedControl,
+} from "@radix-ui/themes";
 import { Search, Grid3X3, Table2, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
@@ -24,7 +30,25 @@ const NodeDisplay: React.FC<NodeDisplayProps> = ({ nodes, liveData }) => {
     "grid"
   );
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedGroup, setSelectedGroup] = useLocalStorage<string>(
+    "nodeSelectedGroup",
+    "all"
+  );
   const searchRef = useRef<HTMLInputElement>(null);
+
+  // 获取所有的分组
+  const groups = useMemo(() => {
+    const groupSet = new Set<string>();
+    nodes.forEach((node) => {
+      if (node.group && node.group.trim()) {
+        groupSet.add(node.group);
+      }
+    });
+    return Array.from(groupSet).sort();
+  }, [nodes]);
+
+  // 判断是否显示分组选择器
+  const showGroupSelector = groups.length >= 1;
 
   // 键盘快捷键支持
   useEffect(() => {
@@ -47,10 +71,18 @@ const NodeDisplay: React.FC<NodeDisplayProps> = ({ nodes, liveData }) => {
 
   // 过滤节点
   const filteredNodes = useMemo(() => {
-    if (!searchTerm.trim()) return nodes;
+    let result = nodes;
+
+    // 先按分组过滤
+    if (selectedGroup !== "all") {
+      result = result.filter((node) => node.group === selectedGroup);
+    }
+
+    // 再按搜索条件过滤
+    if (!searchTerm.trim()) return result;
 
     const term = searchTerm.toLowerCase().trim();
-    return nodes.filter((node) => {
+    return result.filter((node) => {
       // 基本信息搜索
       const basicMatch =
         node.name.toLowerCase().includes(term) ||
@@ -72,7 +104,7 @@ const NodeDisplay: React.FC<NodeDisplayProps> = ({ nodes, liveData }) => {
 
       return basicMatch || regionMatch || priceMatch || statusMatch;
     });
-  }, [nodes, searchTerm, liveData]);
+  }, [nodes, searchTerm, liveData, selectedGroup]);
 
   return (
     <div className="w-full">
@@ -85,7 +117,12 @@ const NodeDisplay: React.FC<NodeDisplayProps> = ({ nodes, liveData }) => {
         className="mb-2 p-4 bg-accent-1 rounded-lg"
       >
         {/* 搜索框 */}
-        <Flex align="center" gap="2" className="flex-1 max-w-md relative">
+        <Flex
+          align="center"
+          gap="2"
+          className="flex-1 max-w-md relative"
+          wrap="wrap"
+        >
           <TextField.Root
             ref={searchRef}
             placeholder={t("search.placeholder", {
@@ -93,7 +130,7 @@ const NodeDisplay: React.FC<NodeDisplayProps> = ({ nodes, liveData }) => {
             })}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1 pr-8"
+            className="flex-1 pr-8 min-w-32"
           >
             <TextField.Slot>
               <Search size={16} />
@@ -137,26 +174,69 @@ const NodeDisplay: React.FC<NodeDisplayProps> = ({ nodes, liveData }) => {
           </Flex>
         </Flex>
       </Flex>
-
+      {/* 分组选择器 */}
+      {showGroupSelector && (
+        <Flex align="center" gap="2" className="mx-4 mb-2 -mt-2">
+          <label className="whitespace-nowrap text-md text-muted-foreground">
+            {t("common.group", { defaultValue: "分组" })}
+          </label>
+          <SegmentedControl.Root
+            value={selectedGroup}
+            onValueChange={setSelectedGroup}
+            size="1"
+          >
+            <SegmentedControl.Item value="all">
+              {t("common.all", { defaultValue: "所有" })}
+            </SegmentedControl.Item>
+            {groups.map((group) => (
+              <SegmentedControl.Item key={group} value={group}>
+                {group}
+              </SegmentedControl.Item>
+            ))}
+          </SegmentedControl.Root>
+        </Flex>
+      )}
       {/* 搜索结果统计 */}
       <Flex justify="between" align="center" className="mx-4 mb-2">
         {searchTerm.trim() ? (
           <Text size="2" color="gray">
             {t("search.results", {
               count: filteredNodes.length,
-              total: nodes.length,
-              defaultValue: `找到 ${filteredNodes.length} 个服务器，共 ${nodes.length} 个`,
+              total:
+                selectedGroup === "all"
+                  ? nodes.length
+                  : nodes.filter((n) => n.group === selectedGroup).length,
+              defaultValue: `找到 ${filteredNodes.length} 个服务器，共 ${
+                selectedGroup === "all"
+                  ? nodes.length
+                  : nodes.filter((n) => n.group === selectedGroup).length
+              } 个`,
             })}
           </Text>
         ) : (
           <Text size="2" color="gray">
-            {t("nodeCard.totalNodes", {
-              total: nodes.length,
-              online: liveData?.online?.length || 0,
-              defaultValue: `共 ${nodes.length} 个节点，${
-                liveData?.online?.length || 0
-              } 个在线`,
-            })}
+            {selectedGroup === "all"
+              ? t("nodeCard.totalNodes", {
+                  total: nodes.length,
+                  online: liveData?.online?.length || 0,
+                  defaultValue: `共 ${nodes.length} 个节点，${
+                    liveData?.online?.length || 0
+                  } 个在线`,
+                })
+              : t("nodeCard.groupNodes", {
+                  group: selectedGroup,
+                  total: filteredNodes.length,
+                  online: filteredNodes.filter((n) =>
+                    liveData?.online?.includes(n.uuid)
+                  ).length,
+                  defaultValue: `${selectedGroup} 分组：共 ${
+                    filteredNodes.length
+                  } 个节点，${
+                    filteredNodes.filter((n) =>
+                      liveData?.online?.includes(n.uuid)
+                    ).length
+                  } 个在线`,
+                })}
           </Text>
         )}
       </Flex>

@@ -420,7 +420,9 @@
     "done": "完毕",
     "select": "选择",
     "success": "成功",
-    "threshold": "阈值"
+    "threshold": "阈值",
+    "group": "分组",
+    "all": "所有"
   },
   "command_clipboard": {
     "title": "命令剪贴板"
