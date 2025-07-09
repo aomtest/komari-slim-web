@@ -44,6 +44,7 @@ const Footer = () => {
         borderTop: '1px solid var(--gray-5)',
         marginTop: 'auto',
       }}
+      className='footer'
     >
       <Flex
         direction={{ initial: 'column', md: 'row' }}
