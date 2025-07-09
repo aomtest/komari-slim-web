@@ -460,6 +460,8 @@
     "empty": "暂无服务器数据"
   },
   "loadAlert": {
-    "threshold_placeholder": "百分比，例如80代表80%"
+    "threshold_placeholder": "百分比，例如80代表80%",
+    "metric": "监控项",
+    "ratio": "时间占比"
   }
 }

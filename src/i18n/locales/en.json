@@ -460,6 +460,9 @@
     "empty": "No server data available"
   },
   "loadAlert": {
-    "threshold_placeholder": "'80' for 80%"
+    "threshold_placeholder": "'80' for 80%",
+    "title": "Load Alert",
+    "metric": "Metric",
+    "ratio": "Ratio"
   }
 }

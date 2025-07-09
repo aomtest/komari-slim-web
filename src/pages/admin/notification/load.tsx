@@ -51,7 +51,7 @@ const InnerLayout = () => {
   return (
     <Flex direction="column" gap="4" className="p-4">
       <div className="flex justify-between items-center">
-        <label className="text-2xl font-bold">{t("loadAlert.title")}</label>
+        <label className="text-2xl font-bold">{t("notification.load.title")}</label>
         <AddButton />
       </div>
 
