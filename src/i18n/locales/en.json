@@ -1,5 +1,5 @@
 {
-  "warn_https": "The current connection is not HTTPS! Your sensitive data is at serious risk. Take immediate action to secure the connection!",
+  "warn_https": "The current connection is not HTTPS! Your sensitive data is at serious risk. Take immediate action to secure the connection! Copy may not available!",
   "warn_websocket": "WebSocket is not connected!",
   "delete": "Delete",
   "account": {
