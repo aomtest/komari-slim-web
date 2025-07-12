@@ -9,7 +9,7 @@ const IndexLayout = () => {
   const InnerLayout = () => {
     return (
       <>
-        <div className="flex flex-col w-full min-h-screen">
+        <div className="layout flex flex-col w-full min-h-screen bg-accent-1">
           <NavBar />
           <main className="main-content m-1 h-full">
             <Outlet />
