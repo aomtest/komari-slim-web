@@ -23,7 +23,7 @@ const Index = () => {
     return (
       <>
         <Callouts />
-        <Card className="mx-4 md:text-base text-sm">
+        <Card className="summary-card mx-4 md:text-base text-sm">
           <div className="flex md:flex-row flex-col md:gap-4 gap-1 justify-between md:items-center">
             <Flex
               direction="row"

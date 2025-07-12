@@ -9,25 +9,12 @@ const IndexLayout = () => {
   const InnerLayout = () => {
     return (
       <>
-        <div
-          style={{
-            backgroundColor: "var(--accent-1)",
-          }}
-          className="flex justify-center w-full"
-        >
-          <div className="flex flex-col md:mx-4 w-full h-full">
-            <NavBar />
-            <main
-              className="m-1"
-              style={{
-                flex: 1,
-                minHeight: 0,
-              }}
-            >
-              <Outlet />
-              <Footer />
-            </main>
-          </div>
+        <div className="flex flex-col min-w-screen min-h-screen">
+          <NavBar />
+          <main className="main-content m-1 h-full">
+            <Outlet />
+          </main>
+          <Footer />
         </div>
       </>
     );

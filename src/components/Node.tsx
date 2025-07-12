@@ -77,7 +77,7 @@ const Node = ({ basic, live, online }: NodeProps) => {
         margin: "0 auto",
         transition: "all 0.2s ease-in-out",
       }}
-      className="hover:cursor-pointer hover:shadow-lg hover:bg-accent-2"
+      className="node-card hover:cursor-pointer hover:shadow-lg hover:bg-accent-2"
     >
       <Flex direction="column" gap="2">
         <Flex justify="between" align="center" my={isMobile ? "-1" : "0"}>

@@ -1,4 +1,4 @@
-import { Box, Flex, Text } from '@radix-ui/themes';
+import { Flex, Text } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 
 const Footer = () => {
@@ -37,14 +37,8 @@ const Footer = () => {
     fetchVersionInfo();
   }, []);
   return (
-    <Box
-      style={{
-        padding: '2rem 1rem',
-        width: '100%',
-        borderTop: '1px solid var(--gray-5)',
-        marginTop: 'auto',
-      }}
-      className='footer'
+    <div
+      className='footer p-2 border-t-1 border-t-[var(--gray-7)]'
     >
       <Flex
         direction={{ initial: 'column', md: 'row' }}
@@ -72,7 +66,7 @@ const Footer = () => {
         </Flex>
 
       </Flex>
-    </Box>
+    </div>
   );
 };
 

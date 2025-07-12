@@ -49,6 +49,11 @@ const App = () => {
           appearance={resolvedAppearance}
           accentColor={color}
           scaling="110%"
+          className="theme-root"
+          style={{
+            backgroundColor: "transparent",
+            minHeight: "100vh",
+          }}
         >
           <PublicInfoProvider>{routing}</PublicInfoProvider>
         </Theme>

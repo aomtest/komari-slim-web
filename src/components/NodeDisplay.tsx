@@ -114,7 +114,7 @@ const NodeDisplay: React.FC<NodeDisplayProps> = ({ nodes, liveData }) => {
         justify="between"
         align={{ initial: "stretch", sm: "center" }}
         gap="4"
-        className="mb-2 p-4 bg-accent-1 rounded-lg"
+        className="control-bar mb-2 p-4 rounded-lg"
       >
         {/* 搜索框 */}
         <Flex
@@ -130,7 +130,7 @@ const NodeDisplay: React.FC<NodeDisplayProps> = ({ nodes, liveData }) => {
             })}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1 pr-8 min-w-32"
+            className="search-box flex-1 pr-8 min-w-32"
           >
             <TextField.Slot>
               <Search size={16} />
