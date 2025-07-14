@@ -425,7 +425,8 @@
     "group": "Group",
     "all": "All",
     "tags": "Tags",
-    "tagsDescription": "Multiple tags separated by ';'"
+    "tagsDescription": "Multiple tags separated by ';'",
+    "tagsTips": "Multiple tags are separated by “;”. </br>  To specify a color, add &ltcolor&gt to the end of the label, e.g. 1Gbps&ltgreen&gt.</br>  A list of available colors can be found at <label class=\"bg-accent-a5 rounded-sm\"><a href=\"https://www.radix-ui.com/themes/docs/theme/color\" target=\"_blank\"> Color - Radix Themes</a></label>"
   },
   "command_clipboard": {
     "title": "Command Clipboard"

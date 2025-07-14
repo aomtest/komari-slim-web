@@ -1061,9 +1061,12 @@ function EditButton({ node }: { node: NodeDetail }) {
             />
           </div>
            <div>
-            <label className="block mb-1 text-sm font-medium text-muted-foreground">
+            <label className="mb-1 text-sm font-medium text-muted-foreground flex items-center">
               {t("common.tags")}
-              <label className="text-muted-foreground ml-1 text-xs">{t("common.tagsDescription")}</label>
+              <label className="text-muted-foreground ml-1 text-xs self-end">{t("common.tagsDescription")}</label>
+              <Tips>
+                <span dangerouslySetInnerHTML={{ __html: t("common.tagsTips") }} />
+              </Tips>
             </label>
             <TextField.Root
               defaultValue={node.tags}

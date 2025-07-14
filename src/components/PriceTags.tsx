@@ -149,18 +149,38 @@ const CustomTags = ({ tags }: { tags?: string }) => {
     "violet",
     "iris",
   ];
+
+  // 解析带颜色的标签
+  const parseTagWithColor = (tag: string) => {
+    const colorMatch = tag.match(/<(\w+)>$/);
+    if (colorMatch) {
+      const color = colorMatch[1].toLowerCase();
+      const text = tag.replace(/<\w+>$/, "");
+      // 检查颜色是否在支持的颜色列表中
+      if (colors.includes(color as any)) {
+        return { text, color: color as typeof colors[number] };
+      }
+    }
+    return { text: tag, color: null };
+  };
+
   return (
     <>
-      {tagList.map((tag, index) => (
-        <Badge
-          key={index}
-          color={colors[index % colors.length]}
-          variant="soft"
-          className="text-sm"
-        >
-          <label className="text-xs">{tag}</label>
-        </Badge>
-      ))}
+      {tagList.map((tag, index) => {
+        const { text, color } = parseTagWithColor(tag);
+        const badgeColor = color || colors[index % colors.length];
+        
+        return (
+          <Badge
+            key={index}
+            color={badgeColor}
+            variant="soft"
+            className="text-sm"
+          >
+            <label className="text-xs">{text}</label>
+          </Badge>
+        );
+      })}
     </>
   );
 };
