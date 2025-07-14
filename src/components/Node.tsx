@@ -110,6 +110,7 @@ const Node = ({ basic, live, online }: NodeProps) => {
                   billing_cycle={basic.billing_cycle}
                   expired_at={basic.expired_at}
                   currency={basic.currency}
+                  tags={basic.tags}
                 />
               </Flex>
             </Link>
@@ -224,6 +225,7 @@ const Node = ({ basic, live, online }: NodeProps) => {
           billing_cycle={basic.billing_cycle}
           expired_at={basic.expired_at}
           currency={basic.currency}
+          tags={basic.tags || ""}
         />
       </Flex>
     </Card>

@@ -6,19 +6,26 @@ const PriceTags = ({
   billing_cycle = 30,
   currency = "￥",
   expired_at = Date.now() + 30 * 24 * 60 * 60 * 1000,
+  tags = "",
   ...props
 }: {
   expired_at?: string | number;
   price?: number;
   billing_cycle?: number;
   currency?: string;
+  tags?: string;
 } & React.ComponentProps<typeof Flex>) => {
   if (price == 0) {
-    return <></>;
+    return (
+      <Flex gap="1" {...props} wrap="wrap">
+        <CustomTags tags={tags} />
+      </Flex>
+    );
   }
   const [t] = useTranslation();
+
   return (
-    <Flex gap="1" {...props}>
+    <Flex gap="1" {...props} wrap="wrap">
       <Badge color="iris" size="1" variant="soft" className="text-sm">
         <label className="text-xs">
           {price == -1 ? t("common.free") : `${currency}${price}`}/
@@ -82,7 +89,80 @@ const PriceTags = ({
           })()}
         </label>
       </Badge>
+      <CustomTags tags={tags} />
     </Flex>
   );
 };
+
+const CustomTags = ({ tags }: { tags?: string }) => {
+  if (!tags || tags.trim() === "") {
+    return <></>;
+  }
+  const tagList = tags.split(";").filter((tag) => tag.trim() !== "");
+  const colors: Array<
+    | "ruby"
+    | "gray"
+    | "gold"
+    | "bronze"
+    | "brown"
+    | "yellow"
+    | "amber"
+    | "orange"
+    | "tomato"
+    | "red"
+    | "crimson"
+    | "pink"
+    | "plum"
+    | "purple"
+    | "violet"
+    | "iris"
+    | "indigo"
+    | "blue"
+    | "cyan"
+    | "teal"
+    | "jade"
+    | "green"
+    | "grass"
+    | "lime"
+    | "mint"
+    | "sky"
+  > = [
+    "indigo",
+    "cyan",
+    "teal",
+    "jade",
+    "green",
+    "lime",
+    "mint",
+    "gold",
+    "bronze",
+    "brown",
+    "yellow",
+    "amber",
+    "orange",
+    "tomato",
+    "ruby",
+    "crimson",
+    "pink",
+    "plum",
+    "purple",
+    "violet",
+    "iris",
+  ];
+  return (
+    <>
+      {tagList.map((tag, index) => (
+        <Badge
+          key={index}
+          color={colors[index % colors.length]}
+          variant="soft"
+          className="text-sm"
+        >
+          <label className="text-xs">{tag}</label>
+        </Badge>
+      ))}
+    </>
+  );
+};
+
 export default PriceTags;

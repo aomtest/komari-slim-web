@@ -205,7 +205,8 @@
     "last_updated": "最后上报",
     "virtualization": "虚拟化",
     "load": "负载",
-    "ping": "延迟"
+    "ping": "延迟",
+    "groupNodes": "{{group}} 分组: 共 {{total}} 个服务器，{{online}} 个服务器在线"
   },
   "login": {
     "title": "登录",
@@ -422,7 +423,9 @@
     "success": "成功",
     "threshold": "阈值",
     "group": "分组",
-    "all": "所有"
+    "all": "所有",
+    "tags": "标签",
+    "tagsDescription": "多个标签用';'分隔"
   },
   "command_clipboard": {
     "title": "命令剪贴板"

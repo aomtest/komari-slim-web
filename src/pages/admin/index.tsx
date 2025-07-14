@@ -296,6 +296,7 @@ const SortableRow = ({
           billing_cycle={node.billing_cycle}
           expired_at={node.expired_at}
           currency={node.currency}
+          tags={node.tags || ""}
         />
       </TableCell>
       <TableCell>
@@ -997,6 +998,7 @@ function EditButton({ node }: { node: NodeDetail }) {
   const { refresh } = useNodeDetails();
   const nameRef = React.useRef<HTMLInputElement>(null);
   const groupRef = React.useRef<HTMLInputElement>(null);
+  const tagsRef = React.useRef<HTMLInputElement>(null);
   const publicRemarkRef = React.useRef<HTMLTextAreaElement>(null);
   const privateRemarkRef = React.useRef<HTMLTextAreaElement>(null);
   const [saving, setSaving] = useState(false);
@@ -1010,6 +1012,7 @@ function EditButton({ node }: { node: NodeDetail }) {
           remark: privateRemarkRef.current?.value,
           public_remark: publicRemarkRef.current?.value,
           group: groupRef.current?.value,
+          tags: tagsRef.current?.value,
         }),
         headers: {
           "Content-Type": "application/json",
@@ -1058,6 +1061,16 @@ function EditButton({ node }: { node: NodeDetail }) {
             />
           </div>
            <div>
+            <label className="block mb-1 text-sm font-medium text-muted-foreground">
+              {t("common.tags")}
+              <label className="text-muted-foreground ml-1 text-xs">{t("common.tagsDescription")}</label>
+            </label>
+            <TextField.Root
+              defaultValue={node.tags}
+              ref={tagsRef}
+            />
+          </div>
+          <div>
             <label className="block mb-1 text-sm font-medium text-muted-foreground">
               {t("common.group")}
             </label>

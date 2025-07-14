@@ -205,7 +205,8 @@
     "last_updated": "Last Update",
     "virtualization": "Virtualization",
     "load": "Load",
-    "ping": "Ping"
+    "ping": "Ping",
+    "groupNodes": "{{group}} group: total {{total}} servers, {{online}} servers online"
   },
   "login": {
     "title": "Login",
@@ -422,7 +423,9 @@
     "real_time": "RealTime",
     "threshold": "Threshold",
     "group": "Group",
-    "all": "All"
+    "all": "All",
+    "tags": "Tags",
+    "tagsDescription": "Multiple tags separated by ';'"
   },
   "command_clipboard": {
     "title": "Command Clipboard"

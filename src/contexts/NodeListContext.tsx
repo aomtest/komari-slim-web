@@ -31,6 +31,7 @@ export type NodeBasicInfo = {
   weight: number;
   /** 价格 */
   price: number;
+  tags: string;
   /** 账单周期（天）*/
   billing_cycle: number;
   currency: string;

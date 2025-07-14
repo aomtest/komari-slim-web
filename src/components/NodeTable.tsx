@@ -385,6 +385,7 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
                       expired_at={node.expired_at}
                       currency={node.currency}
                       gap="1"
+                      tags={node.tags || ""}
                     />
                   </TableCell>
                   <TableCell className="text-center min-w-[80px]">
