@@ -50,6 +50,12 @@ export const routes: RouteObject[] = [
             ),
           },
           {
+            path: "theme",
+            element: React.createElement(
+              lazy(() => import("./pages/admin/settings/theme"))
+            ),
+          },
+          {
             path: "custom",
             element: React.createElement(
               lazy(() => import("./pages/admin/settings/custom"))
@@ -76,7 +82,7 @@ export const routes: RouteObject[] = [
         ],
       },
       {
-        path:"notification",
+        path: "notification",
         children: [
           {
             path: "offline",
@@ -94,7 +100,9 @@ export const routes: RouteObject[] = [
       },
       {
         path: "ping",
-        element: React.createElement(lazy(() => import("./pages/admin/pingTask"))),
+        element: React.createElement(
+          lazy(() => import("./pages/admin/pingTask"))
+        ),
       },
       {
         path: "about",

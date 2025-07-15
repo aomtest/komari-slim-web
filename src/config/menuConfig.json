@@ -16,6 +16,11 @@
           "icon": "Home"
         },
         {
+          "labelKey": "theme.title",
+          "path": "/admin/settings/theme",
+          "icon": "Palette"
+        },
+        {
           "labelKey": "settings.sign_on.title",
           "path": "/admin/settings/sign-on",
           "icon": "CircleArrowRight"

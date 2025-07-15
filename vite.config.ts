@@ -70,6 +70,10 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           ws: true,
         },
+        "/themes": {
+          target: process.env.VITE_API_TARGET,
+          changeOrigin: true,
+        },
       },
     };
   }
