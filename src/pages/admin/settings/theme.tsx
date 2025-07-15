@@ -449,7 +449,7 @@ const ThemePage = () => {
           </Dialog.Description>
 
           <Box className="space-y-4 mt-4">
-            <Box
+            <Flex direction="column" align="center" justify="center"
               className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-gray-400 transition-colors"
               onDrop={handleDrop}
               onDragOver={handleDragOver}
@@ -465,7 +465,7 @@ const ThemePage = () => {
               <Text size="1" color="gray" className="mt-2">
                 {t("theme.zip_files_only")}
               </Text>
-            </Box>
+            </Flex>
 
             <input
               ref={fileInputRef}
