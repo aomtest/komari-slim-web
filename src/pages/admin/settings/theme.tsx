@@ -43,10 +43,10 @@ const ThemePage = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [themeToDelete, setThemeToDelete] = useState<Theme | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { settings, loading: settingsLoading, updateSetting } = useSettings();
-  const currentTheme = settings?.theme || "default";
+  const { settings, loading: settingsLoading, refetch: refetchSettings } = useSettings();
+  const currentTheme = settings?.theme;
 
-  const loading = themesLoading || settingsLoading;
+  const loading = themesLoading || settingsLoading || !currentTheme;
   // 获取主题列表
   const fetchThemes = async () => {
     try {
@@ -187,13 +187,8 @@ const ThemePage = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // 同时更新本地 settings 状态，实现无感刷新
-      try {
-        await updateSetting("theme", themeShort);
-      } catch (settingsError) {
-        console.warn("Failed to update local settings:", settingsError);
-        // 即使本地状态更新失败，也继续执行，因为 API 调用已经成功
-      }
+      // 刷新 settings 以获取最新的主题设置
+      await refetchSettings();
 
       // 更新主题列表中的活跃状态
       setThemes((prevThemes) =>
@@ -218,6 +213,12 @@ const ThemePage = () => {
   // 删除主题
   const deleteTheme = async (themeShort: string) => {
     try {
+      // 如果删除的是当前活跃主题，先切换到默认主题
+      if (themeShort === currentTheme) {
+        await setActiveTheme("default");
+        await refetchSettings();
+      }
+
       const response = await fetch("/api/admin/theme/delete", {
         method: "POST",
         headers: {
@@ -231,14 +232,11 @@ const ThemePage = () => {
         throw new Error(errorData.message || "Delete failed");
       }
 
-      // 如果删除的是当前活跃主题，需要切换到默认主题
-      if (themeShort === currentTheme) {
-        await setActiveTheme("default");
-      } else {
-        // 否则只需要重新获取主题列表
-        await fetchThemes();
-      }
+      // 重新获取主题列表
+      await fetchThemes();
 
+      setDeleteDialogOpen(false);
+      setPreviewDialogOpen(false);
       toast.success(t("theme.delete_success"));
     } catch (err) {
       toast.error(
@@ -449,7 +447,10 @@ const ThemePage = () => {
           </Dialog.Description>
 
           <Box className="space-y-4 mt-4">
-            <Flex direction="column" align="center" justify="center"
+            <Flex
+              direction="column"
+              align="center"
+              justify="center"
               className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-gray-400 transition-colors"
               onDrop={handleDrop}
               onDragOver={handleDragOver}
