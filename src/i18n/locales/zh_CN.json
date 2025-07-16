@@ -311,7 +311,9 @@
       "memoryModeAvailable": "监测可用内存",
       "memoryModeAvailable_tip": "Agent 默认监测并上报已用内存，勾选此选项将监测并上报可用内存。",
       "includeNics": "只监测特定网卡",
-      "excludeNics": "排除特定网卡"
+      "excludeNics": "排除特定网卡",
+      "autoRenewal": "自动续费",
+      "autoRenewalDescription": "如果服务器过期且当前在线，Komari 将自动将到期时间设置为下个自然月（年）"
     },
     "nodeDetail": {
       "machineDetail": "机器详细信息",

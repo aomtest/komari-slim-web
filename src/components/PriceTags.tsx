@@ -30,7 +30,7 @@ const PriceTags = ({
         <label className="text-xs">
           {price == -1 ? t("common.free") : `${currency}${price}`}/
           {(() => {
-            if (billing_cycle >= 28 && billing_cycle <= 32) {
+            if (billing_cycle >= 27 && billing_cycle <= 32) {
               return t("common.monthly");
             } else if (billing_cycle >= 87 && billing_cycle <= 95) {
               return t("common.quarterly");
@@ -38,9 +38,9 @@ const PriceTags = ({
               return t("common.semi_annual");
             } else if (billing_cycle >= 360 && billing_cycle <= 370) {
               return t("common.annual");
-            } else if (billing_cycle >= 720 && billing_cycle <= 730) {
+            } else if (billing_cycle >= 720 && billing_cycle <= 750) {
               return t("common.biennial");
-            } else if (billing_cycle >= 1080 && billing_cycle <= 1100) {
+            } else if (billing_cycle >= 1080 && billing_cycle <= 1150) {
               return t("common.triennial");
             } else if (billing_cycle == -1) {
               return t("common.once");
@@ -127,28 +127,33 @@ const CustomTags = ({ tags }: { tags?: string }) => {
     | "mint"
     | "sky"
   > = [
-    "indigo",
-    "cyan",
-    "teal",
-    "jade",
-    "green",
-    "lime",
-    "mint",
-    "gold",
-    "bronze",
-    "brown",
-    "yellow",
-    "amber",
-    "orange",
-    "tomato",
-    "ruby",
-    "crimson",
-    "pink",
-    "plum",
-    "purple",
-    "violet",
-    "iris",
-  ];
+     "ruby",
+     "gray",
+     "gold",
+     "bronze",
+     "brown",
+     "yellow",
+     "amber",
+     "orange",
+     "tomato",
+     "red",
+     "crimson",
+     "pink",
+     "plum",
+     "purple",
+     "violet",
+     "iris",
+     "indigo",
+     "blue",
+     "cyan",
+     "teal",
+     "jade",
+     "green",
+     "grass",
+     "lime",
+     "mint",
+     "sky"
+  ]
 
   // 解析带颜色的标签
   const parseTagWithColor = (tag: string) => {

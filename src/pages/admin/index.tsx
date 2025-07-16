@@ -67,6 +67,7 @@ import { formatBytes } from "@/components/Node";
 import PriceTags from "@/components/PriceTags";
 import Loading from "@/components/loading";
 import Tips from "@/components/ui/tips";
+import { SettingCardSwitch } from "@/components/admin/SettingCard";
 
 const NodeDetailsPage = () => {
   return (
@@ -1060,27 +1061,25 @@ function EditButton({ node }: { node: NodeDetail }) {
               readOnly
             />
           </div>
-           <div>
+          <div>
             <label className="mb-1 text-sm font-medium text-muted-foreground flex items-center">
               {t("common.tags")}
-              <label className="text-muted-foreground ml-1 text-xs self-end">{t("common.tagsDescription")}</label>
+              <label className="text-muted-foreground ml-1 text-xs self-end">
+                {t("common.tagsDescription")}
+              </label>
               <Tips>
-                <span dangerouslySetInnerHTML={{ __html: t("common.tagsTips") }} />
+                <span
+                  dangerouslySetInnerHTML={{ __html: t("common.tagsTips") }}
+                />
               </Tips>
             </label>
-            <TextField.Root
-              defaultValue={node.tags}
-              ref={tagsRef}
-            />
+            <TextField.Root defaultValue={node.tags} ref={tagsRef} />
           </div>
           <div>
             <label className="block mb-1 text-sm font-medium text-muted-foreground">
               {t("common.group")}
             </label>
-            <TextField.Root
-              defaultValue={node.group}
-              ref={groupRef}
-            />
+            <TextField.Root defaultValue={node.group} ref={groupRef} />
           </div>
           <div>
             <label className="block mb-1 text-sm font-medium text-muted-foreground">
@@ -1371,7 +1370,9 @@ function BillingButton({ node }: { node: NodeDetail }) {
   const [billingCycle, setBillingCycle] = React.useState<string>(
     node.billing_cycle.toString()
   );
-
+  const [autoRenewal, setAutoRenewal] = React.useState<boolean>(
+    node.auto_renewal || false
+  );
   const [currency, setCurrency] = React.useState<string>(node.currency || "$");
 
   const handleSave = async (e: React.FormEvent) => {
@@ -1399,6 +1400,7 @@ function BillingButton({ node }: { node: NodeDetail }) {
           billing_cycle: billingCycleValue,
           expired_at: expiredAtValue,
           currency: currencyValue,
+          auto_renewal: autoRenewal,
         }),
         headers: {
           "Content-Type": "application/json",
@@ -1455,11 +1457,11 @@ function BillingButton({ node }: { node: NodeDetail }) {
               <Select.Trigger></Select.Trigger>
               <Select.Content>
                 <Select.Item value="30">{t("common.monthly")}</Select.Item>
-                <Select.Item value="90">{t("common.quarterly")}</Select.Item>
-                <Select.Item value="180">{t("common.semi_annual")}</Select.Item>
-                <Select.Item value="360">{t("common.annual")}</Select.Item>
-                <Select.Item value="720">{t("common.biennial")}</Select.Item>
-                <Select.Item value="1080">{t("common.triennial")}</Select.Item>
+                <Select.Item value="92">{t("common.quarterly")}</Select.Item>
+                <Select.Item value="184">{t("common.semi_annual")}</Select.Item>
+                <Select.Item value="365">{t("common.annual")}</Select.Item>
+                <Select.Item value="730">{t("common.biennial")}</Select.Item>
+                <Select.Item value="1095">{t("common.triennial")}</Select.Item>
                 <Select.Item value="-1">{t("common.once")}</Select.Item>
               </Select.Content>
             </Select.Root>
@@ -1497,7 +1499,10 @@ function BillingButton({ node }: { node: NodeDetail }) {
                 </Button>
               </TextField.Slot>
             </TextField.Root>
-
+            <Flex gap="2" align="center">
+              
+            </Flex>
+            <SettingCardSwitch title={t("admin.nodeTable.autoRenewal")} description={t("admin.nodeTable.autoRenewalDescription")} defaultChecked={node.auto_renewal || false} onChange={setAutoRenewal} />
             <Button type="submit" disabled={saving}>
               {t("save")}
             </Button>

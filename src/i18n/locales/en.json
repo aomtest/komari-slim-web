@@ -311,7 +311,9 @@
       "memoryModeAvailable": "Monitor available memory",
       "memoryModeAvailable_tip": "The Agent monitors and reports used memory by default. Selecting this option will monitor and report available memory.",
       "includeNics": "Specific network interfaces only.",
-      "excludeNics": "Exclude specific network interfaces."
+      "excludeNics": "Exclude specific network interfaces.",
+      "autoRenewal": "Auto renewal",
+      "autoRenewalDescription": "If the server expires and is currently online, Komari will automatically set the expiration time to the next natural month (year)"
     },
     "nodeDetail": {
       "arch": "Architecture",
