@@ -13,7 +13,7 @@ const NavBar = () => {
       <div className="mr-auto flex">
         {/* <img src="/assets/logo.png" alt="Komari Logo" className="w-10 object-cover mr-2 self-center"/> */}
         <Link to="/">
-          <label className="text-3xl font-bold ">{publicInfo?.sitename}</label>
+          <label className="md:ml-4 text-3xl font-bold ">{publicInfo?.sitename}</label>
         </Link>
         <div className="hidden flex-row items-end md:flex">
           <div
