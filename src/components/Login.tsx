@@ -9,11 +9,15 @@ import {
   IconButton,
 } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
 import { TablerSettings } from "./Icones/Tabler";
 import { AccountProvider, useAccount } from "@/contexts/AccountContext";
 
-const LoginDialog = () => {
+type LoginDialogProps = {
+  trigger?: React.ReactNode | string;  
+  onLoginSuccess?: () => void;
+};
+
+const LoginDialog = ({ trigger, onLoginSuccess }: LoginDialogProps) => {
   const InnerLayout = () => {
     const { account, loading, error, refresh } = useAccount();
     const [t] = useTranslation();
@@ -51,11 +55,14 @@ const LoginDialog = () => {
         const data = await res.json();
         if (res.status === 200) {
           refresh();
+          if (typeof onLoginSuccess === "function") {
+            onLoginSuccess();
+          }
           window.open("/admin", "_self");
         } else {
           if (data.message === "2FA code is required") {
             setRequire2FA(true);
-            return
+            return;
           }
           setErrorMsg(data.message || "Login failed");
         }
@@ -87,17 +94,17 @@ const LoginDialog = () => {
     }
     if (account.logged_in) {
       return (
-        <Link to="/admin">
+        <a href="/admin" target="_blank">
           <IconButton>
             <TablerSettings></TablerSettings>
           </IconButton>
-        </Link>
+        </a>
       );
     }
     return (
       <Dialog.Root>
         <Dialog.Trigger>
-          <Button>{t("login.title")}</Button>
+          {trigger ? trigger : <Button>{t("login.title")}</Button>}
         </Dialog.Trigger>
         <Dialog.Content maxWidth="450px">
           <Dialog.Title>{t("login.title")}</Dialog.Title>

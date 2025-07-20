@@ -157,9 +157,9 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
               >
                 <TablerMenu2 />
               </IconButton>
-              <Link to="/">
+              <a href="/" target="_blank" rel="noopener noreferrer">
                 <label className="text-xl font-bold">Komari</label>
-              </Link>
+              </a>
               <label className="text-sm text-muted-foreground self-end overflow-hidden">
                 {versionInfo && `${versionInfo.version} (${versionInfo.hash})`}
               </label>
