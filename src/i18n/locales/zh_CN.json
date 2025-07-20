@@ -497,6 +497,29 @@
   "loadAlert": {
     "threshold_placeholder": "百分比，例如80代表80%",
     "metric": "监控项",
-    "ratio": "时间占比"
+    "ratio": "时间占比",
+    "title": "负载警报"
+  },
+  "pwa": {
+    "browser": "浏览器模式",
+    "can_install": "可以安装",
+    "install": "安装",
+    "install_prompt_desc": "添加到主屏幕以快速访问",
+    "install_prompt_title": "安装 Komari",
+    "install_status": "安装状态",
+    "installed": "安装",
+    "network_status": "网络状态",
+    "no": "不",
+    "not_installed": "未安装",
+    "offline_hint": "您目前是离线的，某些功能可能受到限制。",
+    "running_mode": "运行模式",
+    "standalone": "独立模式",
+    "update_now": "立即更新",
+    "update_prompt_desc": "找到了一个新版本，单击更新以获取最新功能",
+    "update_prompt_title": "可用的新版本",
+    "yes": "是的",
+    "installed_hint": "该应用程序安装在设备上，您可以从主屏幕快速访问它。",
+    "later": "稍后",
+    "title": "PWA状态"
   }
 }
