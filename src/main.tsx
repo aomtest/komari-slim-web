@@ -22,6 +22,7 @@ import { PublicInfoProvider } from "./contexts/PublicInfoContext";
 import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
 import { PWAUpdatePrompt } from "./components/PWAUpdatePrompt";
 import { OfflineIndicator } from "./components/OfflineIndicator";
+import { Toaster } from "./components/ui/sonner";
 const App = () => {
   const [appearance, setAppearance] = useLocalStorage<Appearance>(
     "appearance",
@@ -59,6 +60,7 @@ const App = () => {
           }}
         >
           <PublicInfoProvider>
+            <Toaster />
             <OfflineIndicator />
             {routing}
             <PWAInstallPrompt />

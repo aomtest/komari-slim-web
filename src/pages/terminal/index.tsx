@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import { Cross1Icon } from "@radix-ui/react-icons";
 import { TablerAlertTriangleFilled } from "../../components/Icones/Tabler";
 import CommandClipboardPanel from "@/pages/terminal/CommandClipboard";
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 import { TerminalContext } from "@/contexts/TerminalContext";
 import { motion } from "framer-motion";
 import throttle from "lodash/throttle";
