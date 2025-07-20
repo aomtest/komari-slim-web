@@ -24,10 +24,16 @@
       "purpose": "any"
     },
     {
-      "src": "/favicon.ico",
+      "src": "/assets/pwa-icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/assets/pwa-icon.png",
       "sizes": "512x512",
-      "type": "image/x-icon",
-      "purpose": "any"
+      "type": "image/png",
+      "purpose": "maskable any"
     }
   ]
 }
