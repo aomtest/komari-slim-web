@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import Pages from "vite-plugin-pages";
 import { visualizer } from "rollup-plugin-visualizer";
+import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vite.dev/config/
 import type { UserConfig } from "vite";
@@ -20,6 +21,53 @@ export default defineConfig(({ mode }) => {
       Pages({
         dirs: "src/pages",
         extensions: ["tsx", "jsx"],
+      }),
+      VitePWA({
+        registerType: 'autoUpdate',
+        includeAssets: ['favicon.ico', 'assets/pwa-icon.png'],
+        manifest: {
+          name: 'Komari Monitor',
+          short_name: 'Komari Monitor',
+          description: 'A simple server monitor tool',
+          theme_color: '#2563eb',
+          background_color: '#ffffff',
+          display: 'standalone',
+          scope: '/',
+          start_url: '/',
+          icons: [
+            {
+              src: '/assets/pwa-icon.png',
+              sizes: '192x192',
+              type: 'image/png',
+              purpose: 'maskable any'
+            },
+            {
+              src: '/assets/pwa-icon.png',
+              sizes: '512x512',
+              type: 'image/png',
+              purpose: 'maskable any'
+            }
+          ]
+        },
+        workbox: {
+          globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+          runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/api\./i,
+              handler: 'NetworkFirst',
+              options: {
+                cacheName: 'api-cache',
+                expiration: {
+                  maxEntries: 10,
+                  maxAgeSeconds: 60 * 60 * 24 * 365 // <== 365 days
+                },
+                cacheableResponse: {
+                  statuses: [0, 200]
+                }
+              }
+            }
+          ]
+        }
       }),
       visualizer({
         open: false,

@@ -1,6 +1,28 @@
 {
   "warn_https": "The current connection is not HTTPS! Your sensitive data is at serious risk. Take immediate action to secure the connection! Copy may not available!",
   "warn_websocket": "WebSocket is not connected!",
+  "pwa": {
+    "title": "PWA Status",
+    "network_status": "Network Status",
+    "install_status": "Install Status",
+    "installed": "Installed",
+    "not_installed": "Not Installed",
+    "running_mode": "Running Mode",
+    "standalone": "Standalone Mode",
+    "browser": "Browser Mode",
+    "can_install": "Can Install",
+    "yes": "Yes",
+    "no": "No",
+    "installed_hint": "The app is installed on your device, you can access it quickly from the home screen.",
+    "offline_hint": "You are currently offline, some features may be limited.",
+    "install_prompt_title": "Install Komari Monitor",
+    "install_prompt_desc": "Add to home screen for quick access",
+    "install": "Install",
+    "later": "Later",
+    "update_prompt_title": "New Version Available",
+    "update_prompt_desc": "A new version is found, click update to get the latest features",
+    "update_now": "Update Now"
+  },
   "delete": "Delete",
   "account": {
     "title": "Account",

@@ -19,6 +19,9 @@ import { useRoutes } from "react-router-dom";
 import { routes } from "./routes";
 import Loading from "./components/loading";
 import { PublicInfoProvider } from "./contexts/PublicInfoContext";
+import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
+import { PWAUpdatePrompt } from "./components/PWAUpdatePrompt";
+import { OfflineIndicator } from "./components/OfflineIndicator";
 const App = () => {
   const [appearance, setAppearance] = useLocalStorage<Appearance>(
     "appearance",
@@ -55,7 +58,12 @@ const App = () => {
             minHeight: "100vh",
           }}
         >
-          <PublicInfoProvider>{routing}</PublicInfoProvider>
+          <PublicInfoProvider>
+            <OfflineIndicator />
+            {routing}
+            <PWAInstallPrompt />
+            <PWAUpdatePrompt />
+          </PublicInfoProvider>
         </Theme>
       </ThemeContext.Provider>
     </Suspense>
