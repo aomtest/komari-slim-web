@@ -526,6 +526,8 @@ type InstallOptions = {
   serviceName: string;
   includeNics: string;
   excludeNics: string;
+  includeMountpoints: string;
+  monthRotate: string;
 };
 function GenerateCommandButton({ node }: { node: NodeDetail }) {
   const [selectedPlatform, setSelectedPlatform] =
@@ -540,6 +542,8 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
     serviceName: "",
     includeNics: "",
     excludeNics: "",
+    includeMountpoints: "",
+    monthRotate: "",
   });
 
   const [enableGhproxy, setEnableGhproxy] = React.useState(false);
@@ -548,6 +552,8 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
     React.useState(false);
   const [enableIncludeNics, setEnableIncludeNics] = React.useState(false);
   const [enableExcludeNics, setEnableExcludeNics] = React.useState(false);
+  const [enableIncludeMountpoints, setEnableIncludeMountpoints] = React.useState(false);
+  const [enableMonthRotate, setEnableMonthRotate] = React.useState(false);
 
   const generateCommand = () => {
     const host = window.location.origin;
@@ -590,6 +596,14 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
     if (enableExcludeNics && installOptions.excludeNics) {
       args.push(`--exclude-nics`);
       args.push(installOptions.excludeNics);
+    }
+    if (enableIncludeMountpoints && installOptions.includeMountpoints) {
+      args.push(`--include-mountpoint`);
+      args.push(installOptions.includeMountpoints);
+    }
+    if (enableMonthRotate && installOptions.monthRotate) {
+      args.push(`--month-rotate`);
+      args.push(installOptions.monthRotate);
     }
 
     let finalCommand = "";
@@ -959,6 +973,89 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
                     setInstallOptions((prev) => ({
                       ...prev,
                       excludeNics: e.target.value,
+                    }))
+                  }
+                />
+              )}
+              <Flex gap="2" align="center">
+                <Checkbox
+                  checked={enableIncludeMountpoints}
+                  onCheckedChange={(checked) => {
+                    setEnableIncludeMountpoints(Boolean(checked));
+                    if (!checked) {
+                      setInstallOptions((prev) => ({
+                        ...prev,
+                        includeMountpoints: "",
+                      }));
+                    }
+                  }}
+                />
+                <label
+                  className="text-sm font-bold cursor-pointer"
+                  onClick={() => {
+                    setEnableIncludeMountpoints(!enableIncludeMountpoints);
+                    if (enableIncludeMountpoints) {
+                      setInstallOptions((prev) => ({
+                        ...prev,
+                        includeMountpoints: "",
+                      }));
+                    }
+                  }}
+                >
+                  {t("admin.nodeTable.includeMountpoints", "只监测特定挂载点")}
+                </label>
+              </Flex>
+              {enableIncludeMountpoints && (
+                <TextField.Root
+                  placeholder="/;/home;/var"
+                  value={installOptions.includeMountpoints}
+                  onChange={(e) =>
+                    setInstallOptions((prev) => ({
+                      ...prev,
+                      includeMountpoints: e.target.value,
+                    }))
+                  }
+                />
+              )}
+              <Flex gap="2" align="center">
+                <Checkbox
+                  checked={enableMonthRotate}
+                  onCheckedChange={(checked) => {
+                    setEnableMonthRotate(Boolean(checked));
+                    if (!checked) {
+                      setInstallOptions((prev) => ({
+                        ...prev,
+                        monthRotate: "",
+                      }));
+                    }
+                  }}
+                />
+                <label
+                  className="text-sm font-bold cursor-pointer"
+                  onClick={() => {
+                    setEnableMonthRotate(!enableMonthRotate);
+                    if (enableMonthRotate) {
+                      setInstallOptions((prev) => ({
+                        ...prev,
+                        monthRotate: "",
+                      }));
+                    }
+                  }}
+                >
+                  {t("admin.nodeTable.monthRotate", "网络统计月重置")}
+                </label>
+              </Flex>
+              {enableMonthRotate && (
+                <TextField.Root
+                  placeholder="1"
+                  type="number"
+                  min="1"
+                  max="31"
+                  value={installOptions.monthRotate}
+                  onChange={(e) =>
+                    setInstallOptions((prev) => ({
+                      ...prev,
+                      monthRotate: e.target.value,
                     }))
                   }
                 />
