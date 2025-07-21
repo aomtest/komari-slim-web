@@ -100,6 +100,11 @@ const osConfigs: OSConfig[] = [
     name: 'Manjaro',
     image: '/assets/os-manjaro-.svg',
     keywords: ['manjaro']
+  },
+  {
+    name: 'macOS',
+    image: '/assets/os-macos.svg',
+    keywords: ['macos']
   }
 ];
 

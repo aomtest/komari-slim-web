@@ -33,7 +33,7 @@ type InstallOptions = {
   serviceName: string;
 };
 
-type Platform = "linux" | "windows";
+type Platform = "linux" | "windows" | "macos";
 
 export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
   const refreshTable = React.useContext(DataTableRefreshContext);
@@ -97,6 +97,11 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
         });
         finalCommand += `"`;
         break;
+      case "macos":
+        finalCommand =
+            `zsh <(curl -sL https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/install.sh) ` +
+            args.join(" ");
+        break;
     }
     return finalCommand;
   };
@@ -131,6 +136,7 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
               <SegmentedControl.Item value="windows">
                 Windows
               </SegmentedControl.Item>
+              <SegmentedControl.Item value="macos">macOS</SegmentedControl.Item>
             </SegmentedControl.Root>
 
             <Flex direction="column" gap="2">
