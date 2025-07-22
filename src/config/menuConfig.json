@@ -81,7 +81,7 @@
     },
     {
       "labelKey": "common.documentation",
-      "path": "https://komari-monitor.github.io/komari-document",
+      "path": "https://komari-document.pages.dev/",
       "icon": "Book"
     }
   ]
