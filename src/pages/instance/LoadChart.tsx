@@ -205,8 +205,8 @@ const LoadChart = ({ data = [] }: LoadChartProps) => {
         })();
 
   return (
-    <Flex direction="column" align="center" gap="4" className="w-full">
-      <div>
+    <Flex direction="column" align="center" gap="4" className="w-full max-w-screen">
+      <div className="overflow-x-auto w-full flex items-center justify-center">
         <SegmentedControl.Root value={hoursView} onValueChange={setHoursView}>
           {avaliableView.map((view) => (
             <SegmentedControl.Item
