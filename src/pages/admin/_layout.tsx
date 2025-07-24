@@ -1,9 +1,12 @@
 import { Outlet } from "react-router-dom";
 
 import AdminPanelBar from "../../components/admin/AdminPanelBar";
+import { AccountProvider } from "@/contexts/AccountContext";
 const AdminLayout = () => (
   <>
-    <AdminPanelBar content={<Outlet />} />
+    <AccountProvider>
+      <AdminPanelBar content={<Outlet />} />
+    </AccountProvider>
   </>
 );
 

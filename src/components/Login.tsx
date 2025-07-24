@@ -13,11 +13,13 @@ import { TablerSettings } from "./Icones/Tabler";
 import { AccountProvider, useAccount } from "@/contexts/AccountContext";
 
 type LoginDialogProps = {
-  trigger?: React.ReactNode | string;  
+  trigger?: React.ReactNode | string;
+  autoOpen?: boolean;
+  showSettings?: boolean;
   onLoginSuccess?: () => void;
 };
 
-const LoginDialog = ({ trigger, onLoginSuccess }: LoginDialogProps) => {
+const LoginDialog = ({ trigger, autoOpen = false, showSettings = true, onLoginSuccess }: LoginDialogProps) => {
   const InnerLayout = () => {
     const { account, loading, error, refresh } = useAccount();
     const [t] = useTranslation();
@@ -27,10 +29,15 @@ const LoginDialog = ({ trigger, onLoginSuccess }: LoginDialogProps) => {
     const [errorMsg, setErrorMsg] = React.useState("");
     const [isLoading, setIsLoading] = React.useState(false);
     const [require2FA, setRequire2FA] = React.useState(false);
-
+    const [open, setOpen] = React.useState(autoOpen || false);
     // Validate inputs
     const isFormValid = username.trim() !== "" && password.trim() !== "";
-
+    console.log(autoOpen, open);
+    React.useEffect(() => {
+      if (autoOpen) {
+        setOpen(true);
+      }
+    }, [autoOpen]);
     // Handle login
     const handleLogin = async () => {
       if (!isFormValid) {
@@ -57,6 +64,7 @@ const LoginDialog = ({ trigger, onLoginSuccess }: LoginDialogProps) => {
           refresh();
           if (typeof onLoginSuccess === "function") {
             onLoginSuccess();
+            return
           }
           window.open("/admin", "_self");
         } else {
@@ -93,6 +101,9 @@ const LoginDialog = ({ trigger, onLoginSuccess }: LoginDialogProps) => {
       );
     }
     if (account.logged_in) {
+      if (!showSettings) {
+        return null; 
+      }
       return (
         <a href="/admin" target="_blank">
           <IconButton>
@@ -102,7 +113,7 @@ const LoginDialog = ({ trigger, onLoginSuccess }: LoginDialogProps) => {
       );
     }
     return (
-      <Dialog.Root>
+      <Dialog.Root open={open} onOpenChange={setOpen}>
         <Dialog.Trigger>
           {trigger ? trigger : <Button>{t("login.title")}</Button>}
         </Dialog.Trigger>

@@ -13,6 +13,8 @@ import type { MenuItem } from "../../types/menu";
 import { iconMap } from "../../utils/iconHelper";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { TablerMenu2 } from "../Icones/Tabler";
+import LoginDialog from "../Login";
+import { useAccount } from "@/contexts/AccountContext";
 
 // 将JSON配置转换为类型安全的菜单项数组
 const menuItems = (menuConfig as { menu: MenuItem[] }).menu;
@@ -26,6 +28,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
   const [openSubMenus, setOpenSubMenus] = useState<{ [key: string]: boolean }>({
     // 默认所有子菜单关闭
   });
+  const { account } = useAccount();
   const isMobile = useIsMobile();
   const ishttps = window.location.protocol === "https:";
   const [t] = useTranslation();
@@ -165,6 +168,15 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
               </label>
             </Flex>
             <Flex gap="3" align="center">
+              {account && !account.logged_in && (
+                <LoginDialog
+                  autoOpen={true}
+                  showSettings={false}
+                  onLoginSuccess={() => {
+                    window.location.reload();
+                  }}
+                />
+              )}
               <ThemeSwitch />
               <ColorSwitch />
               <LanguageSwitch />
