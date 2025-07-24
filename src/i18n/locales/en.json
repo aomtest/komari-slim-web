@@ -172,6 +172,8 @@
   "current_time": "Current Time",
   "region_overview": "Region",
   "traffic_overview": "Traffic Overview",
+  "network_speed": "Network Speed",
+  "status_settings": "Status Settings",
   "account_settings": {
     "github_account": "GitHub Account",
     "github_bound": "Bound",
