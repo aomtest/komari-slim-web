@@ -150,6 +150,8 @@
   "current_time": "當前時間",
   "region_overview": "點亮地區",
   "traffic_overview": "流量概覽",
+  "network_speed": "網路速率",
+  "status_settings": "狀態顯示設定",
   "account_settings": {
     "github_account": "GitHub帳戶",
     "github_bound": "已綁定",
