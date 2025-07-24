@@ -494,7 +494,8 @@
       "grace_period": "Grace Period",
       "batch_edit": "Batch Edit",
       "last_notified": "Last notified",
-      "never_triggered": "Never triggered"
+      "never_triggered": "Never triggered",
+      "grace_period_tip": "A grace period of less than 45 seconds may not trigger online notifications in time."
     },
     "load": {
       "title": "Load"

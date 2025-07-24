@@ -471,7 +471,8 @@
       "title": "离线通知",
       "batch_edit": "批量修改",
       "last_notified": "最后通知",
-      "never_triggered": "从未触发"
+      "never_triggered": "从未触发",
+      "grace_period_tip": "低于45秒的宽限期可能会无法及时触发在线通知"
     },
     "load": {
       "title": "负载通知"

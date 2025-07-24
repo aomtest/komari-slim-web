@@ -30,6 +30,7 @@ import {
 } from "@radix-ui/themes";
 import { toast } from "sonner";
 import Loading from "@/components/loading";
+import Tips from "@/components/ui/tips";
 
 const OfflinePage = () => {
   return (
@@ -83,8 +84,8 @@ const NotificationEditForm = ({
         id="cooldown"
         name="cooldown"
       /> */}
-      <label htmlFor="grace_period">
-        {t("notification.offline.grace_period")}
+      <label htmlFor="grace_period" className="flex items-center gap-2">
+        {t("notification.offline.grace_period")}<Tips>{t("notification.offline.grace_period_tip")}</Tips>
       </label>
       <TextField.Root
         type="number"
