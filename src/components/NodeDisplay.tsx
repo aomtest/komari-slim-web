@@ -176,7 +176,7 @@ const NodeDisplay: React.FC<NodeDisplayProps> = ({ nodes, liveData }) => {
       </Flex>
       {/* 分组选择器 */}
       {showGroupSelector && (
-        <Flex align="center" gap="2" className="mx-4 mb-2 -mt-2 overflow-x-scroll">
+        <Flex align="center" gap="2" className="mx-4 mb-2 -mt-2 overflow-x-auto">
           <label className="whitespace-nowrap text-md text-muted-foreground">
             {t("common.group", { defaultValue: "分组" })}
           </label>
