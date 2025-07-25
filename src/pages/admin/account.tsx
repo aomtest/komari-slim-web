@@ -277,6 +277,13 @@ const InnerLayout = () => {
           >
             {t("account_settings.download_backup")}
           </Button>
+          <Button
+            onClick={() => {
+              window.open("/api/admin/upload/backup", "_blank");
+            }}
+          >
+            {t("account_settings.upload_backup")}
+          </Button>
         </div>
       </Flex>
     </Flex>
