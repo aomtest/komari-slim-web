@@ -48,12 +48,6 @@ const Index = () => {
     }
     //#endregion
     
-    // Calculate total network speed
-    const totalNetworkSpeed = live_data?.data?.data
-      ? Object.values(live_data.data.data).reduce((acc, node) => {
-          return acc + (node.network.up || 0) + (node.network.down || 0);
-        }, 0)
-      : 0;
     return (
       <>
         <Callouts />
