@@ -135,95 +135,85 @@ const Index = () => {
             </Popover.Root>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
             {statusCardsVisibility.currentTime && (
-              <Flex
-                direction="row"
-                justify="between"
-                align="center"
-              >
-                <Text>{t("current_time")}</Text>
-                <Text>{new Date().toLocaleString()}</Text>
-              </Flex>
+              <div className="bg-accent-2 rounded-lg p-3 border border-accent-4">
+                <Flex direction="column" gap="1">
+                  <Text size="2" color="gray">{t("current_time")}</Text>
+                  <Text size="3" weight="medium">{new Date().toLocaleString()}</Text>
+                </Flex>
+              </div>
             )}
             
             {statusCardsVisibility.currentOnline && (
-              <Flex
-                direction="row"
-                justify="between"
-                align="center"
-              >
-                <Text>{t("current_online")}</Text>
-                <Text>
-                  {live_data?.data?.online.length ?? 0} / {nodeList?.length ?? 0}
-                </Text>
-              </Flex>
+              <div className="bg-accent-2 rounded-lg p-3 border border-accent-4">
+                <Flex direction="column" gap="1">
+                  <Text size="2" color="gray">{t("current_online")}</Text>
+                  <Text size="3" weight="medium">
+                    {live_data?.data?.online.length ?? 0} / {nodeList?.length ?? 0}
+                  </Text>
+                </Flex>
+              </div>
             )}
 
             {statusCardsVisibility.regionOverview && (
-              <Flex
-                direction="row"
-                justify="between"
-                align="center"
-              >
-                <Text>{t("region_overview")}</Text>
-                <Text>
-                  {nodeList
-                    ? Object.entries(
-                        nodeList.reduce((acc, item) => {
-                          acc[item.region] = (acc[item.region] || 0) + 1;
-                          return acc;
-                        }, {} as Record<string, number>)
-                      ).length
-                    : 0}
-                </Text>
-              </Flex>
+              <div className="bg-accent-2 rounded-lg p-3 border border-accent-4">
+                <Flex direction="column" gap="1">
+                  <Text size="2" color="gray">{t("region_overview")}</Text>
+                  <Text size="3" weight="medium">
+                    {nodeList
+                      ? Object.entries(
+                          nodeList.reduce((acc, item) => {
+                            acc[item.region] = (acc[item.region] || 0) + 1;
+                            return acc;
+                          }, {} as Record<string, number>)
+                        ).length
+                      : 0}
+                  </Text>
+                </Flex>
+              </div>
             )}
 
             {statusCardsVisibility.trafficOverview && (
-              <Flex
-                direction="row"
-                justify="between"
-                align="center"
-              >
-                <Text>{t("traffic_overview")}</Text>
-                <Text>
-                  {"↑ " +
-                    formatBytes(
-                      live_data?.data?.data
-                        ? Object.values(live_data.data.data).reduce(
-                            (acc, node) => {
-                              return acc + (node.network.totalUp || 0);
-                            },
-                            0
-                          )
-                        : 0
-                    )}{" "}
-                  /{" "}
-                  {"↓ " +
-                    formatBytes(
-                      live_data?.data?.data
-                        ? Object.values(live_data.data.data).reduce(
-                            (acc, node) => {
-                              return acc + (node.network.totalDown || 0);
-                            },
-                            0
-                          )
-                        : 0
-                    )}
-                </Text>
-              </Flex>
+              <div className="bg-accent-2 rounded-lg p-3 border border-accent-4">
+                <Flex direction="column" gap="1">
+                  <Text size="2" color="gray">{t("traffic_overview")}</Text>
+                  <Text size="3" weight="medium">
+                    {"↑ " +
+                      formatBytes(
+                        live_data?.data?.data
+                          ? Object.values(live_data.data.data).reduce(
+                              (acc, node) => {
+                                return acc + (node.network.totalUp || 0);
+                              },
+                              0
+                            )
+                          : 0
+                      )}{" "}
+                    /{" "}
+                    {"↓ " +
+                      formatBytes(
+                        live_data?.data?.data
+                          ? Object.values(live_data.data.data).reduce(
+                              (acc, node) => {
+                                return acc + (node.network.totalDown || 0);
+                              },
+                              0
+                            )
+                          : 0
+                      )}
+                  </Text>
+                </Flex>
+              </div>
             )}
             
             {statusCardsVisibility.networkSpeed && (
-              <Flex
-                direction="row"
-                justify="between"
-                align="center"
-              >
-                <Text>{t("network_speed")}</Text>
-                <Text>{formatSpeed(totalNetworkSpeed)}</Text>
-              </Flex>
+              <div className="bg-accent-2 rounded-lg p-3 border border-accent-4">
+                <Flex direction="column" gap="1">
+                  <Text size="2" color="gray">{t("network_speed")}</Text>
+                  <Text size="3" weight="medium">{formatSpeed(totalNetworkSpeed)}</Text>
+                </Flex>
+              </div>
             )}
           </div>
         </Card>
