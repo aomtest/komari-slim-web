@@ -14,13 +14,13 @@ const formatSpeed = (bytes: number): string => {
   const units = ["B/s", "KB/s", "MB/s", "GB/s", "TB/s"];
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
   const size = bytes / Math.pow(1024, i);
-  
+
   // Adaptive decimal places
   let decimals = 2;
   if (i >= 3) decimals = 1; // GB and above: 1 decimal
   if (i <= 1) decimals = 0; // B and KB: no decimals
   if (size >= 100) decimals = 0; // 100+ of any unit: no decimals
-  
+
   return `${size.toFixed(decimals)} ${units[i]}`;
 };
 
@@ -31,7 +31,7 @@ const Index = () => {
     //document.title = t("home_title");
     //#region 节点数据
     const { nodeList, isLoading, error } = useNodeList();
-    
+
     // Status cards visibility state
     const [statusCardsVisibility, setStatusCardsVisibility] = useLocalStorage('statusCardsVisibility', {
       currentTime: true,
@@ -47,7 +47,7 @@ const Index = () => {
       return <div>Error: {error}</div>;
     }
     //#endregion
-    
+
     return (
       <>
         <Callouts />
@@ -63,153 +63,139 @@ const Index = () => {
                 <Flex direction="column" gap="3">
                   <Text size="2" weight="bold">{t("status_settings")}</Text>
                   <Flex direction="column" gap="2">
-                    <Flex justify="between" align="center">
-                      <Text size="2">{t("current_time")}</Text>
-                      <Switch
-                        checked={statusCardsVisibility.currentTime}
-                        onCheckedChange={(checked) =>
-                          setStatusCardsVisibility({
-                            ...statusCardsVisibility,
-                            currentTime: checked,
-                          })
-                        }
-                      />
-                    </Flex>
-                    <Flex justify="between" align="center">
-                      <Text size="2">{t("current_online")}</Text>
-                      <Switch
-                        checked={statusCardsVisibility.currentOnline}
-                        onCheckedChange={(checked) =>
-                          setStatusCardsVisibility({
-                            ...statusCardsVisibility,
-                            currentOnline: checked,
-                          })
-                        }
-                      />
-                    </Flex>
-                    <Flex justify="between" align="center">
-                      <Text size="2">{t("region_overview")}</Text>
-                      <Switch
-                        checked={statusCardsVisibility.regionOverview}
-                        onCheckedChange={(checked) =>
-                          setStatusCardsVisibility({
-                            ...statusCardsVisibility,
-                            regionOverview: checked,
-                          })
-                        }
-                      />
-                    </Flex>
-                    <Flex justify="between" align="center">
-                      <Text size="2">{t("traffic_overview")}</Text>
-                      <Switch
-                        checked={statusCardsVisibility.trafficOverview}
-                        onCheckedChange={(checked) =>
-                          setStatusCardsVisibility({
-                            ...statusCardsVisibility,
-                            trafficOverview: checked,
-                          })
-                        }
-                      />
-                    </Flex>
-                    <Flex justify="between" align="center">
-                      <Text size="2">{t("network_speed")}</Text>
-                      <Switch
-                        checked={statusCardsVisibility.networkSpeed}
-                        onCheckedChange={(checked) =>
-                          setStatusCardsVisibility({
-                            ...statusCardsVisibility,
-                            networkSpeed: checked,
-                          })
-                        }
-                      />
-                    </Flex>
+                    <StatusSettingSwitch
+                      label={t("current_time")}
+                      checked={statusCardsVisibility.currentTime}
+                      onCheckedChange={(checked) =>
+                        setStatusCardsVisibility({
+                          ...statusCardsVisibility,
+                          currentTime: checked,
+                        })
+                      }
+                    />
+                    <StatusSettingSwitch
+                      label={t("current_online")}
+                      checked={statusCardsVisibility.currentOnline}
+                      onCheckedChange={(checked) =>
+                      setStatusCardsVisibility({
+                        ...statusCardsVisibility,
+                        currentOnline: checked,
+                      })
+                      }
+                    />
+                    <StatusSettingSwitch
+                      label={t("region_overview")}
+                      checked={statusCardsVisibility.regionOverview}
+                      onCheckedChange={(checked) =>
+                      setStatusCardsVisibility({
+                        ...statusCardsVisibility,
+                        regionOverview: checked,
+                      })
+                      }
+                    />
+                    <StatusSettingSwitch
+                      label={t("traffic_overview")}
+                      checked={statusCardsVisibility.trafficOverview}
+                      onCheckedChange={(checked) =>
+                      setStatusCardsVisibility({
+                        ...statusCardsVisibility,
+                        trafficOverview: checked,
+                      })
+                      }
+                    />
+                    <StatusSettingSwitch
+                      label={t("network_speed")}
+                      checked={statusCardsVisibility.networkSpeed}
+                      onCheckedChange={(checked) =>
+                      setStatusCardsVisibility({
+                        ...statusCardsVisibility,
+                        networkSpeed: checked,
+                      })
+                      }
+                    />
                   </Flex>
                 </Flex>
               </Popover.Content>
             </Popover.Root>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
+
+            <div
+            className="flex flex-wrap justify-start gap-4 mt-2"
+            >
             {statusCardsVisibility.currentTime && (
-              <div className="bg-accent-2 rounded-lg p-3 border border-accent-4">
-                <Flex direction="column" gap="1">
-                  <Text size="2" color="gray">{t("current_time")}</Text>
-                  <Text size="3" weight="medium">{new Date().toLocaleString()}</Text>
-                </Flex>
-              </div>
+              <TopCard
+              title={t("current_time")}
+              value={new Date().toLocaleTimeString()}
+              />
             )}
-            
+
             {statusCardsVisibility.currentOnline && (
-              <div className="bg-accent-2 rounded-lg p-3 border border-accent-4">
-                <Flex direction="column" gap="1">
-                  <Text size="2" color="gray">{t("current_online")}</Text>
-                  <Text size="3" weight="medium">
-                    {live_data?.data?.online.length ?? 0} / {nodeList?.length ?? 0}
-                  </Text>
-                </Flex>
-              </div>
+              <TopCard
+              title={t("current_online")}
+              value={`${live_data?.data?.online.length ?? 0} / ${nodeList?.length ?? 0}`}
+              />
             )}
 
             {statusCardsVisibility.regionOverview && (
-              <div className="bg-accent-2 rounded-lg p-3 border border-accent-4">
-                <Flex direction="column" gap="1">
-                  <Text size="2" color="gray">{t("region_overview")}</Text>
-                  <Text size="3" weight="medium">
-                    {nodeList
-                      ? Object.entries(
-                          nodeList.reduce((acc, item) => {
-                            acc[item.region] = (acc[item.region] || 0) + 1;
-                            return acc;
-                          }, {} as Record<string, number>)
-                        ).length
-                      : 0}
-                  </Text>
-                </Flex>
-              </div>
+              <TopCard
+              title={t("region_overview")}
+              value={
+                nodeList
+                ? Object.entries(
+                  nodeList.reduce((acc, item) => {
+                    acc[item.region] = (acc[item.region] || 0) + 1;
+                    return acc;
+                  }, {} as Record<string, number>)
+                  ).length
+                : 0
+              }
+              />
             )}
 
             {statusCardsVisibility.trafficOverview && (
-              <div className="bg-accent-2 rounded-lg p-3 border border-accent-4">
-                <Flex direction="column" gap="1">
-                  <Text size="2" color="gray">{t("traffic_overview")}</Text>
-                  <Text size="3" weight="medium">
-                    {"↑ " +
-                      formatBytes(
-                        live_data?.data?.data
-                          ? Object.values(live_data.data.data).reduce(
-                              (acc, node) => {
-                                return acc + (node.network.totalUp || 0);
-                              },
-                              0
-                            )
-                          : 0
-                      )}{" "}
-                    /{" "}
-                    {"↓ " +
-                      formatBytes(
-                        live_data?.data?.data
-                          ? Object.values(live_data.data.data).reduce(
-                              (acc, node) => {
-                                return acc + (node.network.totalDown || 0);
-                              },
-                              0
-                            )
-                          : 0
-                      )}
-                  </Text>
-                </Flex>
-              </div>
+              <TopCard
+              title={t("traffic_overview")}
+              value={
+                live_data?.data?.data
+                ? formatBytes(Object.values(live_data.data.data).reduce(
+                  (acc, node) => {
+                    return acc + (node.network.totalUp || 0);
+                  },
+                  0
+                  )) + " / " + 
+                formatBytes(
+                  Object.values(live_data.data.data).reduce(
+                  (acc, node) => {
+                    return acc + (node.network.totalDown || 0);
+                  },
+                  0
+                  ))
+                : "0 / 0"
+              }
+              />
             )}
-            
+
             {statusCardsVisibility.networkSpeed && (
-              <div className="bg-accent-2 rounded-lg p-3 border border-accent-4">
-                <Flex direction="column" gap="1">
-                  <Text size="2" color="gray">{t("network_speed")}</Text>
-                  <Text size="3" weight="medium">{formatSpeed(totalNetworkSpeed)}</Text>
-                </Flex>
-              </div>
+              <TopCard
+              title={t("network_speed")}
+              value={
+                live_data?.data?.data
+                ? `${formatSpeed(
+                  Object.values(live_data.data.data).reduce(
+                    (acc, node) => acc + (node.network.up || 0),
+                    0
+                  )
+                  )} / ${formatSpeed(
+                  Object.values(live_data.data.data).reduce(
+                    (acc, node) => acc + (node.network.down || 0),
+                    0
+                  )
+                  )}`
+                : "0 B/s / 0 B/s"
+              }
+              />
             )}
-          </div>
+            </div>
         </Card>
         <NodeDisplay
           nodes={nodeList ?? []}
@@ -272,3 +258,41 @@ const Callouts = () => {
 };
 // #endregion Callouts
 export default Index;
+
+
+type TopCardProps = {
+  title: string;
+  value: string | number;
+  description?: string;
+};
+
+const TopCard: React.FC<TopCardProps> = ({ title, value, description }) => {
+  return (
+    <div className="bg-accent-2 rounded-lg p-3 border border-accent-4 min-32 md:max-w-56 w-full">
+      <Flex direction="column" gap="1">
+        <Text size="2" color="gray">{title}</Text>
+        <Text size="3" weight="medium">{value}</Text>
+        {description && <Text size="2" color="gray">{description}</Text>}
+      </Flex>
+    </div>
+  );
+}
+
+type StatusSettingSwitchProps = {
+  label: string;
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+};
+
+const StatusSettingSwitch: React.FC<StatusSettingSwitchProps> = ({
+  label,
+  checked,
+  onCheckedChange,
+}) => {
+  return (
+    <Flex justify="between" align="center">
+      <Text size="2">{label}</Text>
+      <Switch checked={checked} onCheckedChange={onCheckedChange} />
+    </Flex>
+  );
+};
