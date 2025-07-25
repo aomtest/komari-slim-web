@@ -48,12 +48,6 @@ const Index = () => {
     }
     //#endregion
     
-    // Calculate total network speed
-    const totalNetworkSpeed = live_data?.data?.data
-      ? Object.values(live_data.data.data).reduce((acc, node) => {
-          return acc + (node.network.up || 0) + (node.network.down || 0);
-        }, 0)
-      : 0;
     return (
       <>
         <Callouts />
@@ -222,7 +216,31 @@ const Index = () => {
                 align="center"
               >
                 <Text>{t("network_speed")}</Text>
-                <Text>{formatSpeed(totalNetworkSpeed)}</Text>
+                <Text>
+                  {"↑ " +
+                    formatSpeed(
+                      live_data?.data?.data
+                        ? Object.values(live_data.data.data).reduce(
+                            (acc, node) => {
+                              return acc + (node.network.up || 0);
+                            },
+                            0
+                          )
+                        : 0
+                    )}{" "}
+                  /{" "}
+                  {"↓ " +
+                    formatSpeed(
+                      live_data?.data?.data
+                        ? Object.values(live_data.data.data).reduce(
+                            (acc, node) => {
+                              return acc + (node.network.down || 0);
+                            },
+                            0
+                          )
+                        : 0
+                    )}
+                </Text>
               </Flex>
             )}
           </div>
