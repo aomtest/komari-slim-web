@@ -262,7 +262,9 @@
     "days": "{{count}} 天",
     "cutPeak": "平滑",
     "lossRate": "丢包",
-    "loss_tips": "丢包率计算算法并不准确，谨慎参考"
+    "loss_tips": "丢包率计算算法并不准确，谨慎参考",
+    "showAll": "显示全部",
+    "hideAll": "隐藏全部"
   },
   "home_title": "Komari Monitor",
   "admin": {
