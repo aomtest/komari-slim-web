@@ -166,7 +166,9 @@
         "unbind_github_failed": "解绑GitHub账户失败",
         "github_auth_failed": "处理GitHub认证失败",
         "download_backup": "下载服务器数据备份",
-        "upload_backup": "上传服务器数据备份"
+        "upload_backup": "上传服务器数据备份",
+        "upload_failed": "上传失败，只允许`.zip,.tar,.gz`后缀文件",
+        "upload_success": "上传成功"
     },
     "terminal": {
         "title": "终端",

@@ -188,7 +188,9 @@
         "unbind_github_failed": "Failed to unbind GitHub account",
         "github_auth_failed": "Failed to process GitHub authentication",
         "download_backup": "Download backup",
-        "upload_backup": "Upload backup"
+        "upload_backup": "Upload backup",
+        "upload_failed": "Failed to upload, only `.zip, .tar, .gz` are allowed",
+        "upload_success": "Upload success"
     },
     "terminal": {
         "title": "Terminal",

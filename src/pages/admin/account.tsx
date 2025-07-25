@@ -279,7 +279,32 @@ const InnerLayout = () => {
           </Button>
           <Button
             onClick={() => {
-              window.open("/api/admin/upload/backup", "_blank");
+              const input = document.createElement('input');
+              input.type = 'file';
+              input.accept = '.zip,.tar,.gz'; // 根据实际支持的备份文件类型调整
+              input.onchange = async (e) => {
+                const file = (e.target as HTMLInputElement).files?.[0];
+                if (!file) return;
+                
+                const formData = new FormData();
+                formData.append('backup', file);
+                
+                try {
+                  const response = await fetch('/api/admin/upload/backup', {
+                    method: 'POST',
+                    body: formData
+                  });
+                  
+                  if (!response.ok) {
+                    throw new Error(t('account_settings.upload_failed'));
+                  }
+                  
+                  toast.success(t('account_settings.upload_success'));
+                } catch (error) {
+                  toast.error((error as Error).message);
+                }
+              };
+              input.click();
             }}
           >
             {t("account_settings.upload_backup")}
