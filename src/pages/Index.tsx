@@ -40,6 +40,73 @@ const Index = () => {
       trafficOverview: true,
       networkSpeed: true
     });
+
+    // Status cards configuration
+    const statusCards = [
+      {
+        key: 'currentTime',
+        title: t("current_time"),
+        getValue: () => new Date().toLocaleTimeString(),
+        visible: statusCardsVisibility.currentTime
+      },
+      {
+        key: 'currentOnline',
+        title: t("current_online"),
+        getValue: () => `${live_data?.data?.online.length ?? 0} / ${nodeList?.length ?? 0}`,
+        visible: statusCardsVisibility.currentOnline
+      },
+      {
+        key: 'regionOverview',
+        title: t("region_overview"),
+        getValue: () => nodeList
+          ? Object.entries(
+            nodeList.reduce((acc, item) => {
+              acc[item.region] = (acc[item.region] || 0) + 1;
+              return acc;
+            }, {} as Record<string, number>)
+          ).length
+          : 0,
+        visible: statusCardsVisibility.regionOverview
+      },
+      {
+        key: 'trafficOverview',
+        title: t("traffic_overview"),
+        getValue: () => live_data?.data?.data
+          ? formatBytes(Object.values(live_data.data.data).reduce(
+            (acc, node) => {
+              return acc + (node.network.totalUp || 0);
+            },
+            0
+          )) + " / " +
+          formatBytes(
+            Object.values(live_data.data.data).reduce(
+              (acc, node) => {
+                return acc + (node.network.totalDown || 0);
+              },
+              0
+            ))
+          : "0 / 0",
+        visible: statusCardsVisibility.trafficOverview
+      },
+      {
+        key: 'networkSpeed',
+        title: t("network_speed"),
+        getValue: () => live_data?.data?.data
+          ? `${formatSpeed(
+            Object.values(live_data.data.data).reduce(
+              (acc, node) => acc + (node.network.up || 0),
+              0
+            )
+          )} / ${formatSpeed(
+            Object.values(live_data.data.data).reduce(
+              (acc, node) => acc + (node.network.down || 0),
+              0
+            )
+          )}`
+          : "0 B/s / 0 B/s",
+        visible: statusCardsVisibility.networkSpeed
+      }
+    ];
     if (isLoading) {
       return <Loading />;
     }
@@ -63,139 +130,46 @@ const Index = () => {
                 <Flex direction="column" gap="3">
                   <Text size="2" weight="bold">{t("status_settings")}</Text>
                   <Flex direction="column" gap="2">
-                    <StatusSettingSwitch
-                      label={t("current_time")}
-                      checked={statusCardsVisibility.currentTime}
-                      onCheckedChange={(checked) =>
-                        setStatusCardsVisibility({
-                          ...statusCardsVisibility,
-                          currentTime: checked,
-                        })
-                      }
-                    />
-                    <StatusSettingSwitch
-                      label={t("current_online")}
-                      checked={statusCardsVisibility.currentOnline}
-                      onCheckedChange={(checked) =>
-                      setStatusCardsVisibility({
-                        ...statusCardsVisibility,
-                        currentOnline: checked,
-                      })
-                      }
-                    />
-                    <StatusSettingSwitch
-                      label={t("region_overview")}
-                      checked={statusCardsVisibility.regionOverview}
-                      onCheckedChange={(checked) =>
-                      setStatusCardsVisibility({
-                        ...statusCardsVisibility,
-                        regionOverview: checked,
-                      })
-                      }
-                    />
-                    <StatusSettingSwitch
-                      label={t("traffic_overview")}
-                      checked={statusCardsVisibility.trafficOverview}
-                      onCheckedChange={(checked) =>
-                      setStatusCardsVisibility({
-                        ...statusCardsVisibility,
-                        trafficOverview: checked,
-                      })
-                      }
-                    />
-                    <StatusSettingSwitch
-                      label={t("network_speed")}
-                      checked={statusCardsVisibility.networkSpeed}
-                      onCheckedChange={(checked) =>
-                      setStatusCardsVisibility({
-                        ...statusCardsVisibility,
-                        networkSpeed: checked,
-                      })
-                      }
-                    />
+                    {statusCards.map((card) => (
+                      <StatusSettingSwitch
+                        key={card.key}
+                        label={card.title}
+                        checked={card.visible}
+                        onCheckedChange={(checked) =>
+                          setStatusCardsVisibility({
+                            ...statusCardsVisibility,
+                            [card.key]: checked,
+                          })
+                        }
+                      />
+                    ))}
                   </Flex>
                 </Flex>
               </Popover.Content>
             </Popover.Root>
           </div>
 
-            <div
-            className="flex flex-wrap justify-start gap-4 mt-2"
-            >
-            {statusCardsVisibility.currentTime && (
-              <TopCard
-              title={t("current_time")}
-              value={new Date().toLocaleTimeString()}
-              />
-            )}
-
-            {statusCardsVisibility.currentOnline && (
-              <TopCard
-              title={t("current_online")}
-              value={`${live_data?.data?.online.length ?? 0} / ${nodeList?.length ?? 0}`}
-              />
-            )}
-
-            {statusCardsVisibility.regionOverview && (
-              <TopCard
-              title={t("region_overview")}
-              value={
-                nodeList
-                ? Object.entries(
-                  nodeList.reduce((acc, item) => {
-                    acc[item.region] = (acc[item.region] || 0) + 1;
-                    return acc;
-                  }, {} as Record<string, number>)
-                  ).length
-                : 0
-              }
-              />
-            )}
-
-            {statusCardsVisibility.trafficOverview && (
-              <TopCard
-              title={t("traffic_overview")}
-              value={
-                live_data?.data?.data
-                ? formatBytes(Object.values(live_data.data.data).reduce(
-                  (acc, node) => {
-                    return acc + (node.network.totalUp || 0);
-                  },
-                  0
-                  )) + " / " + 
-                formatBytes(
-                  Object.values(live_data.data.data).reduce(
-                  (acc, node) => {
-                    return acc + (node.network.totalDown || 0);
-                  },
-                  0
-                  ))
-                : "0 / 0"
-              }
-              />
-            )}
-
-            {statusCardsVisibility.networkSpeed && (
-              <TopCard
-              title={t("network_speed")}
-              value={
-                live_data?.data?.data
-                ? `${formatSpeed(
-                  Object.values(live_data.data.data).reduce(
-                    (acc, node) => acc + (node.network.up || 0),
-                    0
-                  )
-                  )} / ${formatSpeed(
-                  Object.values(live_data.data.data).reduce(
-                    (acc, node) => acc + (node.network.down || 0),
-                    0
-                  )
-                  )}`
-                : "0 B/s / 0 B/s"
-              }
-              />
-            )}
-            </div>
+          {(() => {
+            return (
+              <div
+                className="grid gap-2"
+                style={{
+                  gridTemplateColumns: `repeat(auto-fit, minmax(230px, 1fr))`,
+                  gridAutoRows: 'min-content'
+                }}
+              >
+                {statusCards
+                  .filter(card => card.visible)
+                  .map((card) => (
+                    <TopCard
+                      key={card.key}
+                      title={card.title}
+                      value={card.getValue()}
+                    />
+                  ))}
+              </div>
+            );
+          })()}
         </Card>
         <NodeDisplay
           nodes={nodeList ?? []}
@@ -264,14 +238,14 @@ type TopCardProps = {
   title: string;
   value: string | number;
   description?: string;
-};
+}
 
 const TopCard: React.FC<TopCardProps> = ({ title, value, description }) => {
   return (
-    <div className="bg-accent-2 rounded-lg p-3 border border-accent-4 min-32 md:max-w-56 w-full">
+    <div className="min-w-52 md:max-w-72 w-full">
       <Flex direction="column" gap="1">
-        <Text size="2" color="gray">{title}</Text>
-        <Text size="3" weight="medium">{value}</Text>
+        <label className="text-muted-foreground text-sm">{title}</label>
+        <label className="font-medium -mt-2 text-md">{value}</label>
         {description && <Text size="2" color="gray">{description}</Text>}
       </Flex>
     </div>
