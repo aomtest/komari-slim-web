@@ -31,7 +31,7 @@ const i18n = i18next
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: "en-US",
+    fallbackLng: "zh-CN",
     interpolation: {
       escapeValue: false, // React handles XSS
     },

@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Button, Dialog, Flex, Text } from "@radix-ui/themes";
 import { updateSettingsWithToast, useSettings } from "@/lib/api";
 import {
+  SettingCardButton,
   SettingCardCollapse,
   SettingCardIconButton,
   SettingCardLabel,
@@ -11,6 +12,7 @@ import {
 } from "@/components/admin/SettingCard";
 import { toast } from "sonner";
 import Loading from "@/components/loading";
+import { DownloadIcon } from "lucide-react";
 
 export default function SiteSettings() {
   const { t } = useTranslation();
@@ -202,7 +204,53 @@ export default function SiteSettings() {
       <SettingCardLabel>
         {t("settings.site.backup")}
       </SettingCardLabel>
-      <SettingCardIconButton />
+      <SettingCardIconButton
+        title={t("settings.site.backup_download")}
+        description={t("settings.site.backup_download_description")}
+        onClick={() => {
+          window.open("/api/admin/download/backup", "_blank");
+        }}
+      >
+        <DownloadIcon size={16} />
+      </SettingCardIconButton>
+      <SettingCardButton
+        title={t("settings.site.backup_restore")}
+        description={t("settings.site.backup_restore_description")}
+        onClick={async () => {
+          const input = document.createElement('input');
+          input.type = 'file';
+          input.accept = '.zip';
+          input.onchange = async (e) => {
+            const file = (e.target as HTMLInputElement).files?.[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('backup', file);
+
+            try {
+              const response = await fetch('/api/admin/upload/backup', {
+                method: 'POST',
+                body: formData
+              });
+
+                if (!response.ok) {
+                const data = await response.json().catch(() => ({}));
+                const errorMsg = data.message
+                  ? `${data.message}`
+                  : t('settings.site.backup_restore_error');
+                throw new Error(errorMsg);
+                }
+
+              toast.success(t('account_settings.upload_success'));
+            } catch (error) {
+              toast.error((error as Error).message);
+            }
+          };
+          input.click();
+        }}
+      >
+        {t("common.select")}
+      </SettingCardButton>
     </>
   );
 }
