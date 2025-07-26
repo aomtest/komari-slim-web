@@ -167,7 +167,7 @@
         "github_auth_failed": "處理GitHub認證失敗",
         "download_backup": "下載伺服器資料備份",
         "upload_backup": "上傳伺服器資料備份",
-        "upload_failed": "上傳失敗，隻允許`.zip,.tar,.gz`後綴文件",
+        "upload_failed": "上傳失敗，僅支援`.zip`格式文件",
         "upload_success": "上傳成功"
     },
     "terminal": {
