@@ -3,6 +3,7 @@ import { Button, Dialog, Flex, Text } from "@radix-ui/themes";
 import { updateSettingsWithToast, useSettings } from "@/lib/api";
 import {
   SettingCardCollapse,
+  SettingCardIconButton,
   SettingCardLabel,
   SettingCardLongTextInput,
   SettingCardShortTextInput,
@@ -198,6 +199,10 @@ export default function SiteSettings() {
           </Flex>
         </Flex>
       </SettingCardCollapse>
+      <SettingCardLabel>
+        {t("settings.site.backup")}
+      </SettingCardLabel>
+      <SettingCardIconButton />
     </>
   );
 }
