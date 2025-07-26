@@ -167,7 +167,7 @@
         "github_auth_failed": "处理GitHub认证失败",
         "download_backup": "下载服务器数据备份",
         "upload_backup": "上传服务器数据备份",
-        "upload_failed": "上传失败，只允许`.zip`后缀文件",
+        "upload_failed": "上传失败，仅支持`.zip`格式",
         "upload_success": "上传成功"
     },
     "terminal": {
@@ -265,7 +265,9 @@
         "days": "{{count}} 天",
         "cutPeak": "平滑",
         "lossRate": "丢包",
-        "loss_tips": "丢包率计算算法并不准确，谨慎参考"
+        "loss_tips": "丢包率计算算法并不准确，谨慎参考",
+        "showAll": "显示全部",
+        "hideAll": "隐藏全部"
     },
     "home_title": "Komari Monitor",
     "admin": {

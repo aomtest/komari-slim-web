@@ -287,7 +287,9 @@
         "days": "{{count}} Day",
         "cutPeak": "Smooth",
         "lossRate": "Loss",
-        "loss_tips": "Packet loss rate calculation algorithms are inaccurate; please use with caution."
+        "loss_tips": "Packet loss rate calculation algorithms are inaccurate; please use with caution.",
+        "showAll": "Show All",
+        "hideAll": "Hide All"
     },
     "home_title": "Komari Monitor",
     "admin": {
