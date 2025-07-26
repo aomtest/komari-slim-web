@@ -71,12 +71,12 @@
       "cros_description": "Allow API requests from other domains",
       "title": "Site",
       "custom": "Customize",
-      "backup": "备份",
-      "backup_download": "下载备份",
-      "backup_download_description": "将服务器数据下载到本地",
-      "backup_restore_error": "恢复备份失败",
-      "backup_restore": "恢复备份",
-      "backup_restore_description": "从文件恢复备份，将覆盖当前数据。"
+      "backup": "Backup",
+      "backup_download": "Download backup",
+      "backup_download_description": "Download server data to local",
+      "backup_restore_error": "Restore backup failed",
+      "backup_restore": "Restore backup",
+      "backup_restore_description": "Restoring a backup from a file will overwrite the current data."
     },
     "geoip": {
       "enable_title": "Enable GeoIP",
@@ -175,7 +175,7 @@
     "upload_backup": "Upload backup",
     "upload_failed": "Failed to upload, only `.zip` are allowed",
     "upload_success": "Upload success",
-    "looking_for_backup": "正在寻找备份？现已经迁移到设置-站点-备份。"
+    "looking_for_backup": "Looking for backup? It has now been moved to Settings - Site - Backup."
   },
   "terminal": {
     "title": "Terminal",
