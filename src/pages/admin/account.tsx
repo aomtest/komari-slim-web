@@ -269,7 +269,7 @@ const InnerLayout = () => {
             )}
           </div>
         </div>
-        <div>
+        <Flex gap="4" align="center" justify="start">
           <Button
             onClick={() => {
               window.open("/api/admin/download/backup", "_blank");
@@ -281,7 +281,7 @@ const InnerLayout = () => {
             onClick={() => {
               const input = document.createElement('input');
               input.type = 'file';
-              input.accept = '.zip,.tar,.gz'; // 根据实际支持的备份文件类型调整
+              input.accept = '.zip,.tar,.gz';
               input.onchange = async (e) => {
                 const file = (e.target as HTMLInputElement).files?.[0];
                 if (!file) return;
@@ -309,7 +309,7 @@ const InnerLayout = () => {
           >
             {t("account_settings.upload_backup")}
           </Button>
-        </div>
+        </Flex>
       </Flex>
     </Flex>
   );
