@@ -147,137 +147,171 @@ const InnerLayout = () => {
     }
   };
   return (
-    <Flex gap="4" direction="row" className="p-4" wrap="wrap">
-      <Flex gap="2" direction="column" className="w-full">
-        <label className="text-2xl font-bold">{t("account.title")}</label>
-        <label className="text-lg">
-          {t("account.greeting", { username: account?.username })}
-        </label>
-        <form
-          className="flex gap-2 flex-col"
-          onSubmit={handleSubmitUsernameChange}
-        >
-          <label className="font-bold" htmlFor="username">
-            {t("account.change_username_title")}
+    <Flex gap="4" direction="column" align="start">
+      <Flex gap="4" direction="row" className="p-4" wrap="wrap">
+        <Flex gap="2" direction="column" className="w-full">
+          <label className="text-2xl font-bold">{t("account.title")}</label>
+          <label className="text-lg">
+            {t("account.greeting", { username: account?.username })}
           </label>
-
-          <TextField.Root
-            className="max-w-128"
-            id="username"
-            name="username"
-            defaultValue={account?.username}
-          ></TextField.Root>
-          <div>
-            <Button disabled={usernameSaving} type="submit">
-              {t("account.change_username_button")}
-            </Button>
-          </div>
-        </form>
-        <form onSubmit={changePassword} className="flex flex-col gap-2">
-          <label className="font-bold" htmlFor="old_password">
-            {t("account.change_password_title")}
-          </label>
-          <label htmlFor="password">{t("account.new_password")}</label>
-          <TextField.Root
-            className="max-w-128"
-            id="password"
-            name="password"
-            type="password"
-          ></TextField.Root>
-          <label htmlFor="password_repeat">
-            {t("account.new_password_repeat")}
-          </label>
-          <TextField.Root
-            className="max-w-128"
-            id="password_repeat"
-            name="password_repeat"
-            type="password"
-          ></TextField.Root>
-          <div>
-            <Button disabled={passwordSaving} type="submit">
-              {t("account.change_password_button")}
-            </Button>
-          </div>
-        </form>
-      </Flex>
-      <Flex direction="column" className="md:basis-5/12 gap-2">
-        <label className="font-bold text-2xl">2FA</label>
-        {account?.["2fa_enabled"] ? (
-          <TwoFactorEnabled />
-        ) : (
-          <TwoFactorDisabled></TwoFactorDisabled>
-        )}
-        <label className="font-bold text-2xl mt-2">
-          {t("settings.sso.title")}
-        </label>
-
-        {/* GitHub账户绑定/解绑 */}
-        <div className="mb-8 flex flex-col gap-4">
-          <label className="text-xl font-semibold flex items-center gap-2">
-            <Github className="size-5" />
-            {t("account_settings.github_account")}
-          </label>
-          <div className="p-4 bg-[var(--accent-2)] rounded-lg">
-            <p>
-              {isGithubBound() ? (
-                <div className="flex items-center gap-2">
-                  <Badge color="green">
-                    {t("account_settings.github_bound")}
-                  </Badge>
-                  GitHub ID: {account?.sso_id.replace("github_", "")}
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <Badge color="gray">
-                    {t("account_settings.github_unbound")}
-                  </Badge>
-                  {t("account_settings.github_not_bound")}
-                </div>
-              )}
-            </p>
-          </div>
-          <div>
-            {isGithubBound() ? (
-              <Dialog.Root>
-                <Dialog.Trigger>
-                  <Button>{t("account_settings.unbind_github")}</Button>
-                </Dialog.Trigger>
-                <Dialog.Content>
-                  <Dialog.Title>
-                    {t("account_settings.confirm_unbind")}
-                  </Dialog.Title>
-                  <Dialog.Description>
-                    {t("account_settings.unbind_github_warning")}
-                  </Dialog.Description>
-                  <Flex gap="2" justify="end" className="mt-4">
-                    <Dialog.Close>
-                      <Button variant="soft">
-                        {t("account_settings.cancel")}
-                      </Button>
-                    </Dialog.Close>
-                    <Button color="red" onClick={handleGithubAuth}>
-                      {t("account_settings.confirm_unbind")}
-                    </Button>
-                  </Flex>
-                </Dialog.Content>
-              </Dialog.Root>
-            ) : (
-              <Button onClick={handleGithubAuth}>
-                <Github className="size-4" />
-                {t("account_settings.bind_github")}
-              </Button>
-            )}
-          </div>
-        </div>
-        <div>
-          <Button
-            onClick={() => {
-              window.open("/api/admin/download/backup", "_blank");
-            }}
+          <form
+            className="flex gap-2 flex-col"
+            onSubmit={handleSubmitUsernameChange}
           >
-            {t("account_settings.download_backup")}
-          </Button>
-        </div>
+            <label className="font-bold" htmlFor="username">
+              {t("account.change_username_title")}
+            </label>
+
+            <TextField.Root
+              className="max-w-128"
+              id="username"
+              name="username"
+              defaultValue={account?.username}
+            ></TextField.Root>
+            <div>
+              <Button disabled={usernameSaving} type="submit">
+                {t("account.change_username_button")}
+              </Button>
+            </div>
+          </form>
+          <form onSubmit={changePassword} className="flex flex-col gap-2">
+            <label className="font-bold" htmlFor="old_password">
+              {t("account.change_password_title")}
+            </label>
+            <label htmlFor="password">{t("account.new_password")}</label>
+            <TextField.Root
+              className="max-w-128"
+              id="password"
+              name="password"
+              type="password"
+            ></TextField.Root>
+            <label htmlFor="password_repeat">
+              {t("account.new_password_repeat")}
+            </label>
+            <TextField.Root
+              className="max-w-128"
+              id="password_repeat"
+              name="password_repeat"
+              type="password"
+            ></TextField.Root>
+            <div>
+              <Button disabled={passwordSaving} type="submit">
+                {t("account.change_password_button")}
+              </Button>
+            </div>
+          </form>
+        </Flex>
+        <Flex direction="column" className="md:basis-5/12 gap-2">
+          <label className="font-bold text-2xl">2FA</label>
+          {account?.["2fa_enabled"] ? (
+            <TwoFactorEnabled />
+          ) : (
+            <TwoFactorDisabled></TwoFactorDisabled>
+          )}
+          <label className="font-bold text-2xl mt-2">
+            {t("settings.sso.title")}
+          </label>
+
+          {/* GitHub账户绑定/解绑 */}
+          <div className="mb-8 flex flex-col gap-4">
+            <label className="text-xl font-semibold flex items-center gap-2">
+              <Github className="size-5" />
+              {t("account_settings.github_account")}
+            </label>
+            <div className="p-4 bg-[var(--accent-2)] rounded-lg">
+              <p>
+                {isGithubBound() ? (
+                  <div className="flex items-center gap-2">
+                    <Badge color="green">
+                      {t("account_settings.github_bound")}
+                    </Badge>
+                    GitHub ID: {account?.sso_id.replace("github_", "")}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Badge color="gray">
+                      {t("account_settings.github_unbound")}
+                    </Badge>
+                    {t("account_settings.github_not_bound")}
+                  </div>
+                )}
+              </p>
+            </div>
+            <div>
+              {isGithubBound() ? (
+                <Dialog.Root>
+                  <Dialog.Trigger>
+                    <Button>{t("account_settings.unbind_github")}</Button>
+                  </Dialog.Trigger>
+                  <Dialog.Content>
+                    <Dialog.Title>
+                      {t("account_settings.confirm_unbind")}
+                    </Dialog.Title>
+                    <Dialog.Description>
+                      {t("account_settings.unbind_github_warning")}
+                    </Dialog.Description>
+                    <Flex gap="2" justify="end" className="mt-4">
+                      <Dialog.Close>
+                        <Button variant="soft">
+                          {t("account_settings.cancel")}
+                        </Button>
+                      </Dialog.Close>
+                      <Button color="red" onClick={handleGithubAuth}>
+                        {t("account_settings.confirm_unbind")}
+                      </Button>
+                    </Flex>
+                  </Dialog.Content>
+                </Dialog.Root>
+              ) : (
+                <Button onClick={handleGithubAuth}>
+                  <Github className="size-4" />
+                  {t("account_settings.bind_github")}
+                </Button>
+              )}
+            </div>
+          </div>
+          <Flex gap="4" align="center" justify="start">
+            <Button
+              onClick={() => {
+                window.open("/api/admin/download/backup", "_blank");
+              }}
+            >
+              {t("account_settings.download_backup")}
+            </Button>
+            <Button
+              onClick={() => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.zip,.tar,.gz';
+                input.onchange = async (e) => {
+                  const file = (e.target as HTMLInputElement).files?.[0];
+                  if (!file) return;
+                  
+                  const formData = new FormData();
+                  formData.append('backup', file);
+                  
+                  try {
+                    const response = await fetch('/api/admin/upload/backup', {
+                      method: 'POST',
+                      body: formData
+                    });
+                    
+                    if (!response.ok) {
+                      throw new Error(t('account_settings.upload_failed'));
+                    }
+                    
+                    toast.success(t('account_settings.upload_success'));
+                  } catch (error) {
+                    toast.error((error as Error).message);
+                  }
+                };
+                input.click();
+              }}
+            >
+              {t("account_settings.upload_backup")}
+            </Button>
+          </Flex>
+        </Flex>
       </Flex>
     </Flex>
   );
