@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Flex, SegmentedControl, Card, Switch } from "@radix-ui/themes";
+import { Flex, SegmentedControl, Card, Switch, Button } from "@radix-ui/themes";
 import { usePublicInfo } from "@/contexts/PublicInfoContext";
 import Loading from "@/components/loading";
 import {
@@ -15,6 +15,7 @@ import fillMissingTimePoints, {
   calculateLossRate,
 } from "@/utils/RecordHelper";
 import Tips from "@/components/ui/tips";
+import { Eye, EyeOff } from "lucide-react";
 
 interface PingRecord {
   client: string;
@@ -263,6 +264,15 @@ const PingChart = ({ uuid }: { uuid: string }) => {
     setHiddenLines((prev) => ({ ...prev, [key]: !prev[key] }));
   }, []);
 
+  const toggleAllLines = useCallback(() => {
+    const allHidden = tasks.every((task) => hiddenLines[String(task.id)]);
+    const newHiddenState: Record<string, boolean> = {};
+    tasks.forEach((task) => {
+      newHiddenState[String(task.id)] = !allHidden;
+    });
+    setHiddenLines(newHiddenState);
+  }, [tasks, hiddenLines]);
+
   return (
     <Flex direction="column" align="center" gap="4" className="w-full max-w-screen">
       <div className="overflow-x-auto w-full flex items-center justify-center">
@@ -390,25 +400,45 @@ const PingChart = ({ uuid }: { uuid: string }) => {
                   strokeWidth={2}
                   connectNulls={false}
                   type={cutPeak ? "basis" : "linear"}
-                  hide={!!hiddenLines[task.id]}
+                  hide={!!hiddenLines[String(task.id)]}
                 />
               ))}
             </LineChart>
           </ChartContainer>
         )}
-        {/* Cut Peak 开关 */}
+        {/* Cut Peak 开关和显示/隐藏所有按钮 */}
         <div
-          className="flex items-center gap-2"
+          className="flex items-center justify-between gap-4"
           style={{ display: loading ? "none" : "flex" }}
         >
-          <Switch
-            id="cut-peak"
-            checked={cutPeak}
-            onCheckedChange={setCutPeak}
-          />
-          <label htmlFor="cut-peak" className="text-sm font-medium">
-            {t("chart.cutPeak")}
-          </label>
+          <div className="flex items-center gap-2">
+            <Switch
+              id="cut-peak"
+              checked={cutPeak}
+              onCheckedChange={setCutPeak}
+            />
+            <label htmlFor="cut-peak" className="text-sm font-medium">
+              {t("chart.cutPeak")}
+            </label>
+          </div>
+          <Button
+            variant="soft"
+            size="2"
+            onClick={toggleAllLines}
+            className="flex items-center gap-2"
+          >
+            {tasks.every((task) => hiddenLines[String(task.id)]) ? (
+              <>
+                <Eye size={16} />
+                {t("chart.showAll")}
+              </>
+            ) : (
+              <>
+                <EyeOff size={16} />
+                {t("chart.hideAll")}
+              </>
+            )}
+          </Button>
         </div>
       </Card>
     </Flex>
