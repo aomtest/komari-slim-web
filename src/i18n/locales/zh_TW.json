@@ -71,7 +71,7 @@
       "cros_description": "允許來自其他域名的請求存取 API",
       "title": "網站",
       "custom": "自訂",
-      "backup": "备份",
+      "backup": "備份",
       "backup_download": "下载备份",
       "backup_download_description": "将服务器数据下载到本地",
       "backup_restore_error": "恢复备份失败",
