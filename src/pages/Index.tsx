@@ -97,13 +97,13 @@ const Index = () => {
               (acc, node) => acc + (node.network.up || 0),
               0
             )
-          )} ↓ ${formatSpeed(
+          )} | ↓ ${formatSpeed(
             Object.values(live_data.data.data).reduce(
               (acc, node) => acc + (node.network.down || 0),
               0
             )
           )}`
-          : "↑ 0 B/s ↓ 0 B/s",
+          : "↑ 0 B/s | ↓ 0 B/s",
         visible: statusCardsVisibility.networkSpeed
       }
     ];
