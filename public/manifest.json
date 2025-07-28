@@ -10,6 +10,7 @@
   "scope": "/",
   "lang": "zh-CN",
   "categories": ["utilities", "productivity"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/favicon.ico",
