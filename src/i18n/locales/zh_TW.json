@@ -76,7 +76,9 @@
       "backup_download_description": "将服务器数据下载到本地",
       "backup_restore_error": "恢复备份失败",
       "backup_restore": "恢复备份",
-      "backup_restore_description": "从文件恢复备份，将覆盖当前数据。"
+      "backup_restore_description": "从文件恢复备份，将覆盖当前数据。",
+      "private_site": "私有站点",
+      "private_site_description": "将站点设置为私有，开启后数据都需要登陆后才能获取。"
     },
     "geoip": {
       "enable_title": "啟用地理位置資訊",
@@ -471,7 +473,8 @@
     "all": "所有",
     "tags": "標籤",
     "tagsDescription": "多個標籤用';'分隔",
-    "tagsTips": "多個標籤使用\";\"隔開。</br> 如需指定顏色，請在標籤末尾新增&ltcolor&gt，例如：1Gbps&ltgreen&gt。</br> 可用的顏色列表請參考：<label class=\"bg-accent-a5 rounded-sm\"><a href=\"https://www.radix-ui.com/themes/docs/theme/color\" target=\"_blank\"> Color – Radix Themes</a></label>"
+    "tagsTips": "多個標籤使用\";\"隔開。</br> 如需指定顏色，請在標籤末尾新增&ltcolor&gt，例如：1Gbps&ltgreen&gt。</br> 可用的顏色列表請參考：<label class=\"bg-accent-a5 rounded-sm\"><a href=\"https://www.radix-ui.com/themes/docs/theme/color\" target=\"_blank\"> Color – Radix Themes</a></label>",
+    "private_site": "这是一个私有的Komari站点，请先登录。"
   },
   "command_clipboard": {
     "title": "命令剪貼簿"
