@@ -16,10 +16,11 @@ type LoginDialogProps = {
   trigger?: React.ReactNode | string;
   autoOpen?: boolean;
   showSettings?: boolean;
+  info?: string | React.ReactNode;
   onLoginSuccess?: () => void;
 };
 
-const LoginDialog = ({ trigger, autoOpen = false, showSettings = true, onLoginSuccess }: LoginDialogProps) => {
+const LoginDialog = ({ trigger, autoOpen = false, showSettings = true, info, onLoginSuccess }: LoginDialogProps) => {
   const InnerLayout = () => {
     const { account, loading, error, refresh } = useAccount();
     const [t] = useTranslation();
@@ -102,7 +103,7 @@ const LoginDialog = ({ trigger, autoOpen = false, showSettings = true, onLoginSu
     }
     if (account.logged_in) {
       if (!showSettings) {
-        return null; 
+        return null;
       }
       return (
         <a href="/admin" target="_blank">
@@ -120,7 +121,15 @@ const LoginDialog = ({ trigger, autoOpen = false, showSettings = true, onLoginSu
         <Dialog.Content maxWidth="450px">
           <Dialog.Title>{t("login.title")}</Dialog.Title>
           <Dialog.Description size="2" mb="4">
-            {t("login.desc")}
+            <div className="flex justify-center flex-col gap-2">
+              <label>{t("login.desc")}</label>
+              {info && (
+                <label>
+                  {info}
+                </label>
+              )}
+            </div>
+
           </Dialog.Description>
           <Box
             onSubmit={(e) => {

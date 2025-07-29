@@ -53,6 +53,14 @@ export default function SiteSettings() {
           await updateSettingsWithToast({ allow_cors: checked }, t);
         }}
       />
+      <SettingCardSwitch
+        title={t("settings.site.private_site")}
+        description={t("settings.site.private_site_description")}
+        defaultChecked={settings.private_site}
+        onChange={async (checked) => {
+          await updateSettingsWithToast({ private_site: checked }, t);
+        }}
+      />
       <SettingCardLabel>{t("settings.site.custom")}</SettingCardLabel>
       <label className="text-sm text-muted-foreground -mt-4">
         {t("settings.custom.note", "个性化内容在使用自定义主题时可能会被覆盖。请确保代码的安全性，避免使用不受信任的内容。")}
