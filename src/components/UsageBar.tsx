@@ -1,5 +1,4 @@
 import { Box, Flex, Text } from '@radix-ui/themes';
-import { motion } from 'framer-motion'; // For smooth animations
 
 interface UsageBarProps {
   value: number; // Utilization percentage (0–100)
@@ -33,15 +32,14 @@ const UsageBar = ({ value, label, compact = false }: UsageBarProps) => {
             marginBottom: '2px',
           }}
         >
-          <motion.div
+          <div
             style={{
               height: '100%',
               backgroundColor: `var(--${barColor}-9)`,
               borderRadius: '3px',
+              width: `${clampedValue}%`,
+              transition: 'width 0.5s ease-out',
             }}
-            initial={{ width: 0 }}
-            animate={{ width: `${clampedValue}%` }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
           />
         </Box>
         <label color="gray" className='text-sm'>
@@ -70,15 +68,14 @@ const UsageBar = ({ value, label, compact = false }: UsageBarProps) => {
           overflow: 'hidden',
         }}
       >
-        <motion.div
+        <div
           style={{
             height: '100%',
             backgroundColor: `var(--${barColor}-9)`,
             borderRadius: '4px',
+            width: `${clampedValue}%`,
+            transition: 'width 0.5s ease-out',
           }}
-          initial={{ width: 0 }}
-          animate={{ width: `${clampedValue}%` }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
         />
       </Box>
     </Flex>
