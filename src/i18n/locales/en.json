@@ -76,7 +76,9 @@
       "backup_download_description": "Download server data to local",
       "backup_restore_error": "Restore backup failed",
       "backup_restore": "Restore backup",
-      "backup_restore_description": "Restoring a backup from a file will overwrite the current data."
+      "backup_restore_description": "Restoring a backup from a file will overwrite the current data.",
+      "private_site": "Private site",
+      "private_site_description": "Set the site to private. Once enabled, data can only be accessed after logging in."
     },
     "geoip": {
       "enable_title": "Enable GeoIP",
@@ -471,7 +473,8 @@
     "all": "All",
     "tags": "Tags",
     "tagsDescription": "Multiple tags separated by ';'",
-    "tagsTips": "Multiple tags are separated by “;”. </br>  To specify a color, add &ltcolor&gt to the end of the label, e.g. 1Gbps&ltgreen&gt.</br>  A list of available colors can be found at <label class=\"bg-accent-a5 rounded-sm\"><a href=\"https://www.radix-ui.com/themes/docs/theme/color\" target=\"_blank\"> Color - Radix Themes</a></label>"
+    "tagsTips": "Multiple tags are separated by “;”. </br>  To specify a color, add &ltcolor&gt to the end of the label, e.g. 1Gbps&ltgreen&gt.</br>  A list of available colors can be found at <label class=\"bg-accent-a5 rounded-sm\"><a href=\"https://www.radix-ui.com/themes/docs/theme/color\" target=\"_blank\"> Color - Radix Themes</a></label>",
+    "private_site": "This is a private Komari site. Please log in first."
   },
   "command_clipboard": {
     "title": "Command Clipboard"
