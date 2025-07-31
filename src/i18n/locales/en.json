@@ -57,7 +57,8 @@
       "client_secret_description": "OAuth application client secret",
       "provider": "Single Sign-On Provider",
       "provider_description": "Choose the authentication provider for single sign-on",
-      "callback_url_tips": "Configure your SSO provider with this callback URL: {{url}}"
+      "callback_url_tips": "Configure your SSO provider with this callback URL: {{url}}",
+      "provider_fields": "登录参数"
     },
     "general": {
       "title": "General"
@@ -229,7 +230,8 @@
     "password": "Password",
     "two_factor": "Two-Factor Authentication",
     "password_placeholder": "Enter your password",
-    "login_with_github": "Login with GitHub"
+    "login_with_github": "Login with GitHub",
+    "login_with": "使用 {{provider}} 登录"
   },
   "color": {
     "gray": "Gray",
