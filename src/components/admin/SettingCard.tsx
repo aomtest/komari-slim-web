@@ -386,6 +386,7 @@ export function SettingCardSelect({
   title,
   description,
   defaultValue = "",
+  value,
   label = useTranslation().t("select"),
   options = [],
   OnSave = () => {},
@@ -396,6 +397,7 @@ export function SettingCardSelect({
   title?: string;
   description?: string;
   defaultValue?: string;
+  value?: string;
   label?: string;
   options?: { value: string; label?: string; disabled?: boolean }[];
   OnSave?: (value: string, buttonElement: HTMLButtonElement) => void;
@@ -405,8 +407,16 @@ export function SettingCardSelect({
 }) {
   const [disabled, setDisabled] = React.useState(false);
   const savingState = isSaving !== undefined ? isSaving : disabled;
-  const [selectedValue, setSelectedValue] = React.useState(defaultValue);
+  const [selectedValue, setSelectedValue] = React.useState(
+    value !== undefined ? value : defaultValue
+  );
   const buttonRef = React.useRef<HTMLButtonElement>(null);
+
+  React.useEffect(() => {
+    if (value !== undefined) {
+      setSelectedValue(value);
+    }
+  }, [value]);
 
   const handleSave = (value: string) => {
     if (isSaving === undefined && autoDisabled) setDisabled(true);

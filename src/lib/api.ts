@@ -11,8 +11,7 @@ export interface SettingsResponse {
   allow_cors: boolean;
   geo_ip_enabled: boolean;
   geo_ip_provider: string;
-  o_auth_client_id: string;
-  o_auth_client_secret: string;
+  o_auth_provider: string;
   o_auth_enabled: boolean;
   custom_head: string;
   CreatedAt: string;
@@ -116,8 +115,7 @@ export function useSettings() {
     allow_cors: false,
     geo_ip_enabled: false,
     geo_ip_provider: "",
-    o_auth_client_id: "",
-    o_auth_client_secret: "",
+    o_auth_provider: "",
     o_auth_enabled: false,
     custom_head: "",
     CreatedAt: "",
