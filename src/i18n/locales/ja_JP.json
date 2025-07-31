@@ -57,7 +57,8 @@
       "client_secret_description": "OAuth 应用的客户端密钥",
       "provider": "单登录提供商",
       "provider_description": "选择用于单点登录的身份验证提供商",
-      "callback_url_tips": "回调地址：{{url}}"
+      "callback_url_tips": "回调地址：{{url}}",
+      "provider_fields": "登录参数"
     },
     "general": {
       "title": "通用"
@@ -229,7 +230,8 @@
     "password": "密码",
     "two_factor": "双因素认证",
     "password_placeholder": "请输入您的密码",
-    "login_with_github": "使用 GitHub 登录"
+    "login_with_github": "使用 GitHub 登录",
+    "login_with": "使用 {{provider}} 登录"
   },
   "color": {
     "gray": "灰色",
