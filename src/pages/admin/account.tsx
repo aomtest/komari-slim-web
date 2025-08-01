@@ -11,7 +11,7 @@ import {
   Skeleton,
   TextField,
 } from "@radix-ui/themes";
-import { Github } from "lucide-react";
+import { Github, Globe, User } from "lucide-react";
 import Loading from "@/components/loading";
 
 const Account = () => {
@@ -115,35 +115,70 @@ const InnerLayout = () => {
         setPasswordSaving(false);
       });
   }
-  function isGithubBound() {
-    return account?.sso_id?.startsWith("github_") || false;
+  
+  // SSO 辅助函数
+  function getSSOInfo() {
+    if (!account?.sso_id) return null;
+    
+    const [platform, uniqueId] = account.sso_id.split('_', 2);
+    return {
+      platform: platform || '',
+      uniqueId: uniqueId || '',
+      isBound: !!account.sso_id
+    };
   }
-  const handleGithubAuth = async () => {
+  
+  function getSSOIcon(platform: string) {
+    switch (platform.toLowerCase()) {
+      case 'github':
+        return <Github className="size-5" />;
+      case 'google':
+        return <Globe className="size-5" />;
+      default:
+        return <User className="size-5" />;
+    }
+  }
+  
+  function getSSODisplayName(platform: string) {
+    switch (platform.toLowerCase()) {
+      case 'github':
+        return 'GitHub';
+      case 'google':
+        return 'Google';
+      case 'gitlab':
+        return 'GitLab';
+      case 'discord':
+        return 'Discord';
+      default:
+        return platform.charAt(0).toUpperCase() + platform.slice(1);
+    }
+  }
+  
+  const handleSSOAuth = async () => {
     try {
-      if (isGithubBound()) {
-        // 解绑GitHub
+      const ssoInfo = getSSOInfo();
+      if (ssoInfo?.isBound) {
+        // 解绑SSO
         const response = await fetch("/api/admin/oauth2/unbind", {
           method: "POST",
         });
 
         if (response.ok) {
-          toast.success(t("account_settings.unbind_github_success"));
+          toast.success(t("account_settings.unbind_sso_success", { provider: getSSODisplayName(ssoInfo.platform) }));
           refresh(); // 刷新用户信息
         } else {
           const error = await response.json();
-          toast.error(
-            `${t("account_settings.unbind_github_failed")}: ${
-              error.message || t("未知错误")
-            }`
-          );
+          toast.error(t("account_settings.unbind_sso_failed", { 
+            provider: getSSODisplayName(ssoInfo.platform),
+            error: error.message || t("account_settings.unknown_error")
+          }));
         }
       } else {
         window.location.href = "/api/admin/oauth2/bind";
       }
     } catch (error) {
-      console.error("处理GitHub认证失败:", error);
-      toast.error(t("account_settings.github_auth_failed"));
-    } finally {
+      console.error("处理SSO认证失败:", error);
+      toast.error(t("account_settings.sso_auth_failed"));
     }
   };
   return (
@@ -201,7 +236,7 @@ const InnerLayout = () => {
             </div>
           </form>
         </Flex>
-        <Flex direction="column" className="md:basis-5/12 gap-2">
+        <Flex direction="column" className="gap-2">
           <label className="font-bold text-2xl">2FA</label>
           {account?.["2fa_enabled"] ? (
             <TwoFactorEnabled />
@@ -212,63 +247,74 @@ const InnerLayout = () => {
             {t("settings.sso.title")}
           </label>
 
-          {/* GitHub账户绑定/解绑 */}
-          <div className="mb-8 flex flex-col gap-4">
-            <label className="text-xl font-semibold flex items-center gap-2">
-              <Github className="size-5" />
-              {t("account_settings.github_account")}
-            </label>
-            <div className="p-4 bg-[var(--accent-2)] rounded-lg">
-              <p>
-                {isGithubBound() ? (
-                  <div className="flex items-center gap-2">
-                    <Badge color="green">
-                      {t("account_settings.github_bound")}
-                    </Badge>
-                    GitHub ID: {account?.sso_id.replace("github_", "")}
+          {/* SSO账户绑定/解绑 */}
+          <div className="mb-8 flex flex-col gap-4 ">
+            {(() => {
+              const ssoInfo = getSSOInfo();
+              const platform = ssoInfo?.platform || '';
+              const displayName = getSSODisplayName(platform);
+              const icon = getSSOIcon(platform);
+              
+              return (
+                <>
+                  <label className="text-xl font-semibold flex items-center gap-2">
+                    {ssoInfo?.isBound ? icon : <User className="size-5" />}
+                    {ssoInfo?.isBound ? `${displayName}账户` : t("account_settings.sso_account")}
+                  </label>
+                  <div className="p-4 bg-[var(--accent-2)] rounded-lg">
+                    <p>
+                      {ssoInfo?.isBound ? (
+                        <div className="flex items-center gap-2">
+                          <Badge color="green">
+                            {t("account_settings.sso_bound")}
+                          </Badge>
+                          {displayName} ID: {ssoInfo.uniqueId}
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Badge color="gray">
+                            {t("account_settings.sso_unbound")}
+                          </Badge>
+                          {t("account_settings.sso_not_bound")}
+                        </div>
+                      )}
+                    </p>
                   </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <Badge color="gray">
-                      {t("account_settings.github_unbound")}
-                    </Badge>
-                    {t("account_settings.github_not_bound")}
-                  </div>
-                )}
-              </p>
-            </div>
-            <div>
-              {isGithubBound() ? (
-                <Dialog.Root>
-                  <Dialog.Trigger>
-                    <Button>{t("account_settings.unbind_github")}</Button>
-                  </Dialog.Trigger>
-                  <Dialog.Content>
-                    <Dialog.Title>
-                      {t("account_settings.confirm_unbind")}
-                    </Dialog.Title>
-                    <Dialog.Description>
-                      {t("account_settings.unbind_github_warning")}
-                    </Dialog.Description>
-                    <Flex gap="2" justify="end" className="mt-4">
-                      <Dialog.Close>
-                        <Button variant="soft">
-                          {t("account_settings.cancel")}
-                        </Button>
-                      </Dialog.Close>
-                      <Button color="red" onClick={handleGithubAuth}>
-                        {t("account_settings.confirm_unbind")}
+                  <div>
+                    {ssoInfo?.isBound ? (
+                      <Dialog.Root>
+                        <Dialog.Trigger>
+                          <Button>{t("account_settings.unbind_sso", { provider: displayName })}</Button>
+                        </Dialog.Trigger>
+                        <Dialog.Content>
+                          <Dialog.Title>
+                            {t("account_settings.confirm_unbind")}
+                          </Dialog.Title>
+                          <Dialog.Description>
+                            {t("account_settings.unbind_sso_warning", { provider: displayName })}
+                          </Dialog.Description>
+                          <Flex gap="2" justify="end" className="mt-4">
+                            <Dialog.Close>
+                              <Button variant="soft">
+                                {t("account_settings.cancel")}
+                              </Button>
+                            </Dialog.Close>
+                            <Button color="red" onClick={handleSSOAuth}>
+                              {t("account_settings.confirm_unbind")}
+                            </Button>
+                          </Flex>
+                        </Dialog.Content>
+                      </Dialog.Root>
+                    ) : (
+                      <Button onClick={handleSSOAuth}>
+                        <User className="size-4" />
+                        {t("account_settings.bind_sso")}
                       </Button>
-                    </Flex>
-                  </Dialog.Content>
-                </Dialog.Root>
-              ) : (
-                <Button onClick={handleGithubAuth}>
-                  <Github className="size-4" />
-                  {t("account_settings.bind_github")}
-                </Button>
-              )}
-            </div>
+                    )}
+                  </div>
+                </>
+              );
+            })()}
           </div>
           <Flex gap="4" align="center" justify="start">
             <label className="text-muted-foreground text-sm">
