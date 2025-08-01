@@ -6,13 +6,27 @@ type LoadingProps = {
   size?: number
 };
 
-const Loading = ({ text, children,size }: LoadingProps) => {
+const Loading = ({ text, children, size }: LoadingProps) => {
   return (
     <div className="flex items-center justify-center flex-col">
-      <div className={`showbox scale-${size ? size * 10 : 50}`}>
+      <div
+        className="showbox"
+        style={{
+          transform: `scale(${size ? size * 0.1 : 0.5})`,
+          transition: "transform 0.2s",
+        }}
+      >
         <div className="loader">
           <svg className="circular" viewBox="25 25 50 50">
-            <circle className="path" cx="50" cy="50" r="20" fill="none" strokeWidth="2" strokeMiterlimit="10" />
+            <circle
+              className="path"
+              cx="50"
+              cy="50"
+              r="20"
+              fill="none"
+              strokeWidth="2"
+              strokeMiterlimit="10"
+            />
           </svg>
         </div>
       </div>

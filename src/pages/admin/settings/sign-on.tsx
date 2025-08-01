@@ -34,7 +34,7 @@ export default function SignOnSettings() {
           const initialProvider =
             settings.o_auth_provider && providers.includes(settings.o_auth_provider)
               ? settings.o_auth_provider
-              : providers[0] || "";
+              : "";
           setCurrentProvider(initialProvider);
         } else {
           setProviderError(data.message || "获取登录接口信息失败");

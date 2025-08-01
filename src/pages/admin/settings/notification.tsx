@@ -37,7 +37,7 @@ const NotificationSettings = () => {
           const initialSender =
             settings.notification_method && senders.includes(settings.notification_method)
               ? settings.notification_method
-              : senders[0] || "";
+              : "";
           setCurrentMessageSender(initialSender);
         } else {
           setMessageError(data.message || "获取消息通道信息失败");
