@@ -209,7 +209,14 @@
     "upload_backup": "Upload backup",
     "upload_failed": "Failed to upload, only `.zip` are allowed",
     "upload_success": "Upload success",
-    "looking_for_backup": "Looking for backup? It has now been moved to Settings - Site - Backup."
+    "looking_for_backup": "Looking for backup? It has now been moved to Settings - Site - Backup.",
+    "sso_account": "外部账户",
+    "sso_bound": "已绑定外部账户",
+    "sso_unbound": "未绑定",
+    "sso_not_bound": "未绑定",
+    "unbind_sso": "解绑外部账户",
+    "unbind_sso_warning": "确定要解绑 {{provider}} 账号吗？",
+    "bind_sso": "绑定外部账户"
   },
   "terminal": {
     "title": "Terminal",
