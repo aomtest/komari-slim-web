@@ -3,6 +3,7 @@ import {
     SettingCardSwitch,
 } from "@/components/admin/SettingCard";
 import { SettingCardMultiInputCollapse } from "@/components/admin/SettingCardMultiInput";
+import type React from "react";
 import { toast } from "sonner";
 
 interface RenderProviderInputsProps {
@@ -10,6 +11,8 @@ interface RenderProviderInputsProps {
     providerDefs: any;
     providerValues: any;
     translationPrefix?: string;
+    title?: string;
+    description?: string;
     footer?: React.ReactNode | string;
     setProviderValues: (updater: (prev: any) => any) => void;
     handleSave: (values: any) => Promise<void>;
@@ -21,6 +24,8 @@ export const renderProviderInputs = ({
     providerDefs,
     providerValues,
     translationPrefix,
+    title,
+    description,
     footer,
     setProviderValues,
     handleSave,
@@ -38,13 +43,15 @@ export const renderProviderInputs = ({
         <div key={currentProvider}>
             {inputFields.length > 0 && (
                 <SettingCardMultiInputCollapse
-                    title={String(t(`${translationPrefix}.provider_fields`))}
+                    title={title??"详情"}
+                    description={description}
                     defaultOpen={true}
                     items={inputFields.map((f: any) => ({
                         tag: f.name,
                         label: String(t(`${translationPrefix}.${f.name}`, f.name)) + (f.required ? " *" : ""),
                         type: f.type === "int" ? "short" : "short", // 可以根据需要调整
                         defaultValue: providerValues[f.name] || f.default || "",
+                        placeholder: f.help ? String(t(`${translationPrefix}.${f.name}_help`, f.help)) : "",
                         required: f.required,
                         number: f.type === "int",
                     }))}
@@ -81,6 +88,7 @@ export const renderProviderInputs = ({
                             key={f.name}
                             bordless
                             title={String(t(`${translationPrefix}.${f.name}`, f.name))}
+                            description={String(t(`${translationPrefix}.${f.name}_help`, f.help))}
                             options={f.options.split(",").map((opt: string) => ({ value: opt, label: opt }))}
                             defaultValue={providerValues[f.name] || f.default || ""}
                             OnSave={(val: string) => setProviderValues((v: any) => ({ ...v, [f.name]: val }))}
@@ -91,6 +99,7 @@ export const renderProviderInputs = ({
                             bordless
                             key={f.name}
                             title={String(t(`${translationPrefix}.${f.name}`, f.name))}
+                            description={String(t(`${translationPrefix}.${f.name}_help`, f.help))}
                             defaultChecked={providerValues[f.name] !== undefined ? !!providerValues[f.name] : (f.default === "true" || f.default === true)}
                             onChange={(checked: boolean) => setProviderValues((v: any) => ({ ...v, [f.name]: checked }))}
                         />

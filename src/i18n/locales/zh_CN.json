@@ -58,7 +58,21 @@
       "provider": "单登录提供商",
       "provider_description": "选择用于单点登录的身份验证提供商",
       "callback_url_tips": "回调地址：{{url}}",
-      "provider_fields": "登录参数"
+      "provider_fields": "登录参数",
+      "generic": {
+        "client_id": "客户端 ID",
+        "client_secret": "客户端密钥",
+        "auth_url": "授权 URL",
+        "token_url": "令牌 URL",
+        "user_info_url": "用户信息 URL",
+        "scope": "作用域",
+        "user_id_field": "用户 ID 字段"
+      },
+      "github": {
+        "client_id": "GitHub 客户端 ID",
+        "client_secret": "GitHub 客户端密钥"
+      },
+      "provider_fields_description": "设置您选择登录方式的详细信息"
     },
     "general": {
       "title": "通用"
@@ -110,7 +124,6 @@
       "telegram_endpoint": "请求端点",
       "test_description": "发送测试消息",
       "test_title": "发送测试消息",
-      "email": "邮件",
       "smtp_title": "SMTP 配置",
       "smtp_description": "配置 SMTP 邮箱信息以发送邮件通知。",
       "smtp_host": "SMTP 服务器",
@@ -120,7 +133,24 @@
       "smtp_sender": "发件人邮箱",
       "smtp_receiver": "收件人邮箱",
       "smtp_ssl": "启用 SSL",
-      "smtp_tips": "请先测试运行 Komari 的服务器 IP 是否能发送邮件，可使用 \"{{command}}\" 进行测试。"
+      "smtp_tips": "请先测试运行 Komari 的服务器 IP 是否能发送邮件，可使用 \"{{command}}\" 进行测试。",
+      "provider_fields": "发送设置",
+      "provider_fields_description": "详细设置您选择的信息发送渠道",
+      "telegram": {
+        "bot_token": "Telegram Bot Token",
+        "chat_id": "Chat ID",
+        "endpoint": "请求端点",
+        "endpoint_help": "Telegram Bot API 的请求端点，通常为 `https://api.telegram.org/bot`"
+      },
+      "email": {
+        "host": "SMTP 服务器",
+        "port": "端口",
+        "username": "用户名",
+        "password": "密码",
+        "sender": "发件人邮箱",
+        "receiver": "收件人邮箱",
+        "use_ssl": "启用 SSL"
+      }
     },
     "record": {
       "title": "历史记录",
