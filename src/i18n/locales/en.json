@@ -58,7 +58,21 @@
       "provider": "Single Sign-On Provider",
       "provider_description": "Choose the authentication provider for single sign-on",
       "callback_url_tips": "Configure your SSO provider with this callback URL: {{url}}",
-      "provider_fields": "OAuth Parameter"
+      "provider_fields": "OAuth Parameter",
+      "generic": {
+        "client_id": "客户端 ID",
+        "client_secret": "客户端密钥",
+        "auth_url": "授权 URL",
+        "token_url": "令牌 URL",
+        "user_info_url": "用户信息 URL",
+        "scope": "作用域",
+        "user_id_field": "用户 ID 字段"
+      },
+      "github": {
+        "client_id": "GitHub 客户端 ID",
+        "client_secret": "GitHub 客户端密钥"
+      },
+      "provider_fields_description": "设置您选择登录方式的详细信息"
     },
     "general": {
       "title": "General"
@@ -110,7 +124,6 @@
       "telegram_endpoint": "Endpoint",
       "test_description": "Send a test message",
       "test_title": "Send test message",
-      "email": "Email",
       "smtp_title": "SMTP Configuration",
       "smtp_description": "Configure SMTP mail info to send email notifications.",
       "smtp_host": "SMTP Host",
@@ -120,7 +133,24 @@
       "smtp_sender": "Sender Email",
       "smtp_receiver": "Receiver Email",
       "smtp_ssl": "Enable SSL",
-      "smtp_tips": "Please test whether the server running Komari can send emails first. You can use '{{command}}' to test."
+      "smtp_tips": "Please test whether the server running Komari can send emails first. You can use '{{command}}' to test.",
+      "provider_fields": "发送设置",
+      "provider_fields_description": "详细设置您选择的信息发送渠道",
+      "telegram": {
+        "bot_token": "Telegram Bot Token",
+        "chat_id": "Chat ID",
+        "endpoint": "请求端点",
+        "endpoint_help": "Telegram Bot API 的请求端点，通常为 `https://api.telegram.org/bot`"
+      },
+      "email": {
+        "host": "SMTP 服务器",
+        "port": "端口",
+        "username": "用户名",
+        "password": "密码",
+        "sender": "发件人邮箱",
+        "receiver": "收件人邮箱",
+        "use_ssl": "启用 SSL"
+      }
     },
     "record": {
       "title": "Record",
