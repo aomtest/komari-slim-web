@@ -209,7 +209,14 @@
     "upload_backup": "上傳伺服器資料備份",
     "upload_failed": "上傳失敗，僅支援`.zip`格式文件",
     "upload_success": "上傳成功",
-    "looking_for_backup": "正在寻找备份？现已经迁移到设置-站点-备份。"
+    "looking_for_backup": "正在寻找备份？现已经迁移到设置-站点-备份。",
+    "sso_account": "外部账户",
+    "sso_bound": "已绑定外部账户",
+    "sso_unbound": "未绑定",
+    "sso_not_bound": "未绑定",
+    "unbind_sso": "解绑外部账户",
+    "unbind_sso_warning": "确定要解绑 {{provider}} 账号吗？",
+    "bind_sso": "绑定外部账户"
   },
   "terminal": {
     "title": "終端",
