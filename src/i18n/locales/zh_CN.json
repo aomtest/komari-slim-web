@@ -132,7 +132,8 @@
       "ping_record_preserve_time": "Ping数据保存时间",
       "invalid_preserve_time": "无效的时间",
       "expected_usage": "保存一台服务器的数据预计需要{{space}}磁盘空间（Ping数据取决于设置的时间间隔）"
-    }
+    },
+    "missing_required_fields": "请填写必填字段: {{fieldNames}}"
   },
   "sessions": {
     "title": "会话管理",

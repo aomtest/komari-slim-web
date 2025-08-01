@@ -6,9 +6,9 @@ import {
 import { updateSettingsWithToast, useSettings } from "@/lib/api";
 import { Text } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
-import { SettingCardMultiInputCollapse } from "@/components/admin/SettingCardMultiInput";
 import Loading from "@/components/loading";
 import React from "react";
+import { renderProviderInputs } from "@/utils/renderProviders";
 
 export default function SignOnSettings() {
   const { t } = useTranslation();
@@ -91,57 +91,7 @@ export default function SignOnSettings() {
     setProviderLoading(false);
   };
 
-  // 渲染 provider 的输入项
-  const renderProviderInputs = () => {
-    if (!currentProvider || !providerDefs[currentProvider]) return null;
-    const fields = providerDefs[currentProvider];
-    const selectFields = fields.filter((f: any) => f.type === "option" && f.options);
-    const switchFields = fields.filter((f: any) => f.type === "bool");
-    const inputFields = fields.filter((f: any) => f.type !== "option" && f.type !== "bool");
-
-    return (
-      <div key={currentProvider}>
-        {selectFields.map((f: any) => (
-          <SettingCardSelect
-            key={f.name}
-            title={String(t(`settings.sso.${f.name}`, f.name))}
-            options={f.options.split(",").map((opt: string) => ({ value: opt, label: opt }))}
-            defaultValue={providerValues[f.name] || ""}
-            OnSave={(val: string) => setProviderValues((v: any) => ({ ...v, [f.name]: val }))}
-          />
-        ))}
-        {switchFields.map((f: any) => (
-          <SettingCardSwitch
-            key={f.name}
-            title={String(t(`settings.sso.${f.name}`, f.name))}
-            defaultChecked={!!providerValues[f.name]}
-            onChange={(checked: boolean) => setProviderValues((v: any) => ({ ...v, [f.name]: checked }))}
-          />
-        ))}
-        {inputFields.length > 0 && (
-          <SettingCardMultiInputCollapse
-            title={String(t("settings.sso.provider_fields"))}
-            defaultOpen={true}
-            items={inputFields.map((f: any) => ({
-              tag: f.name,
-              label: String(t(`settings.sso.${f.name}`, f.name)),
-              type: "short",
-              defaultValue: providerValues[f.name] || "",
-              required: f.required,
-            }))}
-            onSave={async (values: any) => {
-              const allValues = { ...providerValues, ...values };
-              await handleOidcSave(allValues);
-            }}
-          >
-            <label className="text-sm text-muted-foreground">
-              {String(t("settings.sso.callback_url_tips", { url: `${window.location.origin}/api/oauth_callback` }))}
-            </label>
-          </SettingCardMultiInputCollapse>
-        )}
-      </div>
-    );
-  };
+  // 渲染 provider 的输入项已抽象到 utils/renderProviders.tsx 中
 
   if (loading || (!providerLoading && providerList.length === 0 && !providerError)) {
     return <Loading />;
@@ -183,7 +133,16 @@ export default function SignOnSettings() {
           setCurrentProvider(val);
         }}
       />
-      {providerLoading ? <Loading/> : renderProviderInputs()}
+      {providerLoading ? <Loading/> : renderProviderInputs({
+        currentProvider,
+        providerDefs,
+        providerValues,
+        translationPrefix: "settings.sso",
+        footer: t("settings.sso.callback_url_tips", { url: `${window.location.origin}/api/oauth_callback` }),
+        setProviderValues,
+        handleSave: handleOidcSave,
+        t,
+      })}
     </>
   );
 }
