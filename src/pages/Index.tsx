@@ -72,20 +72,20 @@ const Index = () => {
         key: 'trafficOverview',
         title: t("traffic_overview"),
         getValue: () => live_data?.data?.data
-          ? formatBytes(Object.values(live_data.data.data).reduce(
+          ? `↑ ${formatBytes(Object.values(live_data.data.data).reduce(
             (acc, node) => {
               return acc + (node.network.totalUp || 0);
             },
             0
-          )) + " / " +
-          formatBytes(
+          ))}` + " / " +
+          `↓ ${formatBytes(
             Object.values(live_data.data.data).reduce(
               (acc, node) => {
                 return acc + (node.network.totalDown || 0);
               },
               0
-            ))
-          : "0 / 0",
+            ))}`
+          : "↑ 0B / ↓ 0B",
         visible: statusCardsVisibility.trafficOverview
       },
       {
@@ -97,13 +97,13 @@ const Index = () => {
               (acc, node) => acc + (node.network.up || 0),
               0
             )
-          )} | ↓ ${formatSpeed(
+          )} / ↓ ${formatSpeed(
             Object.values(live_data.data.data).reduce(
               (acc, node) => acc + (node.network.down || 0),
               0
             )
           )}`
-          : "↑ 0 B/s | ↓ 0 B/s",
+          : "↑ 0 B/s / ↓ 0 B/s",
         visible: statusCardsVisibility.networkSpeed
       }
     ];
