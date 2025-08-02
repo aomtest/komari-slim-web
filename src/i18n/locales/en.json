@@ -225,7 +225,7 @@
   },
   "nodeCard": {
     "os": "OS",
-    "kernelVersion": "Kernel Version",
+    "kernelVersion": "内核版本",
     "arch": "Architecture",
     "name": "Node Name",
     "status": "Status",
