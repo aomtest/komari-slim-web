@@ -10,6 +10,7 @@ import {
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
 import { useTranslation } from "react-i18next";
 import fillMissingTimePoints, { cutPeakValues } from "@/utils/RecordHelper";
+import Tips from "./ui/tips";
 
 interface PingRecord {
   client: string;
@@ -95,7 +96,7 @@ const MiniPingChart = ({
     //const sliced = data.slice(-MAX_POINTS);
     const grouped: Record<string, any> = {};
     const timeKeys: number[] = [];
-    
+
     for (const rec of data) {
       const t = new Date(rec.time).getTime();
       let foundKey = null;
@@ -112,18 +113,18 @@ const MiniPingChart = ({
       }
       grouped[useKey][rec.task_id] = rec.value;
     }
-    
+
     let full = Object.values(grouped).sort(
       (a: any, b: any) =>
         new Date(a.time).getTime() - new Date(b.time).getTime()
     );
-    
+
     // 如果开启削峰，应用削峰处理
     if (cutPeak && tasks.length > 0) {
       const taskKeys = tasks.map(task => String(task.id));
       full = cutPeakValues(full, taskKeys);
     }
-    
+
     const full1 = fillMissingTimePoints(full, tasks[0]?.interval || 60, null, tasks[0]?.interval * 1.2 || 72);
     return full1;
   }, [remoteData, cutPeak, tasks]);
@@ -167,7 +168,7 @@ const MiniPingChart = ({
   }, []);
 
   return (
-    <Card style={{ width, height}} className="flex flex-col">
+    <Card style={{ width, height }} className="flex flex-col">
       {loading && (
         <div
           style={{
@@ -231,7 +232,7 @@ const MiniPingChart = ({
               />
               <ChartTooltip
                 cursor={false}
-                formatter={(v: any) => `${v} ms`}
+                formatter={(v: any) => `${Math.round(v)} ms`}
                 content={
                   <ChartTooltipContent
                     labelFormatter={lableFormatter}
@@ -258,8 +259,13 @@ const MiniPingChart = ({
           </ChartContainer>
         )
       )}
-      <div className="-mt-3 flex items-center"  style={{ display: loading ? "none" : "flex" }}>
-        <Switch size="1" checked={cutPeak} onCheckedChange={setCutPeak} /> {t("chart.cutPeak")}
+      <div className="-mt-3 flex items-center" style={{ display: loading ? "none" : "flex" }}>
+        <Switch size="1" checked={cutPeak} onCheckedChange={setCutPeak} />
+        <label htmlFor="cut-peak" className="text-sm font-medium flex items-center gap-1 flex-row">
+          {t("chart.cutPeak")}
+          <Tips><span dangerouslySetInnerHTML={{ __html: t("chart.cutPeak_tips") }} /></Tips>
+        </label>
+
       </div>
     </Card>
   );

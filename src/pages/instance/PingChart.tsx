@@ -346,13 +346,13 @@ const PingChart = ({ uuid }: { uuid: string }) => {
         </Card>
       ) : (
         <div className="w-full max-w-[900px] text-center text-muted-foreground mb-2">
-          暂无数据
+          {t("common.none")}
         </div>
       )}
       <Card className="w-full max-w-[900px]">
         {chartData.length === 0 ? (
           <div className="w-full h-40 flex items-center justify-center text-muted-foreground">
-            暂无数据
+            {t("common.none")}
           </div>
         ) : (
           <ChartContainer config={chartConfig}>
@@ -380,7 +380,7 @@ const PingChart = ({ uuid }: { uuid: string }) => {
               />
               <ChartTooltip
                 cursor={false}
-                formatter={(v: any) => `${v} ms`}
+                formatter={(v: any) => `${Math.round(v)} ms`}
                 content={
                   <ChartTooltipContent
                     labelFormatter={lableFormatter}
@@ -417,8 +417,9 @@ const PingChart = ({ uuid }: { uuid: string }) => {
               checked={cutPeak}
               onCheckedChange={setCutPeak}
             />
-            <label htmlFor="cut-peak" className="text-sm font-medium">
+            <label htmlFor="cut-peak" className="text-sm font-medium flex items-center gap-1 flex-row">
               {t("chart.cutPeak")}
+              <Tips><span dangerouslySetInnerHTML={{ __html: t("chart.cutPeak_tips") }} /></Tips>
             </label>
           </div>
           <Button
