@@ -431,6 +431,7 @@
     "annual": "年",
     "biennial": "两年",
     "triennial": "三年",
+    "quinquennial": "五年",
     "once": "一次性",
     "expired": "已到期",
     "expired_in": "余{{days}}天",

@@ -1555,6 +1555,7 @@ function BillingButton({ node }: { node: NodeDetail }) {
                 <Select.Item value="365">{t("common.annual")}</Select.Item>
                 <Select.Item value="730">{t("common.biennial")}</Select.Item>
                 <Select.Item value="1095">{t("common.triennial")}</Select.Item>
+                <Select.Item value="1825">{t("common.quinquennial")}</Select.Item>
                 <Select.Item value="-1">{t("common.once")}</Select.Item>
               </Select.Content>
             </Select.Root>
