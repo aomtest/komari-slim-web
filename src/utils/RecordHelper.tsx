@@ -155,38 +155,39 @@ export default function fillMissingTimePoints<
 }
 
 /**
- * 智能削峰函数：基于局部邻近值判断异常峰值
- * 如果一个数值相比其前后的邻近值有显著跳跃，则将其替换为邻近值的平均值
- * 同时填充 null/undefined 值
+ * EWMA（指数加权移动平均）
+ * 使用指数加权移动平均算法平滑数据，同时检测并过滤突变值，填充 null/undefined 值
  *
  * @param data 输入数据数组，每个元素应该包含数值型属性
  * @param keys 需要处理的数值属性名数组
- * @param windowSize 判断窗口大小，默认为5（检查前后各2个值）
- * @param threshold 异常阈值倍数，默认为1.2（超过邻近值平均值的1.2倍视为异常）
+ * @param alpha 平滑因子
+ * @param windowSize 突变检测窗口大小
+ * @param spikeThreshold 突变阈值
  * @returns 处理后的数据数组
  */
 export function cutPeakValues<T extends { [key: string]: any }>(
   data: T[],
   keys: string[],
-  windowSize: number = 5,
-  threshold: number = 1.1
+  alpha: number = 0.1,
+  windowSize: number = 15,
+  spikeThreshold: number = 0.3
 ): T[] {
-  if (!data || data.length < 3) return data; // 至少需要3个点才能进行有意义的比较
+  if (!data || data.length === 0) return data;
 
   const result = [...data];
   const halfWindow = Math.floor(windowSize / 2);
 
-  // 为每个需要处理的键执行削峰和填充
+  // 为每个需要处理的键执行突变检测和EWMA平滑
   for (const key of keys) {
-    // 第一步：填充 null/undefined 值
+    // 第一步：检测并移除突变值
     for (let i = 0; i < result.length; i++) {
       const currentValue = result[i][key];
 
-      // 如果当前值是 null/undefined，用邻近值替代
-      if (currentValue == null || typeof currentValue !== "number") {
+      // 如果当前值是有效数值，检查是否为突变
+      if (currentValue != null && typeof currentValue === "number") {
         const neighborValues: number[] = [];
-
-        // 收集邻近的有效值
+        
+        // 收集窗口范围内的邻近有效值
         for (
           let j = Math.max(0, i - halfWindow);
           j <= Math.min(result.length - 1, i + halfWindow);
@@ -199,54 +200,47 @@ export function cutPeakValues<T extends { [key: string]: any }>(
           }
         }
 
-        // 如果有邻近值，用平均值替代
-        if (neighborValues.length > 0) {
+        // 如果有足够的邻近值进行突变检测
+        if (neighborValues.length >= 2) {
           const neighborSum = neighborValues.reduce((sum, val) => sum + val, 0);
-          const neighborMean = neighborSum / neighborValues.length;
-          result[i] = { ...result[i], [key]: neighborMean };
+          const neighborMean = neighborValues.length > 0 ? neighborSum / neighborValues.length : 0;
+
+          // 检测突变：如果当前值与邻近值平均值的相对差异超过阈值
+          if (neighborMean > 0) {
+            const relativeChange = Math.abs(currentValue - neighborMean) / neighborMean;
+            if (relativeChange > spikeThreshold) {
+              // 标记为突变，设置为null，稍后用EWMA填充
+              result[i] = { ...result[i], [key]: null };
+            }
+          } else if (Math.abs(currentValue) > 10) {
+            // 如果邻近值平均值接近0，但当前值很大，也视为突变
+            result[i] = { ...result[i], [key]: null };
+          }
         }
       }
     }
 
-    // 第二步：削峰处理 (现在会处理包括端点在内的所有值)
+    // 第二步：使用EWMA平滑和填充
+    let ewma: number | null = null;
+
     for (let i = 0; i < result.length; i++) {
       const currentValue = result[i][key];
 
-      // 现在所有值都应该是有效的数值
-      if (currentValue == null || typeof currentValue !== "number") continue;
-
-      // 收集邻近的有效值
-      const neighborValues: number[] = [];
-      const start = Math.max(0, i - halfWindow);
-      const end = Math.min(result.length - 1, i + halfWindow);
-
-      for (let j = start; j <= end; j++) {
-        if (j === i) continue; // 跳过当前值
-        const neighbor = result[j][key];
-        if (neighbor != null && typeof neighbor === "number") {
-          neighborValues.push(neighbor);
+      // 如果当前值是有效数值
+      if (currentValue != null && typeof currentValue === "number") {
+        if (ewma === null) {
+          // 第一个有效值作为初始EWMA值
+          ewma = currentValue;
+        } else {
+          // EWMA = α * 当前值 + (1-α) * 前一个EWMA值
+          ewma = alpha * currentValue + (1 - alpha) * ewma;
         }
+        result[i] = { ...result[i], [key]: ewma };
+      } else if (ewma !== null) {
+        // 如果当前值无效但已有EWMA值，用EWMA值填充
+        result[i] = { ...result[i], [key]: ewma };
       }
-
-      // 如果邻近值太少，跳过处理
-      if (neighborValues.length < 2) continue;
-
-      // 计算邻近值的统计信息
-      const neighborSum = neighborValues.reduce((sum, val) => sum + val, 0);
-      const neighborMean = neighborSum / neighborValues.length;
-
-      // 如果邻近值平均值接近0，使用不同的判断逻辑
-      if (neighborMean < 1) {
-        // 对于很小的邻近值，如果当前值超过50ms，视为异常
-        // if (currentValue > 50) {
-        //   result[i] = { ...result[i], [key]: neighborMean };
-        // }
-      } else {
-        // 正常情况：如果当前值超过邻近值平均值的threshold倍，视为异常
-        if (currentValue > neighborMean * threshold) {
-          result[i] = { ...result[i], [key]: neighborMean };
-        }
-      }
+      // 如果当前值无效且还没有EWMA值，保持原值（null/undefined）
     }
   }
 
