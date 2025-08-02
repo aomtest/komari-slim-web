@@ -57,7 +57,22 @@
       "client_secret_description": "OAuth application client secret",
       "provider": "Single Sign-On Provider",
       "provider_description": "Choose the authentication provider for single sign-on",
-      "callback_url_tips": "Configure your SSO provider with this callback URL: {{url}}"
+      "callback_url_tips": "Configure your SSO provider with this callback URL: {{url}}",
+      "provider_fields": "OAuth Parameter",
+      "generic": {
+        "client_id": "客户端 ID",
+        "client_secret": "客户端密钥",
+        "auth_url": "授权 URL",
+        "token_url": "令牌 URL",
+        "user_info_url": "用户信息 URL",
+        "scope": "作用域",
+        "user_id_field": "用户 ID 字段"
+      },
+      "github": {
+        "client_id": "GitHub 客户端 ID",
+        "client_secret": "GitHub 客户端密钥"
+      },
+      "provider_fields_description": "设置您选择登录方式的详细信息"
     },
     "general": {
       "title": "General"
@@ -109,7 +124,6 @@
       "telegram_endpoint": "Endpoint",
       "test_description": "Send a test message",
       "test_title": "Send test message",
-      "email": "Email",
       "smtp_title": "SMTP Configuration",
       "smtp_description": "Configure SMTP mail info to send email notifications.",
       "smtp_host": "SMTP Host",
@@ -119,7 +133,24 @@
       "smtp_sender": "Sender Email",
       "smtp_receiver": "Receiver Email",
       "smtp_ssl": "Enable SSL",
-      "smtp_tips": "Please test whether the server running Komari can send emails first. You can use '{{command}}' to test."
+      "smtp_tips": "Please test whether the server running Komari can send emails first. You can use '{{command}}' to test.",
+      "provider_fields": "发送设置",
+      "provider_fields_description": "详细设置您选择的信息发送渠道",
+      "telegram": {
+        "bot_token": "Telegram Bot Token",
+        "chat_id": "Chat ID",
+        "endpoint": "请求端点",
+        "endpoint_help": "Telegram Bot API 的请求端点，通常为 `https://api.telegram.org/bot`"
+      },
+      "email": {
+        "host": "SMTP 服务器",
+        "port": "端口",
+        "username": "用户名",
+        "password": "密码",
+        "sender": "发件人邮箱",
+        "receiver": "收件人邮箱",
+        "use_ssl": "启用 SSL"
+      }
     },
     "record": {
       "title": "Record",
@@ -131,7 +162,8 @@
       "ping_record_preserve_time": "Ping data retention period",
       "invalid_preserve_time": "Invalid time",
       "expected_usage": "Storing data for one server is estimated to require {{space}} disk space (Ping data depends on the set time interval)"
-    }
+    },
+    "missing_required_fields": "请填写必填字段: {{fieldNames}}"
   },
   "sessions": {
     "title": "Sessions",
@@ -177,7 +209,14 @@
     "upload_backup": "Upload backup",
     "upload_failed": "Failed to upload, only `.zip` are allowed",
     "upload_success": "Upload success",
-    "looking_for_backup": "Looking for backup? It has now been moved to Settings - Site - Backup."
+    "looking_for_backup": "Looking for backup? It has now been moved to Settings - Site - Backup.",
+    "sso_account": "外部账户",
+    "sso_bound": "已绑定外部账户",
+    "sso_unbound": "未绑定",
+    "sso_not_bound": "未绑定",
+    "unbind_sso": "解绑外部账户",
+    "unbind_sso_warning": "确定要解绑 {{provider}} 账号吗？",
+    "bind_sso": "绑定外部账户"
   },
   "terminal": {
     "title": "Terminal",
@@ -229,7 +268,8 @@
     "password": "Password",
     "two_factor": "Two-Factor Authentication",
     "password_placeholder": "Enter your password",
-    "login_with_github": "Login with GitHub"
+    "login_with_github": "Login with GitHub",
+    "login_with": "Login with {{provider}}"
   },
   "color": {
     "gray": "Gray",

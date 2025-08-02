@@ -57,7 +57,22 @@
       "client_secret_description": "OAuth 應用程式的客戶端密鑰",
       "provider": "單一登入提供商",
       "provider_description": "選擇用於單一登入的身份驗證提供商",
-      "callback_url_tips": "回呼地址：{{url}}"
+      "callback_url_tips": "回呼地址：{{url}}",
+      "provider_fields": "登录参数",
+      "generic": {
+        "client_id": "客户端 ID",
+        "client_secret": "客户端密钥",
+        "auth_url": "授权 URL",
+        "token_url": "令牌 URL",
+        "user_info_url": "用户信息 URL",
+        "scope": "作用域",
+        "user_id_field": "用户 ID 字段"
+      },
+      "github": {
+        "client_id": "GitHub 客户端 ID",
+        "client_secret": "GitHub 客户端密钥"
+      },
+      "provider_fields_description": "设置您选择登录方式的详细信息"
     },
     "general": {
       "title": "通用"
@@ -109,7 +124,6 @@
       "telegram_endpoint": "請求端點",
       "test_description": "發送測試訊息",
       "test_title": "發送測試訊息",
-      "email": "郵件",
       "smtp_title": "SMTP 配置",
       "smtp_description": "配置 SMTP 郵箱資訊以發送郵件通知。",
       "smtp_host": "SMTP 伺服器",
@@ -119,7 +133,24 @@
       "smtp_sender": "寄件人郵箱",
       "smtp_receiver": "收件人郵箱",
       "smtp_ssl": "啟用 SSL",
-      "smtp_tips": "請先測試執行 Komari 的伺服器 IP 是否能發送郵件，可使用 \"{{command}}\" 進行測試。"
+      "smtp_tips": "請先測試執行 Komari 的伺服器 IP 是否能發送郵件，可使用 \"{{command}}\" 進行測試。",
+      "provider_fields": "发送设置",
+      "provider_fields_description": "详细设置您选择的信息发送渠道",
+      "telegram": {
+        "bot_token": "Telegram Bot Token",
+        "chat_id": "Chat ID",
+        "endpoint": "请求端点",
+        "endpoint_help": "Telegram Bot API 的请求端点，通常为 `https://api.telegram.org/bot`"
+      },
+      "email": {
+        "host": "SMTP 服务器",
+        "port": "端口",
+        "username": "用户名",
+        "password": "密码",
+        "sender": "发件人邮箱",
+        "receiver": "收件人邮箱",
+        "use_ssl": "启用 SSL"
+      }
     },
     "record": {
       "title": "歷史記錄",
@@ -131,7 +162,8 @@
       "ping_record_preserve_time": "Ping資料保存時間",
       "invalid_preserve_time": "無效的時間",
       "expected_usage": "保存一台伺服器的資料預計需要{{space}}磁碟空間（Ping資料取決於設定的時間間隔）"
-    }
+    },
+    "missing_required_fields": "请填写必填字段: {{fieldNames}}"
   },
   "sessions": {
     "title": "會話管理",
@@ -177,7 +209,14 @@
     "upload_backup": "上傳伺服器資料備份",
     "upload_failed": "上傳失敗，僅支援`.zip`格式文件",
     "upload_success": "上傳成功",
-    "looking_for_backup": "正在寻找备份？现已经迁移到设置-站点-备份。"
+    "looking_for_backup": "正在寻找备份？现已经迁移到设置-站点-备份。",
+    "sso_account": "外部账户",
+    "sso_bound": "已绑定外部账户",
+    "sso_unbound": "未绑定",
+    "sso_not_bound": "未绑定",
+    "unbind_sso": "解绑外部账户",
+    "unbind_sso_warning": "确定要解绑 {{provider}} 账号吗？",
+    "bind_sso": "绑定外部账户"
   },
   "terminal": {
     "title": "終端",
@@ -229,7 +268,8 @@
     "password": "密碼",
     "two_factor": "雙因素認證",
     "password_placeholder": "請輸入您的密碼",
-    "login_with_github": "使用 GitHub 登入"
+    "login_with_github": "使用 GitHub 登入",
+    "login_with": "使用 {{provider}} 登录"
   },
   "color": {
     "gray": "灰色",
