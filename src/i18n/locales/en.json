@@ -431,6 +431,7 @@
     "annual": "Annual",
     "biennial": "Biennial",
     "triennial": "Triennial",
+    "quinquennial": "Quinquennial",
     "once": "Once",
     "expired": "Expired",
     "expired_in": "{{days}} day",

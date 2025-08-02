@@ -42,6 +42,8 @@ const PriceTags = ({
               return t("common.biennial");
             } else if (billing_cycle >= 1080 && billing_cycle <= 1150) {
               return t("common.triennial");
+            } else if (billing_cycle >= 1800 && billing_cycle <= 1850) {
+              return t("common.quinquennial");
             } else if (billing_cycle == -1) {
               return t("common.once");
             } else {
