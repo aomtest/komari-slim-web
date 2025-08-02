@@ -225,6 +225,7 @@
   },
   "nodeCard": {
     "os": "操作系统",
+    "kernelVersion": "内核版本",
     "arch": "架构",
     "name": "节点名称",
     "status": "状态",

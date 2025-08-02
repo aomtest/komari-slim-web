@@ -38,12 +38,13 @@ export const DetailsGrid = ({ uuid, gap, align }: DetailsGridProps) => {
         />
       </label>
       <UpDownStack up="GPU" down={node?.gpu_name ?? "Unknown"} className="flex-[0_0_calc(50%-0.5rem)]" />
-      <UpDownStack
-        className="md:w-64 w-full flex-[0_0_calc(50%-0.5rem)]"
-        up={t("nodeCard.os")}
-        align={align === "center"?"end":"start"}
-        down={node?.os ?? "Unknown"}
-      />
+      <div className={`flex flex-col gap-0 flex-[0_0_calc(50%-0.5rem)] ${align === "center" ? "items-end text-right" : "items-start"}`}>
+        <label className="text-base font-bold">{t("nodeCard.os")}</label>
+        <label className="text-sm text-muted-foreground -mt-1">{node?.os ?? "Unknown"}</label>
+        <label className="text-xs text-muted-foreground opacity-75">
+          {t("nodeCard.kernelVersion")}: {node?.kernel_version ?? "Unknown"}
+        </label>
+      </div>
 
       <UpDownStack
         className="md:w-64 w-full flex-[0_0_calc(50%-0.5rem)]"
