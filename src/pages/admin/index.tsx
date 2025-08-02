@@ -83,10 +83,10 @@ const Layout = () => {
   const [selectedNodes, setSelectedNodes] = useState<string[]>([]);
   const filteredNodes = Array.isArray(nodeDetail)
     ? nodeDetail
-        .filter((node) =>
-          node.name.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-        .sort((a, b) => a.weight - b.weight)
+      .filter((node) =>
+        node.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      .sort((a, b) => a.weight - b.weight)
     : [];
 
   if (isLoading) return <Loading text="" />;
@@ -135,8 +135,7 @@ const Header = ({
       refresh();
     } catch (error) {
       toast.error(
-        `${t("common.error", "Error")}: ${
-          error instanceof Error ? error.message : String(error)
+        `${t("common.error", "Error")}: ${error instanceof Error ? error.message : String(error)
         }`
       );
     } finally {
@@ -215,9 +214,8 @@ const SortableRow = ({
         <div
           {...attributes}
           {...listeners}
-          className={`cursor-move p-2 rounded hover:bg-accent-a3 transition-colors ${
-            isMobile ? "touch-manipulation select-none" : ""
-          }`}
+          className={`cursor-move p-2 rounded hover:bg-accent-a3 transition-colors ${isMobile ? "touch-manipulation select-none" : ""
+            }`}
           style={{
             touchAction: "none", // 禁用移动端的默认手势
             WebkitUserSelect: "none",
@@ -259,13 +257,12 @@ const SortableRow = ({
             >
               {node.ipv6.length > 20
                 ? (() => {
-                    const segments = node.ipv6.split(":");
-                    return segments.length > 3
-                      ? `${segments.slice(0, 2).join(":")}:...${
-                          segments[segments.length - 1]
-                        }`
-                      : node.ipv6;
-                  })()
+                  const segments = node.ipv6.split(":");
+                  return segments.length > 3
+                    ? `${segments.slice(0, 2).join(":")}:...${segments[segments.length - 1]
+                    }`
+                    : node.ipv6;
+                })()
                 : node.ipv6}
               <IconButton variant="ghost" onClick={() => copy(node.ipv6)}>
                 <Copy size="16" />
@@ -395,9 +392,8 @@ const NodeTable = ({
   };
   return (
     <div
-      className={`rounded-md overflow-hidden ${
-        isDragging ? "select-none" : ""
-      }`}
+      className={`rounded-md overflow-hidden ${isDragging ? "select-none" : ""
+        }`}
     >
       <DndContext
         sensors={sensors}
@@ -1573,7 +1569,7 @@ function BillingButton({ node }: { node: NodeDetail }) {
               defaultValue={
                 node.expired_at
                   ? new Date(node.expired_at).toISOString().slice(0, 10)
-                  : ""
+                  : "0001-01-01"
               }
               type="date"
             >
