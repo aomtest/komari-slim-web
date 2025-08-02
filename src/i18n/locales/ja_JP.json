@@ -224,8 +224,9 @@
     "no_active_connection": "没有活动连接"
   },
   "nodeCard": {
-    "os": "操作系统",
-    "arch": "架构",
+    "os": "オペレーティングシステム",
+    "kernelVersion": "カーネルバージョン",
+    "arch": "アーキテクチャ",
     "name": "节点名称",
     "status": "状态",
     "price": "价格",
