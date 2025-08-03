@@ -81,15 +81,15 @@ const Node = ({ basic, live, online }: NodeProps) => {
     >
       <Flex direction="column" gap="2">
         <Flex justify="between" align="center" my={isMobile ? "-1" : "0"}>
-          <Flex justify="start" align="center">
+          <Flex justify="start" align="center" style={{ flex: 1, minWidth: 0 }}>
             <Flag flag={basic.region} />
-            <Link to={`/instance/${basic.uuid}`}>
-              <Flex direction="column">
+            <Link to={`/instance/${basic.uuid}`} style={{ flex: 1, minWidth: 0 }}>
+              <Flex direction="column" style={{ minWidth: 0 }}>
                 <Text
                   weight="bold"
                   size={isMobile ? "2" : "4"}
                   truncate
-                  style={{ maxWidth: "200px" }}
+                  style={{ maxWidth: "100%" }}
                 >
                   {basic.name}
                 </Text>
@@ -115,7 +115,7 @@ const Node = ({ basic, live, online }: NodeProps) => {
               </Flex>
             </Link>
           </Flex>
-          <Flex gap="2" align="center">
+          <Flex gap="2" align="center" style={{ flex: "none" }}>
             {live?.message && <Tips color="#CE282E">{live.message}</Tips>}
             <MiniPingChartFloat
               uuid={basic.uuid}
