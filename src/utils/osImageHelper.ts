@@ -62,6 +62,11 @@ const osConfigs: OSConfig[] = [
     keywords: ['openwrt', 'open wrt', 'open-wrt', 'qwrt']
   },
   {
+    name: 'ImmortalWrt',
+    image: '/assets/os-openwrt.svg',
+    keywords: ['immortalwrt', 'immortal', 'emmortal']
+  },
+  {
     name: 'NixOS',
     image: '/assets/os-nix.svg',
     keywords: ['nixos', 'nix os', 'nix']
