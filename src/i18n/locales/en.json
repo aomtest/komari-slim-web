@@ -452,7 +452,17 @@
     "theme_url_placeholder": "Enter the new theme URL",
     "theme_url_description": "Enter the URL where the theme file can be downloaded from.",
     "update_success": "Theme updated successfully",
-    "update_failed": "Theme update failed"
+    "update_failed": "Theme update failed",
+    "update_mode": "Update Mode",
+    "update_mode_auto": "Auto (Use Original URL)",
+    "update_mode_auto_description": "The system will automatically use the theme's original URL for updates. If the original URL is a GitHub repository, it will automatically download the latest release package.",
+    "update_mode_url": "Direct URL",
+    "update_mode_github": "GitHub Release",
+    "github_owner": "GitHub Owner",
+    "github_owner_placeholder": "Enter the GitHub owner/username",
+    "github_repo": "GitHub Repository",
+    "github_repo_placeholder": "Enter the GitHub repository name",
+    "github_description": "The system will download the latest release from this GitHub repository."
   },
   "copy_success": "Copied!",
   "copy": "Copy",

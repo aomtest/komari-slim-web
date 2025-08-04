@@ -452,7 +452,17 @@
     "theme_url_placeholder": "输入新的主题URL",
     "theme_url_description": "输入可以下载主题文件的URL地址。",
     "update_success": "主题更新成功",
-    "update_failed": "主题更新失败"
+    "update_failed": "主题更新失败",
+    "update_mode": "更新モード",
+    "update_mode_auto": "自動（元のURLを使用）",
+    "update_mode_auto_description": "システムは自動的にテーマの元のURLを使用して更新します。元のURLがGitHubリポジトリの場合、最新のリリースパッケージを自動的にダウンロードします。",
+    "update_mode_url": "直接URL",
+    "update_mode_github": "GitHub リリース",
+    "github_owner": "GitHub オーナー",
+    "github_owner_placeholder": "GitHub ユーザー名/組織名を入力",
+    "github_repo": "GitHub リポジトリ",
+    "github_repo_placeholder": "GitHub リポジトリ名を入力",
+    "github_description": "システムはこのGitHubリポジトリから最新のリリースをダウンロードします。"
   },
   "copy_success": "已复制到剪贴板",
   "copy": "复制",
