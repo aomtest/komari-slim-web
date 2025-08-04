@@ -11,7 +11,7 @@ import {
   IconButton,
 } from "@radix-ui/themes";
 import { useState, useEffect, useRef } from "react";
-import { Upload, Settings, Image as ImageIcon, RefreshCw } from "lucide-react";
+import { Upload, Settings, Image as ImageIcon, RefreshCw, SquareArrowOutUpRight } from "lucide-react";
 import { toast } from "sonner";
 import Loading from "@/components/loading";
 import { useSettings } from "@/lib/api";
@@ -24,6 +24,7 @@ interface Theme {
   author: string;
   version: string;
   preview?: string;
+  url?: string;
   active: boolean;
   createdAt: string;
 }
@@ -142,8 +143,8 @@ const ThemePage = () => {
           } catch (err) {
             toast.error(
               t("theme.upload_failed") +
-                ": " +
-                (err instanceof Error ? err.message : "Unknown error")
+              ": " +
+              (err instanceof Error ? err.message : "Unknown error")
             );
             reject(err);
           }
@@ -209,8 +210,8 @@ const ThemePage = () => {
     } catch (err) {
       toast.error(
         t("theme.set_failed") +
-          ": " +
-          (err instanceof Error ? err.message : "Unknown error")
+        ": " +
+        (err instanceof Error ? err.message : "Unknown error")
       );
     } finally {
       setSettingTheme(null);
@@ -298,8 +299,8 @@ const ThemePage = () => {
     } catch (err) {
       toast.error(
         t("theme.delete_failed") +
-          ": " +
-          (err instanceof Error ? err.message : "Unknown error")
+        ": " +
+        (err instanceof Error ? err.message : "Unknown error")
       );
     }
   };
@@ -406,9 +407,8 @@ const ThemePage = () => {
                 <Flex
                   align="center"
                   justify="center"
-                  className={`w-full h-full ${
-                    theme.preview && theme.short !== "default" ? "hidden" : ""
-                  }`}
+                  className={`w-full h-full ${theme.preview && theme.short !== "default" ? "hidden" : ""
+                    }`}
                 >
                   <ImageIcon size={48} className="text-gray-400" />
                 </Flex>
@@ -608,23 +608,36 @@ const ThemePage = () => {
 
             <Flex direction="column">
               <Flex gap="2" justify="start" align="center">
-                <Text size="2" weight="bold" color="gray">
+                <Text size="2" weight="bold" color="gray" wrap="nowrap">
                   {t("theme.author")}
                 </Text>
                 <Text size="3">{selectedTheme?.author}</Text>
               </Flex>
               <Flex gap="2" justify="start" align="center">
-                <Text size="2" weight="bold" color="gray">
+                <Text size="2" weight="bold" color="gray" wrap="nowrap">
                   {t("theme.version")}
                 </Text>
                 <Text size="3">{selectedTheme?.version}</Text>
               </Flex>
               <Flex gap="2" justify="start" align="center">
-                <Text size="2" weight="bold" color="gray">
+                <Text size="2" weight="bold" color="gray" wrap="nowrap">
                   {t("theme.description")}
                 </Text>
                 <Text size="3">{selectedTheme?.description}</Text>
               </Flex>
+              {selectedTheme?.url && (
+                <Flex gap="2" justify="start" align="center">
+                  <Text size="2" weight="bold" color="gray" wrap="nowrap" >
+                    URL
+                  </Text>
+                  <Text size="1" className="overflow-hidden text-ellipsis">
+                    {selectedTheme?.url}
+                  </Text>
+                  <a href={selectedTheme.url} target="_blank">
+                    <SquareArrowOutUpRight size={12} />
+                  </a>
+                </Flex>
+              )}
             </Flex>
           </Box>
 
