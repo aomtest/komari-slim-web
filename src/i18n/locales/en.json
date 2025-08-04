@@ -444,7 +444,15 @@
     "delete_warning": "Are you sure you want to delete the theme \"{{themeName}}\"? This action cannot be undone.",
     "author": "Author",
     "version": "Version",
-    "description": "Description"
+    "description": "Description",
+    "update": "Update Theme",
+    "update_theme": "Update Theme",
+    "update_description": "If the original theme URL is inaccessible, you can provide a new URL to update the theme.",
+    "theme_url": "Theme URL",
+    "theme_url_placeholder": "Enter the new theme URL",
+    "theme_url_description": "Enter the URL where the theme file can be downloaded from.",
+    "update_success": "Theme updated successfully",
+    "update_failed": "Theme update failed"
   },
   "copy_success": "Copied!",
   "copy": "Copy",

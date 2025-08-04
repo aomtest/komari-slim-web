@@ -444,7 +444,15 @@
     "delete_warning": "您確定要刪除主題 \"{{themeName}}\" 嗎？此操作不可撤銷。",
     "author": "作者",
     "version": "版本",
-    "description": "描述"
+    "description": "描述",
+    "update": "更新主題",
+    "update_theme": "更新主題",
+    "update_description": "如果原主題URL無法訪問，您可以提供新的URL來更新主題。",
+    "theme_url": "主題URL",
+    "theme_url_placeholder": "輸入新的主題URL",
+    "theme_url_description": "輸入可以下載主題檔案的URL地址。",
+    "update_success": "主題更新成功",
+    "update_failed": "主題更新失敗"
   },
   "copy_success": "已複製到剪貼簿",
   "copy": "複製",
