@@ -584,5 +584,29 @@
     "installed_hint": "該應用程式安裝在裝置上，您可以從主螢幕快速存取它。",
     "later": "稍後",
     "title": "PWA狀態"
+  },
+  "exec": {
+    "title": "远程执行",
+    "description": "在选定的节点上远程执行命令",
+    "command": "执行命令",
+    "commandPlaceholder": "whoami",
+    "selectNodes": "选择目标节点",
+    "selectedNodes": "已选择节点",
+    "execute": "执行命令",
+    "executing": "执行中...",
+    "results": "执行结果",
+    "success": "命令执行完成",
+    "errors": {
+      "emptyCommand": "命令不能为空",
+      "noNodes": "请选择至少一个节点",
+      "executionFailed": "执行失败"
+    },
+    "status": {
+      "success": "成功",
+      "failed": "失败",
+      "running": "正在运行",
+      "timeout": "超时"
+    },
+    "taskStarted": "任务已启动"
   }
 }
