@@ -45,11 +45,7 @@ const ThemePage = () => {
   const [themeToDelete, setThemeToDelete] = useState<Theme | null>(null);
   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
   const [themeToUpdate, setThemeToUpdate] = useState<Theme | null>(null);
-  const [themeUrl, setThemeUrl] = useState<string>("");
   const [updating, setUpdating] = useState(false);
-  const [updateMode, setUpdateMode] = useState<"auto" | "url" | "github">("auto");
-  const [githubOwner, setGithubOwner] = useState<string>("");
-  const [githubRepo, setGithubRepo] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { settings, loading: settingsLoading, refetch: refetchSettings } = useSettings();
   const currentTheme = settings?.theme;
@@ -219,24 +215,11 @@ const ThemePage = () => {
   };
 
   // 更新主题
-  const updateTheme = async (
-    themeShort: string, 
-    url: string = "", 
-    githubOwner: string = "", 
-    githubRepo: string = "",
-    useOriginalUrl: boolean = false
-  ) => {
+  const updateTheme = async (themeShort: string) => {
     try {
       setUpdating(true);
       
-      let requestBody;
-      if (useOriginalUrl) {
-        requestBody = { short: themeShort, useOriginalUrl: true };
-      } else if (githubOwner && githubRepo) {
-        requestBody = { short: themeShort, github: { owner: githubOwner, repo: githubRepo } };
-      } else {
-        requestBody = { short: themeShort, url };
-      }
+      const requestBody = { short: themeShort, useOriginalUrl: true };
       
       const response = await fetch("/api/admin/theme/update", {
         method: "POST",
@@ -663,10 +646,6 @@ const ThemePage = () => {
                 color="blue"
                 onClick={() => {
                   setThemeToUpdate(selectedTheme);
-                  setThemeUrl("");
-                  setGithubOwner("");
-                  setGithubRepo("");
-                  setUpdateMode("auto");
                   setUpdateDialogOpen(true);
                 }}
                 className="gap-2"
@@ -730,96 +709,12 @@ const ThemePage = () => {
           </Dialog.Description>
           
           <Box className="space-y-4 mt-4">
-            {/* Update Mode Selector */}
+            {/* Auto Mode Explanation */}
             <Flex direction="column" gap="2">
-              <Text as="label" size="2" weight="bold">
-                {t("theme.update_mode")}
+              <Text size="2" color="gray" className="mt-2">
+                {t("theme.update_mode_auto_description")}
               </Text>
-              <Flex gap="2">
-                <Button 
-                  variant={updateMode === "auto" ? "solid" : "soft"} 
-                  onClick={() => setUpdateMode("auto")}
-                  className="flex-1"
-                >
-                  {t("theme.update_mode_auto")}
-                </Button>
-                <Button 
-                  variant={updateMode === "url" ? "solid" : "soft"} 
-                  onClick={() => setUpdateMode("url")}
-                  className="flex-1"
-                >
-                  {t("theme.update_mode_url")}
-                </Button>
-                <Button 
-                  variant={updateMode === "github" ? "solid" : "soft"} 
-                  onClick={() => setUpdateMode("github")}
-                  className="flex-1"
-                >
-                  {t("theme.update_mode_github")}
-                </Button>
-              </Flex>
             </Flex>
-
-            {/* Auto Mode Explanation (shown when updateMode is "auto") */}
-            {updateMode === "auto" && (
-              <Flex direction="column" gap="2">
-                <Text size="2" color="gray" className="mt-2">
-                  {t("theme.update_mode_auto_description")}
-                </Text>
-              </Flex>
-            )}
-
-            {/* Direct URL Input (shown when updateMode is "url") */}
-            {updateMode === "url" && (
-              <Flex direction="column" gap="2">
-                <Text as="label" size="2" weight="bold">
-                  {t("theme.theme_url")}
-                </Text>
-                <input
-                  type="text"
-                  value={themeUrl}
-                  onChange={(e) => setThemeUrl(e.target.value)}
-                  placeholder={t("theme.theme_url_placeholder")}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <Text size="1" color="gray">
-                  {t("theme.theme_url_description")}
-                </Text>
-              </Flex>
-            )}
-
-            {/* GitHub Inputs (shown when updateMode is "github") */}
-            {updateMode === "github" && (
-              <>
-                <Flex direction="column" gap="2">
-                  <Text as="label" size="2" weight="bold">
-                    {t("theme.github_owner")}
-                  </Text>
-                  <input
-                    type="text"
-                    value={githubOwner}
-                    onChange={(e) => setGithubOwner(e.target.value)}
-                    placeholder={t("theme.github_owner_placeholder")}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </Flex>
-                <Flex direction="column" gap="2">
-                  <Text as="label" size="2" weight="bold">
-                    {t("theme.github_repo")}
-                  </Text>
-                  <input
-                    type="text"
-                    value={githubRepo}
-                    onChange={(e) => setGithubRepo(e.target.value)}
-                    placeholder={t("theme.github_repo_placeholder")}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </Flex>
-                <Text size="1" color="gray">
-                  {t("theme.github_description")}
-                </Text>
-              </>
-            )}
           </Box>
           
           <Flex gap="3" mt="4" justify="end">
@@ -830,25 +725,12 @@ const ThemePage = () => {
             </Dialog.Close>
             <Button
               color="blue"
-              disabled={
-                (updateMode === "url" && !themeUrl.trim()) || 
-                (updateMode === "github" && (!githubOwner.trim() || !githubRepo.trim())) || 
-                updating
-              }
+              disabled={updating}
               onClick={async () => {
                 if (themeToUpdate) {
-                  if (updateMode === "auto") {
-                    await updateTheme(themeToUpdate.short, "", "", "", true);
-                  } else if (updateMode === "url" && themeUrl.trim()) {
-                    await updateTheme(themeToUpdate.short, themeUrl.trim());
-                  } else if (updateMode === "github" && githubOwner.trim() && githubRepo.trim()) {
-                    await updateTheme(themeToUpdate.short, "", githubOwner.trim(), githubRepo.trim());
-                  }
+                  await updateTheme(themeToUpdate.short);
                   setUpdateDialogOpen(false);
                   setThemeToUpdate(null);
-                  setThemeUrl("");
-                  setGithubOwner("");
-                  setGithubRepo("");
                 }
               }}
             >
