@@ -584,5 +584,29 @@
     "installed_hint": "The app is installed on your device, you can access it quickly from the home screen.",
     "later": "Later",
     "title": "PWA Status"
+  },
+  "exec": {
+    "title": "远程执行",
+    "description": "在选定的节点上远程执行命令",
+    "command": "执行命令",
+    "commandPlaceholder": "whoami",
+    "selectNodes": "选择目标节点",
+    "selectedNodes": "已选择节点",
+    "execute": "执行命令",
+    "executing": "执行中...",
+    "results": "执行结果",
+    "success": "命令执行完成",
+    "errors": {
+      "emptyCommand": "命令不能为空",
+      "noNodes": "请选择至少一个节点",
+      "executionFailed": "执行失败"
+    },
+    "status": {
+      "success": "成功",
+      "failed": "失败",
+      "running": "正在运行",
+      "timeout": "超时"
+    },
+    "taskStarted": "任务已启动"
   }
 }
