@@ -163,7 +163,12 @@
       "invalid_preserve_time": "无效的时间",
       "expected_usage": "保存一台服务器的数据预计需要{{space}}磁盘空间（Ping数据取决于设置的时间间隔）"
     },
-    "missing_required_fields": "请填写必填字段: {{fieldNames}}"
+    "missing_required_fields": "请填写必填字段: {{fieldNames}}",
+    "api": {
+      "key_length_error": "API 密钥长度至少为12",
+      "title": "API密钥",
+      "description": "使用API密钥可以访问并操作所有资源，包括不限于远程控制、修改设置和账号密码等，请谨慎保管。留空表示取消API密钥功能。"
+    }
   },
   "sessions": {
     "title": "会话管理",
@@ -533,7 +538,9 @@
     "tags": "标签",
     "tagsDescription": "多个标签用';'分隔",
     "tagsTips": "多个标签使用\";\"隔开。</br> 如需指定颜色，请在标签末尾添加&ltcolor&gt，例如：1Gbps&ltgreen&gt。</br> 可用的颜色列表请参考：<label class=\"bg-accent-a5 rounded-sm\"><a href=\"https://www.radix-ui.com/themes/docs/theme/color\" target=\"_blank\"> Color – Radix Themes</a></label>",
-    "private_site": "这是一个私有的Komari站点，请先登录。"
+    "private_site": "这是一个私有的Komari站点，请先登录。",
+    "generate": "生成",
+    "empty_error": "不能为空"
   },
   "command_clipboard": {
     "title": "命令剪贴板"
