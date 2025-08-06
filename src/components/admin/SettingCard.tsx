@@ -29,7 +29,7 @@ export function SettingCard({
   className = "",
   direction = "column",
   bordless = false,
-  onHeaderClick = () => {},
+  onHeaderClick = () => { },
 }: SettingCardProps) {
   const actionChild = React.Children.toArray(children).find(
     (child) => React.isValidElement(child) && child.type === Action
@@ -115,7 +115,7 @@ export function SettingCardSwitch({
       const promise: Promise<any> = result;
       if (promise && typeof promise.then === "function") {
         promise
-          .then(() => {})
+          .then(() => { })
           .catch(() => {
             setChecked(previousValue);
           })
@@ -234,68 +234,152 @@ export function SettingCardIconButton({
   );
 }
 
-export function SettingCardShortTextInput({
-  title = "",
-  description = "",
-  label = useTranslation().t("save"),
-  defaultValue = "",
-  number = false,
-  OnSave = () => {},
-  autoDisabled = true,
-  isSaving,
-  bordless = false,
-}: {
+interface SettingCardShortTextInputProps
+  extends Omit<React.ComponentProps<typeof TextField.Root>, 'onChange' | 'onKeyDown'> {
+  // SettingCard 相关属性
   title?: string;
   description?: string;
+  bordless?: boolean;
+
+  // 按钮相关属性
   label?: string;
-  defaultValue?: string;
-  number?: boolean;
+  autoDisabled?: boolean;
+  isSaving?: boolean;
+
+  // 保存回调
   OnSave?: (
     value: string,
     inputElement: HTMLInputElement,
     buttonElement: HTMLButtonElement
   ) => void;
-  autoDisabled?: boolean;
-  isSaving?: boolean;
-  bordless?: boolean;
-}) {
-  const [disabled, setDisabled] = React.useState(false);
-  const savingState = isSaving !== undefined ? isSaving : disabled;
-  const [value, setValue] = React.useState(defaultValue);
+
+  // 额外内容
+  children?: React.ReactNode | null;
+
+  // 输入框事件回调 (可选，用于额外处理)
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+}
+
+export function SettingCardShortTextInput({
+  // SettingCard 属性
+  title = "",
+  description = "",
+  bordless = false,
+
+  // 按钮属性
+  label = useTranslation().t("save"),
+  autoDisabled = true,
+  isSaving,
+
+  // 保存回调
+  OnSave = () => { },
+
+  // 额外内容
+  children = null,
+
+  // 事件回调
+  onChange,
+  onKeyDown,
+
+  // TextField.Root 的所有其他属性
+  value,
+  defaultValue,
+  placeholder,
+  disabled,
+  type = "text",
+  required,
+  readOnly,
+  maxLength,
+  minLength,
+  pattern,
+  autoComplete,
+  autoFocus,
+  name,
+  id,
+  className = "w-full",
+  ...restProps
+}: SettingCardShortTextInputProps) {
+  const [internalDisabled, setInternalDisabled] = React.useState(false);
+  const savingState = isSaving !== undefined ? isSaving : internalDisabled;
+  const [internalValue, setInternalValue] = React.useState(value || defaultValue || "");
+  const currentValue = value !== undefined ? value : internalValue;
   const inputRef = React.useRef<HTMLInputElement>(null);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
 
+  // 当外部value改变时，同步内部状态
+  React.useEffect(() => {
+    if (value !== undefined) {
+      setInternalValue(value.toString());
+    }
+  }, [value]);
+
   const handleSave = () => {
-    if (isSaving === undefined && autoDisabled) setDisabled(true);
+    if (isSaving === undefined && autoDisabled) setInternalDisabled(true);
+    const valueToSave = currentValue?.toString() || "";
     const result: any =
       inputRef.current && buttonRef.current
-        ? OnSave(value, inputRef.current, buttonRef.current)
+        ? OnSave(valueToSave, inputRef.current, buttonRef.current)
         : undefined;
     if (autoDisabled) {
       const promise: Promise<any> = result;
       if (promise && typeof promise.then === "function") {
-        promise.finally(() => isSaving === undefined && setDisabled(false));
+        promise.finally(() => isSaving === undefined && setInternalDisabled(false));
       } else {
-        isSaving === undefined && setDisabled(false);
+        isSaving === undefined && setInternalDisabled(false);
       }
     }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
+    const newValue = e.target.value;
+
+    // 只有在非受控模式下才更新内部状态
+    if (value === undefined) {
+      setInternalValue(newValue);
+    }
+
+    // 调用外部传入的 onChange 回调
+    onChange?.(e);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // 按 Enter 键时触发保存
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSave();
+    }
+
+    // 调用外部传入的 onKeyDown 回调
+    onKeyDown?.(e);
   };
 
   return (
     <SettingCard title={title} description={description} bordless={bordless}>
       <Flex direction="column" className="w-full mt-1" gap="2" align="start">
         <TextField.Root
-          className="w-full"
-          defaultValue={defaultValue}
-          value={value}
+          {...restProps}
+          className={className}
+          value={value !== undefined ? value : internalValue}
+          defaultValue={value === undefined ? defaultValue : undefined}
+          placeholder={placeholder}
+          disabled={disabled || savingState}
+          type={type}
+          required={required}
+          readOnly={readOnly}
+          maxLength={maxLength}
+          minLength={minLength}
+          pattern={pattern}
+          autoComplete={autoComplete}
+          autoFocus={autoFocus}
+          name={name}
+          id={id}
           onChange={handleInputChange}
-          type={number ? "number" : "text"}
+          onKeyDown={handleKeyDown}
           ref={inputRef}
-        />
+        >
+        </TextField.Root>
+        {children}
         <Button
           ref={buttonRef}
           onClick={handleSave}
@@ -314,7 +398,7 @@ export function SettingCardLongTextInput({
   description = "",
   label = useTranslation().t("save"),
   defaultValue = "",
-  OnSave = () => {},
+  OnSave = () => { },
   autoDisabled = true,
   isSaving,
   bordless = false,
@@ -389,7 +473,7 @@ export function SettingCardSelect({
   value,
   label = useTranslation().t("select"),
   options = [],
-  OnSave = () => {},
+  OnSave = () => { },
   autoDisabled = true,
   isSaving,
   bordless = false,
