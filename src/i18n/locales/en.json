@@ -163,7 +163,12 @@
       "invalid_preserve_time": "Invalid time",
       "expected_usage": "Storing data for one server is estimated to require {{space}} disk space (Ping data depends on the set time interval)"
     },
-    "missing_required_fields": "请填写必填字段: {{fieldNames}}"
+    "missing_required_fields": "请填写必填字段: {{fieldNames}}",
+    "api": {
+      "key_length_error": "API 密钥长度至少为12",
+      "title": "API密钥",
+      "description": "使用API密钥可以访问并操作所有资源，包括不限于远程控制、修改设置和账号密码等，请谨慎保管。留空表示取消API密钥功能。"
+    }
   },
   "sessions": {
     "title": "Sessions",
@@ -533,7 +538,9 @@
     "tags": "Tags",
     "tagsDescription": "Multiple tags separated by ';'",
     "tagsTips": "Multiple tags are separated by “;”. </br>  To specify a color, add &ltcolor&gt to the end of the label, e.g. 1Gbps&ltgreen&gt.</br>  A list of available colors can be found at <label class=\"bg-accent-a5 rounded-sm\"><a href=\"https://www.radix-ui.com/themes/docs/theme/color\" target=\"_blank\"> Color - Radix Themes</a></label>",
-    "private_site": "This is a private Komari site. Please log in first."
+    "private_site": "This is a private Komari site. Please log in first.",
+    "generate": "生成",
+    "empty_error": "不能为空"
   },
   "command_clipboard": {
     "title": "Command Clipboard"
