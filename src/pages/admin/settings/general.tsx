@@ -1,10 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { Button, Code, Flex, Text, TextField } from "@radix-ui/themes";
-import { updateSettingsWithToast, useSettings } from "@/lib/api";
+import { updateSettingsWithToast, useSettings, type SettingsResponse } from "@/lib/api";
 import {
   SettingCardButton,
   SettingCardCollapse,
+  SettingCardLabel,
   SettingCardSelect,
+  SettingCardShortTextInput,
   SettingCardSwitch,
 } from "@/components/admin/SettingCard";
 import React from "react";
@@ -49,6 +51,8 @@ export default function GeneralSettings() {
 
   return (
     <>
+      <SettingCardLabel>{t("settings.general.auto_discovery")}</SettingCardLabel>
+      <ApiCard settings={settings} />
       <label className="text-xl font-bold">{t("settings.geoip.title")}</label>
       <SettingCardSwitch
         title={t("settings.geoip.enable_title")}
@@ -87,7 +91,7 @@ export default function GeneralSettings() {
           } else {
             toast.error(
               data.message ||
-                t("settings.geoip.update_error", "更新 GeoIP 数据库失败")
+              t("settings.geoip.update_error", "更新 GeoIP 数据库失败")
             );
           }
         }}
@@ -227,4 +231,58 @@ function calculateExpectedUsage(
   }
 
   return formatBytes(totalPingBytes + totalRecordBytes);
+}
+
+
+const ApiCard = ({settings}:{settings:SettingsResponse}) => {
+  //const { settings } = useSettings();
+  const { t } = useTranslation();
+  const [apiValues, setApiValues] = React.useState<string>(settings?.auto_discovery_key || "" );
+
+  // 生成32位随机字符串
+  const generateRandomString = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < 24; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  };
+
+  // 处理生成按钮点击
+  const handleGenerateApiKey = () => {
+    const newApiKey = generateRandomString();
+    setApiValues(newApiKey);
+  };
+
+  // 初始化API值
+  React.useEffect(() => {
+    if (settings?.auto_discovery_key) {
+      setApiValues(settings.auto_discovery_key);
+    }
+  }, [settings?.auto_discovery_key]);
+
+  return (
+    <SettingCardShortTextInput
+        title={t("settings.general.auto_discovery_key")}
+        description={t("settings.general.auto_discovery_key_description")}
+        value={apiValues}
+        onChange={(e) => setApiValues(e.target.value)}
+        OnSave={async (values) => {
+          if (!values) {
+            await updateSettingsWithToast({ auto_discovery_key: "" }, t);
+            return;
+          }
+          if (values.length < 12) {
+            toast.error(t("settings.api.key_length_error"));
+            return;
+          }
+          await updateSettingsWithToast({ auto_discovery_key: values }, t);
+        }}
+      >
+        <div className="flex flex-row gap-2 justify-start items-center">
+          <Button variant="soft" color="green" onClick={handleGenerateApiKey}>{t('common.generate')}</Button>
+        </div>
+      </SettingCardShortTextInput>
+  )
 }
