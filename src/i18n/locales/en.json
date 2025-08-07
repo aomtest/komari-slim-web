@@ -75,7 +75,10 @@
       "provider_fields_description": "设置您选择登录方式的详细信息"
     },
     "general": {
-      "title": "General"
+      "title": "General",
+      "auto_discovery": "自动发现",
+      "auto_discovery_key": "自动发现密钥",
+      "auto_discovery_key_description": "使用自动发现可以批量注册客户端，留空表示禁用自动发现。"
     },
     "site": {
       "name": "Site Name",
