@@ -22,6 +22,7 @@ interface TaskInfo {
   id: number;
   name: string;
   interval: number;
+  loss: number;
 }
 interface PingApiResp {
   status: string;
@@ -111,7 +112,8 @@ const MiniPingChart = ({
         grouped[useKey] = { time: new Date(useKey).toISOString() };
         if (foundKey === null) timeKeys.push(useKey);
       }
-      grouped[useKey][rec.task_id] = rec.value;
+      // 小于0的值不显示，等于0的值要显示
+      grouped[useKey][rec.task_id] = rec.value < 0 ? null : rec.value;
     }
 
     let full = Object.values(grouped).sort(
@@ -232,7 +234,7 @@ const MiniPingChart = ({
               />
               <ChartTooltip
                 cursor={false}
-                formatter={(v: any) => `${Math.round(v)} ms`}
+                formatter={(v: any) => v === null ? null : `${Math.round(v)} ms`}
                 content={
                   <ChartTooltipContent
                     labelFormatter={lableFormatter}

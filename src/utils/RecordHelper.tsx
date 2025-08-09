@@ -168,7 +168,7 @@ export default function fillMissingTimePoints<
 export function cutPeakValues<T extends { [key: string]: any }>(
   data: T[],
   keys: string[],
-  alpha: number = 0.1,
+  alpha: number = 0.3,
   windowSize: number = 15,
   spikeThreshold: number = 0.3
 ): T[] {

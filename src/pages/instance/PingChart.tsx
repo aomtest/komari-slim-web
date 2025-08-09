@@ -12,7 +12,6 @@ import {
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
 import fillMissingTimePoints, {
   cutPeakValues,
-  calculateLossRate,
 } from "@/utils/RecordHelper";
 import Tips from "@/components/ui/tips";
 import { Eye, EyeOff } from "lucide-react";
@@ -27,6 +26,7 @@ interface TaskInfo {
   id: number;
   name: string;
   interval: number;
+  loss: number;
 }
 interface PingApiResp {
   status: string;
@@ -244,12 +244,18 @@ const PingChart = ({ uuid }: { uuid: string }) => {
   const latestValues = useMemo(() => {
     if (!remoteData || !tasks.length) return [];
     const map = new Map<number, PingRecord>();
-    for (let i = remoteData.length - 1; i >= 0; i--) {
-      const rec = remoteData[i];
-      if (!map.has(rec.task_id)) {
-        map.set(rec.task_id, rec);
+    
+    // 为每个task找到最新的有效值（>=0）
+    for (const task of tasks) {
+      for (let i = remoteData.length - 1; i >= 0; i--) {
+        const rec = remoteData[i];
+        if (rec.task_id === task.id && rec.value >= 0) {
+          map.set(task.id, rec);
+          break;
+        }
       }
     }
+    
     return tasks.map((task, idx) => ({
       ...task,
       value: map.get(task.id)?.value ?? null,
@@ -331,12 +337,10 @@ const PingChart = ({ uuid }: { uuid: string }) => {
                   <label className="font-bold text-md -mb-1">{task.name}</label>
                   <div className="flex gap-2 text-sm text-muted-foreground">
                     <span>
-                      {task.value !== null ? `${task.value} ms` : "-"}
+                      {task.value !== null ? `${task.value} ms` : '-'}
                     </span>
                     <span>
-                      {chartData && chartData.length > 0
-                        ? `${calculateLossRate(midData, task.id)}%${t("chart.lossRate")}`
-                        : "-"}
+                      {`${task.loss}%${t("chart.lossRate")}`}
                     </span>
                   </div>
                 </div>
