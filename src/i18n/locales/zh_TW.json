@@ -543,7 +543,9 @@
     "tagsTips": "多個標籤使用\";\"隔開。</br> 如需指定顏色，請在標籤末尾新增&ltcolor&gt，例如：1Gbps&ltgreen&gt。</br> 可用的顏色列表請參考：<label class=\"bg-accent-a5 rounded-sm\"><a href=\"https://www.radix-ui.com/themes/docs/theme/color\" target=\"_blank\"> Color – Radix Themes</a></label>",
     "private_site": "这是一个私有的Komari站点，请先登录。",
     "generate": "生成",
-    "empty_error": "不能为空"
+    "empty_error": "不能为空",
+    "help": "帮助",
+    "day": "天"
   },
   "command_clipboard": {
     "title": "命令剪貼簿"
@@ -569,7 +571,9 @@
     "title": "延遲監測",
     "target": "目標",
     "interval": "間隔",
-    "type": "類型"
+    "type": "類型",
+    "disk_usage_estimate": "预计需要磁盘空间",
+    "disk_usage_with_settings": "根据设置的 {{hour}} 小时保存时间，需要使用 {{space}} 磁盘空间。"
   },
   "search": {
     "placeholder": "搜尋節點名稱、地區、系統...",
