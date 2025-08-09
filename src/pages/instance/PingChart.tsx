@@ -337,10 +337,10 @@ const PingChart = ({ uuid }: { uuid: string }) => {
                   <label className="font-bold text-md -mb-1">{task.name}</label>
                   <div className="flex gap-2 text-sm text-muted-foreground">
                     <span>
-                      {task.value !== null ? `${task.value} ms` : '-'}
+                      {task.value !== null ? `${Number(task.value).toFixed(1)} ms` : '-'}
                     </span>
                     <span>
-                      {`${task.loss}%${t("chart.lossRate")}`}
+                      {`${Number(task.loss).toFixed(1)}%${t("chart.lossRate")}`}
                     </span>
                   </div>
                 </div>
