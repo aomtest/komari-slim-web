@@ -49,38 +49,65 @@ export const renderProviderInputs = ({
                     items={inputFields.map((f: any) => ({
                         tag: f.name,
                         label: String(t(`${translationPrefix}.${f.name}`, f.name)) + (f.required ? " *" : ""),
-                        type: f.type === "int" ? "short" : "short", // 可以根据需要调整
+                        type: ["int", "int64", "float32", "float64"].includes(f.type) ? "short" : "short", // 数字类型使用短输入框
                         defaultValue: providerValues[f.name] || f.default || "",
                         placeholder: f.help ? String(t(`${translationPrefix}.${f.name}_help`, f.help)) : "",
                         required: f.required,
-                        number: f.type === "int",
+                        number: ["int", "int64", "float32", "float64"].includes(f.type),
                     }))}
                     onSave={async (values: any) => {
-                        // 验证必填字段
-                        const requiredFields = inputFields.filter((f: any) => f.required);
-                        const missingFields = requiredFields.filter((f: any) => !values[f.name] || values[f.name].trim() === "");
+                        try {
+                            // 验证必填字段
+                            const requiredFields = inputFields.filter((f: any) => f.required);
+                            const missingFields = requiredFields.filter((f: any) => !values[f.name] || (typeof values[f.name] === 'string' && values[f.name].trim() === ""));
 
-                        if (missingFields.length > 0) {
-                            const fieldNames = missingFields.map((f: any) => t(`${translationPrefix}.${f.name}`, f.name)).join(", ");
-                            toast.error(
-                                t("settings.missing_required_fields", { fieldNames })
-                            );
-                            return;
-                        }
+                            if (missingFields.length > 0) {
+                                const fieldNames = missingFields.map((f: any) => t(`${translationPrefix}.${f.name}`, f.name)).join(", ");
+                                toast.error(
+                                    t("settings.missing_required_fields", { fieldNames })
+                                );
+                                return;
+                            }
 
-                        // 转换数字类型字段
-                        const processedValues = { ...values };
-                        inputFields.forEach((f: any) => {
-                            if (f.type === "int" && processedValues[f.name] !== undefined && processedValues[f.name] !== "") {
-                                const numValue = Number(processedValues[f.name]);
-                                if (!isNaN(numValue)) {
+                            // 转换数字类型字段
+                            const processedValues = { ...values };
+                            inputFields.forEach((f: any) => {
+                                const value = processedValues[f.name];
+                                
+                                // 跳过未定义或null的值
+                                if (value === undefined || value === null) {
+                                    return;
+                                }
+
+                                if (["int", "int64"].includes(f.type)) {
+                                    // 空字符串转换为0
+                                    const numValue = value === "" ? 0 : Number(value);
+                                    if (isNaN(numValue)) {
+                                        toast.error(t("settings.invalid_number", { field: t(`${translationPrefix}.${f.name}`, f.name) }));
+                                        throw new Error(`Invalid integer value for ${f.name}`);
+                                    }
+                                    if (!Number.isInteger(numValue)) {
+                                        toast.error(t("settings.invalid_integer", { field: t(`${translationPrefix}.${f.name}`, f.name) }));
+                                        throw new Error(`Value must be an integer for ${f.name}`);
+                                    }
+                                    processedValues[f.name] = numValue;
+                                } else if (["float32", "float64"].includes(f.type)) {
+                                    // 空字符串转换为0
+                                    const numValue = value === "" ? 0 : Number(value);
+                                    if (isNaN(numValue)) {
+                                        toast.error(t("settings.invalid_number", { field: t(`${translationPrefix}.${f.name}`, f.name) }));
+                                        throw new Error(`Invalid float value for ${f.name}`);
+                                    }
                                     processedValues[f.name] = numValue;
                                 }
-                            }
-                        });
+                            });
 
-                        const allValues = { ...providerValues, ...processedValues };
-                        await handleSave(allValues);
+                            const allValues = { ...providerValues, ...processedValues };
+                            await handleSave(allValues);
+                        } catch (error) {
+                            // 数字转换错误已经通过 toast 显示，这里只需要阻止保存
+                            console.error("Validation error:", error);
+                        }
                     }}
                 >
                     {selectFields.map((f: any) => (

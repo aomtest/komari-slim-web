@@ -55,6 +55,11 @@
       ]
     },
     {
+      "labelKey": "exec.title",
+      "path": "/admin/exec",
+      "icon": "Code"
+    },
+    {
       "labelKey": "ping.title",
       "path": "/admin/ping",
       "icon": "Activity"

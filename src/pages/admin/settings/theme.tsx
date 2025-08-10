@@ -11,7 +11,7 @@ import {
   IconButton,
 } from "@radix-ui/themes";
 import { useState, useEffect, useRef } from "react";
-import { Upload, Settings, Image as ImageIcon } from "lucide-react";
+import { Upload, Settings, Image as ImageIcon, RefreshCw, SquareArrowOutUpRight } from "lucide-react";
 import { toast } from "sonner";
 import Loading from "@/components/loading";
 import { useSettings } from "@/lib/api";
@@ -24,6 +24,7 @@ interface Theme {
   author: string;
   version: string;
   preview?: string;
+  url?: string;
   active: boolean;
   createdAt: string;
 }
@@ -42,6 +43,9 @@ const ThemePage = () => {
   const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [themeToDelete, setThemeToDelete] = useState<Theme | null>(null);
+  const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
+  const [themeToUpdate, setThemeToUpdate] = useState<Theme | null>(null);
+  const [updating, setUpdating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { settings, loading: settingsLoading, refetch: refetchSettings } = useSettings();
   const currentTheme = settings?.theme;
@@ -135,8 +139,8 @@ const ThemePage = () => {
           } catch (err) {
             toast.error(
               t("theme.upload_failed") +
-                ": " +
-                (err instanceof Error ? err.message : "Unknown error")
+              ": " +
+              (err instanceof Error ? err.message : "Unknown error")
             );
             reject(err);
           }
@@ -202,11 +206,48 @@ const ThemePage = () => {
     } catch (err) {
       toast.error(
         t("theme.set_failed") +
+        ": " +
+        (err instanceof Error ? err.message : "Unknown error")
+      );
+    } finally {
+      setSettingTheme(null);
+    }
+  };
+
+  // 更新主题
+  const updateTheme = async (themeShort: string) => {
+    try {
+      setUpdating(true);
+      
+      const requestBody = { short: themeShort, useOriginalUrl: true };
+      
+      const response = await fetch("/api/admin/theme/update", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Update failed");
+      }
+
+      // 重新获取主题列表
+      await fetchThemes();
+
+      setUpdateDialogOpen(false);
+      setPreviewDialogOpen(false);
+      toast.success(t("theme.update_success"));
+    } catch (err) {
+      toast.error(
+        t("theme.update_failed") +
           ": " +
           (err instanceof Error ? err.message : "Unknown error")
       );
     } finally {
-      setSettingTheme(null);
+      setUpdating(false);
     }
   };
 
@@ -241,8 +282,8 @@ const ThemePage = () => {
     } catch (err) {
       toast.error(
         t("theme.delete_failed") +
-          ": " +
-          (err instanceof Error ? err.message : "Unknown error")
+        ": " +
+        (err instanceof Error ? err.message : "Unknown error")
       );
     }
   };
@@ -349,9 +390,8 @@ const ThemePage = () => {
                 <Flex
                   align="center"
                   justify="center"
-                  className={`w-full h-full ${
-                    theme.preview && theme.short !== "default" ? "hidden" : ""
-                  }`}
+                  className={`w-full h-full ${theme.preview && theme.short !== "default" ? "hidden" : ""
+                    }`}
                 >
                   <ImageIcon size={48} className="text-gray-400" />
                 </Flex>
@@ -551,23 +591,36 @@ const ThemePage = () => {
 
             <Flex direction="column">
               <Flex gap="2" justify="start" align="center">
-                <Text size="2" weight="bold" color="gray">
+                <Text size="2" weight="bold" color="gray" wrap="nowrap">
                   {t("theme.author")}
                 </Text>
                 <Text size="3">{selectedTheme?.author}</Text>
               </Flex>
               <Flex gap="2" justify="start" align="center">
-                <Text size="2" weight="bold" color="gray">
+                <Text size="2" weight="bold" color="gray" wrap="nowrap">
                   {t("theme.version")}
                 </Text>
                 <Text size="3">{selectedTheme?.version}</Text>
               </Flex>
               <Flex gap="2" justify="start" align="center">
-                <Text size="2" weight="bold" color="gray">
+                <Text size="2" weight="bold" color="gray" wrap="nowrap">
                   {t("theme.description")}
                 </Text>
                 <Text size="3">{selectedTheme?.description}</Text>
               </Flex>
+              {selectedTheme?.url && (
+                <Flex gap="2" justify="start" align="center">
+                  <Text size="2" weight="bold" color="gray" wrap="nowrap" >
+                    URL
+                  </Text>
+                  <Text size="1" className="overflow-hidden text-ellipsis">
+                    {selectedTheme?.url}
+                  </Text>
+                  <a href={selectedTheme.url} target="_blank">
+                    <SquareArrowOutUpRight size={12} />
+                  </a>
+                </Flex>
+              )}
             </Flex>
           </Box>
 
@@ -587,22 +640,20 @@ const ThemePage = () => {
                 {t("theme.set_active")}
               </Button>
             )}
-            {/* {selectedTheme && !selectedTheme.active && (
+            {selectedTheme && selectedTheme.short !== "default" && (
               <Button
-                size="2"
-                variant="solid"
-                onClick={() => setActiveTheme(selectedTheme.short)}
-                disabled={settingTheme === selectedTheme.short}
+                variant="soft"
+                color="blue"
+                onClick={() => {
+                  setThemeToUpdate(selectedTheme);
+                  setUpdateDialogOpen(true);
+                }}
+                className="gap-2"
               >
-                {settingTheme === selectedTheme.short ? (
-                  <Box className="animate-spin">
-                    <Settings size={16} />
-                  </Box>
-                ) : (
-                  <Settings size={16} />
-                )}
+                <RefreshCw size={16} />
+                {t("theme.update")}
               </Button>
-            )} */}
+            )}
             {selectedTheme && selectedTheme.short !== "default" && (
               <Button
                 size="2"
@@ -644,6 +695,51 @@ const ThemePage = () => {
               }}
             >
               {t("common.delete")}
+            </Button>
+          </Flex>
+        </Dialog.Content>
+      </Dialog.Root>
+
+      {/* 更新主题对话框 */}
+      <Dialog.Root open={updateDialogOpen} onOpenChange={setUpdateDialogOpen}>
+        <Dialog.Content maxWidth="500px">
+          <Dialog.Title>{t("theme.update_theme")}</Dialog.Title>
+          <Dialog.Description>
+            {t("theme.update_description")}
+          </Dialog.Description>
+          
+          <Box className="space-y-4 mt-4">
+            {/* Auto Mode Explanation */}
+            <Flex direction="column" gap="2">
+              <Text size="2" color="gray" className="mt-2">
+                {t("theme.update_mode_auto_description")}
+              </Text>
+            </Flex>
+          </Box>
+          
+          <Flex gap="3" mt="4" justify="end">
+            <Dialog.Close>
+              <Button variant="soft" color="gray">
+                {t("common.cancel")}
+              </Button>
+            </Dialog.Close>
+            <Button
+              color="blue"
+              disabled={updating}
+              onClick={async () => {
+                if (themeToUpdate) {
+                  await updateTheme(themeToUpdate.short);
+                  setUpdateDialogOpen(false);
+                  setThemeToUpdate(null);
+                }
+              }}
+            >
+              {updating ? (
+                <Box className="animate-spin mr-2">
+                  <RefreshCw size={16} />
+                </Box>
+              ) : null}
+              {t("theme.update")}
             </Button>
           </Flex>
         </Dialog.Content>

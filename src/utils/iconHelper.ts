@@ -15,7 +15,8 @@ import {
   Book,
   Server,
   Activity,
-  Palette
+  Palette,
+  Code
 } from "lucide-react";
 
 // Map icon names defined in menuConfig.json to their components
@@ -35,5 +36,6 @@ export const iconMap: Record<string, React.ComponentType<any>> = {
   AtSign,
   Book,
   Activity,
-  Palette
+  Palette,
+  Code,
 };

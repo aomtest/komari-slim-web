@@ -181,7 +181,7 @@ const NotificationSettings = () => {
         }}
       />
       <SettingCardShortTextInput
-        number
+        type="number"
         title={t("admin.notification.expire_time")}
         description={t("admin.notification.expire_time_description")}
         defaultValue={settings.expire_notification_lead_days}
