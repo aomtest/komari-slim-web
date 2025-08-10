@@ -75,7 +75,10 @@
       "provider_fields_description": "设置您选择登录方式的详细信息"
     },
     "general": {
-      "title": "General"
+      "title": "General",
+      "auto_discovery": "自动发现",
+      "auto_discovery_key": "自动发现密钥",
+      "auto_discovery_key_description": "使用自动发现可以批量注册客户端，留空表示禁用自动发现。"
     },
     "site": {
       "name": "Site Name",
@@ -163,7 +166,12 @@
       "invalid_preserve_time": "Invalid time",
       "expected_usage": "Storing data for one server is estimated to require {{space}} disk space (Ping data depends on the set time interval)"
     },
-    "missing_required_fields": "请填写必填字段: {{fieldNames}}"
+    "missing_required_fields": "请填写必填字段: {{fieldNames}}",
+    "api": {
+      "key_length_error": "API 密钥长度至少为12",
+      "title": "API密钥",
+      "description": "使用API密钥可以访问并操作所有资源，包括不限于远程控制、修改设置和账号密码等，请谨慎保管。留空表示取消API密钥功能。"
+    }
   },
   "sessions": {
     "title": "Sessions",
@@ -225,7 +233,7 @@
   },
   "nodeCard": {
     "os": "OS",
-    "kernelVersion": "Kernel Version",
+    "kernelVersion": "内核版本",
     "arch": "Architecture",
     "name": "Node Name",
     "status": "Status",
@@ -533,7 +541,11 @@
     "tags": "Tags",
     "tagsDescription": "Multiple tags separated by ';'",
     "tagsTips": "Multiple tags are separated by “;”. </br>  To specify a color, add &ltcolor&gt to the end of the label, e.g. 1Gbps&ltgreen&gt.</br>  A list of available colors can be found at <label class=\"bg-accent-a5 rounded-sm\"><a href=\"https://www.radix-ui.com/themes/docs/theme/color\" target=\"_blank\"> Color - Radix Themes</a></label>",
-    "private_site": "This is a private Komari site. Please log in first."
+    "private_site": "This is a private Komari site. Please log in first.",
+    "generate": "生成",
+    "empty_error": "不能为空",
+    "help": "帮助",
+    "day": "天"
   },
   "command_clipboard": {
     "title": "Command Clipboard"
@@ -559,7 +571,9 @@
     "title": "Latency",
     "target": "Target",
     "interval": "Interval",
-    "type": "Type"
+    "type": "Type",
+    "disk_usage_estimate": "预计需要磁盘空间",
+    "disk_usage_with_settings": "根据设置的 {{hour}} 小时保存时间，需要使用 {{space}} 磁盘空间。"
   },
   "search": {
     "placeholder": "Search nodes by name, region, OS...",
@@ -600,5 +614,29 @@
     "installed_hint": "The app is installed on your device, you can access it quickly from the home screen.",
     "later": "Later",
     "title": "PWA Status"
+  },
+  "exec": {
+    "title": "远程执行",
+    "description": "在选定的节点上远程执行命令",
+    "command": "执行命令",
+    "commandPlaceholder": "whoami",
+    "selectNodes": "选择目标节点",
+    "selectedNodes": "已选择节点",
+    "execute": "执行命令",
+    "executing": "执行中...",
+    "results": "执行结果",
+    "success": "命令执行完成",
+    "errors": {
+      "emptyCommand": "命令不能为空",
+      "noNodes": "请选择至少一个节点",
+      "executionFailed": "执行失败"
+    },
+    "status": {
+      "success": "成功",
+      "failed": "失败",
+      "running": "正在运行",
+      "timeout": "超时"
+    },
+    "taskStarted": "任务已启动"
   }
 }

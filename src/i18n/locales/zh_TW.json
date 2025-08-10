@@ -75,7 +75,10 @@
       "provider_fields_description": "设置您选择登录方式的详细信息"
     },
     "general": {
-      "title": "通用"
+      "title": "通用",
+      "auto_discovery": "自动发现",
+      "auto_discovery_key": "自动发现密钥",
+      "auto_discovery_key_description": "使用自动发现可以批量注册客户端，留空表示禁用自动发现。"
     },
     "site": {
       "name": "網站名稱",
@@ -163,7 +166,12 @@
       "invalid_preserve_time": "無效的時間",
       "expected_usage": "保存一台伺服器的資料預計需要{{space}}磁碟空間（Ping資料取決於設定的時間間隔）"
     },
-    "missing_required_fields": "请填写必填字段: {{fieldNames}}"
+    "missing_required_fields": "请填写必填字段: {{fieldNames}}",
+    "api": {
+      "key_length_error": "API 密钥长度至少为12",
+      "title": "API密钥",
+      "description": "使用API密钥可以访问并操作所有资源，包括不限于远程控制、修改设置和账号密码等，请谨慎保管。留空表示取消API密钥功能。"
+    }
   },
   "sessions": {
     "title": "會話管理",
@@ -225,7 +233,7 @@
   },
   "nodeCard": {
     "os": "作業系統",
-    "kernelVersion": "核心版本",
+    "kernelVersion": "内核版本",
     "arch": "架構",
     "name": "節點名稱",
     "status": "狀態",
@@ -533,7 +541,11 @@
     "tags": "標籤",
     "tagsDescription": "多個標籤用';'分隔",
     "tagsTips": "多個標籤使用\";\"隔開。</br> 如需指定顏色，請在標籤末尾新增&ltcolor&gt，例如：1Gbps&ltgreen&gt。</br> 可用的顏色列表請參考：<label class=\"bg-accent-a5 rounded-sm\"><a href=\"https://www.radix-ui.com/themes/docs/theme/color\" target=\"_blank\"> Color – Radix Themes</a></label>",
-    "private_site": "这是一个私有的Komari站点，请先登录。"
+    "private_site": "这是一个私有的Komari站点，请先登录。",
+    "generate": "生成",
+    "empty_error": "不能为空",
+    "help": "帮助",
+    "day": "天"
   },
   "command_clipboard": {
     "title": "命令剪貼簿"
@@ -559,7 +571,9 @@
     "title": "延遲監測",
     "target": "目標",
     "interval": "間隔",
-    "type": "類型"
+    "type": "類型",
+    "disk_usage_estimate": "预计需要磁盘空间",
+    "disk_usage_with_settings": "根据设置的 {{hour}} 小时保存时间，需要使用 {{space}} 磁盘空间。"
   },
   "search": {
     "placeholder": "搜尋節點名稱、地區、系統...",
@@ -600,5 +614,29 @@
     "installed_hint": "該應用程式安裝在裝置上，您可以從主螢幕快速存取它。",
     "later": "稍後",
     "title": "PWA狀態"
+  },
+  "exec": {
+    "title": "远程执行",
+    "description": "在选定的节点上远程执行命令",
+    "command": "执行命令",
+    "commandPlaceholder": "whoami",
+    "selectNodes": "选择目标节点",
+    "selectedNodes": "已选择节点",
+    "execute": "执行命令",
+    "executing": "执行中...",
+    "results": "执行结果",
+    "success": "命令执行完成",
+    "errors": {
+      "emptyCommand": "命令不能为空",
+      "noNodes": "请选择至少一个节点",
+      "executionFailed": "执行失败"
+    },
+    "status": {
+      "success": "成功",
+      "failed": "失败",
+      "running": "正在运行",
+      "timeout": "超时"
+    },
+    "taskStarted": "任务已启动"
   }
 }
