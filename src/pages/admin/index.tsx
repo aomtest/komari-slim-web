@@ -1095,7 +1095,13 @@ function EditButton({ node }: { node: NodeDetail }) {
   const tagsRef = React.useRef<HTMLInputElement>(null);
   const publicRemarkRef = React.useRef<HTMLTextAreaElement>(null);
   const privateRemarkRef = React.useRef<HTMLTextAreaElement>(null);
+  const [hidden, setHidden] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  React.useEffect(() => {
+    setHidden(node.hidden);
+  }, [node.hidden]);
+
   const save = async () => {
     try {
       setSaving(true);
@@ -1107,6 +1113,7 @@ function EditButton({ node }: { node: NodeDetail }) {
           public_remark: publicRemarkRef.current?.value,
           group: groupRef.current?.value,
           tags: tagsRef.current?.value,
+          hidden
         }),
         headers: {
           "Content-Type": "application/json",
@@ -1200,6 +1207,14 @@ function EditButton({ node }: { node: NodeDetail }) {
                 "请输入公开备注"
               )}
               ref={publicRemarkRef}
+            />
+          </div>
+          <div>
+            <SettingCardSwitch
+              title={t("admin.nodeEdit.hidden")}
+              description={t("admin.nodeEdit.hidden_description")}
+              defaultChecked={hidden}
+              onChange={setHidden}
             />
           </div>
         </div>
@@ -1594,7 +1609,7 @@ function BillingButton({ node }: { node: NodeDetail }) {
               </TextField.Slot>
             </TextField.Root>
             <Flex gap="2" align="center">
-              
+
             </Flex>
             <SettingCardSwitch title={t("admin.nodeTable.autoRenewal")} description={t("admin.nodeTable.autoRenewalDescription")} defaultChecked={node.auto_renewal || false} onChange={setAutoRenewal} />
             <Button type="submit" disabled={saving}>
