@@ -242,6 +242,7 @@ interface SettingCardShortTextInputProps
   bordless?: boolean;
 
   // 按钮相关属性
+  showSaveButton?: boolean;
   label?: string;
   autoDisabled?: boolean;
   isSaving?: boolean;
@@ -268,6 +269,7 @@ export function SettingCardShortTextInput({
   bordless = false,
 
   // 按钮属性
+  showSaveButton = true,
   label = useTranslation().t("save"),
   autoDisabled = true,
   isSaving,
@@ -384,6 +386,7 @@ export function SettingCardShortTextInput({
           ref={buttonRef}
           onClick={handleSave}
           variant="solid"
+          hidden={!showSaveButton}
           disabled={savingState}
         >
           {label}

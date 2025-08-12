@@ -63,7 +63,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { formatBytes } from "@/utils/unitHelper";
+import { formatBytes, stringToBytes } from "@/utils/unitHelper";
 import PriceTags from "@/components/PriceTags";
 import Loading from "@/components/loading";
 import Tips from "@/components/ui/tips";
@@ -1097,10 +1097,13 @@ function EditButton({ node }: { node: NodeDetail }) {
   const privateRemarkRef = React.useRef<HTMLTextAreaElement>(null);
   const [hidden, setHidden] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [traffic_limit, setTrafficLimit] = useState(0);
 
   React.useEffect(() => {
     setHidden(node.hidden);
-  }, [node.hidden]);
+    setTrafficLimit(node.traffic_limit || 0);
+  }, [node.hidden, node.traffic_limit]);
+
 
   const save = async () => {
     try {
@@ -1113,7 +1116,8 @@ function EditButton({ node }: { node: NodeDetail }) {
           public_remark: publicRemarkRef.current?.value,
           group: groupRef.current?.value,
           tags: tagsRef.current?.value,
-          hidden
+          hidden,
+          traffic_limit
         }),
         headers: {
           "Content-Type": "application/json",
@@ -1219,7 +1223,18 @@ function EditButton({ node }: { node: NodeDetail }) {
           </div>
           <div>
             <SettingCardShortTextInput
-              defaultValue={node.traffic_limit || 0}
+              title={t("admin.nodeEdit.trafficLimit")}
+              description={t("admin.nodeEdit.trafficLimit_description")}
+              defaultValue={formatBytes(traffic_limit || 0)}
+              showSaveButton={false}
+              onChange={(e) => {
+                setTrafficLimit(stringToBytes(e.currentTarget.value));
+              }}
+              onBlur={
+                (e) => {
+                  e.currentTarget.value = formatBytes(traffic_limit);
+                }
+              }
             >
 
             </SettingCardShortTextInput>
