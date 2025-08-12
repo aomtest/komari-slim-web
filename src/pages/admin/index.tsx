@@ -67,7 +67,7 @@ import { formatBytes, stringToBytes } from "@/utils/unitHelper";
 import PriceTags from "@/components/PriceTags";
 import Loading from "@/components/loading";
 import Tips from "@/components/ui/tips";
-import { SettingCardShortTextInput, SettingCardSwitch } from "@/components/admin/SettingCard";
+import { SettingCardCollapse, SettingCardSelect, SettingCardShortTextInput, SettingCardSwitch } from "@/components/admin/SettingCard";
 
 const NodeDetailsPage = () => {
   return (
@@ -1098,11 +1098,13 @@ function EditButton({ node }: { node: NodeDetail }) {
   const [hidden, setHidden] = useState(false);
   const [saving, setSaving] = useState(false);
   const [traffic_limit, setTrafficLimit] = useState(0);
+  const [traffic_limit_type, setTrafficLimitType] = useState("sum");
 
   React.useEffect(() => {
     setHidden(node.hidden);
     setTrafficLimit(node.traffic_limit || 0);
-  }, [node.hidden, node.traffic_limit]);
+    setTrafficLimitType(node.traffic_limit_type || "sum")
+  }, [node.hidden, node.traffic_limit, node.traffic_limit_type]);
 
 
   const save = async () => {
@@ -1117,7 +1119,8 @@ function EditButton({ node }: { node: NodeDetail }) {
           group: groupRef.current?.value,
           tags: tagsRef.current?.value,
           hidden,
-          traffic_limit
+          traffic_limit,
+          traffic_limit_type
         }),
         headers: {
           "Content-Type": "application/json",
@@ -1221,8 +1224,38 @@ function EditButton({ node }: { node: NodeDetail }) {
               onChange={setHidden}
             />
           </div>
-          <div>
+          <SettingCardCollapse title={t("admin.nodeEdit.trafficLimit")}>
+            <SettingCardSelect
+              bordless
+              title={t("admin.nodeEdit.trafficLimitType")}
+              defaultValue={node.traffic_limit_type || "max"}
+              options={[
+                {
+                  label: t("admin.nodeEdit.trafficLimitType_sum"),
+                  value: "sum"
+                },
+                {
+                  label: t("admin.nodeEdit.trafficLimitType_max"),
+                  value: "max"
+                },
+                {
+                  label: t("admin.nodeEdit.trafficLimitType_min"),
+                  value: "min"
+                },
+                                {
+                  label: t("admin.nodeEdit.trafficLimitType_up"),
+                  value: "up"
+                },
+                                {
+                  label: t("admin.nodeEdit.trafficLimitType_down"),
+                  value: "down"
+                },
+              ]} 
+              OnSave={(value) => {
+                setTrafficLimitType(value);
+              }}/>
             <SettingCardShortTextInput
+              bordless
               title={t("admin.nodeEdit.trafficLimit")}
               description={t("admin.nodeEdit.trafficLimit_description")}
               defaultValue={formatBytes(traffic_limit || 0)}
@@ -1236,9 +1269,8 @@ function EditButton({ node }: { node: NodeDetail }) {
                 }
               }
             >
-
             </SettingCardShortTextInput>
-          </div>
+          </SettingCardCollapse>
         </div>
         <Flex gap="2" justify={"end"} className="mt-4">
           <Button
