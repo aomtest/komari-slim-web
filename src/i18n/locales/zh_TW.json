@@ -414,7 +414,9 @@
       "saveSuccess": "儲存成功",
       "saveError": "儲存失敗",
       "hidden": "隐藏节点",
-      "hidden_description": "在未登陆的情况下隐藏该节点"
+      "hidden_description": "在未登陆的情况下隐藏该节点",
+      "trafficLimit": "流量阈值",
+      "trafficLimit_description": "用于首页流量进度条（上传下载取最大值），设置为 0 B 禁用。"
     },
     "notification": {
       "expire_title": "過期提醒",
