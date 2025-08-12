@@ -13,7 +13,7 @@ import React from "react";
 import { toast } from "sonner";
 import Loading from "@/components/loading";
 import { SettingCardMultiInputCollapse } from "@/components/admin/SettingCardMultiInput";
-import { formatBytes } from "@/components/Node";
+import { formatBytes } from "@/utils/unitHelper";
 export default function GeneralSettings() {
   const { t } = useTranslation();
   const { settings, loading, error } = useSettings();

@@ -2,7 +2,8 @@ import { useTranslation } from "react-i18next";
 import { UpDownStack } from "./UpDownStack";
 import { useNodeList } from "@/contexts/NodeListContext";
 import { useLiveData } from "@/contexts/LiveDataContext";
-import { formatBytes, formatUptime } from "./Node";
+import { formatUptime } from "./Node";
+import { formatBytes } from "@/utils/unitHelper";
 import { Flex, Text } from "@radix-ui/themes";
 
 type DetailsGridProps = {

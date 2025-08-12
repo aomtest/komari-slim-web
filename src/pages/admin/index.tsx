@@ -63,7 +63,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { formatBytes } from "@/utils/bytesHelper";
+import { formatBytes } from "@/utils/unitHelper";
 import PriceTags from "@/components/PriceTags";
 import Loading from "@/components/loading";
 import Tips from "@/components/ui/tips";

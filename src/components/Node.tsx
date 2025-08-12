@@ -12,7 +12,7 @@ import Flag from "./Flag";
 import { useTranslation } from "react-i18next";
 import Tips from "./ui/tips";
 
-import { formatBytes } from "@/utils/bytesHelper";
+import { formatBytes } from "@/utils/unitHelper";
 
 /** 格式化秒*/
 export function formatUptime(seconds: number, t: TFunction): string {

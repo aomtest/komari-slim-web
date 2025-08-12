@@ -1,7 +1,7 @@
 import { Callout, Card, Flex, Text, Popover, IconButton, Switch } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import NodeDisplay from "../components/NodeDisplay";
-import { formatBytes } from "@/components/Node";
+import { formatBytes } from "@/utils/unitHelper";
 import { useLiveData } from "../contexts/LiveDataContext";
 import { useNodeList } from "@/contexts/NodeListContext";
 import Loading from "@/components/loading";
