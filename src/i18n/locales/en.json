@@ -412,7 +412,9 @@
       "waiting": "wait...",
       "save": "save",
       "saveSuccess": "Save successfully",
-      "saveError": "Saving failed"
+      "saveError": "Saving failed",
+      "hidden": "隐藏节点",
+      "hidden_description": "在未登陆的情况下隐藏该节点"
     },
     "notification": {
       "expire_title": "Expire notification",
