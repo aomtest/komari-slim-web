@@ -12,7 +12,7 @@ import Flag from "./Flag";
 import { useTranslation } from "react-i18next";
 import Tips from "./ui/tips";
 
-/** 将字节转换为人类可读的大小 */
+import { formatBytes } from "@/utils/bytesHelper";
 
 /** 格式化秒*/
 export function formatUptime(seconds: number, t: TFunction): string {
@@ -28,18 +28,7 @@ export function formatUptime(seconds: number, t: TFunction): string {
   if (s || parts.length === 0) parts.push(`${s} ${t("nodeCard.time_second")}`);
   return parts.join(" ");
 }
-export function formatBytes(bytes: number): string {
-  const units = ["B", "KB", "MB", "GB", "TB", "PB"];
-  let size = bytes;
-  let unitIndex = 0;
 
-  while (size >= 1024 && unitIndex < units.length - 1) {
-    size /= 1024;
-    unitIndex++;
-  }
-
-  return `${size.toFixed(2)} ${units[unitIndex]}`;
-}
 
 interface NodeProps {
   basic: NodeBasicInfo;

@@ -63,11 +63,11 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { formatBytes } from "@/components/Node";
+import { formatBytes } from "@/utils/bytesHelper";
 import PriceTags from "@/components/PriceTags";
 import Loading from "@/components/loading";
 import Tips from "@/components/ui/tips";
-import { SettingCardSwitch } from "@/components/admin/SettingCard";
+import { SettingCardShortTextInput, SettingCardSwitch } from "@/components/admin/SettingCard";
 
 const NodeDetailsPage = () => {
   return (
@@ -1216,6 +1216,13 @@ function EditButton({ node }: { node: NodeDetail }) {
               defaultChecked={hidden}
               onChange={setHidden}
             />
+          </div>
+          <div>
+            <SettingCardShortTextInput
+              defaultValue={node.traffic_limit || 0}
+            >
+
+            </SettingCardShortTextInput>
           </div>
         </div>
         <Flex gap="2" justify={"end"} className="mt-4">
