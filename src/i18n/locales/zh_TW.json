@@ -412,7 +412,9 @@
       "waiting": "等待...",
       "save": "儲存",
       "saveSuccess": "儲存成功",
-      "saveError": "儲存失敗"
+      "saveError": "儲存失敗",
+      "hidden": "隐藏节点",
+      "hidden_description": "在未登陆的情况下隐藏该节点"
     },
     "notification": {
       "expire_title": "過期提醒",
