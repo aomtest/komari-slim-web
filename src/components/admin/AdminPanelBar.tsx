@@ -230,8 +230,59 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                 style={{ width: "100%" }}
               >
                 {menuItems.map((item) => {
-                  const IconComp = iconMap[item.icon];
+                  // 支持 icon 为 URL/相对路径
                   const isOpen = openSubMenus[item.path];
+                  const renderIcon = (
+                    icon: string,
+                    labelKey: string,
+                    className?: string,
+                    active?: boolean
+                  ) => {
+                    const link = /^(https?:\/\/|\/|\.\/|\.\.\/)/.test(icon);
+                    if (link) {
+                      return (
+                        <img
+                          src={icon}
+                          alt={t(labelKey)}
+                          style={{
+                            width: 16,
+                            height: 16,
+                            objectFit: "contain",
+                            opacity: active ? 1 : 0.7,
+                            filter: active ? "none" : "grayscale(20%)",
+                          }}
+                          className={className}
+                          loading="lazy"
+                        />
+                      );
+                    }
+                    const Cmp = iconMap[icon];
+                    if (Cmp) {
+                      return (
+                        <Cmp
+                          className={className}
+                          style={{
+                            color: active
+                              ? "var(--accent-10)"
+                              : "var(--gray11)",
+                          }}
+                        />
+                      );
+                    }
+                    // fallback: simple dot
+                    return (
+                      <span
+                        className={className}
+                        style={{
+                          width: 16,
+                          height: 16,
+                          display: "inline-block",
+                          borderRadius: 4,
+                          background: "var(--accent-8)",
+                        }}
+                      />
+                    );
+                  };
                   if (item.children && item.children.length) {
                     return (
                       <div key={item.path}>
@@ -269,9 +320,11 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                             //}
                           }}
                         >
-                          <IconComp
-                            className="flex w-4 h-5 items-center justify-center opacity-70"
-                          />
+                          {renderIcon(
+                            item.icon,
+                            item.labelKey,
+                            "flex w-4 h-5 items-center justify-center"
+                          )}
                           <Text
                             className="text-base"
                             weight="medium"
@@ -302,24 +355,21 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                           style={{ overflow: "hidden" }}
                         >
                           <Flex direction="column" className="ml-4 gap-1">
-                            {item.children.map((child: MenuItem) => {
-                              const ChildIcon = iconMap[child.icon];
-                              return (
-                                <SidebarItem
-                                  key={child.path}
-                                  to={child.path}
-                                  icon={
-                                    <ChildIcon
-                                      style={{ color: "var(--gray11)" }}
-                                    />
-                                  }
-                                  children={t(child.labelKey)}
-                                  onClick={() =>
-                                    isMobile && setSidebarOpen(false)
-                                  }
-                                />
-                              );
-                            })}
+                            {item.children.map((child: MenuItem) => (
+                              <SidebarItem
+                                key={child.path}
+                                to={child.path}
+                                icon={renderIcon(
+                                  child.icon,
+                                  child.labelKey,
+                                  "flex w-4 h-5 items-center justify-center"
+                                )}
+                                children={t(child.labelKey)}
+                                onClick={() =>
+                                  isMobile && setSidebarOpen(false)
+                                }
+                              />
+                            ))}
                           </Flex>
                         </motion.div>
                       </div>
@@ -329,7 +379,11 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                     <SidebarItem
                       key={item.path}
                       to={item.path}
-                      icon={<IconComp style={{ color: "var(--gray11)" }} />}
+                      icon={renderIcon(
+                        item.icon,
+                        item.labelKey,
+                        "flex w-4 h-5 items-center justify-center"
+                      )}
                       children={t(item.labelKey)}
                       onClick={() => isMobile && setSidebarOpen(false)}
                     />
