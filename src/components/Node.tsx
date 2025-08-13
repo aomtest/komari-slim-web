@@ -66,6 +66,7 @@ const Node = ({ basic, live, online }: NodeProps) => {
         margin: "0 auto",
         transition: "all 0.2s ease-in-out",
       }}
+      id={basic.uuid}
       className="node-card hover:cursor-pointer hover:shadow-lg hover:bg-accent-2"
     >
       <Flex direction="column" gap="2">
