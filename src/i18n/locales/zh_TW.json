@@ -416,7 +416,13 @@
       "hidden": "隐藏节点",
       "hidden_description": "在未登陆的情况下隐藏该节点",
       "trafficLimit": "流量阈值",
-      "trafficLimit_description": "用于首页流量进度条（上传下载取最大值），设置为 0 B 禁用。"
+      "trafficLimit_description": "用于首页流量进度条，设置为 0 B 禁用。",
+      "trafficLimitType": "统计方式",
+      "trafficLimitType_max": "取最大",
+      "trafficLimitType_sum": "总和",
+      "trafficLimitType_min": "取最小",
+      "trafficLimitType_up": "仅上传",
+      "trafficLimitType_down": "仅下载"
     },
     "notification": {
       "expire_title": "過期提醒",
