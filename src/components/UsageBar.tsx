@@ -4,11 +4,12 @@ interface UsageBarProps {
   value: number; // Utilization percentage (0–100)
   label: string; // Label for the bar (e.g., "CPU", "Memory", "Disk")
   compact?: boolean; // Whether to show in compact mode (for tables)
+  max?: number; // Maximum value for the bar (e.g., total RAM, total disk space)
 }
 
-const UsageBar = ({ value, label, compact = false }: UsageBarProps) => {
+const UsageBar = ({ value, label, compact = false, max = 100 }: UsageBarProps) => {
   // Ensure value is between 0 and 100
-  const clampedValue = Math.min(Math.max(value, 0), 100);
+  const clampedValue = Math.min(Math.max(value, 0), max);
 
   // Determine color based on thresholds
   const getColor = (val: number) => {
