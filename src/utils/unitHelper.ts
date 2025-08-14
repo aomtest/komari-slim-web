@@ -79,7 +79,7 @@ export function stringToBytes(str: string): number {
 
     // 4. 乘以单位对应的倍数
     const multiplier = units[unit];
-    return value * multiplier;
+    return Math.round(value * multiplier);
   } catch (error) {
     // 如果表达式无效（例如 "abc-gb"），则捕获错误并返回 0
     console.error(`Error parsing string "${str}":`, error);
