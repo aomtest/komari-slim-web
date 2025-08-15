@@ -479,7 +479,11 @@
     "github_owner_placeholder": "GitHub ユーザー名/組織名を入力",
     "github_repo": "GitHub リポジトリ",
     "github_repo_placeholder": "GitHub リポジトリ名を入力",
-    "github_description": "システムはこのGitHubリポジトリから最新のリリースをダウンロードします。"
+    "github_description": "システムはこのGitHubリポジトリから最新のリリースをダウンロードします。",
+    "manage": "主题管理",
+    "manage_with_name": "{{name}} 主题管理",
+    "default_no_config": "默认主题没有可配置选项。",
+    "no_config": "该主题没有声明配置项。"
   },
   "copy_success": "已复制到剪贴板",
   "copy": "复制",
