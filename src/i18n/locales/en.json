@@ -479,7 +479,11 @@
     "github_owner_placeholder": "Enter the GitHub owner/username",
     "github_repo": "GitHub Repository",
     "github_repo_placeholder": "Enter the GitHub repository name",
-    "github_description": "The system will download the latest release from this GitHub repository."
+    "github_description": "The system will download the latest release from this GitHub repository.",
+    "manage": "主题管理",
+    "manage_with_name": "{{name}} 主题管理",
+    "default_no_config": "默认主题没有可配置选项。",
+    "no_config": "该主题没有声明配置项。"
   },
   "copy_success": "Copied!",
   "copy": "Copy",
