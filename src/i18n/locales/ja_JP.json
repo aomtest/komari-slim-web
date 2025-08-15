@@ -373,6 +373,7 @@
       "setToLongTerm": "设置为长期",
       "invalidPrice": "价格无效",
       "priceTips": "0不显示，-1表示免费",
+      "currencyTips": "¥-人民币，$-美元，€-欧元，£-英镑，₽-卢布，₣-法郎，₹-卢比，₫-越南盾，฿-泰铢",
       "dragToReorder": "长按拖拽重新排序",
       "memoryModeAvailable": "监测可用内存",
       "memoryModeAvailable_tip": "Agent 默认监测并上报已用内存，勾选此选项将监测并上报可用内存。",
