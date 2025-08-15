@@ -373,6 +373,7 @@
       "setToLongTerm": "設定為長期",
       "invalidPrice": "價格無效",
       "priceTips": "0不顯示，-1表示免費",
+      "currencyTips":"¥-人民幣，$-美元，€-歐元，£-英鎊，₽-盧布，₣-法郎，₹-盧比，₫-越南盾，฿-泰銖",
       "dragToReorder": "長按拖曳重新排序",
       "memoryModeAvailable": "監測可用記憶體",
       "memoryModeAvailable_tip": "Agent 預設監測並上報已用記憶體，勾選此選項將監測並上報可用記憶體。",
