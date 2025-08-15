@@ -479,7 +479,11 @@
     "github_owner_placeholder": "輸入GitHub用戶名/組織名",
     "github_repo": "GitHub倉庫",
     "github_repo_placeholder": "輸入GitHub倉庫名稱",
-    "github_description": "系統將從該GitHub倉庫下載最新的發佈版本。"
+    "github_description": "系統將從該GitHub倉庫下載最新的發佈版本。",
+    "manage": "主题管理",
+    "manage_with_name": "{{name}} 主题管理",
+    "default_no_config": "默认主题没有可配置选项。",
+    "no_config": "该主题没有声明配置项。"
   },
   "copy_success": "已複製到剪貼簿",
   "copy": "複製",
