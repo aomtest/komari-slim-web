@@ -373,6 +373,7 @@
       "setToLongTerm": "Set to Long term",
       "invalidPrice": "Invalid price",
       "priceTips": "0 is not displayed, -1 means free",
+      "currencyTips": "¥-RMB，$-Dollar，€-Euro，£-Pound，₽-Ruble，₣-Franc，₹-Rupee，₫-VND，฿-THB",
       "dragToReorder": "Long press and drag to reorder",
       "memoryModeAvailable": "Monitor available memory",
       "memoryModeAvailable_tip": "The Agent monitors and reports used memory by default. Selecting this option will monitor and report available memory.",
