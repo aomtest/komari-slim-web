@@ -1,8 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Flex, Heading, Text, Callout, Separator, Code, Button, Spinner } from '@radix-ui/themes';
+import { Flex, Heading, Callout, Separator, Button } from '@radix-ui/themes';
 import { usePublicInfo } from '@/contexts/PublicInfoContext';
 import { SettingCardSelect, SettingCardSwitch, SettingCardShortTextInput } from '@/components/admin/SettingCard';
 import { toast } from 'sonner';
+import Loading from '@/components/loading';
+import { useTranslation } from 'react-i18next';
 
 interface ThemeFieldBase {
     name?: string; // 显示名
@@ -25,12 +27,14 @@ const ThemeManaged: React.FC = () => {
     const { publicInfo, refresh } = usePublicInfo();
     const theme = publicInfo?.theme;
     const themeSettings = publicInfo?.theme_settings || {}; // 当前值
+    const { t } = useTranslation();
 
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [fields, setFields] = useState<ThemeFieldBase[]>([]);
     const [values, setValues] = useState<Record<string, any>>({});
     const [error, setError] = useState<string | null>(null);
+    const [firstLoading, setFirstLoading] = useState(true);
 
     // 拉取主题配置
     useEffect(() => {
@@ -65,6 +69,7 @@ const ThemeManaged: React.FC = () => {
                 setError(e.message || '加载主题配置失败');
             } finally {
                 setLoading(false);
+                setFirstLoading(false);
             }
         }
         load();
@@ -120,23 +125,22 @@ const ThemeManaged: React.FC = () => {
     return (
         <Flex direction="column" gap="4" className="p-2 md:p-4">
             <Flex justify="between" align="center">
-                <Heading size="4">{theme ? `${theme} 主题管理` : '主题管理'}</Heading>
+                <Heading size="4">{theme ? t("theme.manage_with_name", { name: theme }) : t("theme.manage")}</Heading>
                 {fields.length > 0 && (
-                    <Button onClick={saveAll} loading={saving} disabled={saving}>{saving ? '保存中...' : '保存全部'}</Button>
+                    <Button onClick={saveAll} disabled={saving}>{t("common.save")}</Button>
                 )}
             </Flex>
-            <Text size="2" color="gray">当前主题: <Code>{theme || 'default'}</Code></Text>
             {error && (
                 <Callout.Root color="red"><Callout.Text>{error}</Callout.Text></Callout.Root>
             )}
-            {loading && (
-                <Flex align="center" gap="2"><Spinner /> <Text>加载中...</Text></Flex>
+            {loading && firstLoading && (
+                <Loading />
             )}
             {!loading && theme === 'default' && (
-                <Callout.Root><Callout.Text>默认主题没有可配置选项。</Callout.Text></Callout.Root>
+                <Callout.Root><Callout.Text>{t("theme.default_no_config")}</Callout.Text></Callout.Root>
             )}
             {!loading && !error && fields.length === 0 && theme !== 'default' && (
-                <Callout.Root><Callout.Text>该主题没有声明配置项。</Callout.Text></Callout.Root>
+                <Callout.Root><Callout.Text>{t("theme.no_config")}</Callout.Text></Callout.Root>
             )}
             <Separator size="4" />
             <Flex direction="column" gap="3">
@@ -189,7 +193,7 @@ const ThemeManaged: React.FC = () => {
                             );
                         case 'string':
                         default:
-                            return (    
+                            return (
                                 <SettingCardShortTextInput
                                     key={f.key}
                                     title={f.name}
@@ -204,7 +208,9 @@ const ThemeManaged: React.FC = () => {
                 })}
             </Flex>
             {fields.length > 0 && (
-                <Flex><Button onClick={saveAll} loading={saving} disabled={saving}>{saving ? '保存中...' : '保存全部'}</Button></Flex>
+                <Flex>
+                    <Button onClick={saveAll} disabled={saving}>{t("common.save")}</Button>
+                </Flex>
             )}
         </Flex>
     );
