@@ -220,14 +220,14 @@ function calculateExpectedUsage(
   totalPingBytes = pingPreserveTime * 3600;
 
   if (recordPreserveTime <= 4) {
-    // First 4 hours: 1 record/minute * 512 bytes/record * 60 minutes/hour = 30720 bytes/hour
-    totalRecordBytes = recordPreserveTime * 30720;
+    // First 4 hours: 1 record/minute * 1024 bytes/record * 60 minutes/hour
+    totalRecordBytes = recordPreserveTime * 1 * 1024 * 60;
   } else {
     // Bytes for the first 4 hours
-    totalRecordBytes = 4 * 30720;
+    totalRecordBytes = 4 * 1 * 1024 * 60;
     // Bytes for the remaining time (recordPreserveTime - 4)
-    // 1 record/15 minutes * 512 bytes/record * (60/15) records/hour = 4 records/hour * 512 bytes/record = 2048 bytes/hour
-    totalRecordBytes += (recordPreserveTime - 4) * 2048;
+    // 4 records/hour * 1024 bytes/record
+    totalRecordBytes += (recordPreserveTime - 4) * 4 * 1024;
   }
 
   return formatBytes(totalPingBytes + totalRecordBytes);
