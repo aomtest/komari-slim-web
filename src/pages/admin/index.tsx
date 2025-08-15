@@ -1600,7 +1600,10 @@ function BillingButton({ node }: { node: NodeDetail }) {
             <TextField.Root name="price" defaultValue={node.price} />
 
             <label className="font-bold">
-              {t("admin.nodeTable.currency", "货币")}
+              <label>{t("admin.nodeTable.currency", "货币")}</label>
+              <label className="text-muted-foreground text-sm ml-1 font-medium">
+                {t("admin.nodeTable.currencyTips")}
+              </label>
             </label>
             <TextField.Root
               name="currency"
