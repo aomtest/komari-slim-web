@@ -192,7 +192,7 @@ const Node = ({ basic, live, online }: NodeProps) => {
                 {t("nodeCard.totalTraffic")}
               </Text>
               <Text size="2">
-                ↑ {totalUpload}/s ↓ {totalDownload}/s
+                ↑ {totalUpload} ↓ {totalDownload}
               </Text>
             </Flex>
           )}
