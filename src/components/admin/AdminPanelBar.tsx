@@ -1,5 +1,5 @@
 import { Cross1Icon, ExitIcon } from "@radix-ui/react-icons";
-import { Callout, Flex, Grid, IconButton, Text } from "@radix-ui/themes";
+import { Button, Callout, Flex, Grid, IconButton, Text } from "@radix-ui/themes";
 import { AnimatePresence, motion } from "framer-motion"; // 引入 Framer Motion
 import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -16,6 +16,8 @@ import { TablerMenu2 } from "../Icones/Tabler";
 import LoginDialog from "../Login";
 import { useAccount } from "@/contexts/AccountContext";
 import { usePublicInfo } from "@/contexts/PublicInfoContext";
+import Tips from "../ui/tips";
+import { CircleFadingArrowUp } from "lucide-react";
 
 // 将JSON配置转换为类型安全的菜单项数组 (基础静态菜单)
 const baseMenuItems = (menuConfig as { menu: MenuItem[] }).menu;
@@ -47,6 +49,19 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
     version: string;
   } | null>(null);
 
+  // GitHub 最新发布信息与更新检测
+  interface GithubReleaseInfo {
+    tag_name: string;
+    name?: string;
+    body?: string;
+    html_url: string;
+    published_at?: string;
+  }
+  const [latestRelease, setLatestRelease] = useState<GithubReleaseInfo | null>(
+    null
+  );
+  const [updateAvailable, setUpdateAvailable] = useState(false);
+
   const currentTheme = publicInfo?.theme;
 
   // 动态扩展菜单
@@ -70,8 +85,8 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
         const cfg = data?.configuration;
         if (!cfg) {
           // 没有 configuration 字段则不扩展
-            setExtraMenuItems([]);
-            return;
+          setExtraMenuItems([]);
+          return;
         }
         const rawLabel: string = cfg.name || `${currentTheme}设置`;
         const icon: string = cfg.icon || "Palette"; // fallback icon
@@ -110,6 +125,65 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
 
     fetchVersionInfo();
   }, []);
+
+  // 规范化版本为 [major, minor, patch] 数组，忽略前缀 v 和后缀
+  function parseSemver(input?: string | null): number[] | null {
+    if (!input) return null;
+    const s = String(input).trim().replace(/^v/i, "");
+    const match = s.match(/^(\d+)\.(\d+)\.(\d+)/);
+    if (!match) return null;
+    return [Number(match[1]), Number(match[2]), Number(match[3])];
+  }
+
+  function isNewerVersion(latest?: string | null, current?: string | null) {
+    const a = parseSemver(latest);
+    const b = parseSemver(current);
+    if (!a || !b) return false;
+    for (let i = 0; i < 3; i++) {
+      if (a[i] > b[i]) return true;
+      if (a[i] < b[i]) return false;
+    }
+    return false;
+  }
+
+  // 获取 GitHub 最新 release 并对比当前版本
+  useEffect(() => {
+    let ignore = false;
+    const currentVersion = (publicInfo as any)?.version || versionInfo?.version;
+    if (!currentVersion) return;
+
+    async function loadLatestRelease() {
+      try {
+        const resp = await fetch(
+          "https://api.github.com/repos/komari-monitor/komari/releases/latest",
+          {
+            headers: {
+              Accept: "application/vnd.github+json",
+            },
+            cache: "no-cache",
+          }
+        );
+        if (!resp.ok) throw new Error(`GitHub HTTP ${resp.status}`);
+        const data: GithubReleaseInfo = await resp.json();
+        if (ignore) return;
+        setLatestRelease(data);
+        setUpdateAvailable(
+          isNewerVersion(data?.tag_name || data?.name, currentVersion)
+        );
+      } catch (e) {
+        console.warn("加载 GitHub 最新发布失败:", e);
+        if (!ignore) {
+          setLatestRelease(null);
+          setUpdateAvailable(false);
+        }
+      }
+    }
+
+    loadLatestRelease();
+    return () => {
+      ignore = true;
+    };
+  }, [publicInfo, versionInfo]);
   // Handle responsive behavior
   useEffect(() => {
     const handleResize = () => setSidebarOpen(!isMobile);
@@ -220,11 +294,42 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
               <a href="/" target="_blank" rel="noopener noreferrer">
                 <label className="text-xl font-bold">Komari</label>
               </a>
-              <label className="text-sm text-muted-foreground self-end overflow-hidden">
-                {versionInfo && `${versionInfo.version} (${versionInfo.hash})`}
+              {updateAvailable && latestRelease && (
+                <Tips
+                  mode="dialog"
+                  className="check-update"
+                  trigger={
+                    <CircleFadingArrowUp color="#FB4141" size="16" />
+                  }
+                >
+                  <div className="flex flex-col gap-2">
+                    <label className="font-bold">
+                      {t("common.update_available")}
+                    </label>
+                    {latestRelease.name && (
+                      <div className="text-base font-medium">
+                        {latestRelease.name}
+                      </div>
+                    )}
+                    <div
+                      className="rounded-md p-2 whitespace-pre-wrap break-words overflow-auto max-h-320 text-sm"
+                    >
+                      {latestRelease.body || ""}
+                    </div>
+                    <a className="flex justify-end" href={latestRelease.html_url} target="_blank" rel="noopener noreferrer">
+                      <Button variant="soft">
+                        Github
+                      </Button>
+                    </a>
+                  </div>
+                </Tips>
+              )}
+              <label className="text-sm text-muted-foreground self-end overflow-hidden" hidden={isMobile}>
+                {(publicInfo as any)?.version ||
+                  (versionInfo && `${versionInfo.version} (${versionInfo.hash})`)}
               </label>
             </Flex>
-            <Flex gap="3" align="center">
+            <Flex gap="3" align="center" overflowX="auto">
               {account && !account.logged_in && (
                 <LoginDialog
                   autoOpen={true}
@@ -412,7 +517,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                           style={{ overflow: "hidden" }}
                         >
                           <Flex direction="column" className="ml-4 gap-1">
-              {item.children.map((child: MenuItem) => (
+                            {item.children.map((child: MenuItem) => (
                               <SidebarItem
                                 key={child.path}
                                 to={child.path}
@@ -421,7 +526,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                                   child.labelKey,
                                   "flex w-4 h-5 items-center justify-center"
                                 )}
-                children={(child as ExtendedMenuItem).rawLabel || t(child.labelKey)}
+                                children={(child as ExtendedMenuItem).rawLabel || t(child.labelKey)}
                                 onClick={() =>
                                   isMobile && setSidebarOpen(false)
                                 }
