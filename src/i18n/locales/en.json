@@ -560,7 +560,8 @@
     "generate": "Generate",
     "empty_error": "Can not be empty",
     "help": "Help",
-    "day": "Day"
+    "day": "Day",
+    "update_available": "有新版本"
   },
   "command_clipboard": {
     "title": "Command Clipboard"
