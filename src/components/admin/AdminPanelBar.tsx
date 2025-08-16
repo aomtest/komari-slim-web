@@ -56,11 +56,14 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
     body?: string;
     html_url: string;
     published_at?: string;
+    draft?: boolean;
+    prerelease?: boolean;
   }
   const [latestRelease, setLatestRelease] = useState<GithubReleaseInfo | null>(
     null
   );
   const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [releasesSince, setReleasesSince] = useState<GithubReleaseInfo[]>([]);
 
   const currentTheme = publicInfo?.theme;
 
@@ -146,16 +149,16 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
     return false;
   }
 
-  // 获取 GitHub 最新 release 并对比当前版本
+  // 获取 GitHub releases 列表，并筛选出“比当前版本新的所有 release”
   useEffect(() => {
     let ignore = false;
     const currentVersion = (publicInfo as any)?.version || versionInfo?.version;
     if (!currentVersion) return;
 
-    async function loadLatestRelease() {
+    async function loadReleases() {
       try {
         const resp = await fetch(
-          "https://api.github.com/repos/komari-monitor/komari/releases/latest",
+          "https://api.github.com/repos/komari-monitor/komari/releases?per_page=100",
           {
             headers: {
               Accept: "application/vnd.github+json",
@@ -164,22 +167,25 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
           }
         );
         if (!resp.ok) throw new Error(`GitHub HTTP ${resp.status}`);
-        const data: GithubReleaseInfo = await resp.json();
+        const data: GithubReleaseInfo[] = await resp.json();
         if (ignore) return;
-        setLatestRelease(data);
-        setUpdateAvailable(
-          isNewerVersion(data?.tag_name || data?.name, currentVersion)
-        );
+        const valid = (data || [])
+          .filter(r => !r.draft && !r.prerelease)
+          .filter(r => isNewerVersion(r?.tag_name || r?.name, currentVersion));
+        setReleasesSince(valid);
+        setLatestRelease(valid.length ? valid[0] : null);
+        setUpdateAvailable(valid.length > 0);
       } catch (e) {
         console.warn("加载 GitHub 最新发布失败:", e);
         if (!ignore) {
           setLatestRelease(null);
+          setReleasesSince([]);
           setUpdateAvailable(false);
         }
       }
     }
 
-    loadLatestRelease();
+    loadReleases();
     return () => {
       ignore = true;
     };
@@ -294,7 +300,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
               <a href="/" target="_blank" rel="noopener noreferrer">
                 <label className="text-xl font-bold">Komari</label>
               </a>
-              {updateAvailable && latestRelease && (
+              {updateAvailable && releasesSince.length > 0 && (
                 <Tips
                   mode="dialog"
                   className="check-update"
@@ -302,25 +308,51 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                     <CircleFadingArrowUp color="#FB4141" size="16" />
                   }
                 >
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 max-w-[80vw] md:max-w-[720px]">
                     <label className="font-bold">
                       {t("common.update_available")}
                     </label>
-                    {latestRelease.name && (
-                      <div className="text-base font-medium">
-                        {latestRelease.name}
-                      </div>
-                    )}
-                    <div
-                      className="rounded-md p-2 whitespace-pre-wrap break-words overflow-auto max-h-320 text-sm"
-                    >
-                      {latestRelease.body || ""}
+                    <div className="text-sm text-muted-foreground">
+                      <span style={{ marginRight: 8 }}>
+                        {(publicInfo as any)?.version || versionInfo?.version}
+                      </span>
+                      <span>
+                        {"> "}
+                      </span>
+                      <span>
+                        {(latestRelease?.tag_name || latestRelease?.name) ?? ""}
+                      </span>
                     </div>
-                    <a className="flex justify-end" href={latestRelease.html_url} target="_blank" rel="noopener noreferrer">
-                      <Button variant="soft">
-                        Github
-                      </Button>
-                    </a>
+
+                    <div
+                      className="rounded-md p-2 overflow-auto max-h-80"
+                    >
+                      <div className="flex flex-col gap-4 text-sm">
+                        {releasesSince.map((r) => (
+                          <div key={r.html_url} className="flex flex-col gap-2">
+                            <div className="flex items-center justify-between">
+                              <div className="font-medium">
+                                {r.name || r.tag_name}
+                              </div>
+                              {r.published_at && (
+                                <div className="text-xs text-muted-foreground">
+                                  {new Date(r.published_at).toLocaleString()}
+                                </div>
+                              )}
+                            </div>
+                            <div className="whitespace-pre-wrap break-words">
+                              {r.body || ""}
+                            </div>
+                            <div style={{ height: 1, background: "var(--accent-5)", opacity: 0.5 }} />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex justify-end">
+                      <a href={latestRelease?.html_url} target="_blank" rel="noopener noreferrer">
+                        <Button variant="soft">Github</Button>
+                      </a>
+                    </div>
                   </div>
                 </Tips>
               )}
