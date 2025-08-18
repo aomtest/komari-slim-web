@@ -76,9 +76,9 @@
     },
     "general": {
       "title": "General",
-      "auto_discovery": "自动发现",
-      "auto_discovery_key": "自动发现密钥",
-      "auto_discovery_key_description": "使用自动发现可以批量注册客户端，留空表示禁用自动发现。"
+      "auto_discovery": "Auto discovery",
+      "auto_discovery_key": "Auto discovery key",
+      "auto_discovery_key_description": "Use automatic discovery to register clients in bulk. Leave blank to disable automatic discovery."
     },
     "site": {
       "name": "Site Name",
@@ -168,9 +168,9 @@
     },
     "missing_required_fields": "请填写必填字段: {{fieldNames}}",
     "api": {
-      "key_length_error": "API 密钥长度至少为12",
-      "title": "API密钥",
-      "description": "使用API密钥可以访问并操作所有资源，包括不限于远程控制、修改设置和账号密码等，请谨慎保管。留空表示取消API密钥功能。"
+      "key_length_error": "The API key must be at least 12 characters long",
+      "title": "API key",
+      "description": "API keys can be used to access and operate all resources, including but not limited to remote control, modification of settings, and account passwords. Please keep them safe. Leaving this field blank will disable the API key function."
     }
   },
   "sessions": {
@@ -326,7 +326,7 @@
     "loss_tips": "Packet loss rate calculation algorithms are inaccurate; please use with caution.",
     "showAll": "Show All",
     "hideAll": "Hide All",
-    "cutPeak_tips": "<h2 class=\"text-lg font-bold\">关于数据平滑的提示</h2><p>当您开启平滑后，您在统计图中看到的曲线经过<strong>指数加权移动平均 (EWMA)</strong> 算法处理，这是一种常用的数据平滑技术。</p></br><p>需要注意的是，经过EWMA算法平滑后的曲线所展示的数值，<strong>并非原始的、真实的测量数据</strong>。它们是根据EWMA算法计算得出的一个<strong>平滑趋势线</strong>，旨在减少数据波动，使数据模式和趋势更容易被识别。</p></br><p>因此，您看到的数值更像是<strong>视觉上的呈现</strong>，帮助您更好地理解数据的整体走向和长期趋势，而不是每一个时间点的精确真实值。如果您需要查看具体、原始的数据点，请参考未经平滑处理的数据视图。</p>"
+    "cutPeak_tips": "<h2 class=\"text-lg font-bold\">Tips on Data Smoothing</h2><p>When you enable smoothing, the curves you see in the statistical charts are processed using the <strong>Exponentially Weighted Moving Average (EWMA)</strong> algorithm, a commonly used data smoothing technique.</p></br><p>It's important to note that the values displayed by the EWMA algorithm's smoothed curves, <strong>are not the original, raw measured data</strong>. They represent a <strong>smoothed trend line</strong> calculated based on the EWMA algorithm, designed to reduce data fluctuations and make data patterns and trends easier to identify.</p></br><p>Therefore, the values you see are more of a <strong>visual presentation</strong>, helping you better understand the overall direction and long-term trends of the data, rather than the precise true value at each point in time. If you need to view specific, raw data points, please refer to the unsmoothed data view.</p>"
   },
   "home_title": "Komari Monitor",
   "admin": {
@@ -373,7 +373,7 @@
       "setToLongTerm": "Set to Long term",
       "invalidPrice": "Invalid price",
       "priceTips": "0 is not displayed, -1 means free",
-      "currencyTips":"¥-RMB，$-Dollar，€-Euro，£-Pound，₽-Ruble，₣-Franc，₹-Rupee，₫-VND，฿-THB",
+      "currencyTips": "¥-RMB，$-Dollar，€-Euro，£-Pound，₽-Ruble，₣-Franc，₹-Rupee，₫-VND，฿-THB",
       "dragToReorder": "Long press and drag to reorder",
       "memoryModeAvailable": "Monitor available memory",
       "memoryModeAvailable_tip": "The Agent monitors and reports used memory by default. Selecting this option will monitor and report available memory.",
@@ -413,7 +413,17 @@
       "waiting": "wait...",
       "save": "save",
       "saveSuccess": "Save successfully",
-      "saveError": "Saving failed"
+      "saveError": "Saving failed",
+      "hidden": "隐藏节点",
+      "hidden_description": "在未登陆的情况下隐藏该节点",
+      "trafficLimit": "流量阈值",
+      "trafficLimit_description": "用于首页流量进度条，设置为 0 B 禁用。",
+      "trafficLimitType": "统计方式",
+      "trafficLimitType_max": "取最大",
+      "trafficLimitType_sum": "总和",
+      "trafficLimitType_min": "取最小",
+      "trafficLimitType_up": "仅上传",
+      "trafficLimitType_down": "仅下载"
     },
     "notification": {
       "expire_title": "Expire notification",
@@ -456,7 +466,7 @@
     "description": "Description",
     "update": "Update Theme",
     "update_theme": "Update Theme",
-    "update_description": "If the original theme URL is inaccessible, please upload the theme package to update it",
+    "update_description": "If the original theme URL is inaccessible, please upload the theme package to update it.",
     "theme_url": "Theme URL",
     "update_success": "Theme updated successfully",
     "update_failed": "Theme update failed",
@@ -469,7 +479,11 @@
     "github_owner_placeholder": "Enter the GitHub owner/username",
     "github_repo": "GitHub Repository",
     "github_repo_placeholder": "Enter the GitHub repository name",
-    "github_description": "The system will download the latest release from this GitHub repository."
+    "github_description": "The system will download the latest release from this GitHub repository.",
+    "manage": "主题管理",
+    "manage_with_name": "{{name}} 主题管理",
+    "default_no_config": "默认主题没有可配置选项。",
+    "no_config": "该主题没有声明配置项。"
   },
   "copy_success": "Copied!",
   "copy": "Copy",
@@ -543,10 +557,11 @@
     "tagsDescription": "Multiple tags separated by ';'",
     "tagsTips": "Multiple tags are separated by “;”. </br>  To specify a color, add &ltcolor&gt to the end of the label, e.g. 1Gbps&ltgreen&gt.</br>  A list of available colors can be found at <label class=\"bg-accent-a5 rounded-sm\"><a href=\"https://www.radix-ui.com/themes/docs/theme/color\" target=\"_blank\"> Color - Radix Themes</a></label>",
     "private_site": "This is a private Komari site. Please log in first.",
-    "generate": "生成",
-    "empty_error": "不能为空",
-    "help": "帮助",
-    "day": "天"
+    "generate": "Generate",
+    "empty_error": "Can not be empty",
+    "help": "Help",
+    "day": "Day",
+    "update_available": "有新版本"
   },
   "command_clipboard": {
     "title": "Command Clipboard"
@@ -573,8 +588,8 @@
     "target": "Target",
     "interval": "Interval",
     "type": "Type",
-    "disk_usage_estimate": "预计需要磁盘空间",
-    "disk_usage_with_settings": "根据设置的 {{hour}} 小时保存时间，需要使用 {{space}} 磁盘空间。"
+    "disk_usage_estimate": "Estimated disk space required",
+    "disk_usage_with_settings": "Based on the {{hour}} hour retention period you set, you'll need {{space}} disk space."
   },
   "search": {
     "placeholder": "Search nodes by name, region, OS...",
@@ -617,27 +632,27 @@
     "title": "PWA Status"
   },
   "exec": {
-    "title": "远程执行",
-    "description": "在选定的节点上远程执行命令",
-    "command": "执行命令",
+    "title": "Remote Exec",
+    "description": "Remotely execute commands on selected nodes",
+    "command": "Execute command",
     "commandPlaceholder": "whoami",
-    "selectNodes": "选择目标节点",
-    "selectedNodes": "已选择节点",
-    "execute": "执行命令",
-    "executing": "执行中...",
-    "results": "执行结果",
-    "success": "命令执行完成",
+    "selectNodes": "Select target node",
+    "selectedNodes": "Selected node",
+    "execute": "Remote Exec",
+    "executing": "Executing",
+    "results": "Execute result",
+    "success": "Command execution completed",
     "errors": {
-      "emptyCommand": "命令不能为空",
-      "noNodes": "请选择至少一个节点",
-      "executionFailed": "执行失败"
+      "emptyCommand": "The command cannot be empty.",
+      "noNodes": "Please select at least one node.",
+      "executionFailed": "Execution failed"
     },
     "status": {
-      "success": "成功",
-      "failed": "失败",
-      "running": "正在运行",
-      "timeout": "超时"
+      "success": "Success",
+      "failed": "Failed",
+      "running": "Running",
+      "timeout": "Timeout"
     },
-    "taskStarted": "任务已启动"
+    "taskStarted": "The task has been initiated."
   }
 }

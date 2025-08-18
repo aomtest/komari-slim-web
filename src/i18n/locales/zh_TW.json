@@ -373,7 +373,7 @@
       "setToLongTerm": "設定為長期",
       "invalidPrice": "價格無效",
       "priceTips": "0不顯示，-1表示免費",
-      "currencyTips":"¥-人民幣，$-美元，€-歐元，£-英鎊，₽-盧布，₣-法郎，₹-盧比，₫-越南盾，฿-泰銖",
+      "currencyTips": "¥-人民幣，$-美元，€-歐元，£-英鎊，₽-盧布，₣-法郎，₹-盧比，₫-越南盾，฿-泰銖",
       "dragToReorder": "長按拖曳重新排序",
       "memoryModeAvailable": "監測可用記憶體",
       "memoryModeAvailable_tip": "Agent 預設監測並上報已用記憶體，勾選此選項將監測並上報可用記憶體。",
@@ -413,7 +413,17 @@
       "waiting": "等待...",
       "save": "儲存",
       "saveSuccess": "儲存成功",
-      "saveError": "儲存失敗"
+      "saveError": "儲存失敗",
+      "hidden": "隐藏节点",
+      "hidden_description": "在未登陆的情况下隐藏该节点",
+      "trafficLimit": "流量阈值",
+      "trafficLimit_description": "用于首页流量进度条，设置为 0 B 禁用。",
+      "trafficLimitType": "统计方式",
+      "trafficLimitType_max": "取最大",
+      "trafficLimitType_sum": "总和",
+      "trafficLimitType_min": "取最小",
+      "trafficLimitType_up": "仅上传",
+      "trafficLimitType_down": "仅下载"
     },
     "notification": {
       "expire_title": "過期提醒",
@@ -469,7 +479,11 @@
     "github_owner_placeholder": "輸入GitHub用戶名/組織名",
     "github_repo": "GitHub倉庫",
     "github_repo_placeholder": "輸入GitHub倉庫名稱",
-    "github_description": "系統將從該GitHub倉庫下載最新的發佈版本。"
+    "github_description": "系統將從該GitHub倉庫下載最新的發佈版本。",
+    "manage": "主题管理",
+    "manage_with_name": "{{name}} 主题管理",
+    "default_no_config": "默认主题没有可配置选项。",
+    "no_config": "该主题没有声明配置项。"
   },
   "copy_success": "已複製到剪貼簿",
   "copy": "複製",
@@ -546,7 +560,8 @@
     "generate": "生成",
     "empty_error": "不能为空",
     "help": "帮助",
-    "day": "天"
+    "day": "天",
+    "update_available": "有新版本"
   },
   "command_clipboard": {
     "title": "命令剪貼簿"
