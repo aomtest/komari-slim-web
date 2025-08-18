@@ -332,7 +332,7 @@ const DiskUsageEstimate = () => {
     // - int: 8字节 (64位整数) 
     // - time: 33字节 (RFC3339格式字符串，如 "2006-01-02T15:04:05.000Z07:00")
     // - 其他开销: 20字节
-    const recordSize = 36 + 8 + 8 + 33 + 20; // 约95字节
+    const recordSize = (36 + 8 + 8 + 33 + 20) * 2; // 回收余量2倍
 
     const totalRecordsPerDay = pingTasks.reduce((total, task) => {
       const clientCount = task.clients?.length || 0;

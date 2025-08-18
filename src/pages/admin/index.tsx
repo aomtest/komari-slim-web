@@ -63,11 +63,11 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { formatBytes } from "@/components/Node";
+import { formatBytes, stringToBytes } from "@/utils/unitHelper";
 import PriceTags from "@/components/PriceTags";
 import Loading from "@/components/loading";
 import Tips from "@/components/ui/tips";
-import { SettingCardSwitch } from "@/components/admin/SettingCard";
+import { SettingCardCollapse, SettingCardSelect, SettingCardShortTextInput, SettingCardSwitch } from "@/components/admin/SettingCard";
 
 const NodeDetailsPage = () => {
   return (
@@ -1095,7 +1095,18 @@ function EditButton({ node }: { node: NodeDetail }) {
   const tagsRef = React.useRef<HTMLInputElement>(null);
   const publicRemarkRef = React.useRef<HTMLTextAreaElement>(null);
   const privateRemarkRef = React.useRef<HTMLTextAreaElement>(null);
+  const [hidden, setHidden] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [traffic_limit, setTrafficLimit] = useState(0);
+  const [traffic_limit_type, setTrafficLimitType] = useState("sum");
+
+  React.useEffect(() => {
+    setHidden(node.hidden);
+    setTrafficLimit(node.traffic_limit || 0);
+    setTrafficLimitType(node.traffic_limit_type || "sum")
+  }, [node.hidden, node.traffic_limit, node.traffic_limit_type]);
+
+
   const save = async () => {
     try {
       setSaving(true);
@@ -1107,6 +1118,9 @@ function EditButton({ node }: { node: NodeDetail }) {
           public_remark: publicRemarkRef.current?.value,
           group: groupRef.current?.value,
           tags: tagsRef.current?.value,
+          hidden,
+          traffic_limit,
+          traffic_limit_type
         }),
         headers: {
           "Content-Type": "application/json",
@@ -1202,6 +1216,61 @@ function EditButton({ node }: { node: NodeDetail }) {
               ref={publicRemarkRef}
             />
           </div>
+          <div>
+            <SettingCardSwitch
+              title={t("admin.nodeEdit.hidden")}
+              description={t("admin.nodeEdit.hidden_description")}
+              defaultChecked={hidden}
+              onChange={setHidden}
+            />
+          </div>
+          <SettingCardCollapse title={t("admin.nodeEdit.trafficLimit")}>
+            <SettingCardSelect
+              bordless
+              title={t("admin.nodeEdit.trafficLimitType")}
+              defaultValue={node.traffic_limit_type || "max"}
+              options={[
+                {
+                  label: t("admin.nodeEdit.trafficLimitType_sum"),
+                  value: "sum"
+                },
+                {
+                  label: t("admin.nodeEdit.trafficLimitType_max"),
+                  value: "max"
+                },
+                {
+                  label: t("admin.nodeEdit.trafficLimitType_min"),
+                  value: "min"
+                },
+                                {
+                  label: t("admin.nodeEdit.trafficLimitType_up"),
+                  value: "up"
+                },
+                                {
+                  label: t("admin.nodeEdit.trafficLimitType_down"),
+                  value: "down"
+                },
+              ]} 
+              OnSave={(value) => {
+                setTrafficLimitType(value);
+              }}/>
+            <SettingCardShortTextInput
+              bordless
+              title={t("admin.nodeEdit.trafficLimit")}
+              description={t("admin.nodeEdit.trafficLimit_description")}
+              defaultValue={formatBytes(traffic_limit || 0)}
+              showSaveButton={false}
+              onChange={(e) => {
+                setTrafficLimit(stringToBytes(e.currentTarget.value));
+              }}
+              onBlur={
+                (e) => {
+                  e.currentTarget.value = formatBytes(traffic_limit);
+                }
+              }
+            >
+            </SettingCardShortTextInput>
+          </SettingCardCollapse>
         </div>
         <Flex gap="2" justify={"end"} className="mt-4">
           <Button
@@ -1531,7 +1600,10 @@ function BillingButton({ node }: { node: NodeDetail }) {
             <TextField.Root name="price" defaultValue={node.price} />
 
             <label className="font-bold">
-              {t("admin.nodeTable.currency", "货币")}
+              <label>{t("admin.nodeTable.currency", "货币")}</label>
+              <label className="text-muted-foreground text-sm ml-1 font-medium">
+                {t("admin.nodeTable.currencyTips")}
+              </label>
             </label>
             <TextField.Root
               name="currency"
@@ -1594,7 +1666,7 @@ function BillingButton({ node }: { node: NodeDetail }) {
               </TextField.Slot>
             </TextField.Root>
             <Flex gap="2" align="center">
-              
+
             </Flex>
             <SettingCardSwitch title={t("admin.nodeTable.autoRenewal")} description={t("admin.nodeTable.autoRenewalDescription")} defaultChecked={node.auto_renewal || false} onChange={setAutoRenewal} />
             <Button type="submit" disabled={saving}>

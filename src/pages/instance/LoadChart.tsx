@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useLiveData } from "../../contexts/LiveDataContext";
 import { useTranslation } from "react-i18next";
 import { Card, Flex, SegmentedControl } from "@radix-ui/themes";
-import { formatBytes } from "../../components/Node";
+import { formatBytes } from "@/utils/unitHelper";
 import { useNodeList } from "@/contexts/NodeListContext";
 import fillMissingTimePoints, { type RecordFormat } from "@/utils/RecordHelper";
 import {

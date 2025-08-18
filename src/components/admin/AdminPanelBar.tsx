@@ -1,5 +1,5 @@
 import { Cross1Icon, ExitIcon } from "@radix-ui/react-icons";
-import { Callout, Flex, Grid, IconButton, Text } from "@radix-ui/themes";
+import { Button, Callout, Flex, Grid, IconButton, Text } from "@radix-ui/themes";
 import { AnimatePresence, motion } from "framer-motion"; // 引入 Framer Motion
 import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -15,9 +15,17 @@ import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { TablerMenu2 } from "../Icones/Tabler";
 import LoginDialog from "../Login";
 import { useAccount } from "@/contexts/AccountContext";
+import { usePublicInfo } from "@/contexts/PublicInfoContext";
+import Tips from "../ui/tips";
+import { CircleFadingArrowUp } from "lucide-react";
 
-// 将JSON配置转换为类型安全的菜单项数组
-const menuItems = (menuConfig as { menu: MenuItem[] }).menu;
+// 将JSON配置转换为类型安全的菜单项数组 (基础静态菜单)
+const baseMenuItems = (menuConfig as { menu: MenuItem[] }).menu;
+
+// 扩展的菜单项类型（允许直接提供 rawLabel 而不是多语言 key）
+interface ExtendedMenuItem extends MenuItem {
+  rawLabel?: string; // 不走 i18n，直接显示
+}
 
 interface AdminPanelBarProps {
   content: ReactNode;
@@ -33,12 +41,75 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
   const ishttps = window.location.protocol === "https:";
   const [t] = useTranslation();
   const location = useLocation();
+  const { publicInfo } = usePublicInfo();
   //const navigate = useNavigate();
   // 获取版本信息
   const [versionInfo, setVersionInfo] = useState<{
     hash: string;
     version: string;
   } | null>(null);
+
+  // GitHub 最新发布信息与更新检测
+  interface GithubReleaseInfo {
+    tag_name: string;
+    name?: string;
+    body?: string;
+    html_url: string;
+    published_at?: string;
+    draft?: boolean;
+    prerelease?: boolean;
+  }
+  const [latestRelease, setLatestRelease] = useState<GithubReleaseInfo | null>(
+    null
+  );
+  const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [releasesSince, setReleasesSince] = useState<GithubReleaseInfo[]>([]);
+
+  const currentTheme = publicInfo?.theme;
+
+  // 动态扩展菜单
+  const [extraMenuItems, setExtraMenuItems] = useState<ExtendedMenuItem[]>([]);
+
+  useEffect(() => {
+    let ignore = false;
+    async function loadThemeMenu() {
+      // 仅当 theme 存在且不等于 default 时扩展
+      if (!currentTheme || currentTheme === "default") {
+        setExtraMenuItems([]);
+        return;
+      }
+      try {
+        const resp = await fetch(`/themes/${currentTheme}/komari-theme.json`, {
+          cache: "no-cache",
+        });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        if (ignore) return;
+        const cfg = data?.configuration;
+        if (!cfg) {
+          // 没有 configuration 字段则不扩展
+          setExtraMenuItems([]);
+          return;
+        }
+        const rawLabel: string = cfg.name || `${currentTheme}设置`;
+        const icon: string = cfg.icon || "Palette"; // fallback icon
+        const item: ExtendedMenuItem = {
+          labelKey: rawLabel,
+          rawLabel,
+          path: "/admin/theme_managed",
+          icon,
+        };
+        setExtraMenuItems([item]);
+      } catch (e) {
+        console.warn("加载主题配置失败，将不扩展主题菜单:", e);
+        if (!ignore) setExtraMenuItems([]);
+      }
+    }
+    loadThemeMenu();
+    return () => {
+      ignore = true;
+    };
+  }, [currentTheme]);
   useEffect(() => {
     const fetchVersionInfo = async () => {
       try {
@@ -57,6 +128,68 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
 
     fetchVersionInfo();
   }, []);
+
+  // 规范化版本为 [major, minor, patch] 数组，忽略前缀 v 和后缀
+  function parseSemver(input?: string | null): number[] | null {
+    if (!input) return null;
+    const s = String(input).trim().replace(/^v/i, "");
+    const match = s.match(/^(\d+)\.(\d+)\.(\d+)/);
+    if (!match) return null;
+    return [Number(match[1]), Number(match[2]), Number(match[3])];
+  }
+
+  function isNewerVersion(latest?: string | null, current?: string | null) {
+    const a = parseSemver(latest);
+    const b = parseSemver(current);
+    if (!a || !b) return false;
+    for (let i = 0; i < 3; i++) {
+      if (a[i] > b[i]) return true;
+      if (a[i] < b[i]) return false;
+    }
+    return false;
+  }
+
+  // 获取 GitHub releases 列表，并筛选出“比当前版本新的所有 release”
+  useEffect(() => {
+    let ignore = false;
+    const currentVersion = (publicInfo as any)?.version || versionInfo?.version;
+    if (!currentVersion) return;
+
+    async function loadReleases() {
+      try {
+        const resp = await fetch(
+          "https://api.github.com/repos/komari-monitor/komari/releases?per_page=100",
+          {
+            headers: {
+              Accept: "application/vnd.github+json",
+            },
+            cache: "no-cache",
+          }
+        );
+        if (!resp.ok) throw new Error(`GitHub HTTP ${resp.status}`);
+        const data: GithubReleaseInfo[] = await resp.json();
+        if (ignore) return;
+        const valid = (data || [])
+          .filter(r => !r.draft && !r.prerelease)
+          .filter(r => isNewerVersion(r?.tag_name || r?.name, currentVersion));
+        setReleasesSince(valid);
+        setLatestRelease(valid.length ? valid[0] : null);
+        setUpdateAvailable(valid.length > 0);
+      } catch (e) {
+        console.warn("加载 GitHub 最新发布失败:", e);
+        if (!ignore) {
+          setLatestRelease(null);
+          setReleasesSince([]);
+          setUpdateAvailable(false);
+        }
+      }
+    }
+
+    loadReleases();
+    return () => {
+      ignore = true;
+    };
+  }, [publicInfo, versionInfo]);
   // Handle responsive behavior
   useEffect(() => {
     const handleResize = () => setSidebarOpen(!isMobile);
@@ -65,20 +198,24 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
     return () => window.removeEventListener("resize", handleResize);
   }, [isMobile]);
 
-  // 初次加载时根据当前路径自动展开子菜单
+  // 根据路径自动展开子菜单（包含动态扩展项）
   useEffect(() => {
     const newState: { [key: string]: boolean } = {};
-    menuItems.forEach((item) => {
+    const combined: ExtendedMenuItem[] = [
+      ...baseMenuItems,
+      ...extraMenuItems,
+    ];
+    combined.forEach((item) => {
       if (item.children) {
         newState[item.path] = item.children.some(
-          (child) =>
+          (child: MenuItem) =>
             location.pathname === child.path ||
             location.pathname.startsWith(child.path)
         );
       }
     });
     setOpenSubMenus(newState);
-  }, [location.pathname]);
+  }, [location.pathname, extraMenuItems]);
 
   // 侧边栏动画变体
   const sidebarVariants = {
@@ -163,11 +300,68 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
               <a href="/" target="_blank" rel="noopener noreferrer">
                 <label className="text-xl font-bold">Komari</label>
               </a>
-              <label className="text-sm text-muted-foreground self-end overflow-hidden">
-                {versionInfo && `${versionInfo.version} (${versionInfo.hash})`}
+              {updateAvailable && releasesSince.length > 0 && (
+                <Tips
+                  mode="dialog"
+                  className="check-update"
+                  trigger={
+                    <CircleFadingArrowUp color="#FB4141" size="16" />
+                  }
+                >
+                  <div className="flex flex-col gap-2 max-w-[80vw] md:max-w-[720px]">
+                    <label className="font-bold">
+                      {t("common.update_available")}
+                    </label>
+                    <div className="text-sm text-muted-foreground">
+                      <span style={{ marginRight: 8 }}>
+                        {(publicInfo as any)?.version || versionInfo?.version}
+                      </span>
+                      <span>
+                        {"> "}
+                      </span>
+                      <span>
+                        {(latestRelease?.tag_name || latestRelease?.name) ?? ""}
+                      </span>
+                    </div>
+
+                    <div
+                      className="rounded-md p-2 overflow-auto max-h-80"
+                    >
+                      <div className="flex flex-col gap-4 text-sm">
+                        {releasesSince.map((r) => (
+                          <div key={r.html_url} className="flex flex-col gap-2">
+                            <div className="flex items-center justify-between">
+                              <div className="font-medium">
+                                {r.name || r.tag_name}
+                              </div>
+                              {r.published_at && (
+                                <div className="text-xs text-muted-foreground">
+                                  {new Date(r.published_at).toLocaleString()}
+                                </div>
+                              )}
+                            </div>
+                            <div className="whitespace-pre-wrap break-words">
+                              {r.body || ""}
+                            </div>
+                            <div style={{ height: 1, background: "var(--accent-5)", opacity: 0.5 }} />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex justify-end">
+                      <a href={latestRelease?.html_url} target="_blank" rel="noopener noreferrer">
+                        <Button variant="soft">Github</Button>
+                      </a>
+                    </div>
+                  </div>
+                </Tips>
+              )}
+              <label className="text-sm text-muted-foreground self-end overflow-hidden" hidden={isMobile}>
+                {(publicInfo as any)?.version ||
+                  (versionInfo && `${versionInfo.version} (${versionInfo.hash})`)}
               </label>
             </Flex>
-            <Flex gap="3" align="center">
+            <Flex gap="3" align="center" overflowX="auto">
               {account && !account.logged_in && (
                 <LoginDialog
                   autoOpen={true}
@@ -229,9 +423,60 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                 className="h-full md:mt-0 mt-6 "
                 style={{ width: "100%" }}
               >
-                {menuItems.map((item) => {
-                  const IconComp = iconMap[item.icon];
+                {[...baseMenuItems, ...extraMenuItems].map((item: ExtendedMenuItem) => {
+                  // 支持 icon 为 URL/相对路径
                   const isOpen = openSubMenus[item.path];
+                  const renderIcon = (
+                    icon: string,
+                    labelKey: string,
+                    className?: string,
+                    active?: boolean
+                  ) => {
+                    const link = /^(https?:\/\/|\/|\.\/|\.\.\/)/.test(icon);
+                    if (link) {
+                      return (
+                        <img
+                          src={icon}
+                          alt={t(labelKey)}
+                          style={{
+                            width: 16,
+                            height: 16,
+                            objectFit: "contain",
+                            opacity: active ? 1 : 0.7,
+                            filter: active ? "none" : "grayscale(20%)",
+                          }}
+                          className={className}
+                          loading="lazy"
+                        />
+                      );
+                    }
+                    const Cmp = iconMap[icon];
+                    if (Cmp) {
+                      return (
+                        <Cmp
+                          className={className}
+                          style={{
+                            color: active
+                              ? "var(--accent-10)"
+                              : "var(--gray11)",
+                          }}
+                        />
+                      );
+                    }
+                    // fallback: simple dot
+                    return (
+                      <span
+                        className={className}
+                        style={{
+                          width: 16,
+                          height: 16,
+                          display: "inline-block",
+                          borderRadius: 4,
+                          background: "var(--accent-8)",
+                        }}
+                      />
+                    );
+                  };
                   if (item.children && item.children.length) {
                     return (
                       <div key={item.path}>
@@ -269,9 +514,11 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                             //}
                           }}
                         >
-                          <IconComp
-                            className="flex w-4 h-5 items-center justify-center opacity-70"
-                          />
+                          {renderIcon(
+                            item.icon,
+                            item.labelKey,
+                            "flex w-4 h-5 items-center justify-center"
+                          )}
                           <Text
                             className="text-base"
                             weight="medium"
@@ -279,7 +526,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                               flex: 1,
                             }}
                           >
-                            {t(item.labelKey)}
+                            {item.rawLabel || t(item.labelKey)}
                           </Text>
 
                           <ChevronDownIcon
@@ -302,24 +549,21 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                           style={{ overflow: "hidden" }}
                         >
                           <Flex direction="column" className="ml-4 gap-1">
-                            {item.children.map((child: MenuItem) => {
-                              const ChildIcon = iconMap[child.icon];
-                              return (
-                                <SidebarItem
-                                  key={child.path}
-                                  to={child.path}
-                                  icon={
-                                    <ChildIcon
-                                      style={{ color: "var(--gray11)" }}
-                                    />
-                                  }
-                                  children={t(child.labelKey)}
-                                  onClick={() =>
-                                    isMobile && setSidebarOpen(false)
-                                  }
-                                />
-                              );
-                            })}
+                            {item.children.map((child: MenuItem) => (
+                              <SidebarItem
+                                key={child.path}
+                                to={child.path}
+                                icon={renderIcon(
+                                  child.icon,
+                                  child.labelKey,
+                                  "flex w-4 h-5 items-center justify-center"
+                                )}
+                                children={(child as ExtendedMenuItem).rawLabel || t(child.labelKey)}
+                                onClick={() =>
+                                  isMobile && setSidebarOpen(false)
+                                }
+                              />
+                            ))}
                           </Flex>
                         </motion.div>
                       </div>
@@ -329,8 +573,12 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                     <SidebarItem
                       key={item.path}
                       to={item.path}
-                      icon={<IconComp style={{ color: "var(--gray11)" }} />}
-                      children={t(item.labelKey)}
+                      icon={renderIcon(
+                        item.icon,
+                        item.labelKey,
+                        "flex w-4 h-5 items-center justify-center"
+                      )}
+                      children={item.rawLabel || t(item.labelKey)}
                       onClick={() => isMobile && setSidebarOpen(false)}
                     />
                   );

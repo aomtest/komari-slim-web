@@ -265,7 +265,7 @@ const MiniPingChart = ({
         <Switch size="1" checked={cutPeak} onCheckedChange={setCutPeak} />
         <label htmlFor="cut-peak" className="text-sm font-medium flex items-center gap-1 flex-row">
           {t("chart.cutPeak")}
-          <Tips side="top"><span dangerouslySetInnerHTML={{ __html: t("chart.cutPeak_tips") }} /></Tips>
+          <Tips mode="popup" side="top"><span dangerouslySetInnerHTML={{ __html: t("chart.cutPeak_tips") }} /></Tips>
         </label>
 
       </div>

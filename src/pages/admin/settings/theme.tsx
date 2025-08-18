@@ -27,6 +27,7 @@ interface Theme {
   url?: string;
   active: boolean;
   createdAt: string;
+  configuration?: any;
 }
 
 const ThemePage = () => {
@@ -201,6 +202,12 @@ const ThemePage = () => {
           active: theme.short === themeShort,
         }))
       );
+
+      const theme = themes.find(t => t.short === themeShort)
+      console.log(theme)
+      if ( theme && theme.configuration && theme.configuration.data) {
+        window.location.reload(); 
+      }
 
       toast.success(t("theme.set_success"));
     } catch (err) {

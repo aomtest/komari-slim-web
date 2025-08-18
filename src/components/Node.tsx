@@ -12,7 +12,7 @@ import Flag from "./Flag";
 import { useTranslation } from "react-i18next";
 import Tips from "./ui/tips";
 
-/** 将字节转换为人类可读的大小 */
+import { formatBytes } from "@/utils/unitHelper";
 
 /** 格式化秒*/
 export function formatUptime(seconds: number, t: TFunction): string {
@@ -28,18 +28,7 @@ export function formatUptime(seconds: number, t: TFunction): string {
   if (s || parts.length === 0) parts.push(`${s} ${t("nodeCard.time_second")}`);
   return parts.join(" ");
 }
-export function formatBytes(bytes: number): string {
-  const units = ["B", "KB", "MB", "GB", "TB", "PB"];
-  let size = bytes;
-  let unitIndex = 0;
 
-  while (size >= 1024 && unitIndex < units.length - 1) {
-    size /= 1024;
-    unitIndex++;
-  }
-
-  return `${size.toFixed(2)} ${units[unitIndex]}`;
-}
 
 interface NodeProps {
   basic: NodeBasicInfo;
@@ -77,6 +66,7 @@ const Node = ({ basic, live, online }: NodeProps) => {
         margin: "0 auto",
         transition: "all 0.2s ease-in-out",
       }}
+      id={basic.uuid}
       className="node-card hover:cursor-pointer hover:shadow-lg hover:bg-accent-2"
     >
       <Flex direction="column" gap="2">
@@ -176,6 +166,36 @@ const Node = ({ basic, live, online }: NodeProps) => {
               {formatBytes(basic.disk_total)})
             </Text>
           </Flex>
+          {basic.traffic_limit > 0 ? (
+            <Flex justify="between" hidden={isMobile} direction="column">
+              <UsageBar
+                label={t("nodeCard.totalTraffic")}
+                value={getTrafficPercentage(liveData.network.totalUp, liveData.network.totalDown, basic.traffic_limit, basic.traffic_limit_type ?? "sum")}
+                max={Infinity}
+              />
+              <Flex wrap="nowrap" justify="between">
+                <Text size="1"
+                  className="md:block hidden"
+                  color="gray">
+                  ↑ {totalUpload} ↓ {totalDownload}
+                </Text>
+                <Text size="1"
+                  className="md:block hidden"
+                  color="gray">
+                  {basic.traffic_limit_type && basic.traffic_limit_type.charAt(0).toUpperCase() + basic.traffic_limit_type.slice(1)}({formatBytes(basic.traffic_limit)})
+                </Text>
+              </Flex>
+            </Flex>
+          ) : (
+            <Flex justify="between" hidden={isMobile}>
+              <Text size="2" color="gray">
+                {t("nodeCard.totalTraffic")}
+              </Text>
+              <Text size="2">
+                ↑ {totalUpload} ↓ {totalDownload}
+              </Text>
+            </Flex>
+          )}
 
           <Flex justify="between" hidden={isMobile}>
             <Text size="2" color="gray">
@@ -186,14 +206,6 @@ const Node = ({ basic, live, online }: NodeProps) => {
             </Text>
           </Flex>
 
-          <Flex justify="between" hidden={isMobile}>
-            <Text size="2" color="gray">
-              {t("nodeCard.totalTraffic")}
-            </Text>
-            <Text size="2">
-              ↑ {totalUpload} ↓ {totalDownload}
-            </Text>
-          </Flex>
           <Flex justify="between" gap="2" hidden={!isMobile}>
             <Text size="2">{t("nodeCard.networkSpeed")}</Text>
             <Text size="2">
@@ -202,10 +214,15 @@ const Node = ({ basic, live, online }: NodeProps) => {
           </Flex>
           <Flex justify="between" gap="2" hidden={!isMobile}>
             <Text size="2">{t("nodeCard.totalTraffic")}</Text>
-            <Text size="2">
-              ↑ {totalUpload} ↓ {totalDownload}
-            </Text>
+            <Flex direction="column">
+              <Text size="2">
+                ↑ {totalUpload} ↓ {totalDownload}
+              </Text>
+            </Flex>
           </Flex>
+          {basic.traffic_limit > 0 && isMobile && (
+            <UsageBar label={`${basic.traffic_limit_type && basic.traffic_limit_type.charAt(0).toUpperCase() + basic.traffic_limit_type.slice(1)}(${formatBytes(basic.traffic_limit)})`} max={Infinity} value={getTrafficPercentage(liveData.network.totalUp, liveData.network.totalDown, basic.traffic_limit, basic.traffic_limit_type ?? "sum")} />
+          )}
           <Flex justify="between" hidden={isMobile}>
             <Text size="2" color="gray">
               {t("nodeCard.uptime")}
@@ -294,3 +311,21 @@ export const NodeGrid = ({ nodes, liveData }: NodeGridProps) => {
     </Box>
   );
 };
+
+function getTrafficPercentage(totalUp: number, totalDown: number, limit: number, type: "max" | "min" | "sum" | "up" | "down") {
+  if (limit === 0) return 0;
+  switch (type) {
+    case "max":
+      return Math.max(totalUp, totalDown) / limit * 100;
+    case "min":
+      return Math.min(totalUp, totalDown) / limit * 100;
+    case "sum":
+      return (totalUp + totalDown) / limit * 100;
+    case "up":
+      return totalUp / limit * 100;
+    case "down":
+      return totalDown / limit * 100;
+    default:
+      return 0;
+  }
+}

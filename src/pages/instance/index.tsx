@@ -75,7 +75,7 @@ export default function InstancePage() {
             {node?.uuid}
           </Text>
         </h1>
-        <DetailsGrid align="center" uuid={uuid ?? ""} />
+        <DetailsGrid box align="center" uuid={uuid ?? ""} />
       </div>
       <SegmentedControl.Root
         radius="full"

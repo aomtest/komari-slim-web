@@ -36,9 +36,14 @@ export type NodeBasicInfo = {
   tags: string;
   /** 账单周期（天）*/
   billing_cycle: number;
+  /** 货币 */
   currency: string;
-  
+  /** 分组 */
   group: string;
+  /** 流量阈值 */
+  traffic_limit: number;
+  /** 流量阈值类型 */
+  traffic_limit_type: undefined | "sum" | "max" | "min" | "up" | "down";
   /** 过期时间 */
   expired_at: string;
   /** 创建时间 */

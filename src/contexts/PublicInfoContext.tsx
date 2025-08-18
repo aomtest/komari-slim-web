@@ -13,6 +13,8 @@ export interface PublicInfo {
   record_preserve_time: number;
   sitename: string;
   private_site: boolean;
+  theme: string;
+  theme_settings: any;
   [property: string]: any;
 }
 
