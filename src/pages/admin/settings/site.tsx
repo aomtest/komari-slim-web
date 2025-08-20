@@ -13,10 +13,95 @@ import {
 import { toast } from "sonner";
 import Loading from "@/components/loading";
 import { DownloadIcon } from "lucide-react";
+import { useState } from "react";
+import UploadDialog from "@/components/UploadDialog";
 
 export default function SiteSettings() {
   const { t } = useTranslation();
   const { settings, loading, error } = useSettings();
+
+  // 恢复备份对话框与上传状态
+  const [restoreOpen, setRestoreOpen] = useState(false);
+  const [restoring, setRestoring] = useState(false);
+  const [restoreProgress, setRestoreProgress] = useState(0);
+  const [restoreXhr, setRestoreXhr] = useState<XMLHttpRequest | null>(null);
+
+  const uploadBackup = async (file: File) => {
+    if (!file.name.endsWith(".zip")) {
+      toast.error(t("theme.invalid_file_type", "仅支持 .zip 文件"));
+      return;
+    }
+
+    setRestoring(true);
+    setRestoreProgress(0);
+    const formData = new FormData();
+    formData.append("backup", file);
+
+    return new Promise<void>((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      setRestoreXhr(xhr);
+
+      xhr.upload.addEventListener("progress", (e) => {
+        if (e.lengthComputable) {
+          const percent = (e.loaded / e.total) * 100;
+          setRestoreProgress(Math.round(percent));
+        }
+      });
+
+      xhr.addEventListener("load", () => {
+        try {
+          const ok = xhr.status >= 200 && xhr.status < 300;
+          const data = xhr.responseText ? JSON.parse(xhr.responseText) : {};
+          if (ok) {
+            if (data && data.status && data.status !== "success") {
+              // 服务器返回了非 success 状态
+              const msg = data.message || t("settings.site.backup_restore_error", "恢复备份失败");
+              toast.error(msg);
+              reject(new Error(msg));
+            } else {
+              toast.success(t("account_settings.upload_success", "上传成功"));
+              setRestoreOpen(false);
+              setRestoreProgress(0);
+              resolve();
+            }
+          } else {
+            const msg = (data && data.message) || t("settings.site.backup_restore_error", "恢复备份失败");
+            toast.error(msg);
+            reject(new Error(msg));
+          }
+        } catch (err) {
+          toast.error(t("settings.site.backup_restore_error", "恢复备份失败"));
+          reject(err as Error);
+        } finally {
+          setRestoring(false);
+          setRestoreXhr(null);
+        }
+      });
+
+      xhr.addEventListener("error", () => {
+        toast.error(t("settings.site.backup_restore_error", "恢复备份失败"));
+        setRestoring(false);
+        setRestoreProgress(0);
+        setRestoreXhr(null);
+        reject(new Error("Network error"));
+      });
+
+      xhr.addEventListener("abort", () => {
+        toast.error(t("theme.upload_failed", "上传失败") + ": Upload cancelled");
+        setRestoring(false);
+        setRestoreProgress(0);
+        setRestoreXhr(null);
+        reject(new Error("Upload cancelled"));
+      });
+
+      xhr.open("POST", "/api/admin/upload/backup");
+      xhr.send(formData);
+    });
+  };
+
+  const cancelRestore = () => {
+    if (restoreXhr) restoreXhr.abort();
+  };
 
   if (loading) {
     return <Loading />;
@@ -224,41 +309,28 @@ export default function SiteSettings() {
       <SettingCardButton
         title={t("settings.site.backup_restore")}
         description={t("settings.site.backup_restore_description")}
-        onClick={async () => {
-          const input = document.createElement('input');
-          input.type = 'file';
-          input.accept = '.zip';
-          input.onchange = async (e) => {
-            const file = (e.target as HTMLInputElement).files?.[0];
-            if (!file) return;
-
-            const formData = new FormData();
-            formData.append('backup', file);
-
-            try {
-              const response = await fetch('/api/admin/upload/backup', {
-                method: 'POST',
-                body: formData
-              });
-
-                if (!response.ok) {
-                const data = await response.json().catch(() => ({}));
-                const errorMsg = data.message
-                  ? `${data.message}`
-                  : t('settings.site.backup_restore_error');
-                throw new Error(errorMsg);
-                }
-
-              toast.success(t('account_settings.upload_success'));
-            } catch (error) {
-              toast.error((error as Error).message);
-            }
-          };
-          input.click();
-        }}
+        onClick={() => setRestoreOpen(true)}
       >
         {t("common.select")}
       </SettingCardButton>
+
+      {/* 上传备份对话框 */}
+      <UploadDialog
+        open={restoreOpen}
+        onOpenChange={setRestoreOpen}
+        title={t("settings.site.backup_restore")}
+        description={t("settings.site.backup_restore_description")}
+        accept=".zip"
+        dragDropText={t("theme.drag_drop")}
+        clickToBrowseText={t("theme.or_click_to_browse")}
+        hintText={t("theme.zip_files_only")}
+        uploading={restoring}
+        progress={restoreProgress}
+        cancelUploadLabel={t("common.cancel")}
+        onCancelUpload={cancelRestore}
+        onFileSelected={(file) => uploadBackup(file)}
+        closeLabel={t("common.cancel")}
+      />
     </>
   );
 }
