@@ -73,6 +73,19 @@ const Inner = () => {
           );
         }}
       />
+      <SettingCardLabel>{t("admin.notification.traffic")}</SettingCardLabel>
+      <SettingCardShortTextInput
+        title={t("admin.notification.traffic")}
+        description={t("admin.notification.traffic_description")}
+        defaultValue={settings.traffic_limit_percentage}
+        type="number"
+        OnSave={async (value) => {
+          await updateSettingsWithToast(
+            { traffic_limit_percentage: Number(value) },
+            t
+          );
+        }}
+      />
     </>
   );
 };

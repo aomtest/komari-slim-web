@@ -433,7 +433,9 @@
       "expire_time": "提前多少天开始提醒",
       "expire_time_description": "设置在到期前多少天开始发送提醒通知。",
       "login": "登录通知",
-      "login_description": "当有新的会话登录到Komari时，向您发送通知"
+      "login_description": "当有新的会话登录到Komari时，向您发送通知",
+      "traffic": "流量用量",
+      "traffic_description": "Komari将会在服务器到达指定的流量使用百分比时发送通知，并以5%为梯度持续提醒。如果服务器没有设置流量阈值，不发送通知。设置为0禁用流量提醒。"
     }
   },
   "theme": {
