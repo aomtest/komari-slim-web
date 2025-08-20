@@ -10,11 +10,18 @@ import {
   Badge,
   IconButton,
 } from "@radix-ui/themes";
-import { useState, useEffect, useRef } from "react";
-import { Upload, Settings, Image as ImageIcon, RefreshCw, SquareArrowOutUpRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import {
+  Upload,
+  Settings,
+  Image as ImageIcon,
+  RefreshCw,
+  SquareArrowOutUpRight,
+} from "lucide-react";
 import { toast } from "sonner";
 import Loading from "@/components/loading";
 import { useSettings } from "@/lib/api";
+import UploadDialog from "@/components/UploadDialog";
 
 interface Theme {
   id: string;
@@ -47,8 +54,11 @@ const ThemePage = () => {
   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
   const [themeToUpdate, setThemeToUpdate] = useState<Theme | null>(null);
   const [updating, setUpdating] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const { settings, loading: settingsLoading, refetch: refetchSettings } = useSettings();
+  const {
+    settings,
+    loading: settingsLoading,
+    refetch: refetchSettings,
+  } = useSettings();
   const currentTheme = settings?.theme;
 
   const loading = themesLoading || settingsLoading || !currentTheme;
@@ -140,8 +150,8 @@ const ThemePage = () => {
           } catch (err) {
             toast.error(
               t("theme.upload_failed") +
-              ": " +
-              (err instanceof Error ? err.message : "Unknown error")
+                ": " +
+                (err instanceof Error ? err.message : "Unknown error")
             );
             reject(err);
           }
@@ -203,18 +213,18 @@ const ThemePage = () => {
         }))
       );
 
-      const theme = themes.find(t => t.short === themeShort)
-      console.log(theme)
-      if ( theme && theme.configuration && theme.configuration.data) {
-        window.location.reload(); 
+      const theme = themes.find((t) => t.short === themeShort);
+      console.log(theme);
+      if (theme && theme.configuration && theme.configuration.data) {
+        window.location.reload();
       }
 
       toast.success(t("theme.set_success"));
     } catch (err) {
       toast.error(
         t("theme.set_failed") +
-        ": " +
-        (err instanceof Error ? err.message : "Unknown error")
+          ": " +
+          (err instanceof Error ? err.message : "Unknown error")
       );
     } finally {
       setSettingTheme(null);
@@ -225,9 +235,9 @@ const ThemePage = () => {
   const updateTheme = async (themeShort: string) => {
     try {
       setUpdating(true);
-      
+
       const requestBody = { short: themeShort, useOriginalUrl: true };
-      
+
       const response = await fetch("/api/admin/theme/update", {
         method: "POST",
         headers: {
@@ -289,38 +299,17 @@ const ThemePage = () => {
     } catch (err) {
       toast.error(
         t("theme.delete_failed") +
-        ": " +
-        (err instanceof Error ? err.message : "Unknown error")
+          ": " +
+          (err instanceof Error ? err.message : "Unknown error")
       );
     }
   };
 
-  // 文件拖拽处理
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    const files = Array.from(e.dataTransfer.files);
-    const zipFile = files.find((file) => file.name.endsWith(".zip"));
-    if (zipFile) {
-      uploadTheme(zipFile);
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      uploadTheme(file);
-    }
-  };
-
+  // 同步活跃状态
   useEffect(() => {
     fetchThemes();
-  }, [currentTheme]); // 依赖 currentTheme，当主题变化时重新获取列表
+  }, [currentTheme]);
 
-  // 当 settings 加载完成且主题列表已存在时，同步活跃状态
   useEffect(() => {
     if (!settingsLoading && themes.length > 0) {
       setThemes((prevThemes) =>
@@ -397,37 +386,16 @@ const ThemePage = () => {
                 <Flex
                   align="center"
                   justify="center"
-                  className={`w-full h-full ${theme.preview && theme.short !== "default" ? "hidden" : ""
-                    }`}
+                  className={`w-full h-full ${
+                    theme.preview && theme.short !== "default" ? "hidden" : ""
+                  }`}
                 >
                   <ImageIcon size={48} className="text-gray-400" />
                 </Flex>
                 {/* 覆盖层 */}
                 <Box className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
                   <Flex gap="2">
-                    {/* <Button
-                      size="2"
-                      variant="solid"
-                      onClick={() => {
-                        setSelectedTheme(theme);
-                        setPreviewDialogOpen(true);
-                      }}
-                    >
-                      <Eye size={16} />
-                    </Button> */}
-                    {/* {theme.short !== "default" && (
-                      <Button
-                        size="2"
-                        variant="solid"
-                        color="red"
-                        onClick={() => {
-                          setThemeToDelete(theme);
-                          setDeleteDialogOpen(true);
-                        }}
-                      >
-                        <Trash2 size={16} />
-                      </Button>
-                    )} */}
+                    {/* 预留操作位 */}
                   </Flex>
                 </Box>
 
@@ -486,89 +454,23 @@ const ThemePage = () => {
       )}
 
       {/* 上传对话框 */}
-      <Dialog.Root open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
-        <Dialog.Content maxWidth="450px">
-          <Dialog.Title>{t("theme.upload_theme")}</Dialog.Title>
-          <Dialog.Description>
-            {t("theme.upload_description")}
-          </Dialog.Description>
-
-          <Box className="space-y-4 mt-4">
-            <Flex
-              direction="column"
-              align="center"
-              justify="center"
-              className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-gray-400 transition-colors"
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <Upload size={48} className="mx-auto text-gray-400 mb-4" />
-              <Text size="3" weight="medium">
-                {t("theme.drag_drop")}
-              </Text>
-              <Text size="2" color="gray" className="mt-2">
-                {t("theme.or_click_to_browse")}
-              </Text>
-              <Text size="1" color="gray" className="mt-2">
-                {t("theme.zip_files_only")}
-              </Text>
-            </Flex>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".zip"
-              onChange={handleFileSelect}
-              className="hidden"
-            />
-          </Box>
-          {/* 上传状态提示 */}
-          {uploading && (
-            <Box className="flex items-center justify-center z-50">
-              <Card className="p-6 text-center min-w-80 max-w-md">
-                <Text size="3" className="mt-2 mb-4">
-                  {t("theme.uploading")}
-                </Text>
-
-                {/* 进度条容器 */}
-                <Box className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-3 overflow-hidden">
-                  <Box
-                    className="bg-gradient-to-r from-blue-500 to-blue-600 h-full rounded-full transition-all duration-500 ease-out relative"
-                    style={{ width: `${uploadProgress}%` }}
-                  >
-                    {/* 进度条光泽效果 */}
-                    <Box className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
-                  </Box>
-                </Box>
-
-                <Flex justify="between" align="center" className="mb-4">
-                  <Text size="2" color="gray">
-                    {Math.round(uploadProgress)}%
-                  </Text>
-                </Flex>
-
-                {/* 取消按钮 */}
-                <Button
-                  variant="soft"
-                  color="gray"
-                  onClick={cancelUpload}
-                  disabled={uploadProgress >= 100}
-                >
-                  {t("common.cancel")}
-                </Button>
-              </Card>
-            </Box>
-          )}
-          <Flex gap="3" mt="4" justify="end">
-            <Dialog.Close>
-              <Button variant="soft" color="gray">
-                {t("common.cancel")}
-              </Button>
-            </Dialog.Close>
-          </Flex>
-        </Dialog.Content>
-      </Dialog.Root>
+      <UploadDialog
+        open={uploadDialogOpen}
+        onOpenChange={setUploadDialogOpen}
+        title={t("theme.upload_theme")}
+        description={t("theme.upload_description")}
+        accept=".zip"
+        dragDropText={t("theme.drag_drop")}
+        clickToBrowseText={t("theme.or_click_to_browse")}
+        hintText={t("theme.zip_files_only")}
+        uploading={uploading}
+        progress={uploadProgress}
+        uploadingText={t("theme.uploading")}
+        cancelUploadLabel={t("common.cancel")}
+        onCancelUpload={cancelUpload}
+        onFileSelected={(file) => uploadTheme(file)}
+        closeLabel={t("common.cancel")}
+      />
 
       {/* 预览对话框 */}
       <Dialog.Root open={previewDialogOpen} onOpenChange={setPreviewDialogOpen}>
@@ -617,7 +519,7 @@ const ThemePage = () => {
               </Flex>
               {selectedTheme?.url && (
                 <Flex gap="2" justify="start" align="center">
-                  <Text size="2" weight="bold" color="gray" wrap="nowrap" >
+                  <Text size="2" weight="bold" color="gray" wrap="nowrap">
                     URL
                   </Text>
                   <Text size="1" className="overflow-hidden text-ellipsis">
@@ -714,7 +616,7 @@ const ThemePage = () => {
           <Dialog.Description>
             {t("theme.update_description")}
           </Dialog.Description>
-          
+
           <Box className="space-y-4 mt-4">
             {/* Auto Mode Explanation */}
             <Flex direction="column" gap="2">
@@ -723,7 +625,7 @@ const ThemePage = () => {
               </Text>
             </Flex>
           </Box>
-          
+
           <Flex gap="3" mt="4" justify="end">
             <Dialog.Close>
               <Button variant="soft" color="gray">
@@ -751,8 +653,18 @@ const ThemePage = () => {
           </Flex>
         </Dialog.Content>
       </Dialog.Root>
-    </Box>
+      
+        <label className="text-muted-foreground text-sm">
+          {t("theme.find_more")}<a
+        href="https://komari-document.pages.dev/community/theme.html"
+        target="_blank"
+        className="text-accent-9"
+      >
+        {t("theme.theme_link")}
+      </a>
+    </label>
+  </Box>
   );
-};
+}
 
 export default ThemePage;

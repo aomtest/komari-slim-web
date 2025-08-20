@@ -483,7 +483,9 @@
     "manage": "主题管理",
     "manage_with_name": "{{name}} 主题管理",
     "default_no_config": "默认主题没有可配置选项。",
-    "no_config": "该主题没有声明配置项。"
+    "no_config": "该主题没有声明配置项。",
+    "find_more": "查找更多主题？",
+    "theme_link": "社区维护的主题"
   },
   "copy_success": "已复制到剪贴板",
   "copy": "复制",
