@@ -420,7 +420,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
               <Flex
                 direction="column"
                 gap="1"
-                className="h-full md:mt-0 mt-6 "
+                className="h-full md:mt-0 mt-6"
                 style={{ width: "100%" }}
               >
                 {[...baseMenuItems, ...extraMenuItems].map((item: ExtendedMenuItem) => {
@@ -480,7 +480,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                   if (item.children && item.children.length) {
                     return (
                       <div key={item.path}>
-                        {" "}
+                        
                         <Flex
                           className="p-2 gap-2 border-l-[4px] border-transparent cursor-pointer hover:bg-accent-3 rounded-md"
                           align="center"
@@ -664,10 +664,10 @@ const SidebarItem = ({
         onClick={onClick}
         target="_blank"
         rel="noopener noreferrer"
-        className="group overflow-hidden transition-colors duration-200 hover:bg-accent-3 rounded-md"
+        className="group transition-colors duration-200 hover:bg-accent-3 rounded-md"
       >
         <Flex
-          className="p-2 gap-2"
+          className="p-2 gap-2 h-full"
           align="center"
           style={{
             borderLeft: "4px solid transparent",
@@ -702,7 +702,7 @@ const SidebarItem = ({
     <Link
       to={to}
       onClick={onClick}
-      className="group overflow-hidden transition-colors duration-200 hover:bg-accent-3 rounded-md"
+      className="group transition-colors duration-200 hover:bg-accent-3 rounded-md"
     >
       <Flex
         className="p-2 gap-2"
