@@ -3,7 +3,11 @@ import { useTranslation } from "react-i18next";
 import { Text } from "@radix-ui/themes";
 import { updateSettingsWithToast, useSettings } from "@/lib/api";
 import Loading from "@/components/loading";
-import { SettingCardLabel, SettingCardShortTextInput, SettingCardSwitch } from "@/components/admin/SettingCard";
+import {
+  SettingCardLabel,
+  SettingCardShortTextInput,
+  SettingCardSwitch,
+} from "@/components/admin/SettingCard";
 import { toast } from "sonner";
 const GeneralNotification = () => {
   return (
@@ -53,6 +57,18 @@ const Inner = () => {
           }
           await updateSettingsWithToast(
             { expire_notification_lead_days: numValue },
+            t
+          );
+        }}
+      />
+      <SettingCardLabel>{t("admin.notification.login")}</SettingCardLabel>
+      <SettingCardSwitch
+        title={t("admin.notification.login")}
+        description={t("admin.notification.login_description")}
+        defaultChecked={settings.login_notification}
+        onChange={async (checked) => {
+          await updateSettingsWithToast(
+            { login_notification: checked },
             t
           );
         }}

@@ -431,7 +431,9 @@
       "expire_enable": "是否启用过期提醒",
       "expire_enable_description": "启用后，Komari将在到期前发送提醒通知。",
       "expire_time": "提前多少天开始提醒",
-      "expire_time_description": "设置在到期前多少天开始发送提醒通知。"
+      "expire_time_description": "设置在到期前多少天开始发送提醒通知。",
+      "login": "登录通知",
+      "login_description": "当有新的会话登录到Komari时，向您发送通知"
     }
   },
   "theme": {
