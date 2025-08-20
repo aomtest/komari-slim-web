@@ -5,13 +5,14 @@ import {
   SettingCardButton,
   SettingCardLabel,
   SettingCardSelect,
-  SettingCardShortTextInput,
   SettingCardSwitch,
 } from "@/components/admin/SettingCard";
 import { toast } from "sonner";
 import Loading from "@/components/loading";
 import React from "react";
 import { renderProviderInputs } from "@/utils/renderProviders";
+import { SquareArrowOutUpRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const NotificationSettings = () => {
   const { t } = useTranslation();
@@ -168,35 +169,14 @@ const NotificationSettings = () => {
       >
         GO
       </SettingCardButton>
-      <SettingCardLabel>{t("admin.notification.expire_title")}</SettingCardLabel>
-      <SettingCardSwitch
-        defaultChecked={settings.expire_notification_enabled}
-        title={t("admin.notification.expire_enable")}
-        description={t("admin.notification.expire_enable_description")}
-        onChange={async (checked) => {
-          await updateSettingsWithToast(
-            { expire_notification_enabled: checked },
-            t
-          );
-        }}
-      />
-      <SettingCardShortTextInput
-        type="number"
-        title={t("admin.notification.expire_time")}
-        description={t("admin.notification.expire_time_description")}
-        defaultValue={settings.expire_notification_lead_days}
-        OnSave={async (value) => {
-          const numValue = Number(value);
-          if (isNaN(numValue) || numValue < 0) {
-            toast.error("Please enter a valid non-negative number");
-            return;
-          }
-          await updateSettingsWithToast(
-            { expire_notification_lead_days: numValue },
-            t
-          );
-        }}
-      />
+      <label className="text-muted-foreground text-sm flex flex-row items-center gap-1">
+        {t("settings.notification.moved")}
+        <Link
+          to="/admin/notification/general"
+        >
+          <SquareArrowOutUpRight size={16} />
+        </Link>
+      </label>
     </>
   );
 };

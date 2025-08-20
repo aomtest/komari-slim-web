@@ -102,6 +102,12 @@ export const routes: RouteObject[] = [
               lazy(() => import("./pages/admin/notification/load"))
             ),
           },
+          {
+            path: "general",
+            element: React.createElement(
+              lazy(() => import("./pages/admin/notification/general"))
+            ),
+          },
         ],
       },
       {

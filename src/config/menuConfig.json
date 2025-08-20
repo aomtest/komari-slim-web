@@ -51,6 +51,11 @@
           "labelKey": "notification.load.title",
           "path": "/admin/notification/load",
           "icon": "TrendingUp"
+        },
+        {
+          "labelKey": "settings.general.title",
+          "path": "/admin/notification/general",
+          "icon": "Ellipsis"
         }
       ]
     },
