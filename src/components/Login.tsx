@@ -35,6 +35,8 @@ const LoginDialog = ({ trigger, autoOpen = false, showSettings = true, info, onL
     const {publicInfo} = usePublicInfo();
   // 是否启用密码登录
   const passwordLoginEnabled = !publicInfo?.disable_password_login;
+  const oauthEnabled = !!publicInfo?.oauth_enable;
+  const onlyOAuthLogin = oauthEnabled && !passwordLoginEnabled; // 只有 OAuth
   // Validate inputs (仅在启用密码登录时需要)
   const isFormValid = passwordLoginEnabled && username.trim() !== "" && password.trim() !== "";
     console.log(autoOpen, open);
@@ -117,8 +119,32 @@ const LoginDialog = ({ trigger, autoOpen = false, showSettings = true, info, onL
         </a>
       );
     }
+
+    // 仅 OAuth 登录 且 不自动打开时：点击触发器直接跳转，不展示对话框
+    if (onlyOAuthLogin && !autoOpen) {
+      const redirect = () => {
+        window.location.href = "/api/oauth";
+      };
+      if (trigger) {
+        // 如果提供了自定义触发器，包装一层点击
+        if (typeof trigger === "string") {
+          return (
+            <Button onClick={redirect}>{trigger}</Button>
+          );
+        }
+        return (
+          <span onClick={redirect} style={{ cursor: "pointer", display: "inline-flex" }}>
+            {trigger}
+          </span>
+        );
+      }
+      // 默认按钮
+      return (
+        <Button onClick={redirect}>{t("login.title")}</Button>
+      );
+    }
     return (
-      <Dialog.Root open={open} onOpenChange={setOpen}>
+  <Dialog.Root open={open} onOpenChange={setOpen}>
         <Dialog.Trigger>
           {trigger ? trigger : <Button>{t("login.title")}</Button>}
         </Dialog.Trigger>
