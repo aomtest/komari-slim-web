@@ -130,7 +130,7 @@ const ServerRow: React.FC<{
   };
 
   const joined = ownedTasks.map((t) => t.name).join(", ");
-  const display = joined.length > 60 ? joined.slice(0, 60) + "..." : joined;
+  const display = joined.length > 40 ? joined.slice(0, 40) + "..." : joined;
 
   return (
     <TableRow>
