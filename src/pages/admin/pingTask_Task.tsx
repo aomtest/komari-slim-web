@@ -24,6 +24,31 @@ import { toast } from "sonner";
 
 export const TaskView = ({ pingTasks }: { pingTasks: PingTask[] }) => {
   const { t } = useTranslation();
+  const { nodeDetail } = useNodeDetails();
+
+  // 过滤已删除的节点
+  const processedTasks = React.useMemo(() => {
+    if (!pingTasks)
+      return [] as (PingTask & {
+        __allClientsDeleted?: boolean;
+        __originalCount?: number;
+      })[];
+    const nodeUuidSet = new Set(nodeDetail.map((n) => n.uuid));
+    return pingTasks
+      .map((task) => {
+        const original = task.clients || [];
+        const existing = original.filter((uuid) => nodeUuidSet.has(uuid));
+        const allDeleted = original.length > 0 && existing.length === 0;
+        return {
+          ...task,
+          clients: existing,
+          __allClientsDeleted: allDeleted,
+          __originalCount: original.length,
+        };
+      })
+      .sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
+  }, [pingTasks, nodeDetail]);
+
   return (
     <div className="rounded-xl overflow-hidden">
       <Table>
@@ -36,19 +61,20 @@ export const TaskView = ({ pingTasks }: { pingTasks: PingTask[] }) => {
           <TableHead>{t("common.action")}</TableHead>
         </TableHeader>
         <TableBody>
-          {pingTasks
-            ?.slice()
-            .sort((a, b) => (b.id ?? 0) - (a.id ?? 0))
-            .map((task) => (
-              <Row key={task.id} task={task} />
-            ))}
+          {processedTasks.map((task) => (
+            <Row key={task.id} task={task} />
+          ))}
         </TableBody>
       </Table>
     </div>
   );
 };
 
-const Row = ({ task }: { task: PingTask }) => {
+const Row = ({
+  task,
+}: {
+  task: PingTask & { __allClientsDeleted?: boolean; __originalCount?: number };
+}) => {
   const { t } = useTranslation();
   const { refresh } = usePingTask();
   const { nodeDetail } = useNodeDetails();
