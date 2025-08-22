@@ -22,6 +22,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { TaskView } from "./pingTask_Task";
+import { ServerView } from "./pingTask_Server";
 
 const PingTask = () => {
   return (
@@ -61,7 +62,7 @@ const InnerLayout = () => {
             <TaskView pingTasks={pingTasks ?? []} />
           </Tabs.Content>
           <Tabs.Content value="server">
-            
+            <ServerView pingTasks={pingTasks ?? []} />
           </Tabs.Content>
         </Box>
       </Tabs.Root>

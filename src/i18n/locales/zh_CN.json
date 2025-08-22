@@ -598,7 +598,8 @@
     "disk_usage_estimate": "预计需要磁盘空间",
     "disk_usage_with_settings": "根据设置的 {{hour}} 小时保存时间，需要使用 {{space}} 磁盘空间。",
     "task_view": "任务视图",
-    "server_view": "服务器视图"
+    "server_view": "服务器视图",
+    "task": "任务"
   },
   "search": {
     "placeholder": "搜索节点名称、地区、系统...",
