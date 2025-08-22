@@ -33,8 +33,10 @@ const LoginDialog = ({ trigger, autoOpen = false, showSettings = true, info, onL
     const [require2FA, setRequire2FA] = React.useState(false);
     const [open, setOpen] = React.useState(autoOpen || false);
     const {publicInfo} = usePublicInfo();
-    // Validate inputs
-    const isFormValid = username.trim() !== "" && password.trim() !== "";
+  // 是否启用密码登录
+  const passwordLoginEnabled = !publicInfo?.disable_password_login;
+  // Validate inputs (仅在启用密码登录时需要)
+  const isFormValid = passwordLoginEnabled && username.trim() !== "" && password.trim() !== "";
     console.log(autoOpen, open);
     React.useEffect(() => {
       if (autoOpen) {
@@ -142,78 +144,83 @@ const LoginDialog = ({ trigger, autoOpen = false, showSettings = true, info, onL
             }}
           >
             <Flex direction="column" gap="3">
-              <label>
-                <Text as="div" size="2" mb="1" weight="bold">
-                  {t("login.username")}
-                </Text>
-                <TextField.Root
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="admin"
-                  disabled={isLoading}
-                  autoFocus // Focus on username by default
-                />
-              </label>
-              <label>
-                <Text as="div" size="2" mb="1" weight="bold">
-                  {t("login.password")}
-                </Text>
-                <TextField.Root
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  type="password"
-                  placeholder={t("login.password_placeholder")}
-                  disabled={isLoading}
-                />
-              </label>
-              <label hidden={!require2FA}>
-                <Text as="div" size="2" mb="1" weight="bold">
-                  {t("login.two_factor")}
-                </Text>
-                <TextField.Root
-                  value={twoFac}
-                  onChange={(e) => setTwoFac(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  type="text"
-                  placeholder="000000"
-                  disabled={isLoading}
-                />
-              </label>
-              {errorMsg && (
-                <Text as="div" size="2" color="red">
-                  {errorMsg}
-                </Text>
+              {passwordLoginEnabled && (
+                <>
+                  <label>
+                    <Text as="div" size="2" mb="1" weight="bold">
+                      {t("login.username")}
+                    </Text>
+                    <TextField.Root
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      placeholder="admin"
+                      disabled={isLoading}
+                      autoFocus
+                    />
+                  </label>
+                  <label>
+                    <Text as="div" size="2" mb="1" weight="bold">
+                      {t("login.password")}
+                    </Text>
+                    <TextField.Root
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      type="password"
+                      placeholder={t("login.password_placeholder")}
+                      disabled={isLoading}
+                    />
+                  </label>
+                  <label hidden={!require2FA}>
+                    <Text as="div" size="2" mb="1" weight="bold">
+                      {t("login.two_factor")}
+                    </Text>
+                    <TextField.Root
+                      value={twoFac}
+                      onChange={(e) => setTwoFac(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      type="text"
+                      placeholder="000000"
+                      disabled={isLoading}
+                    />
+                  </label>
+                  {errorMsg && (
+                    <Text as="div" size="2" color="red">
+                      {errorMsg}
+                    </Text>
+                  )}
+                  <Button
+                    type="submit"
+                    disabled={isLoading || !isFormValid}
+                    style={{ opacity: isLoading || !isFormValid ? 0.6 : 1 }}
+                    onClick={handleLogin}
+                  >
+                    {isLoading ? "Logging in..." : t("login.title")}
+                  </Button>
+                </>
               )}
-              <Button
-                type="submit"
-                disabled={isLoading || !isFormValid}
-                style={{ opacity: isLoading || !isFormValid ? 0.6 : 1 }}
-                onClick={handleLogin}
-              >
-                {isLoading ? "Logging in..." : t("login.title")}
-              </Button>
-              <Button
-                onClick={() => {
-                  window.location.href = "/api/oauth";
-                }}
-                variant="soft"
-                disabled={isLoading}
-                type="button" // Prevent form submission
-              >
-                {t(
-                  "login.login_with",
-                  {
+              {/* OAuth 登录按钮：即使关闭密码登录也展示 */}
+              {publicInfo?.oauth_enable && (
+                <Button
+                  onClick={() => {
+                    window.location.href = "/api/oauth";
+                  }}
+                  variant={passwordLoginEnabled ? "soft" : "solid"}
+                  disabled={isLoading}
+                  type="button"
+                >
+                  {t("login.login_with", {
                     provider:
                       publicInfo?.oauth_provider === "generic"
                         ? "OAuth"
                         : publicInfo?.oauth_provider
-                          ? publicInfo.oauth_provider.charAt(0).toUpperCase() + publicInfo.oauth_provider.slice(1)
-                          : ""
-                  }
-                )}
-              </Button>
+                        ? publicInfo.oauth_provider.charAt(0).toUpperCase() +
+                          publicInfo.oauth_provider.slice(1)
+                        : "",
+                  })}
+                </Button>
+              )}
             </Flex>
           </Box>
         </Dialog.Content>
