@@ -22,6 +22,11 @@ const osConfigs: OSConfig[] = [
     keywords: ['alpine', 'alpine linux']
   },
   {
+    name: 'Armbian',
+    image: '/assets/os-armbian.svg',
+    keywords: ['armbian']
+  },
+  {
     name: 'CentOS',
     image: '/assets/os-centos.svg',
     keywords: ['centos', 'cent os']
@@ -30,6 +35,11 @@ const osConfigs: OSConfig[] = [
     name: 'Debian',
     image: '/assets/os-debian.svg',
     keywords: ['debian', 'deb']
+  },
+  {
+    name: 'FreeBSD',
+    image: '/assets/os-freebsd.svg',
+    keywords: ['freebsd', 'bsd']
   },
   {
     name: 'Ubuntu',
