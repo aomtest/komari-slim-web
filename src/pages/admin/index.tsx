@@ -516,7 +516,7 @@ type InstallOptions = {
   disableWebSsh: boolean;
   disableAutoUpdate: boolean;
   ignoreUnsafeCert: boolean;
-  memoryModeAvailable: boolean;
+  memoryIncludeCache: boolean;
   ghproxy: string;
   dir: string;
   serviceName: string;
@@ -532,7 +532,7 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
     disableWebSsh: false,
     disableAutoUpdate: false,
     ignoreUnsafeCert: false,
-    memoryModeAvailable: false,
+    memoryIncludeCache: false,
     ghproxy: "",
     dir: "",
     serviceName: "",
@@ -565,8 +565,8 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
     if (installOptions.ignoreUnsafeCert) {
       args.push("--ignore-unsafe-cert");
     }
-    if (installOptions.memoryModeAvailable) {
-      args.push("--memory-mode-available");
+    if (installOptions.memoryIncludeCache) {
+      args.push("--memory-include-cache");
     }
     if (enableGhproxy && installOptions.ghproxy) {
       const finalUrl = (
@@ -728,11 +728,11 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
               </Flex>
               <Flex gap="2" align="center">
                 <Checkbox
-                  checked={installOptions.memoryModeAvailable}
+                  checked={installOptions.memoryIncludeCache}
                   onCheckedChange={(checked) => {
                     setInstallOptions((prev) => ({
                       ...prev,
-                      memoryModeAvailable: Boolean(checked),
+                      memoryIncludeCache: Boolean(checked),
                     }));
                   }}
                 />
@@ -741,7 +741,7 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
                   onClick={() => {
                     setInstallOptions((prev) => ({
                       ...prev,
-                      memoryModeAvailable: !prev.memoryModeAvailable,
+                      memoryIncludeCache: !prev.memoryIncludeCache,
                     }));
                   }}
                 >
