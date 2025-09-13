@@ -55,7 +55,7 @@
       "client_id_description": "OAuth 应用的客户端 ID",
       "client_secret": "客户端密钥",
       "client_secret_description": "OAuth 应用的客户端密钥",
-      "provider": "单登录提供商",
+      "provider": "单点登录提供商",
       "provider_description": "选择用于单点登录的身份验证提供商",
       "callback_url_tips": "回调地址：{{url}}",
       "provider_fields": "登录参数",
