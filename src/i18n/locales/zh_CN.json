@@ -576,7 +576,8 @@
     "empty_error": "不能为空",
     "help": "帮助",
     "day": "天",
-    "update_available": "有新版本"
+    "update_available": "有新版本",
+    "home": "主页"
   },
   "command_clipboard": {
     "title": "命令剪贴板"

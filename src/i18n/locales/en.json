@@ -561,7 +561,8 @@
     "empty_error": "Can not be empty",
     "help": "Help",
     "day": "Day",
-    "update_available": "有新版本"
+    "update_available": "New version available",
+    "home": "Home"
   },
   "command_clipboard": {
     "title": "Command Clipboard"

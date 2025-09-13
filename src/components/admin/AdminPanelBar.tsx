@@ -562,6 +562,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                                 onClick={() =>
                                   isMobile && setSidebarOpen(false)
                                 }
+                                newTab={child.newTab}
                               />
                             ))}
                           </Flex>
@@ -580,6 +581,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                       )}
                       children={item.rawLabel || t(item.labelKey)}
                       onClick={() => isMobile && setSidebarOpen(false)}
+                      newTab={item.newTab}
                     />
                   );
                 })}
@@ -644,20 +646,24 @@ const SidebarItem = ({
   onClick,
   icon,
   children,
+  newTab,
 }: {
   to: string;
   onClick: () => void;
   icon: ReactNode;
   children: ReactNode;
+  newTab?: boolean;
 }) => {
   const location = useLocation();
   const isExternalLink = to.startsWith("http://") || to.startsWith("https://");
   const isActive =
     !isExternalLink &&
+    to !== "/" &&
     (location.pathname === to ||
       (to !== "/admin" && location.pathname.startsWith(to)));
+  const openInNewTab = newTab === true || (isExternalLink && newTab !== false);
 
-  if (isExternalLink) {
+  if (openInNewTab) {
     return (
       <a
         href={to}
