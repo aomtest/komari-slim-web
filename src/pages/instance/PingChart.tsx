@@ -10,7 +10,7 @@ import {
   ChartLegend,
 } from "@/components/ui/chart";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
-import { cutPeakValues } from "@/utils/RecordHelper";
+import fillMissingTimePoints, { cutPeakValues } from "@/utils/RecordHelper";
 import Tips from "@/components/ui/tips";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -143,48 +143,40 @@ const PingChart = ({ uuid }: { uuid: string }) => {
   }, [hours, uuid]); // Depend on hours
 
   const midData = useMemo(() => {
-    // 按 MiniPingChart 的思路：只构造实际出现的时间点并合并相近时间，避免为最小 interval 大量补 null
+    // 严格对齐：使用最小 interval 构建完整时间网格，并用 fillMissingTimePoints 填充
     const data = remoteData || [];
     if (!data.length) return [];
 
-    // 动态容差：基于最小任务 interval 的 0.4，限制在 [800ms, 1500ms]
     const validIntervals = tasks
       .map((t) => t.interval)
-      .filter((v): v is number => typeof v === "number" && v > 0);
-    const minTaskInterval = validIntervals.length
-      ? Math.min(...validIntervals)
-      : 60; // 秒
-    const toleranceMs = Math.min(
-      1500,
-      Math.max(800, Math.floor(minTaskInterval * 1000 * 0.4))
-    );
+      .filter((v): v is number => typeof v === 'number' && v > 0);
+    const minInterval = validIntervals.length ? Math.min(...validIntervals) : 60; // 秒
 
+    // 先合并相近（抖动）时间点，容差：minInterval *0.25，0.8s ~ 6s
+    const toleranceMs = Math.min(6000, Math.max(800, Math.floor(minInterval * 1000 * 0.25)));
     const grouped: Record<number, any> = {};
     const anchors: number[] = [];
-
     for (const rec of data) {
       const ts = new Date(rec.time).getTime();
       let anchor: number | null = null;
       for (const a of anchors) {
-        if (Math.abs(a - ts) <= toleranceMs) {
-          anchor = a;
-          break;
-        }
+        if (Math.abs(a - ts) <= toleranceMs) { anchor = a; break; }
       }
       const use = anchor ?? ts;
       if (!grouped[use]) {
         grouped[use] = { time: new Date(use).toISOString() };
         if (anchor === null) anchors.push(use);
       }
-      // 负值视为无效点（例如超时），用 null 便于连接策略
       grouped[use][rec.task_id] = rec.value < 0 ? null : rec.value;
     }
+    const merged = Object.values(grouped).sort((a: any, b: any) => new Date(a.time).getTime() - new Date(b.time).getTime());
 
-    const rows = Object.values(grouped).sort(
-      (a: any, b: any) => new Date(a.time).getTime() - new Date(b.time).getTime()
-    );
-    return rows;
-  }, [remoteData, tasks]);
+    // 使用 fillMissingTimePoints 生成 [now-hours, now] 范围 （hours *3600s）
+    // matchTolerance 设为 min( minInterval*0.6, 8 ) 秒，允许一定抖动匹配到网格
+    const matchTolerance = Math.min(minInterval * 0.6, 8);
+    const filled = fillMissingTimePoints(merged, minInterval, hours * 3600, matchTolerance);
+    return filled;
+  }, [remoteData, tasks, hours]);
 
   // 组装图表数据
   const chartData = useMemo(() => {
@@ -399,13 +391,11 @@ const PingChart = ({ uuid }: { uuid: string }) => {
               <ChartLegend onClick={handleLegendClick} />
               {(() => {
                 const minInterval = Math.min(
-                  ...tasks
-                    .map((t) => t.interval || Infinity)
-                    .filter((v) => v !== undefined)
+                  ...tasks.map(t => t.interval || Infinity).filter(v => v !== undefined)
                 );
                 return tasks.map((task, idx) => {
                   const interval = task.interval || minInterval;
-                  const connect = interval > minInterval; // 长间隔任务允许跨 null 连接
+                  const connect = interval > minInterval; // 仅长间隔任务跨预期空白连接
                   return (
                     <Line
                       key={task.id}
@@ -416,7 +406,7 @@ const PingChart = ({ uuid }: { uuid: string }) => {
                       isAnimationActive={false}
                       strokeWidth={2}
                       connectNulls={connect}
-                      type={cutPeak ? "basis" : "linear"}
+                      type={cutPeak ? 'basis' : 'linear'}
                       hide={!!hiddenLines[String(task.id)]}
                     />
                   );
