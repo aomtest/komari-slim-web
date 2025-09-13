@@ -19,6 +19,8 @@ import {
   SquareArrowOutUpRight,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import { usePublicInfo } from "@/contexts/PublicInfoContext";
 import Loading from "@/components/loading";
 import { useSettings } from "@/lib/api";
 import UploadDialog from "@/components/UploadDialog";
@@ -60,6 +62,39 @@ const ThemePage = () => {
     refetch: refetchSettings,
   } = useSettings();
   const currentTheme = settings?.theme;
+  const navigate = useNavigate();
+  const { publicInfo } = usePublicInfo();
+  const [activeThemeHasConfig, setActiveThemeHasConfig] = useState(false);
+
+  // 当 currentTheme 或 publicInfo.theme 变化时重新检测当前主题是否有配置文件
+  useEffect(() => {
+    let cancelled = false;
+    async function check() {
+      const themeShort = currentTheme || publicInfo?.theme;
+      if (!themeShort || themeShort === "default") {
+        setActiveThemeHasConfig(false);
+        return;
+      }
+      try {
+        // 强制不缓存
+        const resp = await fetch(`/themes/${themeShort}/komari-theme.json`, { cache: "no-cache" });
+        if (!resp.ok) {
+          setActiveThemeHasConfig(false);
+          return;
+        }
+        const data = await resp.json().catch(() => null);
+        if (!cancelled && data && data.configuration && Array.isArray(data.configuration.data) && data.configuration.data.length > 0) {
+          setActiveThemeHasConfig(true);
+        } else if (!cancelled) {
+          setActiveThemeHasConfig(false);
+        }
+      } catch {
+        if (!cancelled) setActiveThemeHasConfig(false);
+      }
+    }
+    check();
+    return () => { cancelled = true; };
+  }, [currentTheme, publicInfo?.theme]);
 
   const loading = themesLoading || settingsLoading || !currentTheme;
   // 获取主题列表
@@ -331,14 +366,26 @@ const ThemePage = () => {
 
   return (
     <Box className="p-6 space-y-6">
-      <Flex justify="between" align="center">
+      <Flex justify="between" align="center" gap="3" wrap="wrap">
         <Text size="6" weight="bold">
           {t("theme.title")}
         </Text>
-        <Button onClick={() => setUploadDialogOpen(true)} className="gap-2">
-          <Upload size={16} />
-          {t("theme.upload")}
-        </Button>
+        <Flex gap="2">
+          {activeThemeHasConfig && (
+            <Button
+              variant="soft"
+              className="gap-2"
+              onClick={() => navigate("/admin/theme_managed")}
+            >
+              <Settings size={16} />
+              {`${currentTheme}设置`}
+            </Button>
+          )}
+          <Button onClick={() => setUploadDialogOpen(true)} className="gap-2">
+            <Upload size={16} />
+            {t("theme.upload")}
+          </Button>
+        </Flex>
       </Flex>
 
       {/* 主题卡片网格 */}
@@ -394,9 +441,7 @@ const ThemePage = () => {
                 </Flex>
                 {/* 覆盖层 */}
                 <Box className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-                  <Flex gap="2">
-                    {/* 预留操作位 */}
-                  </Flex>
+                  <Flex gap="2">{/* 预留操作位 */}</Flex>
                 </Box>
 
                 {/* 活跃状态指示器 */}
@@ -653,18 +698,19 @@ const ThemePage = () => {
           </Flex>
         </Dialog.Content>
       </Dialog.Root>
-      
-        <label className="text-muted-foreground text-sm">
-          {t("theme.find_more")}<a
-        href="https://komari-document.pages.dev/community/theme.html"
-        target="_blank"
-        className="text-accent-9"
-      >
-        {t("theme.theme_link")}
-      </a>
-    </label>
-  </Box>
+
+      <label className="text-muted-foreground text-sm">
+        {t("theme.find_more")}
+        <a
+          href="https://komari-document.pages.dev/community/theme.html"
+          target="_blank"
+          className="text-accent-9"
+        >
+          {t("theme.theme_link")}
+        </a>
+      </label>
+    </Box>
   );
-}
+};
 
 export default ThemePage;
