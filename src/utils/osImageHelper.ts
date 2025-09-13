@@ -130,6 +130,11 @@ const osConfigs: OSConfig[] = [
     name: 'macOS',
     image: '/assets/os-macos.svg',
     keywords: ['macos']
+  },
+  {
+    name: "QTS",
+    image: "/assets/os-qnap.svg",
+    keywords: ["qts","quts hero","qes","qutscloud"],
   }
 ];
 
