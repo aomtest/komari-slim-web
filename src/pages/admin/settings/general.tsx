@@ -1,6 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { Button, Code, Flex, Text, TextField } from "@radix-ui/themes";
-import { updateSettingsWithToast, useSettings, type SettingsResponse } from "@/lib/api";
+import {
+  updateSettingsWithToast,
+  useSettings,
+  type SettingsResponse,
+} from "@/lib/api";
 import {
   SettingCardButton,
   SettingCardCollapse,
@@ -51,7 +55,9 @@ export default function GeneralSettings() {
 
   return (
     <>
-      <SettingCardLabel>{t("settings.general.auto_discovery")}</SettingCardLabel>
+      <SettingCardLabel>
+        {t("settings.general.auto_discovery")}
+      </SettingCardLabel>
       <ApiCard settings={settings} />
       <label className="text-xl font-bold">{t("settings.geoip.title")}</label>
       <SettingCardSwitch
@@ -91,7 +97,7 @@ export default function GeneralSettings() {
           } else {
             toast.error(
               data.message ||
-              t("settings.geoip.update_error", "更新 GeoIP 数据库失败")
+                t("settings.geoip.update_error", "更新 GeoIP 数据库失败")
             );
           }
         }}
@@ -205,6 +211,27 @@ export default function GeneralSettings() {
           })}
         </label>
       </SettingCardMultiInputCollapse>
+      <SettingCardLabel>{t("settings.nezha.title")}</SettingCardLabel>
+      <label className="text-sm text-muted-foreground -mt-4">
+        {t("settings.nezha.description")}
+      </label>
+      <SettingCardSwitch
+        title={t("settings.nezha.enabled")}
+        description={t("settings.nezha.enabled_description")}
+        defaultChecked={settings.nezha_compat_enabled}
+        onChange={async (checked) => {
+          await updateSettingsWithToast({ nezha_compat_enabled: checked }, t);
+        }}
+      />
+      <SettingCardShortTextInput
+        title={t("settings.nezha.listen")}
+        description={t("settings.nezha.listen_description")}
+        defaultValue={settings.nezha_compat_listen || ""}
+        placeholder="0.0.0.0:5555"
+        OnSave={async (value) => {
+          await updateSettingsWithToast({ nezha_compat_listen: value }, t);
+        }}
+      />
     </>
   );
 }
@@ -233,16 +260,18 @@ function calculateExpectedUsage(
   return formatBytes(totalPingBytes + totalRecordBytes);
 }
 
-
-const ApiCard = ({settings}:{settings:SettingsResponse}) => {
+const ApiCard = ({ settings }: { settings: SettingsResponse }) => {
   //const { settings } = useSettings();
   const { t } = useTranslation();
-  const [apiValues, setApiValues] = React.useState<string>(settings?.auto_discovery_key || "" );
+  const [apiValues, setApiValues] = React.useState<string>(
+    settings?.auto_discovery_key || ""
+  );
 
   // 生成32位随机字符串
   const generateRandomString = () => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
     for (let i = 0; i < 24; i++) {
       result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
@@ -264,34 +293,39 @@ const ApiCard = ({settings}:{settings:SettingsResponse}) => {
 
   return (
     <SettingCardShortTextInput
-        title={t("settings.general.auto_discovery_key")}
-        description={t("settings.general.auto_discovery_key_description")}
-        value={apiValues}
-        onChange={(e) => setApiValues(e.target.value)}
-        OnSave={async (values) => {
-          if (!values) {
-            await updateSettingsWithToast({ auto_discovery_key: "" }, t);
-            return;
-          }
-          if (values.length < 12) {
-            toast.error(t("settings.api.key_length_error"));
-            return;
-          }
-          await updateSettingsWithToast({ auto_discovery_key: values }, t);
-        }}
-      >
-        <div className="flex flex-row gap-2 justify-start items-center">
-          <Button variant="soft" color="green" onClick={handleGenerateApiKey}>{t('common.generate')}</Button>
-            <Button
-            variant="soft"
-            color="mint"
-            onClick={() => {
-              window.open("https://komari-document.pages.dev/install/agent-ad.html", "_blank");
-            }}
-            >
-            {t('common.help')}
-            </Button>
-        </div>
-      </SettingCardShortTextInput>
-  )
-}
+      title={t("settings.general.auto_discovery_key")}
+      description={t("settings.general.auto_discovery_key_description")}
+      value={apiValues}
+      onChange={(e) => setApiValues(e.target.value)}
+      OnSave={async (values) => {
+        if (!values) {
+          await updateSettingsWithToast({ auto_discovery_key: "" }, t);
+          return;
+        }
+        if (values.length < 12) {
+          toast.error(t("settings.api.key_length_error"));
+          return;
+        }
+        await updateSettingsWithToast({ auto_discovery_key: values }, t);
+      }}
+    >
+      <div className="flex flex-row gap-2 justify-start items-center">
+        <Button variant="soft" color="green" onClick={handleGenerateApiKey}>
+          {t("common.generate")}
+        </Button>
+        <Button
+          variant="soft"
+          color="mint"
+          onClick={() => {
+            window.open(
+              "https://komari-document.pages.dev/install/agent-ad.html",
+              "_blank"
+            );
+          }}
+        >
+          {t("common.help")}
+        </Button>
+      </div>
+    </SettingCardShortTextInput>
+  );
+};

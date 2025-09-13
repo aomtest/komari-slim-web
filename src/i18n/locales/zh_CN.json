@@ -172,6 +172,14 @@
       "key_length_error": "API 密钥长度至少为12",
       "title": "API密钥",
       "description": "使用API密钥可以访问并操作所有资源，包括不限于远程控制、修改设置和账号密码等，请谨慎保管。留空表示取消API密钥功能。"
+    },
+    "nezha": {
+      "title": "哪吒",
+      "enabled": "开启gRpc端口",
+      "enabled_description": "开启gRpc端口，随后哪吒 Agent 可以连接到 Komari, Nezha Agent将会自动注册。启动详情请查看日志。",
+      "listen": "gRpc监听地址",
+      "listen_description": "监听的gRpc地址",
+      "description": "哪吒的兼容选项，Komari 只能处理基础的监控，无法使用延迟检测、远程控制、NAT和内网穿透等功能。娱乐功能，后续无维护打算。（NTR爱好者）"
     }
   },
   "sessions": {
