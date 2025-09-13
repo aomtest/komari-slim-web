@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/chart";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
 import { useTranslation } from "react-i18next";
-import fillMissingTimePoints, { cutPeakValues } from "@/utils/RecordHelper";
+import { cutPeakValues } from "@/utils/RecordHelper";
 import Tips from "./ui/tips";
 
 interface PingRecord {
@@ -92,43 +92,54 @@ const MiniPingChart = ({
   }, [uuid, hours]);
 
   const chartData = useMemo(() => {
+    // 思路：仅保留真实采样时间点（各任务原始时间点的并集），
+    // 不再用最小间隔对整段时间做补点，否则长间隔任务会被大量 null 分割成若干段。
     const data = remoteData || [];
     if (!data.length) return [];
-    //const sliced = data.slice(-MAX_POINTS);
-    const grouped: Record<string, any> = {};
-    const timeKeys: number[] = [];
+
+    // 动态匹配容差：取各任务最小 interval * 0.4（秒）转换为 ms，范围 [800ms, 1500ms]
+    const validIntervals = tasks
+      .map((t) => t.interval)
+      .filter((v): v is number => typeof v === "number" && v > 0);
+    const minTaskInterval = validIntervals.length
+      ? Math.min(...validIntervals)
+      : 60;
+    const toleranceMs = Math.min(
+      1500,
+      Math.max(800, (minTaskInterval * 1000 * 0.4) | 0)
+    );
+
+    const grouped: Record<string, any> = {}; // key: anchor timestamp(ms)
+    const anchors: number[] = [];
 
     for (const rec of data) {
-      const t = new Date(rec.time).getTime();
-      let foundKey = null;
-      for (const key of timeKeys) {
-        if (Math.abs(key - t) <= 1500) {
-          foundKey = key;
+      const ts = new Date(rec.time).getTime();
+      let anchor: number | null = null;
+      // 线性扫描量通常较小（点数有限），后续如需优化可改为二分。
+      for (const a of anchors) {
+        if (Math.abs(a - ts) <= toleranceMs) {
+          anchor = a;
           break;
         }
       }
-      const useKey = foundKey !== null ? foundKey : t;
-      if (!grouped[useKey]) {
-        grouped[useKey] = { time: new Date(useKey).toISOString() };
-        if (foundKey === null) timeKeys.push(useKey);
+      const use = anchor ?? ts;
+      if (!grouped[use]) {
+        grouped[use] = { time: new Date(use).toISOString() };
+        if (anchor === null) anchors.push(use);
       }
-      // 小于0的值不显示，等于0的值要显示
-      grouped[useKey][rec.task_id] = rec.value < 0 ? null : rec.value;
+      grouped[use][rec.task_id] = rec.value < 0 ? null : rec.value; // 负值隐藏
     }
 
-    let full = Object.values(grouped).sort(
-      (a: any, b: any) =>
-        new Date(a.time).getTime() - new Date(b.time).getTime()
+    let rows = Object.values(grouped).sort(
+      (a: any, b: any) => new Date(a.time).getTime() - new Date(b.time).getTime()
     );
 
-    // 如果开启削峰，应用削峰处理
     if (cutPeak && tasks.length > 0) {
-      const taskKeys = tasks.map(task => String(task.id));
-      full = cutPeakValues(full, taskKeys);
+      const taskKeys = tasks.map((t) => String(t.id));
+      rows = cutPeakValues(rows, taskKeys);
     }
 
-    const full1 = fillMissingTimePoints(full, tasks[0]?.interval || 60, null, tasks[0]?.interval * 1.2 || 72);
-    return full1;
+    return rows;
   }, [remoteData, cutPeak, tasks]);
 
   const timeFormatter = (value: any, index: number) => {
@@ -243,20 +254,33 @@ const MiniPingChart = ({
                 }
               />
               <ChartLegend onClick={handleLegendClick} />
-              {tasks.map((task, idx) => (
-                <Line
-                  key={task.id}
-                  dataKey={String(task.id)}
-                  name={task.name}
-                  stroke={colors[idx % colors.length]}
-                  dot={false}
-                  isAnimationActive={false}
-                  strokeWidth={2}
-                  connectNulls={false}
-                  type={cutPeak ? "basisOpen" : "linear"}
-                  hide={!!hiddenLines[task.id]}
-                />
-              ))}
+              {(() => {
+                const minInterval = Math.min(
+                  ...tasks
+                    .map((t) => t.interval || Infinity)
+                    .filter((v) => v !== undefined)
+                );
+                return tasks.map((task, idx) => {
+                  const interval = task.interval || minInterval;
+                  // 对于 interval 大于最小 interval 的任务，开启 connectNulls，
+                  // 这样它们不会因为其他任务的额外时间点被打断。
+                  const connect = interval > minInterval;
+                  return (
+                    <Line
+                      key={task.id}
+                      dataKey={String(task.id)}
+                      name={task.name}
+                      stroke={colors[idx % colors.length]}
+                      dot={false}
+                      isAnimationActive={false}
+                      strokeWidth={2}
+                      connectNulls={connect}
+                      type={cutPeak ? "basisOpen" : "linear"}
+                      hide={!!hiddenLines[task.id]}
+                    />
+                  );
+                });
+              })()}
             </LineChart>
           </ChartContainer>
         )

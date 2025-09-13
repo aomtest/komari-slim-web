@@ -10,9 +10,7 @@ import {
   ChartLegend,
 } from "@/components/ui/chart";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
-import fillMissingTimePoints, {
-  cutPeakValues,
-} from "@/utils/RecordHelper";
+import { cutPeakValues } from "@/utils/RecordHelper";
 import Tips from "@/components/ui/tips";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -145,42 +143,48 @@ const PingChart = ({ uuid }: { uuid: string }) => {
   }, [hours, uuid]); // Depend on hours
 
   const midData = useMemo(() => {
+    // 按 MiniPingChart 的思路：只构造实际出现的时间点并合并相近时间，避免为最小 interval 大量补 null
     const data = remoteData || [];
     if (!data.length) return [];
 
-    const grouped: Record<string, any> = {};
-    const timeKeys: number[] = [];
+    // 动态容差：基于最小任务 interval 的 0.4，限制在 [800ms, 1500ms]
+    const validIntervals = tasks
+      .map((t) => t.interval)
+      .filter((v): v is number => typeof v === "number" && v > 0);
+    const minTaskInterval = validIntervals.length
+      ? Math.min(...validIntervals)
+      : 60; // 秒
+    const toleranceMs = Math.min(
+      1500,
+      Math.max(800, Math.floor(minTaskInterval * 1000 * 0.4))
+    );
 
-    //for (const rec of sliced) {
+    const grouped: Record<number, any> = {};
+    const anchors: number[] = [];
+
     for (const rec of data) {
-      const t = new Date(rec.time).getTime();
-      let foundKey = null;
-      for (const key of timeKeys) {
-        if (Math.abs(key - t) <= 1500) {
-          foundKey = key;
+      const ts = new Date(rec.time).getTime();
+      let anchor: number | null = null;
+      for (const a of anchors) {
+        if (Math.abs(a - ts) <= toleranceMs) {
+          anchor = a;
           break;
         }
       }
-      const useKey = foundKey !== null ? foundKey : t;
-      if (!grouped[useKey]) {
-        grouped[useKey] = { time: new Date(useKey).toISOString() };
-        if (foundKey === null) timeKeys.push(useKey);
+      const use = anchor ?? ts;
+      if (!grouped[use]) {
+        grouped[use] = { time: new Date(use).toISOString() };
+        if (anchor === null) anchors.push(use);
       }
-      grouped[useKey][rec.task_id] = rec.value;
+      // 负值视为无效点（例如超时），用 null 便于连接策略
+      grouped[use][rec.task_id] = rec.value < 0 ? null : rec.value;
     }
 
-    let full = Object.values(grouped).sort(
-      (a: any, b: any) =>
-        new Date(a.time).getTime() - new Date(b.time).getTime()
+    const rows = Object.values(grouped).sort(
+      (a: any, b: any) => new Date(a.time).getTime() - new Date(b.time).getTime()
     );
-    const full1 = fillMissingTimePoints(
-      full,
-      tasks[0]?.interval || 60,
-      hours * 60 * 60,
-      tasks[0]?.interval ? tasks[0]?.interval * 1.2 : 60 * 1.2
-    );
-    return full1;
-  }, [remoteData, cutPeak, tasks, hours]);
+    return rows;
+  }, [remoteData, tasks]);
 
   // 组装图表数据
   const chartData = useMemo(() => {
@@ -393,20 +397,31 @@ const PingChart = ({ uuid }: { uuid: string }) => {
                 }
               />
               <ChartLegend onClick={handleLegendClick} />
-              {tasks.map((task, idx) => (
-                <Line
-                  key={task.id}
-                  dataKey={String(task.id)}
-                  name={task.name}
-                  stroke={colors[idx % colors.length]}
-                  dot={false}
-                  isAnimationActive={false}
-                  strokeWidth={2}
-                  connectNulls={false}
-                  type={cutPeak ? "basis" : "linear"}
-                  hide={!!hiddenLines[String(task.id)]}
-                />
-              ))}
+              {(() => {
+                const minInterval = Math.min(
+                  ...tasks
+                    .map((t) => t.interval || Infinity)
+                    .filter((v) => v !== undefined)
+                );
+                return tasks.map((task, idx) => {
+                  const interval = task.interval || minInterval;
+                  const connect = interval > minInterval; // 长间隔任务允许跨 null 连接
+                  return (
+                    <Line
+                      key={task.id}
+                      dataKey={String(task.id)}
+                      name={task.name}
+                      stroke={colors[idx % colors.length]}
+                      dot={false}
+                      isAnimationActive={false}
+                      strokeWidth={2}
+                      connectNulls={connect}
+                      type={cutPeak ? "basis" : "linear"}
+                      hide={!!hiddenLines[String(task.id)]}
+                    />
+                  );
+                });
+              })()}
             </LineChart>
           </ChartContainer>
         )}
