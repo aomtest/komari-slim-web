@@ -597,9 +597,10 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
       args.push(`--include-mountpoint`);
       args.push(installOptions.includeMountpoints);
     }
-    if (enableMonthRotate && installOptions.monthRotate) {
+    if (enableMonthRotate) {
+      const rotateVal = (installOptions.monthRotate || "").trim() || "1"; // 默认 1
       args.push(`--month-rotate`);
-      args.push(installOptions.monthRotate);
+      args.push(rotateVal);
     }
 
     let finalCommand = "";
@@ -1017,11 +1018,17 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
                 <Checkbox
                   checked={enableMonthRotate}
                   onCheckedChange={(checked) => {
-                    setEnableMonthRotate(Boolean(checked));
-                    if (!checked) {
+                    const enabled = Boolean(checked);
+                    setEnableMonthRotate(enabled);
+                    if (!enabled) {
                       setInstallOptions((prev) => ({
                         ...prev,
                         monthRotate: "",
+                      }));
+                    } else {
+                      setInstallOptions((prev) => ({
+                        ...prev,
+                        monthRotate: prev.monthRotate?.trim() ? prev.monthRotate : "1",
                       }));
                     }
                   }}
@@ -1029,11 +1036,17 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
                 <label
                   className="text-sm font-bold cursor-pointer"
                   onClick={() => {
-                    setEnableMonthRotate(!enableMonthRotate);
-                    if (enableMonthRotate) {
+                    const willEnable = !enableMonthRotate;
+                    setEnableMonthRotate(willEnable);
+                    if (!willEnable) {
                       setInstallOptions((prev) => ({
                         ...prev,
                         monthRotate: "",
+                      }));
+                    } else {
+                      setInstallOptions((prev) => ({
+                        ...prev,
+                        monthRotate: prev.monthRotate?.trim() ? prev.monthRotate : "1",
                       }));
                     }
                   }}
