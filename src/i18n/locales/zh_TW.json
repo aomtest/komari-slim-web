@@ -268,6 +268,7 @@
     "virtualization": "虛擬化",
     "load": "負載",
     "ping": "延遲",
+    "temperature": "溫度",
     "groupNodes": "{{group}} 分組: 共 {{total}} 個伺服器，{{online}} 個伺服器線上"
   },
   "login": {
@@ -319,6 +320,8 @@
     "mem_used": "記憶體",
     "swap_used": "虛擬記憶體",
     "disk_used": "磁碟",
+    "gpu_memory": "顯存使用率",
+    "usage": "使用率",
     "hours": "{{count}} 小時",
     "days": "{{count}} 天",
     "cutPeak": "平滑",
