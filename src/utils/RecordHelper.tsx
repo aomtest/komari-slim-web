@@ -5,6 +5,19 @@ export interface RecordFormat {
   time: string;
   cpu: number | null;
   gpu: number | null;
+  gpu_usage: number | null;
+  gpu_memory: number | null;
+  gpu_detailed?: {
+    [index: number]: {
+      usage: number | null;
+      memory: number | null;
+      temperature: number | null;
+      device_index?: number;
+      device_name?: string;
+      mem_total?: number;
+      mem_used?: number;
+    };
+  };
   ram: number | null;
   ram_total: number | null;
   swap: number | null;
@@ -32,6 +45,19 @@ export function liveDataToRecords(
     time: data.updated_at || "",
     cpu: data.cpu.usage ?? 0,
     gpu: 0,
+    gpu_usage: data.gpu?.average_usage ?? 0,
+    gpu_memory: data.gpu ?
+      data.gpu.detailed_info?.reduce((acc, gpu) =>
+        acc + (gpu.memory_used / gpu.memory_total) * 100, 0) / data.gpu.count || 0
+      : 0,
+    gpu_detailed: data.gpu?.detailed_info?.reduce((acc, gpu, index) => {
+      acc[index] = {
+        usage: gpu.utilization ?? null,
+        memory: (gpu.memory_used / gpu.memory_total) * 100,
+        temperature: gpu.temperature ?? null,
+      };
+      return acc;
+    }, {} as { [index: number]: { usage: number | null; memory: number | null; temperature: number | null; } }) || undefined,
     ram: data.ram.used ?? 0,
     ram_total: 0,
     swap: data.swap.used ?? 0,

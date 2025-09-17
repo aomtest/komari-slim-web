@@ -113,12 +113,44 @@ const LoadChart = ({ data = [] }: LoadChartProps) => {
       })
       .then((resp) => {
         const records = resp.data?.records || [];
+        const gpuDevices = resp.data?.gpu_devices || {};
+
+        // 合并基础记录和GPU数据
+        const mergedRecords = records.map((record: RecordFormat) => {
+          const gpuDetailed = [];
+
+          // 遍历所有GPU设备，找到对应时间的GPU数据
+          for (const deviceIndex in gpuDevices) {
+            const device = gpuDevices[deviceIndex];
+            const gpuRecord = device.records?.find((gr: any) =>
+              new Date(gr.time).getTime() === new Date(record.time).getTime()
+            );
+
+            if (gpuRecord) {
+              gpuDetailed.push({
+                usage: gpuRecord.utilization,
+                memory: (gpuRecord.mem_used / gpuRecord.mem_total) * 100,
+                temperature: gpuRecord.temperature,
+                device_index: gpuRecord.device_index,
+                device_name: gpuRecord.device_name,
+                mem_total: gpuRecord.mem_total,
+                mem_used: gpuRecord.mem_used
+              });
+            }
+          }
+
+          return {
+            ...record,
+            gpu_detailed: gpuDetailed.length > 0 ? gpuDetailed : undefined
+          };
+        });
+
         // 按照时间升序排序
-        records.sort(
+        mergedRecords.sort(
           (a: RecordFormat, b: RecordFormat) =>
             new Date(a.time).getTime() - new Date(b.time).getTime()
         );
-        setRemoteData(records);
+        setRemoteData(mergedRecords);
         setLoading(false);
       })
       .catch((err) => {
@@ -662,6 +694,128 @@ const LoadChart = ({ data = [] }: LoadChartProps) => {
             </LineChart>
           </ChartContainer>
         </Card>
+        {/* GPU Charts - Each GPU gets its own chart */}
+        {live_data?.gpu && live_data.gpu.count > 0 && live_data.gpu.detailed_info?.map((gpu, index) => (
+          <Card key={`gpu-${index}`} className={cn}>
+            <Flex direction="column" gap="2" className="mb-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xl font-bold">{`GPU ${index + 1}: ${gpu.name}`}</label>
+                <span className="text-sm text-muted-foreground">{formatBytes(gpu.memory_total)}</span>
+              </div>
+              <div className="grid grid-cols-3 gap-4 text-sm text-muted-foreground">
+                <div className="text-center">
+                  <div className="font-medium">{t("chart.usage")}</div>
+                  <div className="text-lg font-bold text-foreground">{gpu.utilization}%</div>
+                </div>
+                <div className="text-center">
+                  <div className="font-medium">{t("chart.gpu_memory")}</div>
+                  <div className="text-lg font-bold text-foreground">{((gpu.memory_used / gpu.memory_total) * 100).toFixed(1)}%</div>
+                </div>
+                <div className="text-center">
+                  <div className="font-medium">{t("nodeCard.temperature")}</div>
+                  <div className="text-lg font-bold text-foreground">{gpu.temperature}°C</div>
+                </div>
+              </div>
+            </Flex>
+            <ChartContainer
+              config={{
+                gpu_usage: {
+                  label: "GPU",
+                  color: primaryColor,
+                },
+                gpu_memory: {
+                  label: t("chart.gpu_memory"),
+                  color: secondaryColor,
+                },
+                gpu_temp: {
+                  label: t("nodeCard.temperature"),
+                  color: colors[2],
+                },
+              }}
+            >
+              <AreaChart
+                data={chartData.map((item) => ({
+                  time: item.time,
+                  gpu_usage: item.gpu_detailed?.[index]?.usage ?? item.gpu_usage ?? 0,
+                  gpu_memory: item.gpu_detailed?.[index]?.memory ?? item.gpu_memory ?? 0,
+                  gpu_memory_raw: item.gpu_detailed?.[index]?.mem_used ??
+                    (gpu.memory_total * (item.gpu_detailed?.[index]?.memory || 0) / 100),
+                  gpu_temp: item.gpu_detailed?.[index]?.temperature ?? 0,
+                  client: item.client,
+                }))}
+                accessibilityLayer
+                margin={chartMargin}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="time"
+                  tickLine={false}
+                  tickFormatter={timeFormatter}
+                  interval={0}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  domain={[0, 100]}
+                  tickFormatter={(value, index) =>
+                    index !== 0 ? `${value}%` : ""
+                  }
+                  orientation="left"
+                  type="number"
+                  tick={{ dx: -10 }}
+                  mirror={true}
+                />
+                <ChartTooltip
+                  cursor={false}
+                  formatter={(value, name, props) => {
+                    if (name === "gpu_temp") {
+                      return `${value}°C`;
+                    }
+                    if (name === "gpu_usage") {
+                      return `${Number(value).toFixed(1)}%`;
+                    }
+                    if (name === "gpu_memory") {
+                      const percentage = Number(value).toFixed(1);
+                      const rawValue = props.payload?.gpu_memory_raw || 0;
+                      return `${formatBytes(rawValue)}(${percentage}%)`;
+                    }
+                    return `${Number(value).toFixed(1)}`;
+                  }}
+                  content={
+                    <ChartTooltipContent
+                      labelFormatter={lableFormatter}
+                      indicator="dot"
+                    />
+                  }
+                />
+                <Area
+                  dataKey="gpu_usage"
+                  animationDuration={0}
+                  stroke={primaryColor}
+                  fill={primaryColor}
+                  opacity={0.8}
+                  dot={false}
+                />
+                <Area
+                  dataKey="gpu_memory"
+                  animationDuration={0}
+                  stroke={secondaryColor}
+                  fill={secondaryColor}
+                  opacity={0.8}
+                  dot={false}
+                />
+                <Area
+                  dataKey="gpu_temp"
+                  animationDuration={0}
+                  stroke={colors[2]}
+                  fill={colors[2]}
+                  opacity={0.6}
+                  dot={false}
+                />
+              </AreaChart>
+            </ChartContainer>
+          </Card>
+        ))}
       </div>
     </Flex>
   );

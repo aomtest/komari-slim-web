@@ -268,6 +268,7 @@
     "virtualization": "Virtualization",
     "load": "Load",
     "ping": "Ping",
+    "temperature": "Temperature",
     "groupNodes": "{{group}} group: total {{total}} servers, {{online}} servers online"
   },
   "login": {
@@ -319,6 +320,8 @@
     "mem_used": "Ram",
     "swap_used": "Swap Used",
     "disk_used": "Disk",
+    "gpu_memory": "GPU Memory Usage",
+    "usage": "Usage",
     "hours": "{{count}} Hours",
     "days": "{{count}} Day",
     "cutPeak": "Smooth",
