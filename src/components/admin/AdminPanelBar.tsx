@@ -18,6 +18,7 @@ import { useAccount } from "@/contexts/AccountContext";
 import { usePublicInfo } from "@/contexts/PublicInfoContext";
 import Tips from "../ui/tips";
 import { CircleFadingArrowUp } from "lucide-react";
+import { useRPC2Call } from "@/contexts/RPC2Context";
 
 // 将JSON配置转换为类型安全的菜单项数组 (基础静态菜单)
 const baseMenuItems = (menuConfig as { menu: MenuItem[] }).menu;
@@ -32,6 +33,7 @@ interface AdminPanelBarProps {
 }
 
 const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
+  const { call } = useRPC2Call();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [openSubMenus, setOpenSubMenus] = useState<{ [key: string]: boolean }>({
     // 默认所有子菜单关闭
@@ -113,14 +115,13 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
   useEffect(() => {
     const fetchVersionInfo = async () => {
       try {
-        const response = await fetch("/api/version");
-        const data = await response.json();
-        if (data.status === "success") {
+        //const response = await fetch("/api/version");
+        const data = await call("common:getVersion");
           setVersionInfo({
-            hash: data["data"].hash.slice(0, 7),
-            version: data["data"].version,
+            hash: data.hash?.slice(0, 7),
+            version: data.version,
           });
-        }
+        
       } catch (error) {
         console.error("Failed to fetch version info:", error);
       }

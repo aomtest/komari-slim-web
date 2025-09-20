@@ -83,29 +83,33 @@ export class RPC2Client {
 
     try {
       const wsUrl = this.getWebSocketUrl();
-      this.ws = new WebSocket(wsUrl);
+      const ws = new WebSocket(wsUrl);
+      this.ws = ws;
       this.setupWebSocketHandlers();
 
-      // 等待连接建立
+      // 等待连接建立（不覆盖已设置的处理器，避免丢失心跳与状态更新）
       await new Promise<void>((resolve, reject) => {
-        if (!this.ws) {
-          reject(new Error("WebSocket 创建失败"));
-          return;
-        }
-
+        const handleOpen = () => {
+          cleanup();
+          resolve();
+        };
+        const handleError = () => {
+          cleanup();
+          reject(new Error("WebSocket 连接失败"));
+        };
         const timeout = setTimeout(() => {
+          cleanup();
           reject(new Error("WebSocket 连接超时"));
         }, 10000);
 
-        this.ws.onopen = () => {
+        const cleanup = () => {
           clearTimeout(timeout);
-          resolve();
+          ws.removeEventListener("open", handleOpen);
+          ws.removeEventListener("error", handleError);
         };
 
-        this.ws.onerror = () => {
-          clearTimeout(timeout);
-          reject(new Error("WebSocket 连接失败"));
-        };
+        ws.addEventListener("open", handleOpen, { once: true });
+        ws.addEventListener("error", handleError, { once: true });
       });
     } catch (error) {
       this.setConnectionState(RPC2ConnectionState.ERROR);
@@ -413,7 +417,7 @@ export class RPC2Client {
           // 发送心跳包作为通知请求（不期望响应）
           const heartbeatRequest: JSONRPC2Request = {
             jsonrpc: "2.0",
-            method: "heartbeat",
+            method: "rpc.ping",
             params: { timestamp: Date.now() }
           };
           this.ws.send(JSON.stringify(heartbeatRequest));
@@ -447,6 +451,5 @@ export class RPC2Client {
   }
 }
 
-// 创建默认实例
-export const defaultRPC2Client = new RPC2Client();
-export const rpc2 = new RPC2Client();
+// 注意：避免在模块级别创建默认实例，以免在多处导入时重复建立 WebSocket 连接。
+// 请通过 RPC2Provider + useRPC2Call/useRPC2 使用该客户端，或在需要的地方手动创建实例。

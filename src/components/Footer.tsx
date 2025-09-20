@@ -1,5 +1,6 @@
 import { Flex, Text } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
+import { useRPC2Call } from '@/contexts/RPC2Context';
 
 const Footer = () => {
   //const currentYear = new Date().getFullYear();
@@ -20,15 +21,14 @@ const Footer = () => {
 
   const buildTime = typeof __BUILD_TIME__ !== 'undefined' ? __BUILD_TIME__ : null;
   const [versionInfo, setVersionInfo] = useState<{ hash: string; version: string } | null>(null);
+  const { call } = useRPC2Call();
 
   useEffect(() => {
     const fetchVersionInfo = async () => {
       try {
-        const response = await fetch('/api/version');
-        const data = await response.json();
-        if (data.status === 'success') {
-          setVersionInfo({ hash: data['data'].hash.slice(0,7), version: data['data'].version });
-        }
+        //const response = await fetch('/api/version');
+  const data = await call("common:getVersion")
+          setVersionInfo({ hash: data.hash?.slice(0,7), version: data.version });
       } catch (error) {
         console.error('Failed to fetch version info:', error);
       }
