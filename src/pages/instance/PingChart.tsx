@@ -13,6 +13,8 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
 import fillMissingTimePoints, { cutPeakValues } from "@/utils/RecordHelper";
 import Tips from "@/components/ui/tips";
 import { Eye, EyeOff } from "lucide-react";
+import { useRPC2Call } from "@/contexts/RPC2Context";
+import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 
 interface PingRecord {
   client: string;
@@ -25,16 +27,17 @@ interface TaskInfo {
   name: string;
   interval: number;
   loss: number;
+  p99?: number;
+  p50?: number;
+  p99_p50_ratio?: number;
+  min?: number;
+  max?: number;
+  avg?: number;
+  latest?: number;
+  total?: number;
+  type?: string;
 }
-interface PingApiResp {
-  status: string;
-  message: string;
-  data: {
-    count: number;
-    records: PingRecord[];
-    tasks: TaskInfo[];
-  };
-}
+// 移除旧的 REST API 响应类型，改用 RPC2 返回结构
 
 //const MAX_POINTS = 1000;
 const colors = [
@@ -51,6 +54,7 @@ const colors = [
 const PingChart = ({ uuid }: { uuid: string }) => {
   const { t } = useTranslation();
   const { publicInfo } = usePublicInfo();
+  const { call } = useRPC2Call();
   const max_record_preserve_time = publicInfo?.ping_record_preserve_time || 0;
   // 视图选项
   const presetViews = [
@@ -110,7 +114,7 @@ const PingChart = ({ uuid }: { uuid: string }) => {
     }
   }, [view, avaliableView]);
 
-  // 拉取历史数据
+  // 拉取历史数据（改为 RPC2: common:getRecords）
   useEffect(() => {
     if (!uuid) return;
     if (!hours) {
@@ -122,24 +126,31 @@ const PingChart = ({ uuid }: { uuid: string }) => {
     }
     setLoading(true);
     setError(null);
-    fetch(`/api/records/ping?uuid=${uuid}&hours=${hours}`) // Use hours directly
-      .then((res) => {
-        if (!res.ok) throw new Error(res.statusText);
-        return res.json();
-      })
-      .then((resp: PingApiResp) => {
-        const records = resp.data?.records || [];
-        records.sort(
-          (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime()
-        );
+    const controller = new AbortController();
+    (async () => {
+      try {
+        type RpcResp = {
+          count: number;
+          records: PingRecord[];
+          tasks?: TaskInfo[];
+          from?: string;
+          to?: string;
+        };
+        const result = await call<
+          any,
+          RpcResp
+        >("common:getRecords", { uuid, type: "ping", hours });
+        const records = result?.records || [];
+        records.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
         setRemoteData(records);
-        setTasks(resp.data?.tasks || []);
+        setTasks(result?.tasks || []);
         setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message || "Error");
+      } catch (err: any) {
+        setError(err?.message || "Error");
         setLoading(false);
-      });
+      }
+    })();
+    return () => controller.abort();
   }, [hours, uuid]); // Depend on hours
 
   const midData = useMemo(() => {
@@ -230,7 +241,7 @@ const PingChart = ({ uuid }: { uuid: string }) => {
     const config: Record<string, any> = {};
     tasks.forEach((task, idx) => {
       config[task.id] = {
-        label: task.name,
+        label: `${task.name}${typeof task.p99_p50_ratio === 'number' ? ` (${t('chart.volatility')}: ${task.p99_p50_ratio.toFixed(2)})` : ''}`,
         color: colors[idx % colors.length],
       };
     });
@@ -240,7 +251,7 @@ const PingChart = ({ uuid }: { uuid: string }) => {
   const latestValues = useMemo(() => {
     if (!remoteData || !tasks.length) return [];
     const map = new Map<number, PingRecord>();
-    
+
     // 为每个task找到最新的有效值（>=0）
     for (const task of tasks) {
       for (let i = remoteData.length - 1; i >= 0; i--) {
@@ -251,7 +262,7 @@ const PingChart = ({ uuid }: { uuid: string }) => {
         }
       }
     }
-    
+
     return tasks.map((task, idx) => ({
       ...task,
       value: map.get(task.id)?.value ?? null,
@@ -330,14 +341,91 @@ const PingChart = ({ uuid }: { uuid: string }) => {
                   style={{ backgroundColor: task.color }}
                 />
                 <div className="flex items-start justify-center ml-1 flex-col">
-                  <label className="font-bold text-md -mb-1">{task.name}</label>
+                  <div className="flex items-center gap-1 -mb-1">
+                    <label className="font-bold text-md">{task.name}</label>
+                    <Tips side="top" trigger={<DotsHorizontalIcon className="cursor-pointer"  color="gray" />}>
+                      <div className="grid grid-cols-2 gap-x-3 gap-y-1">
+                        {typeof task.min === 'number' && (
+                          <>
+                            <span className="text-muted-foreground">{t('chart.min')}</span>
+                            <span className="font-mono">{Math.round(task.min)} ms</span>
+                          </>
+                        )}
+                        {typeof task.max === 'number' && (
+                          <>
+                            <span className="text-muted-foreground">{t('chart.max')}</span>
+                            <span className="font-mono">{Math.round(task.max)} ms</span>
+                          </>
+                        )}
+                        {typeof task.avg === 'number' && (
+                          <>
+                            <span className="text-muted-foreground">{t('chart.avg')}</span>
+                            <span className="font-mono">{Math.round(task.avg)} ms</span>
+                          </>
+                        )}
+                        {typeof task.latest === 'number' && (
+                          <>
+                            <span className="text-muted-foreground">{t('chart.latest')}</span>
+                            <span className="font-mono">{Math.round(task.latest)} ms</span>
+                          </>
+                        )}
+                        {typeof task.p99_p50_ratio === 'number' && (
+                          <>
+                            <span className="text-muted-foreground">{t('chart.volatility')}</span>
+                            <span className="font-mono">{task.p99_p50_ratio.toFixed(2)}</span>
+                          </>
+                        )}
+                        {typeof task.p50 === 'number' && (
+                          <>
+                            <span className="text-muted-foreground">p50</span>
+                            <span className="font-mono">{Math.round(task.p50)} ms</span>
+                          </>
+                        )}
+                        {typeof task.p99 === 'number' && (
+                          <>
+                            <span className="text-muted-foreground">p99</span>
+                            <span className="font-mono">{Math.round(task.p99)} ms</span>
+                          </>
+                        )}
+                        {typeof task.loss === 'number' && (
+                          <>
+                            <span className="text-muted-foreground">{t('chart.lossRate')}</span>
+                            <span className="font-mono">{Number(task.loss).toFixed(1)}%</span>
+                          </>
+                        )}
+                        {typeof task.interval === 'number' && (
+                          <>
+                            <span className="text-muted-foreground">{t('chart.interval')}</span>
+                            <span className="font-mono">{task.interval}s</span>
+                          </>
+                        )}
+                        {task.type && (
+                          <>
+                            <span className="text-muted-foreground">{t('chart.type')}</span>
+                            <span className="font-mono uppercase">{task.type}</span>
+                          </>
+                        )}
+                        {typeof task.total === 'number' && (
+                          <>
+                            <span className="text-muted-foreground">{t('chart.total')}</span>
+                            <span className="font-mono">{task.total}</span>
+                          </>
+                        )}
+                      </div>
+                    </Tips>
+                  </div>
                   <div className="flex gap-2 text-sm text-muted-foreground">
                     <span>
-                      {task.value !== null ? `${Number(task.value).toFixed(1)} ms` : '-'}
+                      {task.value !== null ? `${Number(task.value).toFixed(0)} ms` : '-'}
                     </span>
                     <span>
                       {`${Number(task.loss).toFixed(1)}%${t("chart.lossRate")}`}
                     </span>
+                    {typeof task.p99_p50_ratio === 'number' && (
+                      <span title="p99/p50">
+                        {(task.p99_p50_ratio).toFixed(1)}{t('chart.volatility')}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>

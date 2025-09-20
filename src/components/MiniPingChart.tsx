@@ -11,6 +11,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
 import { useTranslation } from "react-i18next";
 import { cutPeakValues } from "@/utils/RecordHelper";
 import Tips from "./ui/tips";
+import { useRPC2Call } from "@/contexts/RPC2Context";
 
 interface PingRecord {
   client: string;
@@ -23,16 +24,11 @@ interface TaskInfo {
   name: string;
   interval: number;
   loss: number;
+  p99?: number;
+  p50?: number;
+  p99_p50_ratio?: number;
 }
-interface PingApiResp {
-  status: string;
-  message: string;
-  data: {
-    count: number;
-    records: PingRecord[];
-    tasks: TaskInfo[];
-  };
-}
+// 移除旧 REST 类型，改用 RPC2 返回结构
 
 //const MAX_POINTS = 1000;
 const colors = [
@@ -66,29 +62,26 @@ const MiniPingChart = ({
   const [hiddenLines, setHiddenLines] = useState<Record<string, boolean>>({});
   const [t] = useTranslation();
   const [cutPeak, setCutPeak] = useState(false);
+  const { call } = useRPC2Call();
   useEffect(() => {
     if (!uuid) return;
 
     setLoading(true);
     setError(null);
-    fetch(`/api/records/ping?uuid=${uuid}&hours=${hours}`)
-      .then((res) => {
-        if (!res.ok) throw new Error(res.statusText);
-        return res.json();
-      })
-      .then((resp: PingApiResp) => {
-        const records = resp.data?.records || [];
-        records.sort(
-          (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime()
-        );
+    (async () => {
+      try {
+        type RpcResp = { count: number; records: PingRecord[]; tasks?: TaskInfo[] };
+        const result = await call<any, RpcResp>("common:getRecords", { uuid, type: "ping", hours });
+        const records = result?.records || [];
+        records.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
         setRemoteData(records);
-        setTasks(resp.data?.tasks || []);
+        setTasks(result?.tasks || []);
         setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message || "Error");
+      } catch (err: any) {
+        setError(err?.message || "Error");
         setLoading(false);
-      });
+      }
+    })();
   }, [uuid, hours]);
 
   const chartData = useMemo(() => {
@@ -168,7 +161,7 @@ const MiniPingChart = ({
     const config: Record<string, any> = {};
     tasks.forEach((task, idx) => {
       config[task.id] = {
-        label: task.name,
+        label: `${task.name}${typeof task.p99_p50_ratio === 'number' ? ` (${t('chart.volatility')}: ${task.p99_p50_ratio.toFixed(2)})` : ''}`,
         color: colors[idx % colors.length],
       };
     });
