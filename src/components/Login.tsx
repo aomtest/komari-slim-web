@@ -39,7 +39,7 @@ const LoginDialog = ({ trigger, autoOpen = false, showSettings = true, info, onL
   const onlyOAuthLogin = oauthEnabled && !passwordLoginEnabled; // 只有 OAuth
   // Validate inputs (仅在启用密码登录时需要)
   const isFormValid = passwordLoginEnabled && username.trim() !== "" && password.trim() !== "";
-    console.log(autoOpen, open);
+    //console.log(autoOpen, open);
     React.useEffect(() => {
       if (autoOpen) {
         setOpen(true);

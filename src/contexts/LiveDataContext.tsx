@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import type { LiveDataResponse } from "../types/LiveData";
+import { useRPC2Call } from "./RPC2Context";
 
 // 创建Context
 interface LiveDataContextType {
@@ -19,6 +20,7 @@ export const LiveDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [live_data, setLiveData] = useState<LiveDataResponse | null>(null);
   const [showCallout, setShowCallout] = useState(false);
   const [refreshCallbacks] = useState<Set<(data: LiveDataResponse) => void>>(new Set());
+  const { call } = useRPC2Call();
 
   // 注册刷新回调函数
   const onRefresh = (callback: (data: LiveDataResponse) => void) => {
@@ -30,56 +32,83 @@ export const LiveDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     refreshCallbacks.forEach(callback => callback(data));
   };
 
-  // WebSocket connection effect
+  // 采用 RPC2 轮询最新状态，替代 WebSocket
   useEffect(() => {
-    let ws: WebSocket | null = null;
-    let reconnectTimeout: number;
+    let timer: number | undefined;
+    let stopped = false;
+    let running = false; // 防抖：避免并发请求
+    const intervalMs = 2000;
 
-    const connect = () => {
-      ws = new WebSocket(
-        window.location.protocol.replace("http", "ws") +
-        "//" +
-        window.location.host +
-        "/api/clients"
-      );
-      ws.onopen = () => {
-        // 连接成功时，隐藏 Callout
-        setShowCallout(true);
-      };
-      ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          setLiveData(data);
-          // 当收到新数据时，通知所有已注册的回调函数
-          notifyRefreshCallbacks(data);
-        } catch (e) {
-          console.error(e);
+    const fetchLatest = async () => {
+      if (running) return; // 如果上次请求还在，跳过
+      running = true;
+      try {
+        // 策略由 RPC2Client 内部实现
+        const result: Record<string, any> = await call("common:getNodesLatestStatus");
+        // 将返回转换为 LiveDataResponse 结构
+        const online = Object.values(result)
+          .filter((v: any) => v?.online)
+          .map((v: any) => v.client as string);
+
+        const dataMap: Record<string, any> = {};
+        for (const [uuid, v] of Object.entries(result)) {
+          const rec = v as any;
+          dataMap[uuid] = {
+            cpu: { usage: typeof rec.cpu === "number" ? rec.cpu : 0 },
+            ram: { used: rec.ram ?? 0 },
+            swap: { used: rec.swap ?? 0 },
+            load: {
+              load1: rec.load ?? 0,
+              load5: rec.load5 ?? 0,
+              load15: rec.load15 ?? 0,
+            },
+            disk: { used: (rec.disk_total ?? 0) - (rec.disk ?? 0) },
+            network: {
+              up: rec.net_out ?? 0,
+              down: rec.net_in ?? 0,
+              totalUp: rec.net_total_out ?? rec.net_total_up ?? 0,
+              totalDown: rec.net_total_in ?? rec.net_total_down ?? 0,
+            },
+            connections: {
+              tcp: rec.connections ?? 0,
+              udp: rec.connections_udp ?? 0,
+            },
+            gpu: rec.gpu !== undefined ? { count: 0, average_usage: rec.gpu, detailed_info: [] } : undefined,
+            uptime: rec.uptime ?? 0,
+            process: rec.process ?? 0,
+            message: "",
+            updated_at: rec.time ?? new Date().toISOString(),
+          };
         }
-      };
-      ws.onerror = () => {
-        ws?.close();
-      };
-      ws.onclose = () => {
-        // 断开连接时，显示 Callout
+
+        const live: LiveDataResponse = {
+          data: {
+            online,
+            data: dataMap,
+          },
+          status: "ok",
+        };
+        setLiveData(live);
+        setShowCallout(true);
+        notifyRefreshCallbacks(live);
+      } catch (e) {
+        console.error("RPC2 获取最新状态失败:", e);
         setShowCallout(false);
-        reconnectTimeout = window.setTimeout(connect, 2000);
-      };
+      } finally {
+        running = false;
+        if (!stopped) {
+          timer = window.setTimeout(fetchLatest, intervalMs);
+        }
+      }
     };
 
-    connect();
-
-    const interval = window.setInterval(() => {
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send("get");
-      }
-    }, 2000);
+    fetchLatest();
 
     return () => {
-      clearInterval(interval);
-      clearTimeout(reconnectTimeout);
-      ws?.close();
+      stopped = true;
+      if (timer) window.clearTimeout(timer);
     };
-  }, []);
+  }, [call]);
 
   return (
     <LiveDataContext.Provider value={{ live_data, showCallout, onRefresh }}>

@@ -43,7 +43,7 @@ export class RPC2Client {
       maxReconnectAttempts: 5,
       requestTimeout: 30000,
       enableHeartbeat: true,
-      heartbeatInterval: 5000,
+      heartbeatInterval: 15000,
       headers: {
         "Content-Type": "application/json",
       },
@@ -295,19 +295,31 @@ export class RPC2Client {
     params?: TParams,
     options: RPC2CallOptions = {}
   ): Promise<TResult> {
-    // 如果启用了自动连接，且当前未连接，尝试建立连接
+    // 如果启用了自动连接，且当前未连接，尝试建立连接（不阻塞使用 HTTP 回退）
     if (this.options.autoConnect && 
         this.connectionState === RPC2ConnectionState.DISCONNECTED) {
       this.autoConnect();
-      // 给连接一点时间，但不要等太久
-      await new Promise(resolve => setTimeout(resolve, 100));
     }
 
+    // 策略：
+    // 1) WS 已连接 → 尝试 WS；失败则回退一次 HTTP
+    // 2) 其他状态（未连/连接中/重连中/错误）→ 直接 HTTP
     if (this.connectionState === RPC2ConnectionState.CONNECTED) {
-      return this.callViaWebSocket(method, params, options);
-    } else {
-      return this.callViaHTTP(method, params, options);
+      try {
+        return await this.callViaWebSocket(method, params, options);
+      } catch (wsErr) {
+        // 回退一次 HTTP
+        try {
+          return await this.callViaHTTP(method, params, options);
+        } catch (httpErr) {
+          // HTTP 也失败，抛出 HTTP 错误（信息更贴近最终失败原因）
+          throw httpErr;
+        }
+      }
     }
+
+    // 未连或重连等情况下，直接使用 HTTP
+    return this.callViaHTTP(method, params, options);
   }
 
   private getWebSocketUrl(): string {

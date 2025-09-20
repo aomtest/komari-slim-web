@@ -1,4 +1,5 @@
 import React from "react";
+import { useRPC2Call } from "./RPC2Context";
 
 export type NodeBasicInfo = {
   /** 节点唯一标识符 */
@@ -69,27 +70,52 @@ export const NodeListProvider: React.FC<{ children: React.ReactNode }> = ({
   const [nodeList, setNodeList] = React.useState<NodeBasicInfo[] | null>(null);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | null>(null);
+  const { call } = useRPC2Call();
 
   const refresh = () => {
     setIsLoading(true);
     setError(null);
-    fetch("/api/nodes")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch node data");
-        }
-        return response.json();
-      })
-      .then((resp) => {
-        if (resp && Array.isArray(resp.data)) {
-          console.log(resp.data);
-          setNodeList(resp.data);
-        } else {
+    // 通过 RPC2 获取节点基本信息
+    call<{ uuid?: string }, Record<string, any>>("common:getNodes")
+      .then((result) => {
+        if (!result || typeof result !== "object") {
           setNodeList([]);
+          return;
         }
+        // 将 { [uuid]: Client } 转换为 NodeBasicInfo[]
+        const list: NodeBasicInfo[] = Object.values(result).map((n: any) => ({
+          uuid: n.uuid,
+          name: n.name,
+          cpu_name: n.cpu_name,
+          virtualization: n.virtualization,
+          arch: n.arch,
+          cpu_cores: n.cpu_cores,
+          os: n.os,
+          kernel_version: n.kernel_version,
+          gpu_name: n.gpu_name,
+          region: n.region,
+          mem_total: n.mem_total,
+          swap_total: n.swap_total,
+          disk_total: n.disk_total,
+          // 兼容旧字段，若无版本信息则给空串
+          version: n.version ?? "",
+          weight: n.weight ?? 0,
+          price: n.price ?? 0,
+          tags: n.tags ?? "",
+          billing_cycle: n.billing_cycle ?? 0,
+          currency: n.currency ?? "",
+          group: n.group ?? "",
+          traffic_limit: n.traffic_limit ?? 0,
+          traffic_limit_type: n.traffic_limit_type,
+          expired_at: n.expired_at ?? "",
+          created_at: n.created_at ?? "",
+          updated_at: n.updated_at ?? "",
+        }));
+        setNodeList(list);
       })
-      .catch((err) => {
-        setError(err.message || "An error occurred while fetching data");
+      .catch((err: any) => {
+        setError(err?.message || "An error occurred while fetching data");
+        setNodeList([]);
       })
       .finally(() => {
         setIsLoading(false);
