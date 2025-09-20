@@ -10,7 +10,7 @@ import {
   ChartLegend,
 } from "@/components/ui/chart";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
-import fillMissingTimePoints, { cutPeakValues } from "@/utils/RecordHelper";
+import fillMissingTimePoints, { cutPeakValues, interpolateNullsLinear } from "@/utils/RecordHelper";
 import Tips from "@/components/ui/tips";
 import { Eye, EyeOff } from "lucide-react";
 import { useRPC2Call } from "@/contexts/RPC2Context";
@@ -104,7 +104,7 @@ const PingChart = ({ uuid }: { uuid: string }) => {
   const [tasks, setTasks] = useState<TaskInfo[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [cutPeak, setCutPeak] = useState(false); // 平滑开关，默认关闭
+  const [cutPeak, setCutPeak] = useState(true); 
 
   // Update hours state when view changes
   useEffect(() => {
@@ -196,6 +196,13 @@ const PingChart = ({ uuid }: { uuid: string }) => {
     if (cutPeak && tasks.length > 0) {
       const taskKeys = tasks.map((task) => String(task.id));
       full = cutPeakValues(midData, taskKeys);
+    }
+    // 无论是否平滑显示曲线，都做一次“真实感插值”：
+    // 仅在相邻有效点之间用线性插值填补中间 null，避免大量零散段。
+    // 数据驱动：每条线使用“中位采样间隔 * 倍数（默认6）”作为最大插值跨度，并钳制在 [2min, 30min]。
+    if (tasks.length > 0 && full.length > 0) {
+      const keys = tasks.map(t => String(t.id));
+      full = interpolateNullsLinear(full, keys, { maxGapMultiplier: 6, minCapMs: 2 * 60_000, maxCapMs: 30 * 60_000 });
     }
     return full;
   }, [remoteData, cutPeak, tasks, hours]);

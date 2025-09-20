@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/chart";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
 import { useTranslation } from "react-i18next";
-import { cutPeakValues } from "@/utils/RecordHelper";
+import { cutPeakValues, interpolateNullsLinear } from "@/utils/RecordHelper";
 import Tips from "./ui/tips";
 import { useRPC2Call } from "@/contexts/RPC2Context";
 
@@ -61,7 +61,7 @@ const MiniPingChart = ({
   const [error, setError] = useState<string | null>(null);
   const [hiddenLines, setHiddenLines] = useState<Record<string, boolean>>({});
   const [t] = useTranslation();
-  const [cutPeak, setCutPeak] = useState(false);
+  const [cutPeak, setCutPeak] = useState(true); // 平滑/削峰默认开启
   const { call } = useRPC2Call();
   useEffect(() => {
     if (!uuid) return;
@@ -130,6 +130,13 @@ const MiniPingChart = ({
     if (cutPeak && tasks.length > 0) {
       const taskKeys = tasks.map((t) => String(t.id));
       rows = cutPeakValues(rows, taskKeys);
+    }
+
+    // 真实感插值（数据驱动）：
+    // 每条线以“中位采样间隔 * 倍数(默认6)”作为最大插值跨度，并钳制在 [2min, 30min]。
+    if (tasks.length > 0 && rows.length > 0) {
+      const keys = tasks.map((t) => String(t.id));
+      rows = interpolateNullsLinear(rows as any[], keys, { maxGapMultiplier: 6, minCapMs: 2 * 60_000, maxCapMs: 30 * 60_000 }) as any[];
     }
 
     return rows;

@@ -181,6 +181,100 @@ export default function fillMissingTimePoints<
 }
 
 /**
+ * 线性插值填充：在相邻两个有效点之间，用线性插值填充中间的 null 值。
+ * - 仅在“两个端点都存在且为数值”时进行插值
+ * - 可通过 maxGapMs 控制最大可插值的时间跨度，超过则保留 null（避免横跨过大的真实空洞）
+ */
+export function interpolateNullsLinear<T extends { [key: string]: any }>(
+  rows: T[],
+  keys: string[],
+  options?:
+    | number
+    | {
+        /** 若提供则为统一的最大插值跨度 */
+        maxGapMs?: number;
+        /** 若未提供 maxGapMs，则以 典型间隔*该倍数 作为每条线的最大插值跨度 */
+        maxGapMultiplier?: number; // default 6
+        /** 统一的下限与上限（用于钳制），避免跨度过小/过大 */
+        minCapMs?: number; // default 2min
+        maxCapMs?: number; // default 30min
+      }
+): T[] {
+  if (!rows || rows.length === 0 || !keys.length) return rows;
+
+  const times = rows.map((r) =>
+    new Date((r as any).time ?? (r as any).updated_at ?? "").getTime()
+  );
+  const out = rows.map((r) => ({ ...r }));
+
+  // 解析配置（向后兼容数字参数）
+  const opts =
+    typeof options === "number"
+      ? { maxGapMs: options }
+      : options || {};
+  const maxGapMsUnified = opts.maxGapMs;
+  const multiplier = opts.maxGapMultiplier ?? 6;
+  const minCap = opts.minCapMs ?? 2 * 60_000; // 2min
+  const maxCap = opts.maxCapMs ?? 30 * 60_000; // 30min
+
+  // 简单工具
+  const clamp = (v: number, lo: number, hi: number) =>
+    Math.max(lo, Math.min(hi, v));
+
+  for (const key of keys) {
+    // 收集该列的有效点索引
+    const validIdx: number[] = [];
+    for (let i = 0; i < rows.length; i++) {
+      const v = rows[i][key];
+      if (typeof v === "number" && Number.isFinite(v)) validIdx.push(i);
+    }
+
+    if (validIdx.length < 2) continue;
+
+    // 计算该列的“典型间隔”（使用中位数）
+    let perKeyMaxGap = maxGapMsUnified;
+    if (perKeyMaxGap === undefined) {
+      const gaps: number[] = [];
+      for (let s = 0; s < validIdx.length - 1; s++) {
+        const i0 = validIdx[s];
+        const i1 = validIdx[s + 1];
+        const t0 = times[i0];
+        const t1 = times[i1];
+        if (Number.isFinite(t0) && Number.isFinite(t1) && t1 > t0) {
+          gaps.push(t1 - t0);
+        }
+      }
+      if (gaps.length === 0) continue;
+      gaps.sort((a, b) => a - b);
+      const median = gaps[(gaps.length / 2) | 0];
+      perKeyMaxGap = clamp(median * multiplier, minCap, maxCap);
+    }
+
+    // 相邻有效点之间做线性插值
+    for (let s = 0; s < validIdx.length - 1; s++) {
+      const i0 = validIdx[s];
+      const i1 = validIdx[s + 1];
+      const t0 = times[i0];
+      const t1 = times[i1];
+      const v0 = rows[i0][key];
+      const v1 = rows[i1][key];
+
+      if (!Number.isFinite(t0) || !Number.isFinite(t1) || t1 <= t0) continue;
+      if (typeof v0 !== "number" || typeof v1 !== "number") continue;
+      if (perKeyMaxGap && t1 - t0 > perKeyMaxGap) continue; // 间隔太大，保持空洞
+
+      for (let j = i0 + 1; j < i1; j++) {
+        const tj = times[j];
+        const ratio = (tj - t0) / (t1 - t0);
+        (out as any)[j][key] = v0 + (v1 - v0) * ratio;
+      }
+    }
+  }
+
+  return out;
+}
+
+/**
  * EWMA（指数加权移动平均）
  * 使用指数加权移动平均算法平滑数据，同时检测并过滤突变值，填充 null/undefined 值
  *
