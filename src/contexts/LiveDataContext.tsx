@@ -12,7 +12,7 @@ interface LiveDataContextType {
 const LiveDataContext = createContext<LiveDataContextType>({
   live_data: null,
   showCallout: true,
-  onRefresh: () => {},
+  onRefresh: () => { },
 });
 
 // 创建Provider组件
@@ -62,7 +62,7 @@ export const LiveDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
               load5: rec.load5 ?? 0,
               load15: rec.load15 ?? 0,
             },
-            disk: { used: (rec.disk_total ?? 0) - (rec.disk ?? 0) },
+            disk: { used: rec.disk ?? 0 },
             network: {
               up: rec.net_out ?? 0,
               down: rec.net_in ?? 0,
@@ -77,7 +77,7 @@ export const LiveDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             uptime: rec.uptime ?? 0,
             process: rec.process ?? 0,
             message: "",
-            updated_at: rec.time ?? new Date().toISOString(),
+            updated_at: rec.time ?? 0,
           };
         }
 
