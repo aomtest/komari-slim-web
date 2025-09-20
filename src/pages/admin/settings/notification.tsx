@@ -4,6 +4,7 @@ import { updateSettingsWithToast, useSettings } from "@/lib/api";
 import {
   SettingCardButton,
   SettingCardLabel,
+  SettingCardLongTextInput,
   SettingCardSelect,
   SettingCardSwitch,
 } from "@/components/admin/SettingCard";
@@ -116,6 +117,15 @@ const NotificationSettings = () => {
           await updateSettingsWithToast({ notification_enabled: checked }, t);
         }}
       />
+      <SettingCardLongTextInput
+        title={t("settings.notification.template")}
+        description={t("settings.notification.template_description")}
+        defaultValue={settings.notification_template}
+        OnSave={
+          async (value) => {
+            await updateSettingsWithToast({ notification_template: value }, t);
+          }}
+      />
       <SettingCardSelect
         title={t("settings.notification.method")}
         description={t("settings.notification.method_description")}
@@ -127,7 +137,7 @@ const NotificationSettings = () => {
           setCurrentMessageSender(val);
         }}
       />
-      {messageLoading ? <Loading/> : renderProviderInputs({
+      {messageLoading ? <Loading /> : renderProviderInputs({
         currentProvider: currentMessageSender,
         providerDefs: messageDefs,
         providerValues: messageValues,
@@ -161,8 +171,8 @@ const NotificationSettings = () => {
           } catch (error) {
             toast.error(
               t("common.error") +
-                ": " +
-                (error instanceof Error ? error.message : String(error))
+              ": " +
+              (error instanceof Error ? error.message : String(error))
             );
           }
         }}
