@@ -1,6 +1,6 @@
 {
   "warn_https": "当前连接不是 HTTPS！您的敏感数据存在严重风险。请立即采取措施确保连接安全！复制操作可能无法使用！",
-  "warn_websocket": "WebSocket 未连接！",
+  "warn_websocket": "RPC2 请求失败，请检查网络连接或服务器状态！",
   "delete": "删除",
   "account": {
     "title": "账户",
