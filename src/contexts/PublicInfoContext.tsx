@@ -1,4 +1,5 @@
 import React from "react";
+import { useRPC2Call } from "./RPC2Context";
 
 export interface PublicInfo {
   allow_cors: boolean;
@@ -15,13 +16,6 @@ export interface PublicInfo {
   private_site: boolean;
   theme: string;
   theme_settings: any;
-  [property: string]: any;
-}
-
-interface Response {
-  data: PublicInfo;
-  message: string;
-  status: string;
   [property: string]: any;
 }
 
@@ -42,30 +36,24 @@ export const PublicInfoProvider: React.FC<{ children: React.ReactNode }> = ({
   const [publicInfo, setPublicInfo] = React.useState<PublicInfo | null>(null);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | null>(null);
-
-  const refresh = () => {
+  const { call } = useRPC2Call();
+  const refresh = async () => {
     setError(null);
     setIsLoading(true);
-    fetch("/api/public")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch public info");
-        }
-        return response.json();
-      })
-      .then((resp: Response) => {
-        if (resp && resp.data) {
-          setPublicInfo(resp.data);
-        } else {
-          setPublicInfo(null);
-        }
-      })
-      .catch((err) => {
-        setError(err.message || "An error occurred while fetching public info");
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+
+    try {
+      const data = await call("common:getPublicInfo");
+
+      if (data) {
+        setPublicInfo(data);
+      } else {
+        setPublicInfo(null);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred while fetching public info");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   React.useEffect(() => {

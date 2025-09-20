@@ -23,6 +23,7 @@ import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
 import { PWAUpdatePrompt } from "./components/PWAUpdatePrompt";
 import { OfflineIndicator } from "./components/OfflineIndicator";
 import { Toaster } from "./components/ui/sonner";
+import { RPC2Provider } from "./contexts/RPC2Context";
 const App = () => {
   const [appearance, setAppearance] = useLocalStorage<Appearance>(
     "appearance",
@@ -59,13 +60,15 @@ const App = () => {
             minHeight: "100vh",
           }}
         >
-          <PublicInfoProvider>
-            <Toaster />
-            <OfflineIndicator />
-            {routing}
-            <PWAInstallPrompt />
-            <PWAUpdatePrompt />
-          </PublicInfoProvider>
+          <RPC2Provider>
+            <PublicInfoProvider>
+              <Toaster />
+              <OfflineIndicator />
+              {routing}
+              <PWAInstallPrompt />
+              <PWAUpdatePrompt />
+            </PublicInfoProvider>
+          </RPC2Provider>
         </Theme>
       </ThemeContext.Provider>
     </Suspense>
