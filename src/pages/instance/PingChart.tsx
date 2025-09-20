@@ -10,7 +10,7 @@ import {
   ChartLegend,
 } from "@/components/ui/chart";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
-import fillMissingTimePoints, { cutPeakValues, interpolateNullsLinear } from "@/utils/RecordHelper";
+import { cutPeakValues, interpolateNullsLinear } from "@/utils/RecordHelper";
 import Tips from "@/components/ui/tips";
 import { Eye, EyeOff } from "lucide-react";
 import { useRPC2Call } from "@/contexts/RPC2Context";
@@ -104,7 +104,7 @@ const PingChart = ({ uuid }: { uuid: string }) => {
   const [tasks, setTasks] = useState<TaskInfo[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [cutPeak, setCutPeak] = useState(true); 
+  const [cutPeak, setCutPeak] = useState(false); 
 
   // Update hours state when view changes
   useEffect(() => {
@@ -154,17 +154,18 @@ const PingChart = ({ uuid }: { uuid: string }) => {
   }, [hours, uuid]); // Depend on hours
 
   const midData = useMemo(() => {
-    // 严格对齐：使用最小 interval 构建完整时间网格，并用 fillMissingTimePoints 填充
+    // 与 Mini 保持一致：只使用合并抖动后的真实锚点，并截取到最后 hours 窗口范围。
     const data = remoteData || [];
     if (!data.length) return [];
 
-    const validIntervals = tasks
+    // 参考间隔（若缺失则 60s），仅用于抖动合并容差
+    const taskIntervals = tasks
       .map((t) => t.interval)
       .filter((v): v is number => typeof v === 'number' && v > 0);
-    const minInterval = validIntervals.length ? Math.min(...validIntervals) : 60; // 秒
+    const fallbackIntervalSec = taskIntervals.length ? Math.min(...taskIntervals) : 60;
 
-    // 先合并相近（抖动）时间点，容差：minInterval *0.25，0.8s ~ 6s
-    const toleranceMs = Math.min(6000, Math.max(800, Math.floor(minInterval * 1000 * 0.25)));
+    // 合并抖动：0.25 * 参考间隔（0.8s ~ 6s）
+    const toleranceMs = Math.min(6000, Math.max(800, Math.floor(fallbackIntervalSec * 1000 * 0.25)));
     const grouped: Record<number, any> = {};
     const anchors: number[] = [];
     for (const rec of data) {
@@ -182,11 +183,16 @@ const PingChart = ({ uuid }: { uuid: string }) => {
     }
     const merged = Object.values(grouped).sort((a: any, b: any) => new Date(a.time).getTime() - new Date(b.time).getTime());
 
-    // 使用 fillMissingTimePoints 生成 [now-hours, now] 范围 （hours *3600s）
-    // matchTolerance 设为 min( minInterval*0.6, 8 ) 秒，允许一定抖动匹配到网格
-    const matchTolerance = Math.min(minInterval * 0.6, 8);
-    const filled = fillMissingTimePoints(merged, minInterval, hours * 3600, matchTolerance);
-    return filled;
+    // 截取最后 hours 窗口，并多保留一个窗口外的前置点，便于边界插值
+    const lastTs = new Date((merged as any[])[(merged as any[]).length - 1].time).getTime();
+    const fromTs = lastTs - hours * 3600_000;
+    let startIdx = 0;
+    for (let i = 0; i < (merged as any[]).length; i++) {
+      const ts = new Date((merged as any[])[i].time).getTime();
+      if (ts >= fromTs) { startIdx = Math.max(0, i - 1); break; }
+    }
+    const clipped = (merged as any[]).slice(startIdx);
+    return clipped;
   }, [remoteData, tasks, hours]);
 
   // 组装图表数据
@@ -461,7 +467,9 @@ const PingChart = ({ uuid }: { uuid: string }) => {
                 dataKey="time"
                 tickLine={false}
                 tickFormatter={timeFormatter}
-                interval={0}
+                interval="preserveStartEnd"
+                minTickGap={30}
+                allowDuplicatedCategory={false}
               />
               <YAxis
                 tickLine={false}
@@ -485,12 +493,8 @@ const PingChart = ({ uuid }: { uuid: string }) => {
               />
               <ChartLegend onClick={handleLegendClick} />
               {(() => {
-                const minInterval = Math.min(
-                  ...tasks.map(t => t.interval || Infinity).filter(v => v !== undefined)
-                );
                 return tasks.map((task, idx) => {
-                  const interval = task.interval || minInterval;
-                  const connect = interval > minInterval; // 仅长间隔任务跨预期空白连接
+                  const connect = false; // 由插值控制连贯性，避免跨越大空洞的错误连接
                   return (
                     <Line
                       key={task.id}

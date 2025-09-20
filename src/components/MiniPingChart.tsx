@@ -61,7 +61,7 @@ const MiniPingChart = ({
   const [error, setError] = useState<string | null>(null);
   const [hiddenLines, setHiddenLines] = useState<Record<string, boolean>>({});
   const [t] = useTranslation();
-  const [cutPeak, setCutPeak] = useState(true); // 平滑/削峰默认开启
+  const [cutPeak, setCutPeak] = useState(false);
   const { call } = useRPC2Call();
   useEffect(() => {
     if (!uuid) return;
