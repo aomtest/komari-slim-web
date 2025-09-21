@@ -1,16 +1,17 @@
 import { DropdownMenu, IconButton } from "@radix-ui/themes";
 import { type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-
+import { resources } from "../i18n/config";
 interface LanguageSwitch {
   icon?: ReactNode;
 }
 
-const languages: { code: string; name: string }[] = [
-  { code: "zh-CN", name: "简体中文" },
-  { code: "zh-TW", name: "繁體中文" },
-  { code: "en-US", name: "English" },
-];
+const languages: { code: string; name: string }[] = Object.entries(resources)
+  .filter(([, res]) => typeof res === "object" && res !== null && "name" in res && typeof (res as any).name === "string")
+  .map(([code, res]) => ({
+    code,
+    name: (res as any).name as string,
+  }));
 
 const LanguageSwitch = ({
   icon = (
