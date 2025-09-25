@@ -11,7 +11,7 @@ const languages: { code: string; name: string }[] = Object.entries(resources)
   .map(([code, res]) => ({
     code,
     name: (res as any).name as string,
-  }));
+  })).sort((a, b) => a.code.localeCompare(b.code));
 
 const LanguageSwitch = ({
   icon = (
@@ -37,7 +37,7 @@ const LanguageSwitch = ({
             key={lang.code}
             onClick={() => i18n.changeLanguage(lang.code)}
           >
-            {lang.name}
+            {lang.name} ({lang.code.slice(0, 2)})
           </DropdownMenu.Item>
         ))}
       </DropdownMenu.Content>
