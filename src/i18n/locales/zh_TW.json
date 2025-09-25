@@ -35,6 +35,7 @@
     "github_unbound": "未綁定",
     "looking_for_backup": "正在尋找備份？現已經遷移到設置-站點-備份。",
     "sso_account": "外部帳戶",
+    "sso_auth_failed": "處理SSO認證失敗",
     "sso_bound": "已綁定外部帳戶",
     "sso_not_bound": "未綁定",
     "sso_unbound": "未綁定",
@@ -43,7 +44,10 @@
     "unbind_github_success": "已成功解除綁定GitHub帳戶",
     "unbind_github_warning": "解除綁定後，您將無法使用GitHub帳戶登入。確定要解除綁定嗎？",
     "unbind_sso": "解除綁定外部帳戶",
+    "unbind_sso_failed": "解除綁定失敗",
+    "unbind_sso_success": "成功解除綁定",
     "unbind_sso_warning": "確定要解除綁定 {{provider}} 帳號嗎？",
+    "unknown_error": "未知錯誤",
     "upload_backup": "上傳伺服器數據備份",
     "upload_failed": "上傳失敗，僅支持`.zip`格式",
     "upload_success": "上傳成功"
@@ -284,6 +288,7 @@
   "current_time": "當前時間",
   "delete": "刪除",
   "exec": {
+    "allCompleted": "所有任務執行完成",
     "command": "執行命令",
     "commandPlaceholder": "whoami",
     "description": "在選定的節點上遠程執行命令",
@@ -294,6 +299,7 @@
     },
     "execute": "執行命令",
     "executing": "執行中...",
+    "pollingTimeout": "任務執行超時",
     "results": "執行結果",
     "selectedNodes": "已選擇節點",
     "selectNodes": "選擇目標節點",
@@ -499,6 +505,8 @@
       "update_success": "GeoIP 資料庫更新成功",
       "update_title": "更新 GeoIP 資料庫"
     },
+    "invalid_integer": "無效的整數",
+    "invalid_number": "無效的數字",
     "missing_required_fields": "請填寫必填字段: {{fieldNames}}",
     "nezha": {
       "description": "哪吒的相容選項，Komari 只能處理基礎的監控，無法使用延遲檢測、遠端控制、NAT和內網穿透等功能。娛樂功能，後續無維護打算。（NTR愛好者）",
@@ -546,6 +554,8 @@
       "telegram_description": "配置您的 Telegram 機器人以在聊天中直接接收提醒。",
       "telegram_endpoint": "請求端點",
       "telegram_title": "Telegram 配置",
+      "template": "消息通知模板",
+      "template_description": "Komari 將按照消息通知模板發送通知",
       "test_description": "發送測試消息",
       "test_title": "發送測試消息",
       "title": "通知"

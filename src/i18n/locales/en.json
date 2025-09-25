@@ -35,6 +35,7 @@
     "github_unbound": "Unbound",
     "looking_for_backup": "Looking for backup? It has now been moved to Settings - Site - Backup.",
     "sso_account": "External Account",
+    "sso_auth_failed": "SSO authentication failed",
     "sso_bound": "Bound External Account",
     "sso_not_bound": "Unbound",
     "sso_unbound": "Unbound",
@@ -43,7 +44,10 @@
     "unbind_github_success": "Successfully unbound GitHub account",
     "unbind_github_warning": "After unbinding, you will not be able to log in with your GitHub account. Are you sure you want to unbind?",
     "unbind_sso": "Unbind External Account",
+    "unbind_sso_failed": "Unbinding failed",
+    "unbind_sso_success": "Successfully unbound",
     "unbind_sso_warning": "Are you sure you want to unbind the {{provider}} account?",
+    "unknown_error": "Unknown error",
     "upload_backup": "Upload backup",
     "upload_failed": "Failed to upload, only `.zip` are allowed",
     "upload_success": "Upload success"
@@ -284,6 +288,7 @@
   "current_time": "Current Time",
   "delete": "Delete",
   "exec": {
+    "allCompleted": "All tasks executed successfully",
     "command": "Execute command",
     "commandPlaceholder": "whoami",
     "description": "Remotely execute commands on selected nodes",
@@ -294,6 +299,7 @@
     },
     "execute": "Remote Exec",
     "executing": "Executing",
+    "pollingTimeout": "Task execution timed out",
     "results": "Execute result",
     "selectedNodes": "Selected node",
     "selectNodes": "Select target node",
@@ -499,6 +505,8 @@
       "update_success": "GeoIP database update successful",
       "update_title": "Updating the GeoIP database"
     },
+    "invalid_integer": "Invalid integer",
+    "invalid_number": "Invalid number",
     "missing_required_fields": "Please fill in the required fields: {{fieldNames}}",
     "nezha": {
       "description": "Compatibility options for Nezha, Komari can only handle basic monitoring and cannot use features like delay detection, remote control, NAT, and internal penetration. Entertainment features, no maintenance plans in the future. (NTR enthusiasts)",
@@ -546,6 +554,8 @@
       "telegram_description": "Configure your Telegram bot to get alerts directly in your chat.",
       "telegram_endpoint": "Endpoint",
       "telegram_title": "Telegram Configuration",
+      "template": "Notification template",
+      "template_description": "Komari will send notifications according to the notification template",
       "test_description": "Send a test message",
       "test_title": "Send test message",
       "title": "Notifications"

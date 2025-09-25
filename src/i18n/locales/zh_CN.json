@@ -35,6 +35,7 @@
     "github_unbound": "未绑定",
     "looking_for_backup": "正在寻找备份？现已经迁移到设置-站点-备份。",
     "sso_account": "外部账户",
+    "sso_auth_failed": "处理SSO认证失败",
     "sso_bound": "已绑定外部账户",
     "sso_not_bound": "未绑定",
     "sso_unbound": "未绑定",
@@ -43,14 +44,13 @@
     "unbind_github_success": "已成功解绑GitHub账户",
     "unbind_github_warning": "解绑后，您将无法使用GitHub账户登录。确定要解绑吗？",
     "unbind_sso": "解绑外部账户",
+    "unbind_sso_failed": "解绑失败",
+    "unbind_sso_success": "成功解绑",
     "unbind_sso_warning": "确定要解绑 {{provider}} 账号吗？",
+    "unknown_error": "未知错误",
     "upload_backup": "上传服务器数据备份",
     "upload_failed": "上传失败，仅支持`.zip`格式",
-    "upload_success": "上传成功",
-    "unbind_sso_success": "成功解绑",
-    "unbind_sso_failed": "解绑失败",
-    "unknown_error": "未知错误",
-    "sso_auth_failed": "处理SSO认证失败"
+    "upload_success": "上传成功"
   },
   "admin": {
     "nodeDetail": {
@@ -288,6 +288,7 @@
   "current_time": "当前时间",
   "delete": "删除",
   "exec": {
+    "allCompleted": "所有任务执行完成",
     "command": "执行命令",
     "commandPlaceholder": "whoami",
     "description": "在选定的节点上远程执行命令",
@@ -298,6 +299,7 @@
     },
     "execute": "执行命令",
     "executing": "执行中...",
+    "pollingTimeout": "任务执行超时",
     "results": "执行结果",
     "selectedNodes": "已选择节点",
     "selectNodes": "选择目标节点",
@@ -309,9 +311,7 @@
     },
     "success": "命令执行完成",
     "taskStarted": "任务已启动",
-    "title": "远程执行",
-    "allCompleted": "所有任务执行完成",
-    "pollingTimeout": "任务执行超时"
+    "title": "远程执行"
   },
   "go_to_home": "回到主页",
   "home_title": "Komari Monitor",
@@ -505,6 +505,8 @@
       "update_success": "GeoIP 数据库更新成功",
       "update_title": "更新 GeoIP 数据库"
     },
+    "invalid_integer": "无效的整数",
+    "invalid_number": "无效的数字",
     "missing_required_fields": "请填写必填字段: {{fieldNames}}",
     "nezha": {
       "description": "哪吒的兼容选项，Komari 只能处理基础的监控，无法使用延迟检测、远程控制、NAT和内网穿透等功能。娱乐功能，后续无维护打算。（NTR爱好者）",
@@ -552,11 +554,11 @@
       "telegram_description": "配置您的 Telegram 机器人以在聊天中直接接收提醒。",
       "telegram_endpoint": "请求端点",
       "telegram_title": "Telegram 配置",
+      "template": "消息通知模板",
+      "template_description": "Komari 将按照消息通知模板发送通知",
       "test_description": "发送测试消息",
       "test_title": "发送测试消息",
-      "title": "通知",
-      "template": "消息通知模板",
-      "template_description": "Komari 将按照消息通知模板发送通知"
+      "title": "通知"
     },
     "record": {
       "enabled": "开启历史记录",
@@ -620,9 +622,7 @@
       "provider_fields_description": "设置您选择登录方式的详细信息",
       "title": "单点登录"
     },
-    "title": "设置",
-    "invalid_number": "无效的数字",
-    "invalid_integer": "无效的整数"
+    "title": "设置"
   },
   "status_settings": "状态显示设置",
   "terminal": {

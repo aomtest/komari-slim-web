@@ -35,6 +35,7 @@
     "github_unbound": "未バインド",
     "looking_for_backup": "バックアップを探していますか？現在は設定-サイト-バックアップに移行しました。",
     "sso_account": "外部アカウント",
+    "sso_auth_failed": "SSO認証の失敗を処理する",
     "sso_bound": "外部アカウントがバインド済み",
     "sso_not_bound": "未バインド",
     "sso_unbound": "未バインド",
@@ -43,7 +44,10 @@
     "unbind_github_success": "GitHubアカウントのバインド解除に成功しました",
     "unbind_github_warning": "バインド解除後、GitHubアカウントでログインできなくなります。バインド解除しますか？",
     "unbind_sso": "外部アカウントのバインド解除",
+    "unbind_sso_failed": "解除に失敗しました",
+    "unbind_sso_success": "解除に成功しました",
     "unbind_sso_warning": "{{provider}} アカウントのバインド解除を確認しますか？",
+    "unknown_error": "未知のエラー",
     "upload_backup": "サーバーデータバックアップをアップロード",
     "upload_failed": "アップロードに失敗しました。`.zip`形式のみサポートされています",
     "upload_success": "アップロードに成功しました"
@@ -284,6 +288,7 @@
   "current_time": "現在の時間",
   "delete": "削除",
   "exec": {
+    "allCompleted": "すべてのタスクが完了しました",
     "command": "コマンドを実行",
     "commandPlaceholder": "whoami",
     "description": "選択したノードでリモートコマンドを実行",
@@ -294,6 +299,7 @@
     },
     "execute": "コマンドを実行",
     "executing": "実行中...",
+    "pollingTimeout": "タスクの実行がタイムアウトしました",
     "results": "実行結果",
     "selectedNodes": "選択されたノード",
     "selectNodes": "ターゲットノードを選択",
@@ -499,6 +505,8 @@
       "update_success": "GeoIPデータベースの更新に成功しました",
       "update_title": "GeoIPデータベースを更新"
     },
+    "invalid_integer": "無効な整数",
+    "invalid_number": "無効な数字",
     "missing_required_fields": "必須フィールドを入力してください: {{fieldNames}}",
     "nezha": {
       "description": "哪吒の互換オプション、Komari は基本的な監視のみを処理でき、遅延検出、リモートコントロール、NAT および内部ネットワークの貫通などの機能は使用できません。エンターテインメント機能は、今後のメンテナンスの予定はありません。（NTR愛好者）",
@@ -546,6 +554,8 @@
       "telegram_description": "チャットで直接通知を受け取るために、Telegram ボットを設定します。",
       "telegram_endpoint": "リクエストエンドポイント",
       "telegram_title": "Telegram 設定",
+      "template": "メッセージ通知テンプレート",
+      "template_description": "Komariはメッセージ通知テンプレートに従って通知を送信します",
       "test_description": "テストメッセージを送信",
       "test_title": "テストメッセージを送信",
       "title": "通知"

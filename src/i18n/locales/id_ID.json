@@ -35,6 +35,7 @@
     "github_unbound": "Belum Terhubung",
     "looking_for_backup": "Mencari cadangan? Sekarang telah dipindahkan ke menu Pengaturan - Situs - Cadangan.",
     "sso_account": "Akun Eksternal",
+    "sso_auth_failed": "Gagal memproses otentikasi SSO",
     "sso_bound": "Akun Eksternal Terhubung",
     "sso_not_bound": "Belum Terhubung",
     "sso_unbound": "Belum Terhubung",
@@ -43,7 +44,10 @@
     "unbind_github_success": "Berhasil memutuskan tautan akun GitHub",
     "unbind_github_warning": "Setelah diputuskan, Anda tidak dapat masuk menggunakan GitHub. Apakah Anda yakin ingin memutuskan tautan?",
     "unbind_sso": "Putuskan Tautan Akun Eksternal",
+    "unbind_sso_failed": "Gagal membatalkan ikatan",
+    "unbind_sso_success": "Berhasil membatalkan ikatan",
     "unbind_sso_warning": "Apakah Anda yakin ingin memutuskan tautan akun {{provider}}?",
+    "unknown_error": "Kesalahan tidak diketahui",
     "upload_backup": "Unggah Cadangan",
     "upload_failed": "Gagal mengunggah, hanya berkas `.zip` yang diperbolehkan",
     "upload_success": "Unggah berhasil"
@@ -284,6 +288,7 @@
   "current_time": "Waktu saat ini",
   "delete": "Hapus",
   "exec": {
+    "allCompleted": "Semua tugas telah selesai dieksekusi",
     "command": "Perintah",
     "commandPlaceholder": "whoami",
     "description": "Eksekusi perintah jarak jauh pada node yang dipilih",
@@ -294,6 +299,7 @@
     },
     "execute": "Eksekusi Jarak Jauh",
     "executing": "Sedang mengeksekusi",
+    "pollingTimeout": "Waktu tunggu eksekusi tugas habis",
     "results": "Hasil eksekusi",
     "selectedNodes": "Node terpilih",
     "selectNodes": "Pilih node tujuan",
@@ -499,6 +505,8 @@
       "update_success": "Pembaruan basis data GeoIP berhasil",
       "update_title": "Memperbarui basis data GeoIP"
     },
+    "invalid_integer": "Bilangan bulat tidak valid",
+    "invalid_number": "Angka tidak valid",
     "missing_required_fields": "Silakan isi kolom yang wajib: {{fieldNames}}",
     "nezha": {
       "description": "Opsi kompatibilitas untuk Nezha, Komari hanya dapat menangani pemantauan dasar dan tidak dapat menggunakan fitur seperti deteksi keterlambatan, kontrol jarak jauh, NAT, dan penetrasi internal. Fitur hiburan, tidak ada rencana pemeliharaan di masa depan. (Penggemar NTR)",
@@ -546,6 +554,8 @@
       "telegram_description": "Konfigurasikan bot Telegram Anda untuk mendapatkan peringatan langsung di chat.",
       "telegram_endpoint": "Endpoint",
       "telegram_title": "Konfigurasi Telegram",
+      "template": "Template pemberitahuan pesan",
+      "template_description": "Komari akan mengirim pemberitahuan sesuai dengan template pemberitahuan pesan",
       "test_description": "Kirim pesan uji coba",
       "test_title": "Kirim pesan uji coba",
       "title": "Notifikasi"
