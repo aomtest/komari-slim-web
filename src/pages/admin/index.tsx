@@ -453,7 +453,7 @@ const NodeTable = ({
   );
 };
 
-type Platform = "linux" | "windows";
+type Platform = "linux" | "windows" | "macos";
 const ActionButtons = ({ node }: { node: NodeDetail }) => {
   const { t } = useTranslation();
   return (
@@ -653,6 +653,9 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
         });
         finalCommand += `"`;
         break;
+      case "macos":
+        finalCommand = `zsh <(curl -sL ${scriptUrl}) ` + args.join(" ");
+        break;
     }
     return finalCommand;
   };
@@ -686,6 +689,7 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
             <SegmentedControl.Item value="windows">
               Windows
             </SegmentedControl.Item>
+            <SegmentedControl.Item value="macos">macOS</SegmentedControl.Item>
           </SegmentedControl.Root>
 
           <Flex direction="column" gap="2">
