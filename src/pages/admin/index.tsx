@@ -67,7 +67,12 @@ import { formatBytes, stringToBytes } from "@/utils/unitHelper";
 import PriceTags from "@/components/PriceTags";
 import Loading from "@/components/loading";
 import Tips from "@/components/ui/tips";
-import { SettingCardCollapse, SettingCardSelect, SettingCardShortTextInput, SettingCardSwitch } from "@/components/admin/SettingCard";
+import {
+  SettingCardCollapse,
+  SettingCardSelect,
+  SettingCardShortTextInput,
+  SettingCardSwitch,
+} from "@/components/admin/SettingCard";
 
 const NodeDetailsPage = () => {
   return (
@@ -83,10 +88,10 @@ const Layout = () => {
   const [selectedNodes, setSelectedNodes] = useState<string[]>([]);
   const filteredNodes = Array.isArray(nodeDetail)
     ? nodeDetail
-      .filter((node) =>
-        node.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-      .sort((a, b) => a.weight - b.weight)
+        .filter((node) =>
+          node.name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .sort((a, b) => a.weight - b.weight)
     : [];
 
   if (isLoading) return <Loading text="" />;
@@ -135,7 +140,8 @@ const Header = ({
       refresh();
     } catch (error) {
       toast.error(
-        `${t("common.error", "Error")}: ${error instanceof Error ? error.message : String(error)
+        `${t("common.error", "Error")}: ${
+          error instanceof Error ? error.message : String(error)
         }`
       );
     } finally {
@@ -214,8 +220,9 @@ const SortableRow = ({
         <div
           {...attributes}
           {...listeners}
-          className={`cursor-move p-2 rounded hover:bg-accent-a3 transition-colors ${isMobile ? "touch-manipulation select-none" : ""
-            }`}
+          className={`cursor-move p-2 rounded hover:bg-accent-a3 transition-colors ${
+            isMobile ? "touch-manipulation select-none" : ""
+          }`}
           style={{
             touchAction: "none", // 禁用移动端的默认手势
             WebkitUserSelect: "none",
@@ -257,12 +264,13 @@ const SortableRow = ({
             >
               {node.ipv6.length > 20
                 ? (() => {
-                  const segments = node.ipv6.split(":");
-                  return segments.length > 3
-                    ? `${segments.slice(0, 2).join(":")}:...${segments[segments.length - 1]
-                    }`
-                    : node.ipv6;
-                })()
+                    const segments = node.ipv6.split(":");
+                    return segments.length > 3
+                      ? `${segments.slice(0, 2).join(":")}:...${
+                          segments[segments.length - 1]
+                        }`
+                      : node.ipv6;
+                  })()
                 : node.ipv6}
               <IconButton variant="ghost" onClick={() => copy(node.ipv6)}>
                 <Copy size="16" />
@@ -392,8 +400,9 @@ const NodeTable = ({
   };
   return (
     <div
-      className={`rounded-md overflow-hidden ${isDragging ? "select-none" : ""
-        }`}
+      className={`rounded-md overflow-hidden ${
+        isDragging ? "select-none" : ""
+      }`}
     >
       <DndContext
         sensors={sensors}
@@ -548,7 +557,8 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
     React.useState(false);
   const [enableIncludeNics, setEnableIncludeNics] = React.useState(false);
   const [enableExcludeNics, setEnableExcludeNics] = React.useState(false);
-  const [enableIncludeMountpoints, setEnableIncludeMountpoints] = React.useState(false);
+  const [enableIncludeMountpoints, setEnableIncludeMountpoints] =
+    React.useState(false);
   const [enableMonthRotate, setEnableMonthRotate] = React.useState(false);
 
   const generateCommand = () => {
@@ -602,18 +612,30 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
       args.push(`--month-rotate`);
       args.push(rotateVal);
     }
-
+    let scriptUrl =
+      "https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/install.sh";
+    if (enableGhproxy) {
+      if (enableGhproxy && installOptions.ghproxy) {
+        scriptUrl = scriptUrl.slice(8); // 去掉 https://
+        if (installOptions.ghproxy.endsWith("/")) {
+          scriptUrl = `${installOptions.ghproxy}${scriptUrl}`;
+        } else {
+          scriptUrl = `${installOptions.ghproxy}/${scriptUrl}`;
+        }
+        if (!scriptUrl.startsWith("http")) {
+          scriptUrl = `http://${scriptUrl}`;
+        }
+      }
+    }
     let finalCommand = "";
     switch (selectedPlatform) {
       case "linux":
-        finalCommand =
-          `bash <(curl -sL https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/install.sh) ` +
-          args.join(" ");
+        finalCommand = `bash <(curl -sL ${scriptUrl}) ` + args.join(" ");
         break;
       case "windows":
         finalCommand =
           `powershell.exe -NoProfile -ExecutionPolicy Bypass -Command ` +
-          `"iwr 'https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/install.ps1'` +
+          `"iwr '${scriptUrl}'` +
           ` -UseBasicParsing -OutFile 'install.ps1'; &` +
           ` '.\\install.ps1'`;
         args.forEach((arg) => {
@@ -1028,7 +1050,9 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
                     } else {
                       setInstallOptions((prev) => ({
                         ...prev,
-                        monthRotate: prev.monthRotate?.trim() ? prev.monthRotate : "1",
+                        monthRotate: prev.monthRotate?.trim()
+                          ? prev.monthRotate
+                          : "1",
                       }));
                     }
                   }}
@@ -1046,7 +1070,9 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
                     } else {
                       setInstallOptions((prev) => ({
                         ...prev,
-                        monthRotate: prev.monthRotate?.trim() ? prev.monthRotate : "1",
+                        monthRotate: prev.monthRotate?.trim()
+                          ? prev.monthRotate
+                          : "1",
                       }));
                     }
                   }}
@@ -1116,9 +1142,8 @@ function EditButton({ node }: { node: NodeDetail }) {
   React.useEffect(() => {
     setHidden(node.hidden);
     setTrafficLimit(node.traffic_limit || 0);
-    setTrafficLimitType(node.traffic_limit_type || "sum")
+    setTrafficLimitType(node.traffic_limit_type || "sum");
   }, [node.hidden, node.traffic_limit, node.traffic_limit_type]);
-
 
   const save = async () => {
     try {
@@ -1133,7 +1158,7 @@ function EditButton({ node }: { node: NodeDetail }) {
           tags: tagsRef.current?.value,
           hidden,
           traffic_limit,
-          traffic_limit_type
+          traffic_limit_type,
         }),
         headers: {
           "Content-Type": "application/json",
@@ -1245,28 +1270,29 @@ function EditButton({ node }: { node: NodeDetail }) {
               options={[
                 {
                   label: t("admin.nodeEdit.trafficLimitType_sum"),
-                  value: "sum"
+                  value: "sum",
                 },
                 {
                   label: t("admin.nodeEdit.trafficLimitType_max"),
-                  value: "max"
+                  value: "max",
                 },
                 {
                   label: t("admin.nodeEdit.trafficLimitType_min"),
-                  value: "min"
+                  value: "min",
                 },
-                                {
+                {
                   label: t("admin.nodeEdit.trafficLimitType_up"),
-                  value: "up"
+                  value: "up",
                 },
-                                {
+                {
                   label: t("admin.nodeEdit.trafficLimitType_down"),
-                  value: "down"
+                  value: "down",
                 },
-              ]} 
+              ]}
               OnSave={(value) => {
                 setTrafficLimitType(value);
-              }}/>
+              }}
+            />
             <SettingCardShortTextInput
               bordless
               title={t("admin.nodeEdit.trafficLimit")}
@@ -1276,13 +1302,10 @@ function EditButton({ node }: { node: NodeDetail }) {
               onChange={(e) => {
                 setTrafficLimit(stringToBytes(e.currentTarget.value));
               }}
-              onBlur={
-                (e) => {
-                  e.currentTarget.value = formatBytes(traffic_limit);
-                }
-              }
-            >
-            </SettingCardShortTextInput>
+              onBlur={(e) => {
+                e.currentTarget.value = formatBytes(traffic_limit);
+              }}
+            ></SettingCardShortTextInput>
           </SettingCardCollapse>
         </div>
         <Flex gap="2" justify={"end"} className="mt-4">
@@ -1640,7 +1663,9 @@ function BillingButton({ node }: { node: NodeDetail }) {
                 <Select.Item value="365">{t("common.annual")}</Select.Item>
                 <Select.Item value="730">{t("common.biennial")}</Select.Item>
                 <Select.Item value="1095">{t("common.triennial")}</Select.Item>
-                <Select.Item value="1825">{t("common.quinquennial")}</Select.Item>
+                <Select.Item value="1825">
+                  {t("common.quinquennial")}
+                </Select.Item>
                 <Select.Item value="-1">{t("common.once")}</Select.Item>
               </Select.Content>
             </Select.Root>
@@ -1678,10 +1703,13 @@ function BillingButton({ node }: { node: NodeDetail }) {
                 </Button>
               </TextField.Slot>
             </TextField.Root>
-            <Flex gap="2" align="center">
-
-            </Flex>
-            <SettingCardSwitch title={t("admin.nodeTable.autoRenewal")} description={t("admin.nodeTable.autoRenewalDescription")} defaultChecked={node.auto_renewal || false} onChange={setAutoRenewal} />
+            <Flex gap="2" align="center"></Flex>
+            <SettingCardSwitch
+              title={t("admin.nodeTable.autoRenewal")}
+              description={t("admin.nodeTable.autoRenewalDescription")}
+              defaultChecked={node.auto_renewal || false}
+              onChange={setAutoRenewal}
+            />
             <Button type="submit" disabled={saving}>
               {t("save")}
             </Button>
