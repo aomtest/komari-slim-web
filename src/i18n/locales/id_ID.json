@@ -593,6 +593,8 @@
       "name_description": "Atur nama situs",
       "private_site": "Situs Privat",
       "private_site_description": "Jadikan situs privat. Setelah diaktifkan, data hanya dapat diakses setelah login.",
+      "script_domain": "Alamat koneksi Agen",
+      "script_domain_description": "Tentukan alamat koneksi panel untuk skrip instalasi, memudahkan pengguna dengan beberapa domain, dan tidak akan mempengaruhi akses domain lain. Biarkan kosong untuk menggunakan domain saat ini.",
       "title": "Situs"
     },
     "sso": {

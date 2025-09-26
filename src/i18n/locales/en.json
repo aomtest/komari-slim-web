@@ -593,6 +593,8 @@
       "name_description": "Set the name of the site",
       "private_site": "Private site",
       "private_site_description": "Set the site to private. Once enabled, data can only be accessed after logging in.",
+      "script_domain": "Agent connection address",
+      "script_domain_description": "Define the connection address for the installation script panel, convenient for users with multiple domains, and will not affect access to other domains. Leave empty to use the current domain.",
       "title": "Site"
     },
     "sso": {

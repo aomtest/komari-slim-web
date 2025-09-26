@@ -593,6 +593,8 @@
       "name_description": "設置站點名稱",
       "private_site": "私有站點",
       "private_site_description": "將站點設置為私有，開啟後資料都需要登錄後才能獲取。",
+      "script_domain": "Agent 連接地址",
+      "script_domain_description": "為安裝腳本定義面板的連接地址，方便多個域名的用戶，並不會影響其他域名的訪問。留空使用當前域名。",
       "title": "站點"
     },
     "sso": {
