@@ -73,6 +73,7 @@ import {
   SettingCardShortTextInput,
   SettingCardSwitch,
 } from "@/components/admin/SettingCard";
+import { useSettings } from "@/lib/api";
 
 const NodeDetailsPage = () => {
   return (
@@ -560,9 +561,18 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
   const [enableIncludeMountpoints, setEnableIncludeMountpoints] =
     React.useState(false);
   const [enableMonthRotate, setEnableMonthRotate] = React.useState(false);
+  const {settings} = useSettings();
 
   const generateCommand = () => {
-    const host = window.location.origin;
+    const host = function () {
+      if (!settings.script_domain) {
+        return window.location.origin;
+      }
+      if (settings.script_domain.startsWith("http")) {
+        return settings.script_domain.replace(/\/+$/, "");
+      }
+      return `http://${settings.script_domain.replace(/\/+$/, "")}`;
+    }();
     const token = node.token || "";
     let args = ["-e", host, "-t", token];
     // 根据安装选项生成参数

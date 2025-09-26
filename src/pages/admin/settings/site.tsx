@@ -146,6 +146,15 @@ export default function SiteSettings() {
           await updateSettingsWithToast({ private_site: checked }, t);
         }}
       />
+      <SettingCardShortTextInput
+        title={t("settings.site.script_domain")}
+        description={t("settings.site.script_domain_description")}
+        placeholder={`${window.location.origin}`}
+        defaultValue={settings.script_domain || ""}
+        OnSave={async (data) => {
+          await updateSettingsWithToast({ script_domain: data }, t);
+        }}
+      />
       <SettingCardLabel>{t("settings.site.custom")}</SettingCardLabel>
       <label className="text-sm text-muted-foreground -mt-4">
         {t("settings.custom.note", "个性化内容在使用自定义主题时可能会被覆盖。请确保代码的安全性，避免使用不受信任的内容。")}
