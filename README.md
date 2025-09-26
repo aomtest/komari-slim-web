@@ -10,7 +10,7 @@ How to contribute to Komari translations?
 
 ## 开发环境配置
 
-> 我不是计科专业的，代码质量可能达不到平均水平，React是边学边写的，请多包涵。
+> 我不是计科专业的，代码质量可能达不到平均水平，React是边学边写的，在此之前我从未接触过前端开发，请多包涵。
 
 ### 前置 Nodejs
 
