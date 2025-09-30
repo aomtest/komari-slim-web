@@ -622,8 +622,12 @@ function GenerateCommandButton({ node }: { node: NodeDetail }) {
       args.push(`--month-rotate`);
       args.push(rotateVal);
     }
+    let scriptFile = "install.sh";
+    if (selectedPlatform === "windows") {
+      scriptFile = "install.ps1";
+    }
     let scriptUrl =
-      "https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/install.sh";
+      `https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/${scriptFile}`;
     if (enableGhproxy) {
       if (enableGhproxy && installOptions.ghproxy) {
         scriptUrl = scriptUrl.slice(8); // 去掉 https://
