@@ -55,7 +55,9 @@ export default function SiteSettings() {
           if (ok) {
             if (data && data.status && data.status !== "success") {
               // 服务器返回了非 success 状态
-              const msg = data.message || t("settings.site.backup_restore_error", "恢复备份失败");
+              const msg =
+                data.message ||
+                t("settings.site.backup_restore_error", "恢复备份失败");
               toast.error(msg);
               reject(new Error(msg));
             } else {
@@ -65,7 +67,9 @@ export default function SiteSettings() {
               resolve();
             }
           } else {
-            const msg = (data && data.message) || t("settings.site.backup_restore_error", "恢复备份失败");
+            const msg =
+              (data && data.message) ||
+              t("settings.site.backup_restore_error", "恢复备份失败");
             toast.error(msg);
             reject(new Error(msg));
           }
@@ -87,7 +91,9 @@ export default function SiteSettings() {
       });
 
       xhr.addEventListener("abort", () => {
-        toast.error(t("theme.upload_failed", "上传失败") + ": Upload cancelled");
+        toast.error(
+          t("theme.upload_failed", "上传失败") + ": Upload cancelled"
+        );
         setRestoring(false);
         setRestoreProgress(0);
         setRestoreXhr(null);
@@ -146,6 +152,14 @@ export default function SiteSettings() {
           await updateSettingsWithToast({ private_site: checked }, t);
         }}
       />
+      <SettingCardSwitch
+        title={t("settings.site.send_ip_addr_to_guest")}
+        description={t("settings.site.send_ip_addr_to_guest_description")}
+        defaultChecked={settings.send_ip_addr_to_guest}
+        onChange={async (checked) => {
+          await updateSettingsWithToast({ send_ip_addr_to_guest: checked }, t);
+        }}
+      />
       <SettingCardShortTextInput
         title={t("settings.site.script_domain")}
         description={t("settings.site.script_domain_description")}
@@ -157,7 +171,7 @@ export default function SiteSettings() {
       />
       <SettingCardLabel>{t("settings.site.custom")}</SettingCardLabel>
       <label className="text-sm text-muted-foreground -mt-4">
-        {t("settings.custom.note", "个性化内容在使用自定义主题时可能会被覆盖。请确保代码的安全性，避免使用不受信任的内容。")}
+        {t("settings.custom.note")}
       </label>
       <SettingCardLongTextInput
         title={t("settings.custom.header")}
@@ -202,7 +216,10 @@ export default function SiteSettings() {
             />
           </Flex>
           <label className="text-sm text-muted-foreground">
-            {t("settings.custom.favicon_note", "Favicon 图标的更新速度可能较慢，通常需要清除浏览器缓存后才能看到更改。")}
+            {t(
+              "settings.custom.favicon_note",
+              "Favicon 图标的更新速度可能较慢，通常需要清除浏览器缓存后才能看到更改。"
+            )}
           </label>
           <Flex gap="2" align="center">
             <Dialog.Root>
@@ -303,9 +320,7 @@ export default function SiteSettings() {
           </Flex>
         </Flex>
       </SettingCardCollapse>
-      <SettingCardLabel>
-        {t("settings.site.backup")}
-      </SettingCardLabel>
+      <SettingCardLabel>{t("settings.site.backup")}</SettingCardLabel>
       <SettingCardIconButton
         title={t("settings.site.backup_download")}
         description={t("settings.site.backup_download_description")}
