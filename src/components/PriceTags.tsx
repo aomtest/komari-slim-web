@@ -7,6 +7,8 @@ const PriceTags = ({
   currency = "￥",
   expired_at = Date.now() + 30 * 24 * 60 * 60 * 1000,
   tags = "",
+  ip4 = "",
+  ip6 = "",
   ...props
 }: {
   expired_at?: string | number;
@@ -14,6 +16,8 @@ const PriceTags = ({
   billing_cycle?: number;
   currency?: string;
   tags?: string;
+  ip4?: any;
+  ip6?: any;
 } & React.ComponentProps<typeof Flex>) => {
   if (price == 0) {
     return (
@@ -26,6 +30,24 @@ const PriceTags = ({
 
   return (
     <Flex gap="1" {...props} wrap="wrap">
+      {ip4 && (
+        <Badge size="1" variant="soft" className="text-sm" color="green">
+          <label className="flex justify-center items-center gap-1 text-xs">
+            <div className="border-2 rounded-4xl border-green-500"></div>
+            V4
+          </label>
+        </Badge>
+      )}
+
+      {ip6 && (
+        <Badge size="1" variant="soft" className="text-sm" color="green">
+          <label className="flex justify-center items-center gap-1 text-xs">
+            <div className="border-2 rounded-4xl border-green-500"></div>
+            V6
+          </label>
+        </Badge>
+      )}
+
       <Badge color="iris" size="1" variant="soft" className="text-sm">
         <label className="text-xs">
           {price == -1 ? t("common.free") : `${currency}${price}`}/
@@ -129,33 +151,33 @@ const CustomTags = ({ tags }: { tags?: string }) => {
     | "mint"
     | "sky"
   > = [
-     "ruby",
-     "gray",
-     "gold",
-     "bronze",
-     "brown",
-     "yellow",
-     "amber",
-     "orange",
-     "tomato",
-     "red",
-     "crimson",
-     "pink",
-     "plum",
-     "purple",
-     "violet",
-     "iris",
-     "indigo",
-     "blue",
-     "cyan",
-     "teal",
-     "jade",
-     "green",
-     "grass",
-     "lime",
-     "mint",
-     "sky"
-  ]
+    "ruby",
+    "gray",
+    "gold",
+    "bronze",
+    "brown",
+    "yellow",
+    "amber",
+    "orange",
+    "tomato",
+    "red",
+    "crimson",
+    "pink",
+    "plum",
+    "purple",
+    "violet",
+    "iris",
+    "indigo",
+    "blue",
+    "cyan",
+    "teal",
+    "jade",
+    "green",
+    "grass",
+    "lime",
+    "mint",
+    "sky",
+  ];
 
   // 解析带颜色的标签
   const parseTagWithColor = (tag: string) => {
@@ -165,7 +187,7 @@ const CustomTags = ({ tags }: { tags?: string }) => {
       const text = tag.replace(/<\w+>$/, "");
       // 检查颜色是否在支持的颜色列表中
       if (colors.includes(color as any)) {
-        return { text, color: color as typeof colors[number] };
+        return { text, color: color as (typeof colors)[number] };
       }
     }
     return { text: tag, color: null };
@@ -176,7 +198,7 @@ const CustomTags = ({ tags }: { tags?: string }) => {
       {tagList.map((tag, index) => {
         const { text, color } = parseTagWithColor(tag);
         const badgeColor = color || colors[index % colors.length];
-        
+
         return (
           <Badge
             key={index}

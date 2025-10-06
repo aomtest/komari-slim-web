@@ -101,6 +101,8 @@ const Node = ({ basic, live, online }: NodeProps) => {
                   expired_at={basic.expired_at}
                   currency={basic.currency}
                   tags={basic.tags}
+                  ip4={basic.ipv4}
+                  ip6={basic.ipv6}
                 />
               </Flex>
             </Link>
@@ -198,8 +200,8 @@ const Node = ({ basic, live, online }: NodeProps) => {
           )}
 
           <Flex justify="between" hidden={isMobile}>
-            <Text size="2" color="gray">
-              {t("nodeCard.networkSpeed")}
+            <Text size="2" color="gray" className="flex items-center">
+              {t("nodeCard.networkSpeed")} 
             </Text>
             <Text size="2">
               ↑ {uploadSpeed}/s ↓ {downloadSpeed}/s
