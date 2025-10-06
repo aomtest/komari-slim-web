@@ -100,6 +100,7 @@
       "autoRenewalDescription": "Jika server kedaluwarsa dan masih online, Komari akan otomatis mengatur waktu kedaluwarsa ke bulan (atau tahun) berikutnya.",
       "billing": "Penagihan",
       "billingCycle": "Siklus Penagihan",
+      "billingCycleTips": "<b>Aturan Siklus Penagihan</b><br/> <br/> <b>Menurut Siklus yang Ditetapkan (Perpanjangan Kalender)</b><br/> Ketika jumlah hari yang dimasukkan mendekati nilai dari rencana yang ditetapkan (seperti pembayaran bulanan, triwulanan, tahunan), perpanjangan akan dilakukan sesuai dengan <b>Siklus Kalender</b> yang sesuai.<br/> - Nilai umum: 30 (bulanan), 92 (triwulanan), 365 (tahunan), 730 (dua tahun) dan sebagainya.<br/> - Contoh: Masukkan 30, layanan diperpanjang dari 15 Maret, tanggal kedaluwarsa baru adalah 15 April.<br/> <br/> <b>Menurut Jumlah Hari Kustom</b><br/> Ketika jumlah hari lain dimasukkan (seperti 7, 45, 100), perpanjangan akan dilakukan secara ketat sesuai dengan jumlah hari.<br/> - Contoh: Masukkan 45, layanan diperpanjang dari 15 Maret, tanggal kedaluwarsa baru adalah 29 April (setelah 45 hari).<br/> <br/> <b>Pembayaran Sekali</b><br/> Masukkan -1 untuk menunjukkan pembayaran sekali.",
       "cancel": "Batal",
       "cannotUndo": "Tindakan ini tidak dapat dibatalkan!",
       "clientVersion": "Versi Klien",
