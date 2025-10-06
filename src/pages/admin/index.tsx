@@ -14,7 +14,6 @@ import {
   IconButton,
   TextArea,
   SegmentedControl,
-  Select,
 } from "@radix-ui/themes";
 import {
   CircleDollarSign,
@@ -74,6 +73,8 @@ import {
   SettingCardSwitch,
 } from "@/components/admin/SettingCard";
 import { useSettings } from "@/lib/api";
+import { SelectOrInput } from "@/components/ui/select-or-input";
+
 
 const NodeDetailsPage = () => {
   return (
@@ -1597,8 +1598,9 @@ function BillingButton({ node }: { node: NodeDetail }) {
       setSaving(true);
       const formData = new FormData(e.target as HTMLFormElement);
       const priceValue = (formData.get("price") as string) || "0";
+      
       const price = parseFloat(priceValue);
-
+      
       if (isNaN(price) || (price < 0 && price !== -1)) {
         toast.error(t("admin.nodeTable.invalidPrice"));
         return;
@@ -1665,28 +1667,25 @@ function BillingButton({ node }: { node: NodeDetail }) {
               onChange={(e) => setCurrency(e.target.value)}
             />
 
-            <label className="font-bold">
-              {t("admin.nodeTable.billingCycle")}
+            <label className="font-bold flex items-center gap-1">
+              {t("admin.nodeTable.billingCycle")} <Tips><span dangerouslySetInnerHTML={{ __html: t("admin.nodeTable.billingCycleTips") }}></span></Tips>
             </label>
-            <Select.Root
-              name="billingCycle"
-              value={billingCycle}
-              onValueChange={setBillingCycle}
-            >
-              <Select.Trigger></Select.Trigger>
-              <Select.Content>
-                <Select.Item value="30">{t("common.monthly")}</Select.Item>
-                <Select.Item value="92">{t("common.quarterly")}</Select.Item>
-                <Select.Item value="184">{t("common.semi_annual")}</Select.Item>
-                <Select.Item value="365">{t("common.annual")}</Select.Item>
-                <Select.Item value="730">{t("common.biennial")}</Select.Item>
-                <Select.Item value="1095">{t("common.triennial")}</Select.Item>
-                <Select.Item value="1825">
-                  {t("common.quinquennial")}
-                </Select.Item>
-                <Select.Item value="-1">{t("common.once")}</Select.Item>
-              </Select.Content>
-            </Select.Root>
+            <SelectOrInput
+            options={[
+              { label: t("common.monthly"), value: "30" },
+              { label: t("common.quarterly"), value: "92" },
+              { label: t("common.semi_annual"), value: "184" },
+              { label: t("common.annual"), value: "365" },
+              { label: t("common.biennial"), value: "730" },
+              { label: t("common.triennial"), value: "1095" },
+              { label: t("common.quinquennial"), value: "1825" },
+              { label: t("common.once"), value: "-1" },
+            ]}
+            type="number"
+            name="billingCycle"
+            value={billingCycle === "0" ? "" : billingCycle}
+            onChange={setBillingCycle}
+          />
 
             <Flex gap="2" align="center">
               <label className="font-bold">
