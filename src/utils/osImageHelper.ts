@@ -12,137 +12,157 @@ interface OSConfig {
 // 操作系统匹配组
 const osConfigs: OSConfig[] = [
   {
-    name: 'AlmaLinux',
-    image: '/assets/os-alma.svg',
-    keywords: ['alma', 'almalinux']
+    name: "AlmaLinux",
+    image: "/assets/logo/os-alma.svg",
+    keywords: ["alma", "almalinux"],
   },
   {
-    name: 'Alpine Linux',
-    image: '/assets/os-alpine.webp',
-    keywords: ['alpine', 'alpine linux']
+    name: "Alpine Linux",
+    image: "/assets/logo/os-alpine.webp",
+    keywords: ["alpine", "alpine linux"],
   },
   {
-    name: 'Armbian',
-    image: '/assets/os-armbian.svg',
-    keywords: ['armbian']
+    name: "Armbian",
+    image: "/assets/logo/os-armbian.svg",
+    keywords: ["armbian"],
   },
   {
-    name: 'CentOS',
-    image: '/assets/os-centos.svg',
-    keywords: ['centos', 'cent os']
+    name: "CentOS",
+    image: "/assets/logo/os-centos.svg",
+    keywords: ["centos", "cent os"],
   },
   {
-    name: 'Debian',
-    image: '/assets/os-debian.svg',
-    keywords: ['debian', 'deb']
+    name: "Debian",
+    image: "/assets/logo/os-debian.svg",
+    keywords: ["debian", "deb"],
   },
   {
-    name: 'FreeBSD',
-    image: '/assets/os-freebsd.svg',
-    keywords: ['freebsd', 'bsd']
+    name: "FreeBSD",
+    image: "/assets/logo/os-freebsd.svg",
+    keywords: ["freebsd", "bsd"],
   },
   {
-    name: 'Ubuntu',
-    image: '/assets/os-ubuntu.svg',
-    keywords: ['ubuntu', 'elementary']
+    name: "Ubuntu",
+    image: "/assets/logo/os-ubuntu.svg",
+    keywords: ["ubuntu", "elementary"],
   },
   {
-    name: 'Windows',
-    image: '/assets/os-windows.svg',
-    keywords: ['windows', 'win', 'microsoft', 'ms']
+    name: "Windows",
+    image: "/assets/logo/os-windows.svg",
+    keywords: ["windows", "win", "microsoft", "ms"],
   },
   {
-    name: 'Arch Linux',
-    image: '/assets/os-arch.svg',
-    keywords: ['arch', 'archlinux', 'arch linux']
+    name: "Arch Linux",
+    image: "/assets/logo/os-arch.svg",
+    keywords: ["arch", "archlinux", "arch linux"],
   },
   {
-    name: 'Kali Linux',
-    image: '/assets/os-kail.svg',
-    keywords: ['kail', 'kali', 'kali linux']
+    name: "Kali Linux",
+    image: "/assets/logo/os-kail.svg",
+    keywords: ["kail", "kali", "kali linux"],
   },
   {
-    name: 'iStoreOS',
-    image: '/assets/os-istore.png',
-    keywords: ['istore', 'istoreos', 'istore os']
+    name: "iStoreOS",
+    image: "/assets/logo/os-istore.png",
+    keywords: ["istore", "istoreos", "istore os"],
   },
   {
-    name: 'OpenWrt',
-    image: '/assets/os-openwrt.svg',
-    keywords: ['openwrt', 'open wrt', 'open-wrt', 'qwrt']
+    name: "OpenWrt",
+    image: "/assets/logo/os-openwrt.svg",
+    keywords: ["openwrt", "open wrt", "open-wrt", "qwrt"],
   },
   {
-    name: 'ImmortalWrt',
-    image: '/assets/os-openwrt.svg',
-    keywords: ['immortalwrt', 'immortal', 'emmortal']
+    name: "ImmortalWrt",
+    image: "/assets/logo/os-openwrt.svg",
+    keywords: ["immortalwrt", "immortal", "emmortal"],
   },
   {
-    name: 'NixOS',
-    image: '/assets/os-nix.svg',
-    keywords: ['nixos', 'nix os', 'nix']
+    name: "NixOS",
+    image: "/assets/logo/os-nix.svg",
+    keywords: ["nixos", "nix os", "nix"],
   },
   {
-    name: 'Rocky Linux',
-    image: '/assets/os-rocky.svg',
-    keywords: ['rocky', 'rocky linux']
+    name: "Rocky Linux",
+    image: "/assets/logo/os-rocky.svg",
+    keywords: ["rocky", "rocky linux"],
   },
   {
-    name: 'Fedora',
-    image: '/assets/os-fedora.svg',
-    keywords: ['fedora']
+    name: "Fedora",
+    image: "/assets/logo/os-fedora.svg",
+    keywords: ["fedora"],
   },
   {
-    name: 'openSUSE',
-    image: '/assets/os-openSUSE.svg',
-    keywords: ['opensuse', 'suse']
+    name: "openSUSE",
+    image: "/assets/logo/os-openSUSE.svg",
+    keywords: ["opensuse", "suse"],
   },
   {
-    name: 'Gentoo',
-    image: '/assets/os-gentoo.svg',
-    keywords: ['gentoo']
+    name: "Gentoo",
+    image: "/assets/logo/os-gentoo.svg",
+    keywords: ["gentoo"],
   },
   {
-    name: 'Red Hat',
-    image: '/assets/os-redhat.svg',
-    keywords: ['redhat', 'rhel', 'red hat']
+    name: "Red Hat",
+    image: "/assets/logo/os-redhat.svg",
+    keywords: ["redhat", "rhel", "red hat"],
   },
   {
-    name: 'Linux Mint',
-    image: '/assets/os-mint.svg',
-    keywords: ['mint', 'linux mint']
+    name: "Linux Mint",
+    image: "/assets/logo/os-mint.svg",
+    keywords: ["mint", "linux mint"],
   },
   {
-    name: 'Manjaro',
-    image: '/assets/os-manjaro-.svg',
-    keywords: ['manjaro']
+    name: "Manjaro",
+    image: "/assets/logo/os-manjaro-.svg",
+    keywords: ["manjaro"],
   },
   {
-    name: 'Synology DSM',
-    image: '/assets/os-synology.ico',
-    keywords: ['synology', 'dsm', 'synology dsm']
+    name: "Synology DSM",
+    image: "/assets/logo/os-synology.ico",
+    keywords: ["synology", "dsm", "synology dsm"],
   },
   {
-    name: 'Proxmox VE',
-    image: '/assets/os-proxmox.ico',
-    keywords: ['proxmox', 'proxmox ve']
+    name: "Proxmox VE",
+    image: "/assets/logo/os-proxmox.ico",
+    keywords: ["proxmox", "proxmox ve"],
   },
   {
-    name: 'macOS',
-    image: '/assets/os-macos.svg',
-    keywords: ['macos']
+    name: "macOS",
+    image: "/assets/logo/os-macos.svg",
+    keywords: ["macos"],
   },
   {
     name: "QTS",
-    image: "/assets/os-qnap.svg",
-    keywords: ["qts","quts hero","qes","qutscloud"],
-  }
+    image: "/assets/logo/os-qnap.svg",
+    keywords: ["qts", "quts hero", "qes", "qutscloud"],
+  },
+  {
+    name: "Astar",
+    image: "/assets/logo/os-astar.png",
+    keywords: ["astar", "astar linux"],
+  },
+  {
+    name: "Huawei",
+    image: "/assets/logo/os-huawei.svg",
+    keywords: ["huawei", "euleros", "euler os"],
+  },
+  {
+    name: "Aliyun",
+    image: "/assets/logo/alibabacloud-color.svg",
+    keywords: ["aliyun", "alibaba"],
+  },
+  {
+    name: "OpenCloudOS",
+    image: "/assets/logo/os-OpenCloudOS.png",
+    keywords: ["opencloud"],
+  },
 ];
 
 // 默认配置
 const defaultOSConfig: OSConfig = {
-  name: 'Unknown',
-  image: '/assets/TablerHelp.svg',
-  keywords: ['unknown']
+  name: "Unknown",
+  image: "/assets/logo/linux.svg",
+  keywords: ["unknown"],
 };
 
 /**
@@ -185,14 +205,14 @@ export function getOSImage(osString: string): string {
  */
 export function getAllOSImages(): Record<string, string> {
   const imageMap: Record<string, string> = {};
-  
-  osConfigs.forEach(config => {
+
+  osConfigs.forEach((config) => {
     const key = config.keywords[0]; // 使用第一个关键词作为键
     imageMap[key] = config.image;
   });
-  
+
   imageMap.unknown = defaultOSConfig.image;
-  
+
   return imageMap;
 }
 
@@ -203,20 +223,20 @@ export function getAllOSImages(): Record<string, string> {
  */
 export function getOSName(osString: string): string {
   const config = findOSConfig(osString);
-  
+
   // 如果匹配到具体的操作系统，返回其名称
   if (config !== defaultOSConfig) {
     return config.name;
   }
-  
+
   // 如果没有匹配到，从输入字符串中提取名称
   if (!osString) {
-    return 'Unknown';
+    return "Unknown";
   }
-  
+
   // 使用空格或斜杠分割，取第一个部分
   const parts = osString.trim().split(/[\s/]/);
-  return parts[0] || 'Unknown';
+  return parts[0] || "Unknown";
 }
 
 /**
@@ -226,7 +246,7 @@ export function getOSName(osString: string): string {
  */
 export function isSupportedOS(osString: string): boolean {
   if (!osString) return false;
-  
+
   const config = findOSConfig(osString);
   return config !== defaultOSConfig;
 }
