@@ -137,9 +137,14 @@ const osConfigs: OSConfig[] = [
     keywords: ["qts", "quts hero", "qes", "qutscloud"],
   },
   {
-    name: "Astar",
+    name: "Astra Linux",
     image: "/assets/logo/os-astar.png",
-    keywords: ["astar", "astar linux"],
+    keywords: ["astra", "astra linux"],
+  },
+  {
+    name: "Orange Pi",
+    image: "/assets/logo/orange-pi.ico",
+    keywords: ["orange pi", "orangepi"],
   },
   {
     name: "Huawei",
