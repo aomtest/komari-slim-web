@@ -7,6 +7,7 @@ import { useNodeList } from "@/contexts/NodeListContext";
 import Loading from "@/components/loading";
 import { Settings } from "lucide-react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useEffect } from "react";
 
 // Intelligent speed formatting function
 const formatSpeed = (bytes: number): string => {
@@ -30,7 +31,7 @@ const Index = () => {
     const { live_data } = useLiveData();
     //document.title = t("home_title");
     //#region 节点数据
-    const { nodeList, isLoading, error } = useNodeList();
+    const { nodeList, isLoading, error,refresh } = useNodeList();
 
     // Status cards visibility state
     const [statusCardsVisibility, setStatusCardsVisibility] = useLocalStorage('statusCardsVisibility', {
@@ -107,6 +108,14 @@ const Index = () => {
         visible: statusCardsVisibility.networkSpeed
       }
     ];
+
+    useEffect(() => {
+      const interval = setInterval(() => {
+        refresh();
+      }, 5000);
+      return () => clearInterval(interval);
+    }, [nodeList]);
+
     if (isLoading) {
       return <Loading />;
     }
