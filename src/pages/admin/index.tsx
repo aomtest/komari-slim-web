@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   NodeDetailsProvider,
   useNodeDetails,
@@ -85,7 +85,7 @@ const NodeDetailsPage = () => {
 };
 
 const Layout = () => {
-  const { nodeDetail, isLoading, error } = useNodeDetails();
+  const { nodeDetail, isLoading, error, refresh } = useNodeDetails();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedNodes, setSelectedNodes] = useState<string[]>([]);
   const filteredNodes = Array.isArray(nodeDetail)
@@ -95,7 +95,12 @@ const Layout = () => {
         )
         .sort((a, b) => a.weight - b.weight)
     : [];
-
+  
+  useEffect(() => {
+    const interval = setInterval(() => { refresh() }, 5000);
+    return () => clearInterval(interval);
+  }, [nodeDetail]);
+  
   if (isLoading) return <Loading text="" />;
   if (error) return <div>{error}</div>;
 
