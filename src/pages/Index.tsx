@@ -62,7 +62,9 @@ const Index = () => {
         getValue: () => nodeList
           ? Object.entries(
             nodeList.reduce((acc, item) => {
-              acc[item.region] = (acc[item.region] || 0) + 1;
+              if (live_data?.data.online.includes(item.uuid)) {
+                acc[item.region] = (acc[item.region] || 0) + 1;
+              }
               return acc;
             }, {} as Record<string, number>)
           ).length
@@ -72,39 +74,35 @@ const Index = () => {
       {
         key: 'trafficOverview',
         title: t("traffic_overview"),
-        getValue: () => live_data?.data?.data
-          ? `↑ ${formatBytes(Object.values(live_data.data.data).reduce(
-            (acc, node) => {
-              return acc + (node.network.totalUp || 0);
-            },
-            0
-          ))}` + " / " +
-          `↓ ${formatBytes(
-            Object.values(live_data.data.data).reduce(
-              (acc, node) => {
-                return acc + (node.network.totalDown || 0);
-              },
-              0
-            ))}`
-          : "↑ 0B / ↓ 0B",
+        getValue: () => {
+          const data = live_data?.data?.data;
+          const online = live_data?.data?.online;
+          if (!data || !online) return "↑ 0B / ↓ 0B";
+          const onlineSet = new Set(online);
+          const values = Object.entries(data)
+            .filter(([uuid]) => onlineSet.has(uuid))
+            .map(([, node]) => node);
+          const up = values.reduce((acc, node) => acc + (node.network.totalUp || 0), 0);
+          const down = values.reduce((acc, node) => acc + (node.network.totalDown || 0), 0);
+          return `↑ ${formatBytes(up)} / ↓ ${formatBytes(down)}`;
+        },
         visible: statusCardsVisibility.trafficOverview
       },
       {
         key: 'networkSpeed',
         title: t("network_speed"),
-        getValue: () => live_data?.data?.data
-          ? `↑ ${formatSpeed(
-            Object.values(live_data.data.data).reduce(
-              (acc, node) => acc + (node.network.up || 0),
-              0
-            )
-          )} / ↓ ${formatSpeed(
-            Object.values(live_data.data.data).reduce(
-              (acc, node) => acc + (node.network.down || 0),
-              0
-            )
-          )}`
-          : "↑ 0 B/s / ↓ 0 B/s",
+        getValue: () => {
+          const data = live_data?.data?.data;
+          const online = live_data?.data?.online;
+          if (!data || !online) return "↑ 0 B/s / ↓ 0 B/s";
+          const onlineSet = new Set(online);
+          const values = Object.entries(data)
+            .filter(([uuid]) => onlineSet.has(uuid))
+            .map(([, node]) => node);
+          const up = values.reduce((acc, node) => acc + (node.network.up || 0), 0);
+          const down = values.reduce((acc, node) => acc + (node.network.down || 0), 0);
+          return `↑ ${formatSpeed(up)} / ↓ ${formatSpeed(down)}`;
+        },
         visible: statusCardsVisibility.networkSpeed
       }
     ];
