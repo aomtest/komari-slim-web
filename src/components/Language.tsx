@@ -1,17 +1,17 @@
 import { DropdownMenu, IconButton } from "@radix-ui/themes";
 import { type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { supportedLanguages } from "../i18n/config";
+import { resources } from "../i18n/config";
 interface LanguageSwitch {
   icon?: ReactNode;
 }
 
-const languages: { code: string; name: string }[] = Object.entries(
-  supportedLanguages
-)
-  .filter(([, meta]) => typeof meta?.name === "string")
-  .map(([code, meta]) => ({ code, name: (meta as any).name as string }))
-  .sort((a, b) => a.code.localeCompare(b.code));
+const languages: { code: string; name: string }[] = Object.entries(resources)
+  .filter(([, res]) => typeof res === "object" && res !== null && "name" in res && typeof (res as any).name === "string")
+  .map(([code, res]) => ({
+    code,
+    name: (res as any).name as string,
+  })).sort((a, b) => a.code.localeCompare(b.code));
 
 const LanguageSwitch = ({
   icon = (

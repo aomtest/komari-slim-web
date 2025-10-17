@@ -6,11 +6,12 @@ import Loading from "@/components/loading";
 import { useTranslation } from "react-i18next";
 import { SquareArrowOutUpRight } from "lucide-react";
 import { SegmentedControl } from "@radix-ui/themes";
+import { Eula, MIT_LICENSE } from "@/utils/field";
 
 export default function AboutPage() {
   const [markdown, setMarkdown] = useState("");
   const { t } = useTranslation();
-  const [view, setView] = useState("readme");
+  const [view, setView] = useState("open_source");
   useEffect(() => {
     fetch(
       "https://raw.githubusercontent.com/komari-monitor/komari/refs/heads/main/README.md"
@@ -118,52 +119,76 @@ export default function AboutPage() {
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-bold text-foreground">{t("about.title")}</h1>
       <SegmentedControl.Root defaultValue={view} onValueChange={setView}>
-        <SegmentedControl.Item value="readme">Readme</SegmentedControl.Item>
         <SegmentedControl.Item value="open_source">
           {t("about.open_source_title")}
         </SegmentedControl.Item>
+        <SegmentedControl.Item value="eula">
+          法律声明与合规指引
+        </SegmentedControl.Item>
+        <SegmentedControl.Item value="readme">Readme</SegmentedControl.Item>
       </SegmentedControl.Root>
-      {view === "readme" ? (
-        <>
-          <div className="markdown-body border border-muted/20 rounded-md">
-            {markdown ? (
-              <ReactMarkdown remarkPlugins={[remarkGfm]} children={markdown} />
-            ) : (
-              <Loading />
-            )}
-          </div>
-          <a
-            href="https://github.com/komari-monitor/komari/blob/main/README.md"
-            target="_blank"
-            rel="noreferrer"
-            className="flex flex-row gap-2 text-sm items-center"
-          >
-            {t("about.readme_open_in_new_tab")}
-            <SquareArrowOutUpRight size="16"></SquareArrowOutUpRight>
-          </a>
-        </>
-      ) : (
-        <>
-          <h2 className="text-xl font-semibold text-foreground">
-            {t("about.open_source")}
-          </h2>
-          <div className="copyright text-sm text-gray-500 dark:text-gray-400">
-            {sortedLicenses.map(([license, libs]) => (
-              <div key={license} className="mb-2">
-                <h3 className="font-black text-lg text-foreground">
-                  {license}
-                </h3>
-                <ul className="list-disc list-inside">
-                  {libs.sort().map((lib) => (
-                    <li key={lib}>{lib}</li>
+      {(() => {
+        switch (view) {
+          case "eula":
+            return (
+              <>
+                <div className="license-text mb-4 p-4 border rounded-md bg-accent-1 flex flex-col gap-2">
+                  <pre className="text-wrap">{Eula}</pre>
+                </div>
+              </>
+            );
+          case "open_source":
+            return (
+              <>
+                <div className="license-text mb-4 p-4 border rounded-md bg-accent-1 flex flex-col gap-2">
+                  <pre className="text-wrap">{MIT_LICENSE}</pre>
+                </div>
+                <h2 className="text-xl font-semibold text-foreground">
+                  {t("about.open_source")}
+                </h2>
+                <div className="copyright text-sm text-gray-500 dark:text-gray-400">
+                  {sortedLicenses.map(([license, libs]) => (
+                    <div key={license} className="mb-2">
+                      <h3 className="font-black text-lg text-foreground">
+                        {license}
+                      </h3>
+                      <ul className="list-disc list-inside">
+                        {libs.sort().map((lib) => (
+                          <li key={lib}>{lib}</li>
+                        ))}
+                      </ul>
+                    </div>
                   ))}
-                </ul>
-              </div>
-            ))}
-            {t("about.ai")}
-          </div>
-        </>
-      )}
+                  {t("about.ai")}
+                </div>
+              </>
+            );
+          case "readme":
+            return (
+              <>
+                <div className="markdown-body border border-muted/20 rounded-md">
+                  {markdown ? (
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      children={markdown}
+                    />
+                  ) : (
+                    <Loading />
+                  )}
+                </div>
+                <a
+                  href="https://github.com/komari-monitor/komari/blob/main/README.md"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex flex-row gap-2 text-sm items-center"
+                >
+                  {t("about.readme_open_in_new_tab")}
+                  <SquareArrowOutUpRight size="16"></SquareArrowOutUpRight>
+                </a>
+              </>
+            );
+        }
+      })()}
     </div>
   );
 }
