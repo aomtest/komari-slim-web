@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import Pages from "vite-plugin-pages";
 import { visualizer } from "rollup-plugin-visualizer";
-import { VitePWA } from 'vite-plugin-pwa';
+import { VitePWA } from "vite-plugin-pwa";
 
 // https://vite.dev/config/
 import type { UserConfig } from "vite";
@@ -23,51 +23,51 @@ export default defineConfig(({ mode }) => {
         extensions: ["tsx", "jsx"],
       }),
       VitePWA({
-        registerType: 'autoUpdate',
-        includeAssets: ['favicon.ico', 'assets/pwa-icon.png'],
+        registerType: "autoUpdate",
+        includeAssets: ["favicon.ico", "assets/pwa-icon.png"],
         manifest: {
-          name: 'Komari Monitor',
-          short_name: 'Komari Monitor',
-          description: 'A simple server monitor tool',
-          theme_color: '#2563eb',
-          background_color: '#ffffff',
-          display: 'standalone',
-          scope: '/',
-          start_url: '/',
+          name: "Komari Monitor",
+          short_name: "Komari Monitor",
+          description: "A simple server monitor tool",
+          theme_color: "#2563eb",
+          background_color: "#ffffff",
+          display: "standalone",
+          scope: "/",
+          start_url: "/",
           icons: [
             {
-              src: '/assets/pwa-icon.png',
-              sizes: '192x192',
-              type: 'image/png',
-              purpose: 'maskable any'
+              src: "/assets/pwa-icon.png",
+              sizes: "192x192",
+              type: "image/png",
+              purpose: "maskable any",
             },
             {
-              src: '/assets/pwa-icon.png',
-              sizes: '512x512',
-              type: 'image/png',
-              purpose: 'maskable any'
-            }
-          ]
+              src: "/assets/pwa-icon.png",
+              sizes: "512x512",
+              type: "image/png",
+              purpose: "maskable any",
+            },
+          ],
         },
         workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+          globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/api\./i,
-              handler: 'NetworkFirst',
+              handler: "NetworkFirst",
               options: {
-                cacheName: 'api-cache',
+                cacheName: "api-cache",
                 expiration: {
                   maxEntries: 10,
-                  maxAgeSeconds: 60 * 60 * 24 * 365 // <== 365 days
+                  maxAgeSeconds: 60 * 60 * 24 * 365, // <== 365 days
                 },
                 cacheableResponse: {
-                  statuses: [0, 200]
-                }
-              }
-            }
-          ]
-        }
+                  statuses: [0, 200],
+                },
+              },
+            },
+          ],
+        },
       }),
       visualizer({
         open: false,
@@ -87,13 +87,70 @@ export default defineConfig(({ mode }) => {
     build: {
       assetsDir: "assets",
       outDir: "dist",
+      chunkSizeWarningLimit: 800,
       rollupOptions: {
         output: {
           // go embed ignore files start with '_'
           chunkFileNames: "assets/chunk-[name]-[hash].js",
           entryFileNames: "assets/entry-[name]-[hash].js",
-          manualChunks: {
-            "react-vendor": ["react", "react-dom"],
+          // More granular vendor splitting to improve caching and reduce initial chunks
+          manualChunks(id) {
+            if (!id.includes("node_modules")) return undefined;
+
+            // React core + router
+            if (/node_modules\/(react|react-dom|react-router-dom)\//.test(id)) {
+              return "react";
+            }
+            // i18n related
+            if (id.includes("i18n")) {
+              return "i18n";
+            }
+            // Radix UI (themes + primitives)
+            if (/node_modules\/(@radix-ui)\//.test(id)) {
+              return "radix";
+            }
+            // Icon library
+            if (/node_modules\/(lucide-react)\//.test(id)) {
+              return "icons";
+            }
+            // Charts
+            if (id.includes("chart")) {
+              return "charts";
+            }
+            // xterm
+            if (id.includes("xterm")) {
+              return "xterm";
+            }
+            // dnd-kit
+            if (/node_modules\/(@dnd-kit)\//.test(id)) {
+              return "dndkit";
+            }
+            // framer-motion
+            if (id.includes("motion")) {
+              return "framer-motion";
+            }
+            // lodash
+            if (/node_modules\/(lodash|lodash-es)\//.test(id)) {
+              return "lodash-vendor";
+            }
+            // decimal.js
+            if (/node_modules\/(decimal.js)\//.test(id)) {
+              return "decimaljs";
+            }
+            //sonner
+            if (/node_modules\/(sonner)\//.test(id)) {
+              return "sonner";
+            }
+            //mdast-util
+            if (id.includes("mdast-util-")) {
+              return "mdast-util";
+            }
+            // tailwind
+            if (id.includes("tailwind")) {
+              return "tailwind";
+            }
+            // Fallback: group remaining deps to general vendor
+            return "vendor-" + id.split("node_modules/")[1][0];
           },
         },
       },
