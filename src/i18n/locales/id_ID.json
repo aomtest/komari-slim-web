@@ -1,4 +1,11 @@
 {
+  "about": {
+    "ai": "Proses pengembangan proyek Komari didukung oleh alat kecerdasan buatan. Alat-alat ini digunakan untuk menjalankan tugas seperti pembuatan kode, refactoring, dan debugging, untuk meningkatkan efisiensi pengembangan dan kualitas kode. Semua kode dan saran yang dihasilkan oleh AI telah diperiksa dan divalidasi oleh pengembang manusia.",
+    "open_source": "Komari bersifat open source berdasarkan lisensi MIT dan dibangun menggunakan perangkat lunak open source berikut:",
+    "open_source_title": "Lisensi Perangkat Lunak Open Source",
+    "readme_open_in_new_tab": "Buka di tab baru",
+    "title": "Tentang"
+  },
   "account": {
     "2fa_disabled": "Autentikasi dua faktor dinonaktifkan",
     "2fa_enabled": "Autentikasi dua faktor diaktifkan",
