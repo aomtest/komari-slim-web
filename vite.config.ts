@@ -93,66 +93,8 @@ export default defineConfig(({ mode }) => {
           // go embed ignore files start with '_'
           chunkFileNames: "assets/chunk-[name]-[hash].js",
           entryFileNames: "assets/entry-[name]-[hash].js",
-          // More granular vendor splitting to improve caching and reduce initial chunks
-          manualChunks(id) {
-            if (!id.includes("node_modules")) return undefined;
-
-            // React core + router
-            if (/node_modules\/(react|react-dom|react-router-dom)\//.test(id)) {
-              return "react";
-            }
-            // i18n related
-            if (id.includes("i18n")) {
-              return "i18n";
-            }
-            // Radix UI (themes + primitives)
-            if (/node_modules\/(@radix-ui)\//.test(id)) {
-              return "radix";
-            }
-            // Icon library
-            if (/node_modules\/(lucide-react)\//.test(id)) {
-              return "icons";
-            }
-            // Charts
-            if (id.includes("chart")) {
-              return "charts";
-            }
-            // xterm
-            if (id.includes("xterm")) {
-              return "xterm";
-            }
-            // dnd-kit
-            if (/node_modules\/(@dnd-kit)\//.test(id)) {
-              return "dndkit";
-            }
-            // framer-motion
-            if (id.includes("motion")) {
-              return "framer-motion";
-            }
-            // lodash
-            if (/node_modules\/(lodash|lodash-es)\//.test(id)) {
-              return "lodash-vendor";
-            }
-            // decimal.js
-            if (/node_modules\/(decimal.js)\//.test(id)) {
-              return "decimaljs";
-            }
-            //sonner
-            if (/node_modules\/(sonner)\//.test(id)) {
-              return "sonner";
-            }
-            //mdast-util
-            if (id.includes("mdast-util-")) {
-              return "mdast-util";
-            }
-            // tailwind
-            if (id.includes("tailwind")) {
-              return "tailwind";
-            }
-            // Fallback: group remaining deps to general vendor
-            return "vendor-" + id.split("node_modules/")[1][0];
-          },
-        },
+          // Do not use manualChunks, use React.lazy() and <Suspense> instead
+        }
       },
     },
   };
