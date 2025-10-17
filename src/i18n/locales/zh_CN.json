@@ -687,7 +687,8 @@
     "upload_theme": "上传主题",
     "uploading": "正在上传主题...",
     "version": "版本",
-    "zip_files_only": "仅支持 .zip 格式"
+    "zip_files_only": "仅支持 .zip 格式",
+    "uploda_413_content_too_large": "文件上传失败 (413)。请检查并增大您的反向代理服务器（如 Nginx/CDN）配置中的文件大小限制（client_max_body_size），确保该值大于您的目标文件大小。"
   },
   "time": {
     "ago": "前",
