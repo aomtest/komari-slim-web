@@ -686,6 +686,7 @@
     "upload_success": "テーマのアップロードに成功しました",
     "upload_theme": "テーマをアップロード",
     "uploading": "テーマをアップロード中...",
+    "uploda_413_content_too_large": "ファイルのアップロードに失敗しました (413)。Nginx/CDNなどのリバースプロキシサーバーの設定でファイルサイズ制限（client_max_body_size）を確認し、ターゲットファイルサイズよりも大きい値に増やしてください。",
     "version": "バージョン",
     "zip_files_only": ".zip形式のみサポート"
   },

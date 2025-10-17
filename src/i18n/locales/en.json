@@ -686,6 +686,7 @@
     "upload_success": "Theme uploaded successfully",
     "upload_theme": "Upload Theme",
     "uploading": "Uploading theme...",
+    "uploda_413_content_too_large": "File upload failed (413). Please check and increase the file size limit in your reverse proxy server (such as Nginx/CDN) configuration (client_max_body_size) to ensure that this value is greater than your target file size.",
     "version": "Version",
     "zip_files_only": "Only .zip files are supported"
   },

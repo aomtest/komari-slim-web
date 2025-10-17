@@ -686,6 +686,7 @@
     "upload_success": "主題上傳成功",
     "upload_theme": "上傳主題",
     "uploading": "正在上傳主題...",
+    "uploda_413_content_too_large": "文件上傳失敗 (413)。請檢查並增大您的反向代理伺服器（如 Nginx/CDN）配置中的檔案大小限制（client_max_body_size），確保該值大於您的目標檔案大小。",
     "version": "版本",
     "zip_files_only": "僅支持 .zip 格式"
   },

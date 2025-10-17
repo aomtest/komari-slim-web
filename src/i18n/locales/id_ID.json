@@ -686,6 +686,7 @@
     "upload_success": "Tema berhasil diunggah",
     "upload_theme": "Unggah Tema",
     "uploading": "Mengunggah tema...",
+    "uploda_413_content_too_large": "Unggahan file gagal (413). Silakan periksa dan tingkatkan batas ukuran file dalam konfigurasi server proxy terbalik Anda (seperti Nginx/CDN) (client_max_body_size), pastikan nilai tersebut lebih besar dari ukuran file yang Anda tuju.",
     "version": "Versi",
     "zip_files_only": "Hanya file .zip yang didukung"
   },
