@@ -6,7 +6,8 @@ import Loading from "@/components/loading";
 import { useTranslation } from "react-i18next";
 import { SquareArrowOutUpRight } from "lucide-react";
 import { SegmentedControl } from "@radix-ui/themes";
-import { Eula, MIT_LICENSE } from "@/utils/field";
+import { Apache2_LICENSE, Eula, MIT_LICENSE } from "@/utils/field";
+import { SettingCardCollapse } from "@/components/admin/SettingCard";
 
 export default function AboutPage() {
   const [markdown, setMarkdown] = useState("");
@@ -108,7 +109,10 @@ export default function AboutPage() {
       "gopkg.in/toast.v1",
     ],
     "ISC License": ["github.com/oschwald/maxminddb-golang", "lucide-react"],
-    "CC-BY-4.0 License": ["twemoji"],
+    "CC-BY-4.0 License": [
+      "License: https://creativecommons.org/licenses/by/4.0/",
+      "twemoji | Twemoji © Twitter, Inc. and other contributors | Not modified | https://github.com/twitter/twemoji",
+    ],
   };
 
   const sortedLicenses = Object.entries(open_source_licenses).sort(([a], [b]) =>
@@ -140,8 +144,19 @@ export default function AboutPage() {
           case "open_source":
             return (
               <>
-                <div className="license-text mb-4 p-4 border rounded-md bg-accent-1 flex flex-col gap-2">
-                  <pre className="text-wrap">{MIT_LICENSE}</pre>
+                <div className="text-foreground flex flex-col gap-4">
+                  <SettingCardCollapse
+                    title="MIT License"
+                    description="Copyright (C) 2025 Komari Monitor"
+                  >
+                    <pre className="text-wrap">{MIT_LICENSE}</pre>
+                  </SettingCardCollapse>
+                  <SettingCardCollapse
+                    title="Apache License"
+                    description="Version 2.0, January 2004"
+                  >
+                    <pre className="text-wrap">{Apache2_LICENSE}</pre>
+                  </SettingCardCollapse>
                 </div>
                 <h2 className="text-xl font-semibold text-foreground">
                   {t("about.open_source")}
