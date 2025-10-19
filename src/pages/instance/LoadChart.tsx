@@ -160,7 +160,25 @@ const LoadChart = ({ data = [] }: LoadChartProps) => {
           (a: RecordFormat, b: RecordFormat) =>
             new Date(a.time).getTime() - new Date(b.time).getTime()
         );
-        setRemoteData(mergedRecords);
+        // 根据所选视图推导采样间隔，并对远程数据做瘦身，仅保留绘图需要的点数，避免高频数据占用内存
+        const selectedHours = selected.hours ?? 24;
+        const minute = 60; // s
+        const hour = 60 * 60; // s
+        // 与下方 chartData 的间隔策略保持一致
+        const intervalSec =
+          selectedHours > 120
+            ? hour
+            : selectedHours === 4
+            ? minute
+            : 15 * minute;
+        const totalSec = selectedHours * 3600;
+        const maxNeededPoints = Math.max(
+          1,
+          Math.floor(totalSec / intervalSec) + 2
+        );
+        // 只保留末尾需要的数量（避免保留更高频的秒级数据）
+        const thinned = mergedRecords.slice(-maxNeededPoints);
+        setRemoteData(thinned);
         setLoading(false);
       })
       .catch((err) => {
@@ -230,25 +248,32 @@ const LoadChart = ({ data = [] }: LoadChartProps) => {
   };
   const minute = 60;
   const hour = minute * 60;
-  const chartData =
-    hoursView === t("common.real_time") || hoursView === "real-time"
-      ? data
-      : hoursView === presetViews[0].label
-      ? fillMissingTimePoints(remoteData ?? [], minute, hour * 4, minute * 2)
-      : (() => {
-          const selectedHours =
-            presetViews.find((v) => v.label === hoursView)?.hours ||
-            avaliableView.find((v) => v.label === hoursView)?.hours ||
-            24;
-          const interval = selectedHours > 120 ? hour : minute * 15;
-          const maxGap = interval * 2;
-          return fillMissingTimePoints(
-            remoteData ?? [],
-            interval,
-            hour * selectedHours,
-            maxGap
-          );
-        })();
+  // 限制实时模式的数据点数量，避免长时间运行时数据无限增长
+  const MAX_REALTIME_POINTS = 30 * 5; // 与父组件 recent.length 一致（150）
+  const isRealtime =
+    hoursView === t("common.real_time") || hoursView === "real-time";
+  const realtimeData = Array.isArray(data)
+    ? data.slice(-MAX_REALTIME_POINTS)
+    : data;
+
+  const chartData = isRealtime
+    ? realtimeData
+    : hoursView === presetViews[0].label
+    ? fillMissingTimePoints(remoteData ?? [], minute, hour * 4, minute * 2)
+    : (() => {
+        const selectedHours =
+          presetViews.find((v) => v.label === hoursView)?.hours ||
+          avaliableView.find((v) => v.label === hoursView)?.hours ||
+          24;
+        const interval = selectedHours > 120 ? hour : minute * 15;
+        const maxGap = interval * 2;
+        return fillMissingTimePoints(
+          remoteData ?? [],
+          interval,
+          hour * selectedHours,
+          maxGap
+        );
+      })();
 
   return (
     <Flex
