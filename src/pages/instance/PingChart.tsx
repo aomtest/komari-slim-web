@@ -75,16 +75,28 @@ const PingChart = ({ uuid }: { uuid: string }) => {
     }
     const maxPreset = presetViews[presetViews.length - 1];
     if (max_record_preserve_time > maxPreset.hours) {
+      const dynamicLabel =
+        max_record_preserve_time % 24 === 0
+          ? `${t("chart.days", {
+              count: Math.floor(max_record_preserve_time / 24),
+            })}`
+          : `${t("chart.hours", { count: max_record_preserve_time })}`;
       avaliableView.push({
-        label: `${t("chart.hours", { count: max_record_preserve_time })}`,
+        label: dynamicLabel,
         hours: max_record_preserve_time,
       });
     } else if (
       max_record_preserve_time > 1 &&
       !presetViews.some((v) => v.hours === max_record_preserve_time)
     ) {
+      const dynamicLabel =
+        max_record_preserve_time % 24 === 0
+          ? `${t("chart.days", {
+              count: Math.floor(max_record_preserve_time / 24),
+            })}`
+          : `${t("chart.hours", { count: max_record_preserve_time })}`;
       avaliableView.push({
-        label: `${t("chart.hours", { count: max_record_preserve_time })}`,
+        label: dynamicLabel,
         hours: max_record_preserve_time,
       });
     }

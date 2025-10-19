@@ -73,10 +73,15 @@ const LoadChart = ({ data = [] }: LoadChartProps) => {
     // 如果大于最大预设，显示 "xxx hours"
     const maxPreset = presetViews[presetViews.length - 1];
     if (max_record_preserve_time > maxPreset.hours) {
+      // 若能被24整除，显示为“xx天”，否则显示为“xx小时”
+      const dynamicLabel =
+        max_record_preserve_time % 24 === 0
+          ? `${t("chart.days", {
+              count: Math.floor(max_record_preserve_time / 24),
+            })}`
+          : `${t("chart.hours", { count: max_record_preserve_time })}`;
       avaliableView.push({
-        label: `${t("chart.hours", {
-          count: max_record_preserve_time,
-        })}`,
+        label: dynamicLabel,
         hours: max_record_preserve_time,
       });
     } else if (
@@ -84,10 +89,14 @@ const LoadChart = ({ data = [] }: LoadChartProps) => {
       !presetViews.some((v) => v.hours === max_record_preserve_time)
     ) {
       // 如果不是预设但大于4小时，显示具体小时
+      const dynamicLabel =
+        max_record_preserve_time % 24 === 0
+          ? `${t("chart.days", {
+              count: Math.floor(max_record_preserve_time / 24),
+            })}`
+          : `${t("chart.hours", { count: max_record_preserve_time })}`;
       avaliableView.push({
-        label: `${t("chart.hours", {
-          count: max_record_preserve_time,
-        })}`,
+        label: dynamicLabel,
         hours: max_record_preserve_time,
       });
     }
