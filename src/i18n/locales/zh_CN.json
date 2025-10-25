@@ -557,6 +557,10 @@
         "endpoint": "请求端点",
         "endpoint_help": "Telegram Bot API 的请求端点，通常为 `https://api.telegram.org/bot`"
       },
+      "Javascript": {
+        "script": "JavaScript 代码",
+        "script_help": "实现 sendMessage(message, title) 及可选的 sendEvent(event) 函数的 JavaScript 代码（部分支持 ES6）。两者均应返回 Promise 或布尔值。可用 API：fetch()、xhr()、console.log()。指南: https://komari-document.pages.dev/faq/notification-template.html"
+      },
       "telegram_bot_token": "Telegram 机器人令牌",
       "telegram_chat_id_error": "Chat ID 不可为空",
       "telegram_description": "配置您的 Telegram 机器人以在聊天中直接接收提醒。",

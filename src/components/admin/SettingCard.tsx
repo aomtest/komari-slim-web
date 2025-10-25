@@ -402,6 +402,7 @@ export function SettingCardLongTextInput({
   label = useTranslation().t("save"),
   defaultValue = "",
   OnSave = () => { },
+  onChange,
   autoDisabled = true,
   isSaving,
   bordless = false,
@@ -416,6 +417,7 @@ export function SettingCardLongTextInput({
     textAreaElement: HTMLTextAreaElement,
     buttonElement: HTMLButtonElement
   ) => void;
+  onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   autoDisabled?: boolean;
   isSaving?: boolean;
   bordless?: boolean;
@@ -445,6 +447,8 @@ export function SettingCardLongTextInput({
 
   const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setValue(e.target.value);
+    // 调用外部传入的 onChange 回调
+    onChange?.(e);
   };
 
   return (

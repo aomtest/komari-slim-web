@@ -152,6 +152,9 @@ export const renderProviderInputs = ({
                     description={fieldDescription}
                     defaultValue={String(fieldValue)}
                     showSaveButton={false}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                        updateLocalValue(f.name, e.target.value);
+                    }}
                     OnSave={(value: string) => {
                         updateLocalValue(f.name, value);
                     }}
