@@ -405,6 +405,7 @@ export function SettingCardLongTextInput({
   autoDisabled = true,
   isSaving,
   bordless = false,
+  showSaveButton = true,
 }: {
   title?: string;
   description?: string;
@@ -418,6 +419,7 @@ export function SettingCardLongTextInput({
   autoDisabled?: boolean;
   isSaving?: boolean;
   bordless?: boolean;
+  showSaveButton?: boolean;
 }) {
   const [disabled, setDisabled] = React.useState(false);
   const savingState = isSaving !== undefined ? isSaving : disabled;
@@ -456,14 +458,16 @@ export function SettingCardLongTextInput({
           onChange={handleTextAreaChange}
           ref={textAreaRef}
         />
-        <Button
-          ref={buttonRef}
-          onClick={handleSave}
-          variant="solid"
-          disabled={savingState}
-        >
-          {label}
-        </Button>
+        {showSaveButton && (
+          <Button
+            ref={buttonRef}
+            onClick={handleSave}
+            variant="solid"
+            disabled={savingState}
+          >
+            {label}
+          </Button>
+        )}
       </Flex>
     </SettingCard>
   );
