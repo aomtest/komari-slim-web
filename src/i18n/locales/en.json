@@ -536,6 +536,10 @@
       },
       "enable": "Enable Notifications",
       "enable_description": "Enable to get updates via your preferred method.",
+      "Javascript": {
+        "script": "JavaScript code",
+        "script_help": "JavaScript code that implements the sendMessage(message, title) and optional sendEvent(event) functions (partially supports ES6). Both should return a Promise or a boolean value. Available APIs: fetch(), xhr(), console.log(). Guide: https://komari-document.pages.dev/faq/notification-template.html"
+      },
       "method": "Delivery Method",
       "method_description": "Pick your preferred platform for alerts.",
       "moved": "Looking for expired notifications? Moved to notification-general",

@@ -536,6 +536,10 @@
       },
       "enable": "Aktifkan Notifikasi",
       "enable_description": "Aktifkan untuk mendapatkan pembaruan melalui metode pilihan Anda.",
+      "Javascript": {
+        "script": "Kode JavaScript",
+        "script_help": "Kode JavaScript yang mengimplementasikan fungsi sendMessage(message, title) dan sendEvent(event) yang bersifat opsional (dukungan sebagian untuk ES6). Keduanya harus mengembalikan Promise atau nilai boolean. API yang tersedia: fetch(), xhr(), console.log(). Panduan: https://komari-document.pages.dev/faq/notification-template.html"
+      },
       "method": "Metode Pengiriman",
       "method_description": "Pilih platform favorit Anda untuk peringatan.",
       "moved": "Mencari notifikasi kedaluwarsa? Pindah ke notification-general",

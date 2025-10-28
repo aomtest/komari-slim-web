@@ -536,6 +536,10 @@
       },
       "enable": "開啟通知",
       "enable_description": "通過首選方式獲取及時通知。",
+      "Javascript": {
+        "script": "JavaScript 代碼",
+        "script_help": "實現 sendMessage(message, title) 及可選的 sendEvent(event) 函數的 JavaScript 代碼（部分支持 ES6）。兩者均應返回 Promise 或布爾值。可用 API：fetch()、xhr()、console.log()。指南: https://komari-document.pages.dev/faq/notification-template.html"
+      },
       "method": "通知渠道",
       "method_description": "選擇您偏好的通知平台",
       "moved": "正在尋找過期通知？已經遷移到通知-通用",
