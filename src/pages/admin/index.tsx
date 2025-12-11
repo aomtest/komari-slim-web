@@ -653,7 +653,7 @@ function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings:
     let finalCommand = "";
     switch (selectedPlatform) {
       case "linux":
-        finalCommand = `bash <(curl -sL ${scriptUrl}) ` + args.join(" ");
+        finalCommand = `wget -qO- ${scriptUrl} | sudo bash -s -- ` + args.join(" ");
         break;
       case "windows":
         finalCommand =
