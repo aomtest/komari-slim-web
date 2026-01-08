@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
   const buildTime = new Date().toISOString();
 
   // Supports configuring BASE_URL via environment variables, defaulting to the root path.
-  const base = process.env.VITE_BASE_URL || '/';
+  const base: string = process.env.VITE_BASE_URL ? process.env.VITE_BASE_URL : '/';
   const baseConfig: UserConfig = {
     base: base,
     plugins: [
