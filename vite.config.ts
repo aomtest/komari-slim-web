@@ -14,7 +14,10 @@ import dotenv from "dotenv";
 export default defineConfig(({ mode }) => {
   const buildTime = new Date().toISOString();
 
+  // Supports configuring BASE_URL via environment variables, defaulting to the root path.
+  const base: string = process.env.VITE_BASE_URL ? process.env.VITE_BASE_URL : '/';
   const baseConfig: UserConfig = {
+    base: base,
     plugins: [
       react(),
       tailwindcss(),
@@ -32,17 +35,17 @@ export default defineConfig(({ mode }) => {
           theme_color: "#2563eb",
           background_color: "#ffffff",
           display: "standalone",
-          scope: "/",
-          start_url: "/",
+          scope: base,
+          start_url: base,
           icons: [
             {
-              src: "/assets/pwa-icon.png",
+              src: "${base}assets/pwa-icon.png",
               sizes: "192x192",
               type: "image/png",
               purpose: "maskable any",
             },
             {
-              src: "/assets/pwa-icon.png",
+              src: "${base}assets/pwa-icon.png",
               sizes: "512x512",
               type: "image/png",
               purpose: "maskable any",
