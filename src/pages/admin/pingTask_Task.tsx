@@ -46,7 +46,11 @@ export const TaskView = ({ pingTasks }: { pingTasks: PingTask[] }) => {
           __originalCount: original.length,
         };
       })
-      .sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
+      .sort((a, b) => {
+        const aKey = (a as any).name ?? String(a.id ?? 0);
+        const bKey = (b as any).name ?? String(b.id ?? 0);
+        return aKey.localeCompare(bKey, undefined, { sensitivity: "base", numeric: true });
+});
   }, [pingTasks, nodeDetail]);
 
   return (
