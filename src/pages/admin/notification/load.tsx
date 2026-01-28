@@ -8,7 +8,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { LoadAlertProvider, useLoadAlert, type LoadAlert } from "@/contexts/LoadAlertContext";
+import {
+  LoadAlertProvider,
+  useLoadAlert,
+  type LoadAlert,
+} from "@/contexts/LoadAlertContext";
 import {
   NodeDetailsProvider,
   useNodeDetails,
@@ -51,7 +55,9 @@ const InnerLayout = () => {
   return (
     <Flex direction="column" gap="4" className="p-4">
       <div className="flex justify-between items-center">
-        <label className="text-2xl font-bold">{t("notification.load.title")}</label>
+        <label className="text-2xl font-bold">
+          {t("notification.load.title")}
+        </label>
         <AddButton />
       </div>
 
@@ -203,7 +209,9 @@ const Row = ({ alert }: { alert: LoadAlert }) => {
       <TableCell>{alert.metric?.toUpperCase()}</TableCell>
       <TableCell>{alert.threshold}%</TableCell>
       <TableCell>{alert.ratio}</TableCell>
-      <TableCell>{alert.interval} {t("time.minute")}</TableCell>
+      <TableCell>
+        {alert.interval} {t("time.minute")}
+      </TableCell>
       <TableCell className="flex items-center gap-2">
         {/* 编辑按钮 */}
         <Dialog.Root open={editOpen} onOpenChange={setEditOpen}>
@@ -401,7 +409,9 @@ const AddButton: React.FC = () => {
             <Select.Root
               value={selectedType}
               onValueChange={(value) =>
-                setSelectedType(value as "cpu" | "ram" | "disk" | "net_in" | "net_out")
+                setSelectedType(
+                  value as "cpu" | "ram" | "disk" | "net_in" | "net_out",
+                )
               }
             >
               <Select.Trigger id="type" name="type" />
@@ -409,11 +419,11 @@ const AddButton: React.FC = () => {
                 <Select.Item value="cpu">CPU</Select.Item>
                 <Select.Item value="ram">RAM</Select.Item>
                 <Select.Item value="disk">Disk</Select.Item>
-                <Select.Item value="net_in">Net In</Select.Item>
-                <Select.Item value="net_out">Net Out</Select.Item>
+                <Select.Item value="net_in">Net In(Mbps)</Select.Item>
+                <Select.Item value="net_out">Net Out(Mbps)</Select.Item>
               </Select.Content>
             </Select.Root>
-            <label htmlFor="threshold">{t("common.threshold")} (%)</label>
+            <label htmlFor="threshold">{t("common.threshold")} (%/Mbps)</label>
             <TextField.Root
               id="threshold"
               name="threshold"
@@ -462,6 +472,5 @@ const AddButton: React.FC = () => {
     </Dialog.Root>
   );
 };
-
 
 export default LoadPage;
