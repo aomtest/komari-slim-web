@@ -10,9 +10,48 @@ import { toast } from "sonner";
 import Loading from "@/components/loading";
 import { useTranslation } from "react-i18next";
 
+type I18nText = string | Record<string, string>;
+
+function resolveI18nText(
+  text: I18nText | undefined,
+  language: string,
+): string | undefined {
+  if (text === undefined || text === null) return undefined;
+  if (typeof text === "string") return text;
+
+  const dict = text;
+  const lang = (language || "").trim();
+  if (!lang) {
+    const first = Object.values(dict)[0];
+    return first;
+  }
+
+  // Try exact match first (e.g. zh-CN)
+  if (dict[lang] !== undefined) return dict[lang];
+
+  // Try base language (e.g. zh)
+  const base = lang.split(/[-_]/)[0];
+  if (base && dict[base] !== undefined) return dict[base];
+
+  // Case-insensitive fallback
+  const lowerLang = lang.toLowerCase();
+  for (const [k, v] of Object.entries(dict)) {
+    if (k.toLowerCase() === lowerLang) return v;
+  }
+  if (base) {
+    const lowerBase = base.toLowerCase();
+    for (const [k, v] of Object.entries(dict)) {
+      if (k.toLowerCase() === lowerBase) return v;
+    }
+  }
+
+  // Last resort: first value
+  return Object.values(dict)[0];
+}
+
 interface ThemeFieldBase {
-  name?: string; // 显示名
-  help?: string; // 帮助文本
+  name?: I18nText; // 显示名（字符串或多语言字典）
+  help?: I18nText; // 帮助文本（字符串或多语言字典）
   type: "title" | "switch" | "select" | "number" | "string";
   key?: string; // 对应设置键（title 无需）
   default?: any; // 默认值
@@ -31,7 +70,12 @@ const ThemeManaged: React.FC = () => {
   const { publicInfo, refresh } = usePublicInfo();
   const theme = publicInfo?.theme;
   const themeSettings = publicInfo?.theme_settings || {}; // 当前值
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  const currentLanguage =
+    i18n.resolvedLanguage ||
+    i18n.language ||
+    (typeof navigator !== "undefined" ? navigator.language : "");
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -167,19 +211,21 @@ const ThemeManaged: React.FC = () => {
           if (f.type === "title") {
             return (
               <Heading key={idx} size="3" className="mt-4">
-                {f.name || "标题"}
+                {resolveI18nText(f.name, currentLanguage) || "标题"}
               </Heading>
             );
           }
           if (!f.key) return null;
           const val = values[f.key];
+          const title = resolveI18nText(f.name, currentLanguage);
+          const description = resolveI18nText(f.help, currentLanguage);
           switch (f.type) {
             case "switch":
               return (
                 <SettingCardSwitch
                   key={f.key}
-                  title={f.name}
-                  description={f.help}
+                  title={title}
+                  description={description}
                   defaultChecked={!!val}
                   onChange={(checked) => handleValueChange(f.key!, checked)}
                 />
@@ -193,8 +239,8 @@ const ThemeManaged: React.FC = () => {
               return (
                 <SettingCardSelect
                   key={f.key}
-                  title={f.name}
-                  description={f.help}
+                  title={title}
+                  description={description}
                   value={val}
                   options={opts}
                   OnSave={(v) => handleValueChange(f.key!, v)}
@@ -206,8 +252,8 @@ const ThemeManaged: React.FC = () => {
               return (
                 <SettingCardShortTextInput
                   key={f.key}
-                  title={f.name}
-                  description={f.help}
+                  title={title}
+                  description={description}
                   type="number"
                   showSaveButton={false}
                   value={val !== undefined ? String(val) : ""}
@@ -226,8 +272,8 @@ const ThemeManaged: React.FC = () => {
               return (
                 <SettingCardShortTextInput
                   key={f.key}
-                  title={f.name}
-                  description={f.help}
+                  title={title}
+                  description={description}
                   value={val !== undefined ? String(val) : ""}
                   required={f.required}
                   showSaveButton={false}
