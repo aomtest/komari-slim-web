@@ -1,5 +1,12 @@
 import { Cross1Icon, ExitIcon } from "@radix-ui/react-icons";
-import { Button, Callout, Flex, Grid, IconButton, Text } from "@radix-ui/themes";
+import {
+  Button,
+  Callout,
+  Flex,
+  Grid,
+  IconButton,
+  Text,
+} from "@radix-ui/themes";
 import { AnimatePresence, motion } from "framer-motion"; // 引入 Framer Motion
 import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -62,7 +69,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
     prerelease?: boolean;
   }
   const [latestRelease, setLatestRelease] = useState<GithubReleaseInfo | null>(
-    null
+    null,
   );
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [releasesSince, setReleasesSince] = useState<GithubReleaseInfo[]>([]);
@@ -76,7 +83,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
     let ignore = false;
     async function loadThemeMenu() {
       // 仅当 theme 存在且不等于 default 时扩展
-      if (!currentTheme || currentTheme === "default") {
+      if (!currentTheme) {
         setExtraMenuItems([]);
         return;
       }
@@ -93,7 +100,11 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
           setExtraMenuItems([]);
           return;
         }
-        const rawLabel: string = cfg.name || `${currentTheme}设置`;
+        const rawLabel: string =
+          cfg.name ||
+          t("theme.manage_with_name", {
+            name: currentTheme === "default" ? "" : currentTheme,
+          });
         const icon: string = cfg.icon || "Palette"; // fallback icon
         const item: ExtendedMenuItem = {
           labelKey: rawLabel,
@@ -117,11 +128,10 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
       try {
         //const response = await fetch("/api/version");
         const data = await call("common:getVersion");
-          setVersionInfo({
-            hash: data.hash?.slice(0, 7),
-            version: data.version,
-          });
-        
+        setVersionInfo({
+          hash: data.hash?.slice(0, 7),
+          version: data.version,
+        });
       } catch (error) {
         console.error("Failed to fetch version info:", error);
       }
@@ -165,14 +175,16 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
               Accept: "application/vnd.github+json",
             },
             cache: "no-cache",
-          }
+          },
         );
         if (!resp.ok) throw new Error(`GitHub HTTP ${resp.status}`);
         const data: GithubReleaseInfo[] = await resp.json();
         if (ignore) return;
         const valid = (data || [])
-          .filter(r => !r.draft && !r.prerelease)
-          .filter(r => isNewerVersion(r?.tag_name || r?.name, currentVersion));
+          .filter((r) => !r.draft && !r.prerelease)
+          .filter((r) =>
+            isNewerVersion(r?.tag_name || r?.name, currentVersion),
+          );
         setReleasesSince(valid);
         setLatestRelease(valid.length ? valid[0] : null);
         setUpdateAvailable(valid.length > 0);
@@ -202,16 +214,13 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
   // 根据路径自动展开子菜单（包含动态扩展项）
   useEffect(() => {
     const newState: { [key: string]: boolean } = {};
-    const combined: ExtendedMenuItem[] = [
-      ...baseMenuItems,
-      ...extraMenuItems,
-    ];
+    const combined: ExtendedMenuItem[] = [...baseMenuItems, ...extraMenuItems];
     combined.forEach((item) => {
       if (item.children) {
         newState[item.path] = item.children.some(
           (child: MenuItem) =>
             location.pathname === child.path ||
-            location.pathname.startsWith(child.path)
+            location.pathname.startsWith(child.path),
         );
       }
     });
@@ -305,9 +314,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                 <Tips
                   mode="dialog"
                   className="check-update"
-                  trigger={
-                    <CircleFadingArrowUp color="#FB4141" size="16" />
-                  }
+                  trigger={<CircleFadingArrowUp color="#FB4141" size="16" />}
                 >
                   <div className="flex flex-col gap-2 max-w-[80vw] md:max-w-[720px]">
                     <label className="font-bold">
@@ -317,17 +324,13 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                       <span style={{ marginRight: 8 }}>
                         {(publicInfo as any)?.version || versionInfo?.version}
                       </span>
-                      <span>
-                        {"> "}
-                      </span>
+                      <span>{"> "}</span>
                       <span>
                         {(latestRelease?.tag_name || latestRelease?.name) ?? ""}
                       </span>
                     </div>
 
-                    <div
-                      className="rounded-md p-2 overflow-auto max-h-80"
-                    >
+                    <div className="rounded-md p-2 overflow-auto max-h-80">
                       <div className="flex flex-col gap-4 text-sm">
                         {releasesSince.map((r) => (
                           <div key={r.html_url} className="flex flex-col gap-2">
@@ -344,22 +347,36 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                             <div className="whitespace-pre-wrap break-words">
                               {r.body || ""}
                             </div>
-                            <div style={{ height: 1, background: "var(--accent-5)", opacity: 0.5 }} />
+                            <div
+                              style={{
+                                height: 1,
+                                background: "var(--accent-5)",
+                                opacity: 0.5,
+                              }}
+                            />
                           </div>
                         ))}
                       </div>
                     </div>
                     <div className="flex justify-end">
-                      <a href={latestRelease?.html_url} target="_blank" rel="noopener noreferrer">
+                      <a
+                        href={latestRelease?.html_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         <Button variant="soft">Github</Button>
                       </a>
                     </div>
                   </div>
                 </Tips>
               )}
-              <label className="text-sm text-muted-foreground self-end overflow-hidden" hidden={isMobile}>
+              <label
+                className="text-sm text-muted-foreground self-end overflow-hidden"
+                hidden={isMobile}
+              >
                 {(publicInfo as any)?.version ||
-                  (versionInfo && `${versionInfo.version} (${versionInfo.hash})`)}
+                  (versionInfo &&
+                    `${versionInfo.version} (${versionInfo.hash})`)}
               </label>
             </Flex>
             <Flex gap="3" align="center" overflowX="auto">
@@ -424,168 +441,172 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                 className="h-full md:mt-0 mt-6"
                 style={{ width: "100%" }}
               >
-                {[...baseMenuItems, ...extraMenuItems].map((item: ExtendedMenuItem) => {
-                  // 支持 icon 为 URL/相对路径
-                  const isOpen = openSubMenus[item.path];
-                  const renderIcon = (
-                    icon: string,
-                    labelKey: string,
-                    className?: string,
-                    active?: boolean
-                  ) => {
-                    const link = /^(https?:\/\/|\/|\.\/|\.\.\/)/.test(icon);
-                    if (link) {
+                {[...baseMenuItems, ...extraMenuItems].map(
+                  (item: ExtendedMenuItem) => {
+                    // 支持 icon 为 URL/相对路径
+                    const isOpen = openSubMenus[item.path];
+                    const renderIcon = (
+                      icon: string,
+                      labelKey: string,
+                      className?: string,
+                      active?: boolean,
+                    ) => {
+                      const link = /^(https?:\/\/|\/|\.\/|\.\.\/)/.test(icon);
+                      if (link) {
+                        return (
+                          <img
+                            src={icon}
+                            alt={t(labelKey)}
+                            style={{
+                              width: 16,
+                              height: 16,
+                              objectFit: "contain",
+                              opacity: active ? 1 : 0.7,
+                              filter: active ? "none" : "grayscale(20%)",
+                            }}
+                            className={className}
+                            loading="lazy"
+                          />
+                        );
+                      }
+                      const Cmp = iconMap[icon];
+                      if (Cmp) {
+                        return (
+                          <Cmp
+                            className={className}
+                            style={{
+                              color: active
+                                ? "var(--accent-10)"
+                                : "var(--gray11)",
+                            }}
+                          />
+                        );
+                      }
+                      // fallback: simple dot
                       return (
-                        <img
-                          src={icon}
-                          alt={t(labelKey)}
+                        <span
+                          className={className}
                           style={{
                             width: 16,
                             height: 16,
-                            objectFit: "contain",
-                            opacity: active ? 1 : 0.7,
-                            filter: active ? "none" : "grayscale(20%)",
+                            display: "inline-block",
+                            borderRadius: 4,
+                            background: "var(--accent-8)",
                           }}
-                          className={className}
-                          loading="lazy"
                         />
                       );
-                    }
-                    const Cmp = iconMap[icon];
-                    if (Cmp) {
+                    };
+                    if (item.children && item.children.length) {
                       return (
-                        <Cmp
-                          className={className}
-                          style={{
-                            color: active
-                              ? "var(--accent-10)"
-                              : "var(--gray11)",
-                          }}
-                        />
-                      );
-                    }
-                    // fallback: simple dot
-                    return (
-                      <span
-                        className={className}
-                        style={{
-                          width: 16,
-                          height: 16,
-                          display: "inline-block",
-                          borderRadius: 4,
-                          background: "var(--accent-8)",
-                        }}
-                      />
-                    );
-                  };
-                  if (item.children && item.children.length) {
-                    return (
-                      <div key={item.path}>
-                        
-                        <Flex
-                          className="p-2 gap-2 border-l-[4px] border-transparent cursor-pointer hover:bg-accent-3 rounded-md"
-                          align="center"
-                          onClick={() => {
-                            //const currentlyOpen = openSubMenus[item.path];
-                            // 检查当前路径是否已经在该父菜单的子菜单中
-                            //const isCurrentlyInThisMenu = item.children?.some(
-                            //  (child) =>
-                            //    location.pathname === child.path ||
-                            //    location.pathname.startsWith(child.path)
-                            //);
+                        <div key={item.path}>
+                          <Flex
+                            className="p-2 gap-2 border-l-[4px] border-transparent cursor-pointer hover:bg-accent-3 rounded-md"
+                            align="center"
+                            onClick={() => {
+                              //const currentlyOpen = openSubMenus[item.path];
+                              // 检查当前路径是否已经在该父菜单的子菜单中
+                              //const isCurrentlyInThisMenu = item.children?.some(
+                              //  (child) =>
+                              //    location.pathname === child.path ||
+                              //    location.pathname.startsWith(child.path)
+                              //);
 
-                            // 切换子菜单的展开状态
-                            setOpenSubMenus((prev) => ({
-                              ...prev,
-                              [item.path]: !prev[item.path],
-                            }));
+                              // 切换子菜单的展开状态
+                              setOpenSubMenus((prev) => ({
+                                ...prev,
+                                [item.path]: !prev[item.path],
+                              }));
 
-                            //// 只有在非展开状态且不在当前菜单组中时才导航到第一个子菜单项
-                            //if (
-                            //  !currentlyOpen &&
-                            //  !isCurrentlyInThisMenu &&
-                            //  item.children &&
-                            //  item.children.length > 0
-                            //) {
-                            //  //navigate(item.children[0].path);
-                            //  // 如果是移动端，关闭侧边栏
-                            //  if (isMobile) {
-                            //    setSidebarOpen(false);
-                            //  }
-                            //}
-                          }}
-                        >
-                          {renderIcon(
-                            item.icon,
-                            item.labelKey,
-                            "flex w-4 h-5 items-center justify-center"
-                          )}
-                          <Text
-                            className="text-base"
-                            weight="medium"
-                            style={{
-                              flex: 1,
+                              //// 只有在非展开状态且不在当前菜单组中时才导航到第一个子菜单项
+                              //if (
+                              //  !currentlyOpen &&
+                              //  !isCurrentlyInThisMenu &&
+                              //  item.children &&
+                              //  item.children.length > 0
+                              //) {
+                              //  //navigate(item.children[0].path);
+                              //  // 如果是移动端，关闭侧边栏
+                              //  if (isMobile) {
+                              //    setSidebarOpen(false);
+                              //  }
+                              //}
                             }}
                           >
-                            {item.rawLabel || t(item.labelKey)}
-                          </Text>
+                            {renderIcon(
+                              item.icon,
+                              item.labelKey,
+                              "flex w-4 h-5 items-center justify-center",
+                            )}
+                            <Text
+                              className="text-base"
+                              weight="medium"
+                              style={{
+                                flex: 1,
+                              }}
+                            >
+                              {item.rawLabel || t(item.labelKey)}
+                            </Text>
 
-                          <ChevronDownIcon
-                            style={{
-                              transform: isOpen
-                                ? "rotate(180deg)"
-                                : "rotate(0deg)",
-                              transition: "transform 0.2s",
-                            }}
-                          />
-                        </Flex>
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={
-                            isOpen
-                              ? { height: "auto", opacity: 1 }
-                              : { height: 0, opacity: 0 }
-                          }
-                          transition={{ duration: 0.2 }}
-                          style={{ overflow: "hidden" }}
-                        >
-                          <Flex direction="column" className="ml-4 gap-1">
-                            {item.children.map((child: MenuItem) => (
-                              <SidebarItem
-                                key={child.path}
-                                to={child.path}
-                                icon={renderIcon(
-                                  child.icon,
-                                  child.labelKey,
-                                  "flex w-4 h-5 items-center justify-center"
-                                )}
-                                children={(child as ExtendedMenuItem).rawLabel || t(child.labelKey)}
-                                onClick={() =>
-                                  isMobile && setSidebarOpen(false)
-                                }
-                                newTab={child.newTab}
-                              />
-                            ))}
+                            <ChevronDownIcon
+                              style={{
+                                transform: isOpen
+                                  ? "rotate(180deg)"
+                                  : "rotate(0deg)",
+                                transition: "transform 0.2s",
+                              }}
+                            />
                           </Flex>
-                        </motion.div>
-                      </div>
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={
+                              isOpen
+                                ? { height: "auto", opacity: 1 }
+                                : { height: 0, opacity: 0 }
+                            }
+                            transition={{ duration: 0.2 }}
+                            style={{ overflow: "hidden" }}
+                          >
+                            <Flex direction="column" className="ml-4 gap-1">
+                              {item.children.map((child: MenuItem) => (
+                                <SidebarItem
+                                  key={child.path}
+                                  to={child.path}
+                                  icon={renderIcon(
+                                    child.icon,
+                                    child.labelKey,
+                                    "flex w-4 h-5 items-center justify-center",
+                                  )}
+                                  children={
+                                    (child as ExtendedMenuItem).rawLabel ||
+                                    t(child.labelKey)
+                                  }
+                                  onClick={() =>
+                                    isMobile && setSidebarOpen(false)
+                                  }
+                                  newTab={child.newTab}
+                                />
+                              ))}
+                            </Flex>
+                          </motion.div>
+                        </div>
+                      );
+                    }
+                    return (
+                      <SidebarItem
+                        key={item.path}
+                        to={item.path}
+                        icon={renderIcon(
+                          item.icon,
+                          item.labelKey,
+                          "flex w-4 h-5 items-center justify-center",
+                        )}
+                        children={item.rawLabel || t(item.labelKey)}
+                        onClick={() => isMobile && setSidebarOpen(false)}
+                        newTab={item.newTab}
+                      />
                     );
-                  }
-                  return (
-                    <SidebarItem
-                      key={item.path}
-                      to={item.path}
-                      icon={renderIcon(
-                        item.icon,
-                        item.labelKey,
-                        "flex w-4 h-5 items-center justify-center"
-                      )}
-                      children={item.rawLabel || t(item.labelKey)}
-                      onClick={() => isMobile && setSidebarOpen(false)}
-                      newTab={item.newTab}
-                    />
-                  );
-                })}
+                  },
+                )}
               </Flex>
             </Flex>
           </motion.div>
@@ -693,11 +714,7 @@ const SidebarItem = ({
           >
             {icon}
           </span>
-          <Text
-            className="text-base"
-            weight="medium"
-            style={{ flex: 1 }}
-          >
+          <Text className="text-base" weight="medium" style={{ flex: 1 }}>
             {children}
           </Text>
         </Flex>

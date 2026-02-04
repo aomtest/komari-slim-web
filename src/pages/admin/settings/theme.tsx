@@ -71,19 +71,27 @@ const ThemePage = () => {
     let cancelled = false;
     async function check() {
       const themeShort = currentTheme || publicInfo?.theme;
-      if (!themeShort || themeShort === "default") {
+      if (!themeShort) {
         setActiveThemeHasConfig(false);
         return;
       }
       try {
         // 强制不缓存
-        const resp = await fetch(`/themes/${themeShort}/komari-theme.json`, { cache: "no-cache" });
+        const resp = await fetch(`/themes/${themeShort}/komari-theme.json`, {
+          cache: "no-cache",
+        });
         if (!resp.ok) {
           setActiveThemeHasConfig(false);
           return;
         }
         const data = await resp.json().catch(() => null);
-        if (!cancelled && data && data.configuration && Array.isArray(data.configuration.data) && data.configuration.data.length > 0) {
+        if (
+          !cancelled &&
+          data &&
+          data.configuration &&
+          Array.isArray(data.configuration.data) &&
+          data.configuration.data.length > 0
+        ) {
           setActiveThemeHasConfig(true);
         } else if (!cancelled) {
           setActiveThemeHasConfig(false);
@@ -93,7 +101,9 @@ const ThemePage = () => {
       }
     }
     check();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [currentTheme, publicInfo?.theme]);
 
   const loading = themesLoading || settingsLoading || !currentTheme;
@@ -106,24 +116,6 @@ const ThemePage = () => {
       }
       const data = await response.json();
       const themeList = data.data || [];
-
-      // 确保始终有默认主题
-      let hasDefaultTheme = themeList.some(
-        (theme: Theme) => theme.short === "default"
-      );
-      if (!hasDefaultTheme) {
-        themeList.unshift({
-          id: "default",
-          name: t("theme.default_theme"),
-          short: "default",
-          description: t("theme.default_description"),
-          author: "Akizon77",
-          version: "1.0.0",
-          preview: "/assets/edit_117847723_p0.png",
-          active: currentTheme === "default",
-          createdAt: new Date().toISOString(),
-        });
-      }
 
       // 根据 settings 中的 theme 设置活跃状态
       const updatedThemes = themeList.map((theme: Theme) => ({
@@ -193,7 +185,7 @@ const ThemePage = () => {
             toast.error(
               t("theme.upload_failed") +
                 ": " +
-                (err instanceof Error ? err.message : "Unknown error")
+                (err instanceof Error ? err.message : "Unknown error"),
             );
             reject(err);
           }
@@ -252,7 +244,7 @@ const ThemePage = () => {
         prevThemes.map((theme) => ({
           ...theme,
           active: theme.short === themeShort,
-        }))
+        })),
       );
 
       const theme = themes.find((t) => t.short === themeShort);
@@ -266,7 +258,7 @@ const ThemePage = () => {
       toast.error(
         t("theme.set_failed") +
           ": " +
-          (err instanceof Error ? err.message : "Unknown error")
+          (err instanceof Error ? err.message : "Unknown error"),
       );
     } finally {
       setSettingTheme(null);
@@ -303,7 +295,7 @@ const ThemePage = () => {
       toast.error(
         t("theme.update_failed") +
           ": " +
-          (err instanceof Error ? err.message : "Unknown error")
+          (err instanceof Error ? err.message : "Unknown error"),
       );
     } finally {
       setUpdating(false);
@@ -342,7 +334,7 @@ const ThemePage = () => {
       toast.error(
         t("theme.delete_failed") +
           ": " +
-          (err instanceof Error ? err.message : "Unknown error")
+          (err instanceof Error ? err.message : "Unknown error"),
       );
     }
   };
@@ -358,7 +350,7 @@ const ThemePage = () => {
         prevThemes.map((theme) => ({
           ...theme,
           active: theme.short === currentTheme,
-        }))
+        })),
       );
     }
   }, [currentTheme, settingsLoading, themes.length]);
@@ -422,17 +414,13 @@ const ThemePage = () => {
               >
                 {theme.preview ? (
                   <img
-                    src={
-                      theme.short === "default"
-                        ? "/assets/edit_117847723_p0.png"
-                        : `/themes/${theme.short}/${theme.preview}`
-                    }
+                    src={`/themes/${theme.short}/${theme.preview}`}
                     alt={theme.name}
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       e.currentTarget.style.display = "none";
                       e.currentTarget.nextElementSibling?.classList.remove(
-                        "hidden"
+                        "hidden",
                       );
                     }}
                   />
@@ -440,9 +428,7 @@ const ThemePage = () => {
                 <Flex
                   align="center"
                   justify="center"
-                  className={`w-full h-full ${
-                    theme.preview && theme.short !== "default" ? "hidden" : ""
-                  }`}
+                  className={`w-full h-full ${theme.preview ? "hidden" : ""}`}
                 >
                   <ImageIcon size={48} className="text-gray-400" />
                 </Flex>
@@ -531,15 +517,9 @@ const ThemePage = () => {
 
           <Box className="space-y-4 mt-4">
             <Box className="aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden relative">
-              {selectedTheme?.preview && selectedTheme.short !== "default" ? (
+              {selectedTheme?.preview ? (
                 <img
                   src={`/themes/${selectedTheme.short}/${selectedTheme.preview}`}
-                  alt={selectedTheme.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : selectedTheme?.short === "default" ? (
-                <img
-                  src={`/assets/edit_117847723_p0.png`}
                   alt={selectedTheme.name}
                   className="w-full h-full object-cover"
                 />
@@ -601,7 +581,7 @@ const ThemePage = () => {
                 {t("theme.set_active")}
               </Button>
             )}
-            {selectedTheme && selectedTheme.short !== "default" && (
+            {selectedTheme && (
               <Button
                 variant="soft"
                 color="blue"
