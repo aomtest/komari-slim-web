@@ -581,7 +581,7 @@ const ThemePage = () => {
                 {t("theme.set_active")}
               </Button>
             )}
-            {selectedTheme && (
+            {selectedTheme && selectedTheme.short !== "default" && (
               <Button
                 variant="soft"
                 color="blue"
