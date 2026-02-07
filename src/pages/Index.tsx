@@ -16,7 +16,6 @@ import { useNodeList } from "@/contexts/NodeListContext";
 import Loading from "@/components/loading";
 import { Settings } from "lucide-react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { usePublicInfo } from "@/contexts/PublicInfoContext";
 
 // Intelligent speed formatting function
 const formatSpeed = (bytes: number): string => {
