@@ -4,12 +4,18 @@ import NavBar from "../components/NavBar";
 import { Outlet } from "react-router-dom";
 import { NodeListProvider } from "@/contexts/NodeListContext";
 import { usePublicInfo } from "@/contexts/PublicInfoContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const IndexLayout = () => {
   // 使用我们的LiveDataContext
   const InnerLayout = () => {
     const { publicInfo } = usePublicInfo();
-    const bgUrl = publicInfo?.theme_settings?.backgroundImageUrl;
+    const isMobile = useIsMobile();
+    const bgUrlDesktop = publicInfo?.theme_settings?.backgroundImageUrlDesktop;
+    const bgUrlMobile = publicInfo?.theme_settings?.backgroundImageUrlMobile;
+    const bgUrl = isMobile ? bgUrlMobile || bgUrlDesktop : bgUrlDesktop;
+    const mainContentWidth =
+      publicInfo?.theme_settings?.mainContentWidth ?? 100;
     return (
       <>
         <div
@@ -22,8 +28,15 @@ const IndexLayout = () => {
             backgroundImage: bgUrl ? `url(${bgUrl})` : "none",
           }}
         >
-          <NavBar />
-          <main className="main-content m-1 h-full">
+          <main
+            className="main-content m-1 h-full"
+            style={{
+              width: `${mainContentWidth}vw`,
+              marginLeft: "auto",
+              marginRight: "auto",
+            }}
+          >
+            <NavBar />
             <Outlet />
           </main>
           <Footer />
