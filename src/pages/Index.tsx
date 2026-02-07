@@ -16,6 +16,7 @@ import { useNodeList } from "@/contexts/NodeListContext";
 import Loading from "@/components/loading";
 import { Settings } from "lucide-react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { usePublicInfo } from "@/contexts/PublicInfoContext";
 
 // Intelligent speed formatting function
 const formatSpeed = (bytes: number): string => {
@@ -50,7 +51,7 @@ const Index = () => {
         regionOverview: true,
         trafficOverview: true,
         networkSpeed: true,
-      }
+      },
     );
 
     // Status cards configuration
@@ -74,12 +75,15 @@ const Index = () => {
         getValue: () =>
           nodeList
             ? Object.entries(
-                nodeList.reduce((acc, item) => {
-                  if (live_data?.data.online.includes(item.uuid)) {
-                    acc[item.region] = (acc[item.region] || 0) + 1;
-                  }
-                  return acc;
-                }, {} as Record<string, number>)
+                nodeList.reduce(
+                  (acc, item) => {
+                    if (live_data?.data.online.includes(item.uuid)) {
+                      acc[item.region] = (acc[item.region] || 0) + 1;
+                    }
+                    return acc;
+                  },
+                  {} as Record<string, number>,
+                ),
               ).length
             : 0,
         visible: statusCardsVisibility.regionOverview,
@@ -97,11 +101,11 @@ const Index = () => {
             .map(([, node]) => node);
           const up = values.reduce(
             (acc, node) => acc + (node.network.totalUp || 0),
-            0
+            0,
           );
           const down = values.reduce(
             (acc, node) => acc + (node.network.totalDown || 0),
-            0
+            0,
           );
           return `↑ ${formatBytes(up)} / ↓ ${formatBytes(down)}`;
         },
@@ -120,11 +124,11 @@ const Index = () => {
             .map(([, node]) => node);
           const up = values.reduce(
             (acc, node) => acc + (node.network.up || 0),
-            0
+            0,
           );
           const down = values.reduce(
             (acc, node) => acc + (node.network.down || 0),
-            0
+            0,
           );
           return `↑ ${formatSpeed(up)} / ↓ ${formatSpeed(down)}`;
         },
@@ -145,6 +149,7 @@ const Index = () => {
     if (error) {
       return <div>Error: {error}</div>;
     }
+
     //#endregion
 
     return (

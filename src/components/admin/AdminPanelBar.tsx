@@ -26,6 +26,7 @@ import { usePublicInfo } from "@/contexts/PublicInfoContext";
 import Tips from "../ui/tips";
 import { CircleFadingArrowUp } from "lucide-react";
 import { useRPC2Call } from "@/contexts/RPC2Context";
+import { resolveI18nText } from "@/utils/i18nText";
 
 // 将JSON配置转换为类型安全的菜单项数组 (基础静态菜单)
 const baseMenuItems = (menuConfig as { menu: MenuItem[] }).menu;
@@ -48,7 +49,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
   const { account } = useAccount();
   const isMobile = useIsMobile();
   const ishttps = window.location.protocol === "https:";
-  const [t] = useTranslation();
+  const [t, i18n] = useTranslation();
   const location = useLocation();
   const { publicInfo } = usePublicInfo();
   //const navigate = useNavigate();
@@ -57,7 +58,10 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
     hash: string;
     version: string;
   } | null>(null);
-
+  const currentLanguage =
+    i18n.resolvedLanguage ||
+    i18n.language ||
+    (typeof navigator !== "undefined" ? navigator.language : "");
   // GitHub 最新发布信息与更新检测
   interface GithubReleaseInfo {
     tag_name: string;
@@ -101,7 +105,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
           return;
         }
         const rawLabel: string =
-          cfg.name ||
+          resolveI18nText(cfg.name, currentLanguage) ??
           t("theme.manage_with_name", {
             name: currentTheme === "default" ? "" : currentTheme,
           });

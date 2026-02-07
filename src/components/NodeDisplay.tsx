@@ -15,6 +15,7 @@ import { NodeGrid } from "./Node";
 const NodeTable = React.lazy(() => import("./NodeTable"));
 import { isRegionMatch } from "@/utils/regionHelper";
 import "./NodeDisplay.css";
+import { usePublicInfo } from "@/contexts/PublicInfoContext";
 
 export type ViewMode = "grid" | "table";
 
@@ -27,12 +28,12 @@ const NodeDisplay: React.FC<NodeDisplayProps> = ({ nodes, liveData }) => {
   const [t] = useTranslation();
   const [viewMode, setViewMode] = useLocalStorage<ViewMode>(
     "nodeViewMode",
-    "grid"
+    "grid",
   );
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedGroup, setSelectedGroup] = useLocalStorage<string>(
     "nodeSelectedGroup",
-    "all"
+    "all",
   );
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -231,13 +232,13 @@ const NodeDisplay: React.FC<NodeDisplayProps> = ({ nodes, liveData }) => {
                   group: selectedGroup,
                   total: filteredNodes.length,
                   online: filteredNodes.filter((n) =>
-                    liveData?.online?.includes(n.uuid)
+                    liveData?.online?.includes(n.uuid),
                   ).length,
                   defaultValue: `${selectedGroup} 分组：共 ${
                     filteredNodes.length
                   } 个节点，${
                     filteredNodes.filter((n) =>
-                      liveData?.online?.includes(n.uuid)
+                      liveData?.online?.includes(n.uuid),
                     ).length
                   } 个在线`,
                 })}

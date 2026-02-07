@@ -29,7 +29,6 @@ export function formatUptime(seconds: number, t: TFunction): string {
   return parts.join(" ");
 }
 
-
 interface NodeProps {
   basic: NodeBasicInfo;
   live: Record | undefined;
@@ -38,6 +37,7 @@ interface NodeProps {
 const Node = ({ basic, live, online }: NodeProps) => {
   const [t] = useTranslation();
   const isMobile = useIsMobile();
+  const { publicInfo } = usePublicInfo();
   const defaultLive = {
     cpu: { usage: 0 },
     ram: { used: 0 },
@@ -73,7 +73,10 @@ const Node = ({ basic, live, online }: NodeProps) => {
         <Flex justify="between" align="center" my={isMobile ? "-1" : "0"}>
           <Flex justify="start" align="center" style={{ flex: 1, minWidth: 0 }}>
             <Flag flag={basic.region} />
-            <Link to={`/instance/${basic.uuid}`} style={{ flex: 1, minWidth: 0 }}>
+            <Link
+              to={`/instance/${basic.uuid}`}
+              style={{ flex: 1, minWidth: 0 }}
+            >
               <Flex direction="column" style={{ minWidth: 0 }}>
                 <Text
                   weight="bold"
@@ -101,8 +104,16 @@ const Node = ({ basic, live, online }: NodeProps) => {
                   expired_at={basic.expired_at}
                   currency={basic.currency}
                   tags={basic.tags}
-                  ip4={basic.ipv4}
-                  ip6={basic.ipv6}
+                  ip4={
+                    publicInfo?.theme_settings?.showIpTagsInCard
+                      ? basic.ipv4
+                      : undefined
+                  }
+                  ip6={
+                    publicInfo?.theme_settings?.showIpTagsInCard
+                      ? basic.ipv6
+                      : undefined
+                  }
                 />
               </Flex>
             </Link>
@@ -137,7 +148,9 @@ const Node = ({ basic, live, online }: NodeProps) => {
                 alt={basic.os}
                 className="w-5 h-5 mr-2"
               />
-              <Text size="2">{getOSName(basic.os)} / {basic.arch}</Text>
+              <Text size="2">
+                {getOSName(basic.os)} / {basic.arch}
+              </Text>
             </Flex>
           </Flex>
           <Flex className="md:flex-col flex-row md:gap-1 gap-4">
@@ -172,19 +185,23 @@ const Node = ({ basic, live, online }: NodeProps) => {
             <Flex justify="between" hidden={isMobile} direction="column">
               <UsageBar
                 label={t("nodeCard.totalTraffic")}
-                value={getTrafficPercentage(liveData.network.totalUp, liveData.network.totalDown, basic.traffic_limit, basic.traffic_limit_type ?? "sum")}
+                value={getTrafficPercentage(
+                  liveData.network.totalUp,
+                  liveData.network.totalDown,
+                  basic.traffic_limit,
+                  basic.traffic_limit_type ?? "sum",
+                )}
                 max={Infinity}
               />
               <Flex wrap="nowrap" justify="between">
-                <Text size="1"
-                  className="md:block hidden"
-                  color="gray">
+                <Text size="1" className="md:block hidden" color="gray">
                   ↑ {totalUpload} ↓ {totalDownload}
                 </Text>
-                <Text size="1"
-                  className="md:block hidden"
-                  color="gray">
-                  {basic.traffic_limit_type && basic.traffic_limit_type.charAt(0).toUpperCase() + basic.traffic_limit_type.slice(1)}({formatBytes(basic.traffic_limit)})
+                <Text size="1" className="md:block hidden" color="gray">
+                  {basic.traffic_limit_type &&
+                    basic.traffic_limit_type.charAt(0).toUpperCase() +
+                      basic.traffic_limit_type.slice(1)}
+                  ({formatBytes(basic.traffic_limit)})
                 </Text>
               </Flex>
             </Flex>
@@ -201,7 +218,7 @@ const Node = ({ basic, live, online }: NodeProps) => {
 
           <Flex justify="between" hidden={isMobile}>
             <Text size="2" color="gray" className="flex items-center">
-              {t("nodeCard.networkSpeed")} 
+              {t("nodeCard.networkSpeed")}
             </Text>
             <Text size="2">
               ↑ {uploadSpeed}/s ↓ {downloadSpeed}/s
@@ -223,7 +240,16 @@ const Node = ({ basic, live, online }: NodeProps) => {
             </Flex>
           </Flex>
           {basic.traffic_limit > 0 && isMobile && (
-            <UsageBar label={`${basic.traffic_limit_type && basic.traffic_limit_type.charAt(0).toUpperCase() + basic.traffic_limit_type.slice(1)}(${formatBytes(basic.traffic_limit)})`} max={Infinity} value={getTrafficPercentage(liveData.network.totalUp, liveData.network.totalDown, basic.traffic_limit, basic.traffic_limit_type ?? "sum")} />
+            <UsageBar
+              label={`${basic.traffic_limit_type && basic.traffic_limit_type.charAt(0).toUpperCase() + basic.traffic_limit_type.slice(1)}(${formatBytes(basic.traffic_limit)})`}
+              max={Infinity}
+              value={getTrafficPercentage(
+                liveData.network.totalUp,
+                liveData.network.totalDown,
+                basic.traffic_limit,
+                basic.traffic_limit_type ?? "sum",
+              )}
+            />
           )}
           <Flex justify="between" hidden={isMobile}>
             <Text size="2" color="gray">
@@ -267,21 +293,27 @@ import PriceTags from "./PriceTags";
 import { TrendingUp } from "lucide-react";
 import MiniPingChartFloat from "./MiniPingChartFloat";
 import { getOSImage, getOSName } from "@/utils";
+import { usePublicInfo } from "@/contexts/PublicInfoContext";
 export const NodeGrid = ({ nodes, liveData }: NodeGridProps) => {
+  const { publicInfo } = usePublicInfo();
+  const offlineServerPosition =
+    publicInfo?.theme_settings?.offlineServerPosition; // "First/Keep/Last"
   // 确保liveData是有效的
   const onlineNodes = liveData && liveData.online ? liveData.online : [];
 
-  // 排序节点：先按在线/离线状态排序，再按权重排序（权重大的靠前）
+  // 排序节点：先按权重排序，权重大的靠前，再根据用户设置排序
   const sortedNodes = [...nodes].sort((a, b) => {
-    const aOnline = onlineNodes.includes(a.uuid);
-    const bOnline = onlineNodes.includes(b.uuid);
+    const aIsOnline = onlineNodes.includes(a.uuid);
+    const bIsOnline = onlineNodes.includes(b.uuid);
 
-    // 如果一个在线一个离线，在线的排前面
-    if (aOnline !== bOnline) {
-      return aOnline ? -1 : 1;
+    if (offlineServerPosition === "First") {
+      if (!aIsOnline && bIsOnline) return -1;
+      if (aIsOnline && !bIsOnline) return 1;
+    } else if (offlineServerPosition === "Keep") {
+    } else {
+      if (aIsOnline && !bIsOnline) return -1;
+      if (!aIsOnline && bIsOnline) return 1;
     }
-
-    // 都是在线或都是离线的情况下，按权重升序排序（权重大的在后面）
     return a.weight - b.weight;
   });
 
@@ -314,19 +346,24 @@ export const NodeGrid = ({ nodes, liveData }: NodeGridProps) => {
   );
 };
 
-function getTrafficPercentage(totalUp: number, totalDown: number, limit: number, type: "max" | "min" | "sum" | "up" | "down") {
+function getTrafficPercentage(
+  totalUp: number,
+  totalDown: number,
+  limit: number,
+  type: "max" | "min" | "sum" | "up" | "down",
+) {
   if (limit === 0) return 0;
   switch (type) {
     case "max":
-      return Math.max(totalUp, totalDown) / limit * 100;
+      return (Math.max(totalUp, totalDown) / limit) * 100;
     case "min":
-      return Math.min(totalUp, totalDown) / limit * 100;
+      return (Math.min(totalUp, totalDown) / limit) * 100;
     case "sum":
-      return (totalUp + totalDown) / limit * 100;
+      return ((totalUp + totalDown) / limit) * 100;
     case "up":
-      return totalUp / limit * 100;
+      return (totalUp / limit) * 100;
     case "down":
-      return totalDown / limit * 100;
+      return (totalDown / limit) * 100;
     default:
       return 0;
   }

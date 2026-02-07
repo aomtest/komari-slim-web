@@ -5,54 +5,17 @@ import {
   SettingCardSelect,
   SettingCardSwitch,
   SettingCardShortTextInput,
+  SettingCardLongTextInput,
 } from "@/components/admin/SettingCard";
 import { toast } from "sonner";
 import Loading from "@/components/loading";
 import { useTranslation } from "react-i18next";
-
-type I18nText = string | Record<string, string>;
-
-function resolveI18nText(
-  text: I18nText | undefined,
-  language: string,
-): string | undefined {
-  if (text === undefined || text === null) return undefined;
-  if (typeof text === "string") return text;
-
-  const dict = text;
-  const lang = (language || "").trim();
-  if (!lang) {
-    const first = Object.values(dict)[0];
-    return first;
-  }
-
-  // Try exact match first (e.g. zh-CN)
-  if (dict[lang] !== undefined) return dict[lang];
-
-  // Try base language (e.g. zh)
-  const base = lang.split(/[-_]/)[0];
-  if (base && dict[base] !== undefined) return dict[base];
-
-  // Case-insensitive fallback
-  const lowerLang = lang.toLowerCase();
-  for (const [k, v] of Object.entries(dict)) {
-    if (k.toLowerCase() === lowerLang) return v;
-  }
-  if (base) {
-    const lowerBase = base.toLowerCase();
-    for (const [k, v] of Object.entries(dict)) {
-      if (k.toLowerCase() === lowerBase) return v;
-    }
-  }
-
-  // Last resort: first value
-  return Object.values(dict)[0];
-}
+import { resolveI18nText, type I18nText } from "@/utils/i18nText";
 
 interface ThemeFieldBase {
   name?: I18nText; // 显示名（字符串或多语言字典）
   help?: I18nText; // 帮助文本（字符串或多语言字典）
-  type: "title" | "switch" | "select" | "number" | "string";
+  type: "title" | "switch" | "select" | "number" | "string" | "richtext";
   key?: string; // 对应设置键（title 无需）
   default?: any; // 默认值
   options?: string; // 仅 select 支持，逗号分隔
@@ -265,6 +228,17 @@ const ThemeManaged: React.FC = () => {
                         : Number(e.target.value),
                     )
                   }
+                />
+              );
+            case "richtext":
+              return (
+                <SettingCardLongTextInput
+                  key={f.key}
+                  title={title}
+                  description={description}
+                  defaultValue={val !== undefined ? String(val) : ""}
+                  showSaveButton={false}
+                  onChange={(e) => handleValueChange(f.key!, e.target.value)}
                 />
               );
             case "string":
