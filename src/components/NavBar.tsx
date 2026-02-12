@@ -11,45 +11,55 @@ const NavBar = () => {
   const { publicInfo } = usePublicInfo();
   const { t } = useTranslation();
   return (
-    <nav className="nav-bar flex rounded-b-lg items-center gap-3 max-h-16 justify-end min-w-full p-2 px-4">
-      <div className="mr-auto flex">
+    <nav className="nav-bar flex rounded-b-lg items-center gap-2 md:gap-3 max-h-16 justify-end min-w-full p-2 px-4">
+      <div className="mr-auto flex items-center min-w-0">
         {/* <img src="/assets/logo.png" alt="Komari Logo" className="w-10 object-cover mr-2 self-center"/> */}
-        <Link to="/">
-          <label className="text-3xl font-bold ">{publicInfo?.sitename}</label>
+        <Link to="/" className="flex items-center min-w-0">
+          <span className="font-bold text-[clamp(1.25rem,5vw,1.875rem)] whitespace-nowrap truncate leading-tight">
+            {publicInfo?.sitename}
+          </span>
         </Link>
-        <div className="hidden flex-row items-end md:flex">
+        <div className="hidden flex-row items-baseline md:flex ml-3">
           <div
-            style={{ color: "var(--accent-3)" }}
-            className="border-solid border-r-2 mr-1 mb-1 w-2 h-2/3"
+            style={{ borderColor: "var(--accent-3)" }}
+            className="border-r-2 mr-2 h-4 self-center"
           />
-          <label
-            className="text-base font-bold"
+          <span
+            className="text-base font-bold whitespace-nowrap"
             style={{ color: "var(--accent-4)" }}
           >
             Komari Monitor
-          </label>
+          </span>
         </div>
       </div>
 
-      <IconButton
-        variant="soft"
-        onClick={() => {
-          window.open("https://github.com/komari-monitor", "_blank");
-        }}
-      >
-        <GitHubLogoIcon />
-      </IconButton>
+      <div className="flex items-center gap-2 flex-shrink-0">
+        <IconButton
+          variant="soft"
+          onClick={() => {
+            window.open("https://github.com/komari-monitor", "_blank");
+          }}
+        >
+          <GitHubLogoIcon />
+        </IconButton>
 
-      <ThemeSwitch />
-      <ColorSwitch />
-      <LanguageSwitch />
-      {publicInfo?.private_site ? (<LoginDialog
-        autoOpen={publicInfo?.private_site}
-        info={t('common.private_site')}
-        onLoginSuccess={() => { window.location.reload(); }}
-      />) : (<LoginDialog />)}
-
+        <ThemeSwitch />
+        <ColorSwitch />
+        <LanguageSwitch />
+        {publicInfo?.private_site ? (
+          <LoginDialog
+            autoOpen={publicInfo?.private_site}
+            info={t("common.private_site")}
+            onLoginSuccess={() => {
+              window.location.reload();
+            }}
+          />
+        ) : (
+          <LoginDialog />
+        )}
+      </div>
     </nav>
   );
 };
+
 export default NavBar;
