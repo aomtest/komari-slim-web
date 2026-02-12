@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Card,
   Flex,
@@ -34,7 +35,7 @@ interface NodeProps {
   live: Record | undefined;
   online: boolean;
 }
-const Node = ({ basic, live, online }: NodeProps) => {
+const Node = React.memo(({ basic, live, online }: NodeProps) => {
   const [t] = useTranslation();
   const isMobile = useIsMobile();
   const { publicInfo } = usePublicInfo();
@@ -275,7 +276,7 @@ const Node = ({ basic, live, online }: NodeProps) => {
       </Flex>
     </Card>
   );
-};
+});
 
 export default Node;
 
