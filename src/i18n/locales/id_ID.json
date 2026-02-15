@@ -609,6 +609,11 @@
       "script_domain_description": "Tentukan alamat koneksi panel untuk skrip instalasi, memudahkan pengguna dengan beberapa domain, dan tidak akan mempengaruhi akses domain lain. Biarkan kosong untuk menggunakan domain saat ini.",
       "send_ip_addr_to_guest": "Tampilkan sebagian alamat IP kepada pengunjung",
       "send_ip_addr_to_guest_description": "Dalam keadaan tidak login, sebagian informasi alamat IP dapat dilihat melalui common:getNodes, berbentuk 9.*.*.* / fe80:*:*:*:*:*:*:*. Digunakan untuk menampilkan IP pada beberapa tema.",
+      "tempory_share": "Berbagi sementara",
+      "tempory_share_current_link": "Tautan akses sementara saat ini",
+      "tempory_share_description": "Setelah mengaktifkan situs pribadi, Anda dapat mengakses situs melalui tautan berbagi sementara.",
+      "tempory_share_hours": "Durasi berbagi (jam)",
+      "tempory_share_revoke": "Mencabut izin akses",
       "title": "Situs"
     },
     "sso": {

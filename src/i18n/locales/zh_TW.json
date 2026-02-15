@@ -609,6 +609,11 @@
       "script_domain_description": "為安裝腳本定義面板的連接地址，方便多個域名的用戶，並不會影響其他域名的訪問。留空使用當前域名。",
       "send_ip_addr_to_guest": "向訪客顯示部分IP地址",
       "send_ip_addr_to_guest_description": "未登入的情況下可以透過 common:getNodes 查看部分IP地址資訊，形如 9.*.*.* / fe80:*:*:*:*:*:*:*。用於部分主題展示IP。",
+      "tempory_share": "臨時分享",
+      "tempory_share_current_link": "當前臨時訪問鏈接",
+      "tempory_share_description": "開啟私有站點後，可以通過臨時分享鏈接訪問站點。",
+      "tempory_share_hours": "分享時長（小時）",
+      "tempory_share_revoke": "撤銷訪問許可",
       "title": "站點"
     },
     "sso": {
