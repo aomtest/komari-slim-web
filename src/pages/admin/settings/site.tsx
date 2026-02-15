@@ -18,7 +18,8 @@ import UploadDialog from "@/components/UploadDialog";
 
 export default function SiteSettings() {
   const { t } = useTranslation();
-  const { settings, loading, error } = useSettings();
+  const { settings, loading, error, refetch } = useSettings();
+  const [shareHours, setShareHours] = useState(1);
 
   // 恢复备份对话框与上传状态
   const [restoreOpen, setRestoreOpen] = useState(false);
@@ -92,7 +93,7 @@ export default function SiteSettings() {
 
       xhr.addEventListener("abort", () => {
         toast.error(
-          t("theme.upload_failed", "上传失败") + ": Upload cancelled"
+          t("theme.upload_failed", "上传失败") + ": Upload cancelled",
         );
         setRestoring(false);
         setRestoreProgress(0);
@@ -145,14 +146,6 @@ export default function SiteSettings() {
         }}
       />
       <SettingCardSwitch
-        title={t("settings.site.private_site")}
-        description={t("settings.site.private_site_description")}
-        defaultChecked={settings.private_site}
-        onChange={async (checked) => {
-          await updateSettingsWithToast({ private_site: checked }, t);
-        }}
-      />
-      <SettingCardSwitch
         title={t("settings.site.send_ip_addr_to_guest")}
         description={t("settings.site.send_ip_addr_to_guest_description")}
         defaultChecked={settings.send_ip_addr_to_guest}
@@ -169,6 +162,99 @@ export default function SiteSettings() {
           await updateSettingsWithToast({ script_domain: data }, t);
         }}
       />
+      <SettingCardLabel>{t("settings.site.private_site")}</SettingCardLabel>
+      <SettingCardSwitch
+        title={t("settings.site.private_site")}
+        description={t("settings.site.private_site_description")}
+        defaultChecked={settings.private_site}
+        onChange={async (checked) => {
+          await updateSettingsWithToast({ private_site: checked }, t);
+        }}
+      />
+      <SettingCardCollapse
+        title={t("settings.site.tempory_share")}
+        description={t("settings.site.tempory_share_description")}
+      >
+        <div className="flex w-full flex-col gap-4">
+          <SettingCardShortTextInput
+            title={t("settings.site.tempory_share_current_link")}
+            value={
+              settings.tempory_share_token
+                ? `${window.location.origin}/?temp_key=${settings.tempory_share_token}`
+                : ""
+            }
+            showSaveButton={false}
+            description={`${t("admin.nodeTable.expiredAt")}: ${new Date((settings.tempory_share_token_expire_at || 0) * 1000).toLocaleString()}`}
+            disabled
+            bordless
+          >
+            <Button
+              onClick={() => {
+                if (!settings.tempory_share_token) return;
+                navigator.clipboard.writeText(
+                  `${window.location.origin}/?temp_key=${settings.tempory_share_token}`,
+                );
+                toast.success(t("copy"));
+              }}
+            >
+              {t("copy")}
+            </Button>
+          </SettingCardShortTextInput>
+          <SettingCardShortTextInput
+            title={t("settings.site.tempory_share_hours")}
+            bordless
+            showSaveButton={false}
+            value={shareHours}
+            type="number"
+            onChange={(e) => {
+              try {
+                const val = parseInt(e.target.value);
+                if (!isNaN(val)) {
+                  setShareHours(val);
+                }
+              } catch (err) {
+                // ignore
+              }
+            }}
+          ></SettingCardShortTextInput>
+          <div className="flex flex-row w-full gap-2">
+            <Button
+              onClick={async () => {
+                const chars =
+                  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+                let key = "";
+                for (let i = 0; i < 8; i++) {
+                  key += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                await updateSettingsWithToast(
+                  {
+                    tempory_share_token: key,
+                    tempory_share_token_expire_at:
+                      Math.floor(Date.now() / 1000) + shareHours * 3600,
+                  },
+                  t,
+                );
+                await refetch();
+              }}
+            >
+              {t("common.generate")}
+            </Button>
+            <Button
+              color="red"
+              variant="soft"
+              onClick={async () => {
+                await updateSettingsWithToast(
+                  { tempory_share_token: "", tempory_share_token_expire_at: 0 },
+                  t,
+                );
+                await refetch();
+              }}
+            >
+              {t("settings.site.tempory_share_revoke")}
+            </Button>
+          </div>
+        </div>
+      </SettingCardCollapse>
       <SettingCardLabel>{t("settings.site.custom")}</SettingCardLabel>
       <label className="text-sm text-muted-foreground -mt-4">
         {t("settings.custom.note")}
@@ -185,7 +271,7 @@ export default function SiteSettings() {
         title={t("settings.custom.body", "自定义 Body")}
         description={t(
           "settings.custom.body_description",
-          "在页面底部添加自定义内容"
+          "在页面底部添加自定义内容",
         )}
         defaultValue={settings.custom_body || ""}
         OnSave={async (data) => {
@@ -196,7 +282,7 @@ export default function SiteSettings() {
         title={t("settings.custom.favicon", "自定义 Favicon")}
         description={t(
           "settings.custom.favicon_description",
-          "在浏览器标签页显示的图标"
+          "在浏览器标签页显示的图标",
         )}
         defaultOpen={true}
       >
@@ -218,7 +304,7 @@ export default function SiteSettings() {
           <label className="text-sm text-muted-foreground">
             {t(
               "settings.custom.favicon_note",
-              "Favicon 图标的更新速度可能较慢，通常需要清除浏览器缓存后才能看到更改。"
+              "Favicon 图标的更新速度可能较慢，通常需要清除浏览器缓存后才能看到更改。",
             )}
           </label>
           <Flex gap="2" align="center">
@@ -235,7 +321,7 @@ export default function SiteSettings() {
                 <Dialog.Description>
                   {t(
                     "settings.custom.favicon_default_description",
-                    "这将恢复默认的 Favicon 图标，是否继续？"
+                    "这将恢复默认的 Favicon 图标，是否继续？",
                   )}
                 </Dialog.Description>
                 <Flex gap="2" justify="end">
@@ -257,12 +343,12 @@ export default function SiteSettings() {
                               toast.success(
                                 t(
                                   "settings.custom.favicon_default_success",
-                                  "已恢复默认 Favicon"
-                                )
+                                  "已恢复默认 Favicon",
+                                ),
                               );
                             } else {
                               toast.error(
-                                data.message || "恢复默认 Favicon 失败"
+                                data.message || "恢复默认 Favicon 失败",
                               );
                             }
                           })
@@ -294,15 +380,15 @@ export default function SiteSettings() {
                           headers: {
                             "Content-Type": "application/octet-stream",
                           },
-                        }
+                        },
                       );
                       const data = await response.json();
                       if (data.status === "success") {
                         toast.success(
                           t(
                             "settings.custom.favicon_update_success",
-                            "已更新 Favicon"
-                          )
+                            "已更新 Favicon",
+                          ),
                         );
                       } else {
                         toast.error(data.message || "Failed to update Favicon");

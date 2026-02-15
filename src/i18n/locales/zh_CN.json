@@ -609,7 +609,12 @@
       "script_domain_description": "为安装脚本定义面板的连接地址，方便多个域名的用户，并不会影响其他域名的访问。留空使用当前域名。",
       "send_ip_addr_to_guest": "向访客显示部分IP地址",
       "send_ip_addr_to_guest_description": "未登录的情况下可以通过 common:getNodes 查看部分IP地址信息，形如 9.*.*.* / fe80:*:*:*:*:*:*:*。用于部分主题展示IP。",
-      "title": "站点"
+      "title": "站点",
+      "tempory_share": "临时分享",
+      "tempory_share_description": "开启私有站点后，可以通过临时分享链接访问站点。",
+      "tempory_share_current_link": "当前临时访问链接",
+      "tempory_share_hours": "分享时长（小时）",
+      "tempory_share_revoke": "撤销访问许可"
     },
     "sso": {
       "callback_url_tips": "回调地址：{{url}}",

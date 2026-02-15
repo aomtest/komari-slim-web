@@ -1,4 +1,4 @@
-import { StrictMode, useMemo } from "react";
+import React, { StrictMode, useMemo } from "react";
 import { createRoot } from "react-dom/client";
 import "./global.css";
 import { Theme } from "@radix-ui/themes";
@@ -26,13 +26,27 @@ import { OfflineIndicator } from "./components/OfflineIndicator";
 import { Toaster } from "./components/ui/sonner";
 import { RPC2Provider } from "./contexts/RPC2Context";
 const App = () => {
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tempKey = params.get("temp_key");
+
+    if (tempKey) {
+      document.cookie = `temp_key=${tempKey}; path=/; max-age=${60 * 60 * 24 * 365 * 100}`;
+      params.delete("temp_key");
+      window.history.replaceState(
+        {},
+        document.title,
+        `${window.location.pathname}${params.toString() ? "?" + params.toString() : ""}`,
+      );
+    }
+  }, []);
   const [appearance, setAppearance] = useLocalStorage<Appearance>(
     "appearance",
-    THEME_DEFAULTS.appearance
+    THEME_DEFAULTS.appearance,
   );
   const [color, setColor] = useLocalStorage<Colors>(
     "color",
-    THEME_DEFAULTS.color
+    THEME_DEFAULTS.color,
   );
 
   // Use the system theme hook to resolve "system" to actual theme
@@ -45,7 +59,7 @@ const App = () => {
       color,
       setColor,
     }),
-    [appearance, setAppearance, color, setColor]
+    [appearance, setAppearance, color, setColor],
   );
   const routing = useRoutes(routes);
   return (
@@ -83,5 +97,5 @@ createRoot(document.getElementById("root")!).render(
         <App />
       </BrowserRouter>
     </StrictMode>
-  </ErrorBoundary>
+  </ErrorBoundary>,
 );

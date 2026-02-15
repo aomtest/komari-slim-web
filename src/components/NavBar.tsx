@@ -46,9 +46,11 @@ const NavBar = () => {
         <ThemeSwitch />
         <ColorSwitch />
         <LanguageSwitch />
-        {publicInfo?.private_site ? (
+        {publicInfo?.private_site && !document.cookie.includes("temp_key") ? (
           <LoginDialog
-            autoOpen={publicInfo?.private_site}
+            autoOpen={
+              publicInfo?.private_site && !document.cookie.includes("temp_key")
+            }
             info={t("common.private_site")}
             onLoginSuccess={() => {
               window.location.reload();
