@@ -18,6 +18,7 @@ import {
   closestCenter,
   useSensor,
   useSensors,
+  type DragEndEvent,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -90,7 +91,7 @@ export const TaskView = ({ pingTasks }: { pingTasks: PingTask[] }) => {
     setLocalTasks(processedTasks);
   }, [processedTasks]);
 
-  const handleDragEnd = async (event: any) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
@@ -102,6 +103,7 @@ export const TaskView = ({ pingTasks }: { pingTasks: PingTask[] }) => {
     );
     if (oldIndex < 0 || newIndex < 0) return;
 
+    const previousTasks = Array.from(localTasks);
     const reorderedTasks = Array.from(localTasks);
     const [reorderedItem] = reorderedTasks.splice(oldIndex, 1);
     reorderedTasks.splice(newIndex, 0, reorderedItem);
@@ -127,6 +129,7 @@ export const TaskView = ({ pingTasks }: { pingTasks: PingTask[] }) => {
         throw new Error(data?.message || t("common.error"));
       }
     } catch (error: any) {
+      setLocalTasks(previousTasks);
       toast.error(error?.message || t("common.error"));
       refresh();
     }
@@ -136,13 +139,15 @@ export const TaskView = ({ pingTasks }: { pingTasks: PingTask[] }) => {
     <div className="rounded-xl overflow-hidden">
       <Table>
         <TableHeader>
-          <TableHead className="w-10"></TableHead>
-          <TableHead>{t("common.name")}</TableHead>
-          <TableHead>{t("common.server")}</TableHead>
-          <TableHead>{t("ping.target")}</TableHead>
-          <TableHead>{t("ping.type")}</TableHead>
-          <TableHead>{t("ping.interval")}</TableHead>
-          <TableHead>{t("common.action")}</TableHead>
+          <TableRow>
+            <TableHead className="w-10" aria-label={t("common.sort")}></TableHead>
+            <TableHead>{t("common.name")}</TableHead>
+            <TableHead>{t("common.server")}</TableHead>
+            <TableHead>{t("ping.target")}</TableHead>
+            <TableHead>{t("ping.type")}</TableHead>
+            <TableHead>{t("ping.interval")}</TableHead>
+            <TableHead>{t("common.action")}</TableHead>
+          </TableRow>
         </TableHeader>
         <DndContext
           sensors={sensors}
@@ -155,7 +160,7 @@ export const TaskView = ({ pingTasks }: { pingTasks: PingTask[] }) => {
           >
             <TableBody>
               {localTasks.map((task) => (
-                <Row key={task.id} task={task} />
+                <Row key={getTaskSortableId(task)} task={task} />
               ))}
             </TableBody>
           </SortableContext>
@@ -264,7 +269,7 @@ const Row = ({
   };
 
   return (
-    <TableRow ref={setNodeRef} style={style} key={task.id}>
+    <TableRow ref={setNodeRef} style={style}>
       <TableCell>
         <div
           {...attributes}
