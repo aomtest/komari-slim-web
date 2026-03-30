@@ -92,11 +92,29 @@ export default function InstancePage() {
   }, [nodeList, live_data, offlineServerPosition]);
 
   useEffect(() => {
-    fetch(`/api/recent/${uuid}`)
+    if (!uuid) {
+      setRecent([]);
+      return;
+    }
+
+    const controller = new AbortController();
+    setRecent([]);
+
+    fetch(`/api/recent/${uuid}`, { signal: controller.signal })
       .then((res) => res.json())
-      .then((data) => setRecent(data.data.slice(-length)))
-      .catch((err) => console.error("Failed to fetch recent data:", err));
-  }, [uuid]);
+      .then((data) => {
+        if (!controller.signal.aborted) {
+          setRecent((data?.data ?? []).slice(-length));
+        }
+      })
+      .catch((err) => {
+        if (err?.name !== "AbortError") {
+          console.error("Failed to fetch recent data:", err);
+        }
+      });
+
+    return () => controller.abort();
+  }, [uuid, length]);
   // 动态追加数据
   useEffect(() => {
     const unsubscribe = onRefresh((resp) => {
