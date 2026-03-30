@@ -38,6 +38,21 @@
         }
       },
       {
+        "key": "showServerListInDetails",
+        "default": true,
+        "type": "switch",
+        "name": {
+          "en": "Show server list in details",
+          "zh-CN": "在详情页显示服务器列表",
+          "ja": "詳細ページにサーバーリストを表示"
+        },
+        "help": {
+          "en": "Enable to show the server list in the details page of each server. This allows users to easily navigate to other servers without returning to the homepage.",
+          "zh-CN": "开启以在每个服务器的详情页中显示服务器列表，方便用户无需返回首页即可轻松导航到其他服务器。",
+          "ja": "各サーバーの詳細ページにサーバーリストを表示するには、有効にします。これにより、ユーザーはホームページに戻ることなく、他のサーバーに簡単に移動できます。"
+        }
+      },
+      {
         "key": "backgroundImageUrlDesktop",
         "type": "string",
         "default": "",

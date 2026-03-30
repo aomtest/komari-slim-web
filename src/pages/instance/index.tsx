@@ -1,19 +1,22 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState, useMemo } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useLiveData } from "../../contexts/LiveDataContext";
 import { useTranslation } from "react-i18next";
 import type { Record } from "../../types/LiveData";
 import Flag from "../../components/Flag";
-import { Flex, SegmentedControl, Text } from "@radix-ui/themes";
+import { Card, Flex, SegmentedControl, Text } from "@radix-ui/themes";
 import { useNodeList } from "@/contexts/NodeListContext";
 import { liveDataToRecords } from "@/utils/RecordHelper";
 import LoadChart from "./LoadChart";
 import PingChart from "./PingChart";
 import { DetailsGrid } from "@/components/DetailsGrid";
+import { usePublicInfo } from "@/contexts/PublicInfoContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function InstancePage() {
   const { t } = useTranslation();
-  const { onRefresh } = useLiveData();
+  const navigate = useNavigate();
+  const { onRefresh, live_data } = useLiveData();
   const { uuid } = useParams<{ uuid: string }>();
   const [recent, setRecent] = useState<Record[]>([]);
   const { nodeList } = useNodeList();
@@ -21,6 +24,72 @@ export default function InstancePage() {
   const [chartView, setChartView] = useState<"load" | "ping">("load");
   // #region 初始数据加载
   const node = nodeList?.find((n) => n.uuid === uuid);
+  const { publicInfo } = usePublicInfo();
+  const isMobile = useIsMobile();
+  const showServerListInDetails =
+    publicInfo?.theme_settings?.showServerListInDetails === true;
+  const offlineServerPosition =
+    publicInfo?.theme_settings?.offlineServerPosition;
+
+  // 组织按分组的服务器列表
+  const groupedNodes = useMemo(() => {
+    if (!nodeList) return [];
+
+    const onlineNodes = live_data?.data?.online ?? [];
+    const sortNodes = (
+      a: (typeof nodeList)[number],
+      b: (typeof nodeList)[number],
+    ) => {
+      const aIsOnline = onlineNodes.includes(a.uuid);
+      const bIsOnline = onlineNodes.includes(b.uuid);
+
+      if (offlineServerPosition === "First") {
+        if (!aIsOnline && bIsOnline) return -1;
+        if (aIsOnline && !bIsOnline) return 1;
+      } else if (offlineServerPosition === "Keep") {
+      } else {
+        if (aIsOnline && !bIsOnline) return -1;
+        if (!aIsOnline && bIsOnline) return 1;
+      }
+
+      return a.weight - b.weight;
+    };
+
+    const groups = new Map<string | null, typeof nodeList>();
+
+    nodeList.forEach((node) => {
+      const groupKey = node.group && node.group.trim() ? node.group : null;
+      if (!groups.has(groupKey)) {
+        groups.set(groupKey, []);
+      }
+      groups.get(groupKey)?.push(node);
+    });
+
+    // 转换为数组，其中未分组的排在最后
+    const result: Array<{ group: string | null; nodes: typeof nodeList }> = [];
+
+    // 先添加有分组的（按分组名称排序）
+    Array.from(groups.entries())
+      .filter(([group]) => group !== null)
+      .sort(([a], [b]) => (a ?? "").localeCompare(b ?? ""))
+      .forEach(([group, nodes]) => {
+        result.push({
+          group,
+          nodes: [...nodes].sort(sortNodes),
+        });
+      });
+
+    // 再添加未分组的
+    const ungrouped = groups.get(null);
+    if (ungrouped) {
+      result.push({
+        group: null,
+        nodes: [...ungrouped].sort(sortNodes),
+      });
+    }
+
+    return result;
+  }, [nodeList, live_data, offlineServerPosition]);
 
   useEffect(() => {
     fetch(`/api/recent/${uuid}`)
@@ -40,7 +109,7 @@ export default function InstancePage() {
         // 追加新数据，限制总长度为length（FIFO）
         // 检查是否已存在相同时间戳的记录
         const exists = prev.some(
-          (item) => item.updated_at === newRecord.updated_at
+          (item) => item.updated_at === newRecord.updated_at,
         );
         if (exists) {
           return prev; // 如果已存在，不添加新记录
@@ -57,111 +126,106 @@ export default function InstancePage() {
   }, [onRefresh, uuid]);
   // #region 布局
   return (
-    <Flex className="items-center" direction={"column"} gap="2">
-      <div className="flex flex-col gap-1 md:p-4 p-3 border-0 rounded-md">
-        <h1 className="flex items-center flex-wrap">
-          <Flag flag={node?.region ?? ""} />
-          <Text size="3" weight="bold" wrap="nowrap">
-            {node?.name ?? uuid}
-          </Text>
-          <Text
-            size="1"
-            style={{
-              marginLeft: "8px",
-            }}
-            className="text-accent-6"
-            wrap="nowrap"
+    <div className="flex flex-row justify-center p-4 gap-4">
+      {showServerListInDetails && !isMobile && (
+        <div className="w-[300px] shrink-0 self-start sticky top-4">
+          <Card
+            className="w-full overflow-hidden shadow-lg"
+            style={{ height: "calc(100vh - 2rem)" }}
           >
-            {node?.uuid}
-          </Text>
-        </h1>
-        <DetailsGrid box align="center" uuid={uuid ?? ""} />
-      </div>
-      <SegmentedControl.Root
-        radius="full"
-        value={chartView}
-        onValueChange={(value) => setChartView(value as "load" | "ping")}
-      >
-        <SegmentedControl.Item value="load">
-          {t("nodeCard.load")}
-        </SegmentedControl.Item>
-        <SegmentedControl.Item value="ping">
-          {t("nodeCard.ping")}
-        </SegmentedControl.Item>
-      </SegmentedControl.Root>
-      {/* Recharts */}
-      {chartView === "load" ? (
-        <LoadChart data={liveDataToRecords(uuid ?? "", recent)} />
-      ) : (
-        <PingChart uuid={uuid ?? ""} />
+            <Flex direction="column" gap="0" className="h-full min-h-0">
+              <div className="p-3 border-b border-accent-3">
+                <Text size="2" weight="bold">
+                  {t("common.serverList", { defaultValue: "服务器列表" })}
+                </Text>
+              </div>
+              <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
+                {groupedNodes.map((group, groupIndex) => (
+                  <div key={groupIndex}>
+                    {group.group && (
+                      <div className="px-3 py-1 text-xs font-semibold text-accent-8 bg-accent-2 sticky top-0">
+                        {group.group}
+                      </div>
+                    )}
+                    {group.group === null && (
+                      <div className="px-3 py-1 text-xs font-semibold text-accent-8 bg-accent-2 sticky top-0">
+                        {t("common.ungrouped", { defaultValue: "未分组" })}
+                      </div>
+                    )}
+                    <div>
+                      {group.nodes.map((node) => (
+                        <div
+                          key={node.uuid}
+                          onClick={() => navigate(`/instance/${node.uuid}`)}
+                          className={`mx-1 my-0.5 px-2 py-0 cursor-pointer transition-colors text-sm rounded-md border-l-[4px] flex items-center gap-2 ${
+                            node.uuid === uuid
+                              ? "bg-accent-4 text-accent-10 font-bold"
+                              : "hover:bg-accent-3"
+                          }`}
+                          style={{
+                            borderLeft:
+                              node.uuid === uuid
+                                ? "4px solid var(--accent-8)"
+                                : "4px solid transparent",
+                          }}
+                        >
+                          <Flag flag={node.region} />
+                          <span
+                            className={`truncate ${
+                              node.uuid === uuid ? "text-accent-10" : ""
+                            }`}
+                          >
+                            {node.name}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Flex>
+          </Card>
+        </div>
       )}
-      <div className="grid w-full items-center justify-center mx-auto h-full gap-4 p-1 md:grid-cols-[repeat(auto-fit,minmax(620px,1fr))] grid-cols-[repeat(auto-fit,minmax(320px,1fr))]"></div>
-    </Flex>
+      <div className="flex flex-col h-full items-center gap-2">
+        <div className="flex flex-col gap-1 md:p-4 p-3 border-0 rounded-md">
+          <h1 className="flex items-center flex-wrap">
+            <Flag flag={node?.region ?? ""} />
+            <Text size="3" weight="bold" wrap="nowrap">
+              {node?.name ?? uuid}
+            </Text>
+            <Text
+              size="1"
+              style={{
+                marginLeft: "8px",
+              }}
+              className="text-accent-6"
+              wrap="nowrap"
+            >
+              {node?.uuid}
+            </Text>
+          </h1>
+          <DetailsGrid box align="center" uuid={uuid ?? ""} />
+        </div>
+        <SegmentedControl.Root
+          radius="full"
+          value={chartView}
+          onValueChange={(value) => setChartView(value as "load" | "ping")}
+        >
+          <SegmentedControl.Item value="load">
+            {t("nodeCard.load")}
+          </SegmentedControl.Item>
+          <SegmentedControl.Item value="ping">
+            {t("nodeCard.ping")}
+          </SegmentedControl.Item>
+        </SegmentedControl.Root>
+        {/* Recharts */}
+        {chartView === "load" ? (
+          <LoadChart data={liveDataToRecords(uuid ?? "", recent)} />
+        ) : (
+          <PingChart uuid={uuid ?? ""} />
+        )}
+      </div>
+    </div>
   );
 }
-// #region 详情网格
-
-// // 递归补0工具
-// function deepZeroFill(obj: any): any {
-//   if (obj === null || obj === undefined) return 0;
-//   if (typeof obj === "number") return 0;
-//   if (typeof obj === "string" || typeof obj === "boolean") return obj;
-//   if (Array.isArray(obj)) return obj.map(deepZeroFill);
-//   if (typeof obj === "object") {
-//     const res: any = {};
-//     for (const k in obj) {
-//       if (k === "updated_at") continue;
-//       res[k] = deepZeroFill(obj[k]);
-//     }
-//     return res;
-//   }
-//   return 0;
-// }
-
-// function fillMissingTimePoints<T extends { updated_at: string }>(
-//   data: T[],
-//   intervalSec: number = 10,
-//   totalSeconds: number = 180,
-//   matchToleranceSec?: number
-// ): T[] {
-//   if (!data.length) return [];
-//   // 按时间升序排序
-//   const sorted = [...data].sort(
-//     (a, b) =>
-//       new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime()
-//   );
-//   const end = new Date(sorted[sorted.length - 1].updated_at).getTime();
-//   const interval = intervalSec * 1000;
-//   const start = end - totalSeconds * 1000 + interval;
-//   const timePoints: number[] = [];
-//   for (let t = start; t <= end; t += interval) {
-//     timePoints.push(t);
-//   }
-//   // 生成补齐后的数据：允许时间点在 matchToleranceMs 容忍范围内匹配原始数据
-//   const zeroTemplate = deepZeroFill(sorted[sorted.length - 1]);
-//   let dataIdx = 0;
-//   const matchToleranceMs = (matchToleranceSec ?? intervalSec) * 1000;
-//   const filled: T[] = timePoints.map((t) => {
-//     // 找到最近的原始数据点（在 matchToleranceMs 容忍范围内）
-//     let found: T | undefined = undefined;
-//     while (
-//       dataIdx < sorted.length &&
-//       new Date(sorted[dataIdx].updated_at).getTime() < t - matchToleranceMs
-//     ) {
-//       dataIdx++;
-//     }
-//     if (
-//       dataIdx < sorted.length &&
-//       Math.abs(new Date(sorted[dataIdx].updated_at).getTime() - t) <=
-//         matchToleranceMs
-//     ) {
-//       found = sorted[dataIdx];
-//     }
-//     if (found) {
-//       return { ...found, updated_at: new Date(t).toISOString() };
-//     }
-//     // 没有数据，递归补0
-//     return { ...zeroTemplate, updated_at: new Date(t).toISOString() } as T;
-//   });
-//   return filled;
-// }
