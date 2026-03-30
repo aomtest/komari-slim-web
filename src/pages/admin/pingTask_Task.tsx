@@ -7,8 +7,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useNodeDetails } from "@/contexts/NodeDetailsContext";
 import { usePingTask, type PingTask } from "@/contexts/PingTaskContext";
+import {
+  DndContext,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import {
   Button,
   Dialog,
@@ -17,14 +34,34 @@ import {
   Select,
   TextField,
 } from "@radix-ui/themes";
-import { MoreHorizontal, Pencil, Trash } from "lucide-react";
+import { MenuIcon, MoreHorizontal, Pencil, Trash } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
+const getTaskSortableId = (task: { id?: number; name?: string; target?: string }) =>
+  task.id !== undefined
+    ? `id-${task.id}`
+    : `tmp-${task.name ?? ""}-${task.target ?? ""}`;
+
 export const TaskView = ({ pingTasks }: { pingTasks: PingTask[] }) => {
   const { t } = useTranslation();
+  const { refresh } = usePingTask();
   const { nodeDetail } = useNodeDetails();
+  const sensors = useSensors(
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: 10,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 200,
+        tolerance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {})
+  );
 
   // 过滤已删除的节点
   const processedTasks = React.useMemo(() => {
@@ -45,30 +82,89 @@ export const TaskView = ({ pingTasks }: { pingTasks: PingTask[] }) => {
           __allClientsDeleted: allDeleted,
           __originalCount: original.length,
         };
-      })
-      .sort((a, b) => {
-        const aKey = (a as any).name ?? String(a.id ?? 0);
-        const bKey = (b as any).name ?? String(b.id ?? 0);
-        return aKey.localeCompare(bKey, undefined, { sensitivity: "base", numeric: true });
-});
+      });
   }, [pingTasks, nodeDetail]);
+
+  const [localTasks, setLocalTasks] = React.useState(processedTasks);
+
+  React.useEffect(() => {
+    setLocalTasks(processedTasks);
+  }, [processedTasks]);
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = localTasks.findIndex(
+      (task) => getTaskSortableId(task) === String(active.id)
+    );
+    const newIndex = localTasks.findIndex(
+      (task) => getTaskSortableId(task) === String(over.id)
+    );
+    if (oldIndex < 0 || newIndex < 0) return;
+
+    const previousTasks = Array.from(localTasks);
+    const reorderedTasks = Array.from(localTasks);
+    const [reorderedItem] = reorderedTasks.splice(oldIndex, 1);
+    reorderedTasks.splice(newIndex, 0, reorderedItem);
+
+    setLocalTasks(reorderedTasks);
+
+    const orderData = reorderedTasks.reduce((acc, task, index) => {
+      if (task.id !== undefined) {
+        acc[String(task.id)] = index;
+      }
+      return acc;
+    }, {} as Record<string, number>);
+
+    try {
+      const response = await fetch("/api/admin/ping/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderData),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data?.message || t("common.error"));
+      }
+    } catch (error: any) {
+      setLocalTasks(previousTasks);
+      toast.error(error?.message || t("common.error"));
+      refresh();
+    }
+  };
 
   return (
     <div className="rounded-xl overflow-hidden">
       <Table>
         <TableHeader>
-          <TableHead>{t("common.name")}</TableHead>
-          <TableHead>{t("common.server")}</TableHead>
-          <TableHead>{t("ping.target")}</TableHead>
-          <TableHead>{t("ping.type")}</TableHead>
-          <TableHead>{t("ping.interval")}</TableHead>
-          <TableHead>{t("common.action")}</TableHead>
+          <TableRow>
+            <TableHead className="w-10" aria-label={t("common.sort")}></TableHead>
+            <TableHead>{t("common.name")}</TableHead>
+            <TableHead>{t("common.server")}</TableHead>
+            <TableHead>{t("ping.target")}</TableHead>
+            <TableHead>{t("ping.type")}</TableHead>
+            <TableHead>{t("ping.interval")}</TableHead>
+            <TableHead>{t("common.action")}</TableHead>
+          </TableRow>
         </TableHeader>
-        <TableBody>
-          {processedTasks.map((task) => (
-            <Row key={task.id} task={task} />
-          ))}
-        </TableBody>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={localTasks.map((task) => getTaskSortableId(task))}
+            strategy={verticalListSortingStrategy}
+          >
+            <TableBody>
+              {localTasks.map((task) => (
+                <Row key={getTaskSortableId(task)} task={task} />
+              ))}
+            </TableBody>
+          </SortableContext>
+        </DndContext>
       </Table>
     </div>
   );
@@ -82,6 +178,14 @@ const Row = ({
   const { t } = useTranslation();
   const { refresh } = usePingTask();
   const { nodeDetail } = useNodeDetails();
+  const isMobile = useIsMobile();
+  const sortableId = getTaskSortableId(task);
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: sortableId });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
   const [editOpen, setEditOpen] = React.useState(false);
   const [editSaving, setEditSaving] = React.useState(false);
   const [deleteOpen, setDeleteOpen] = React.useState(false);
@@ -165,7 +269,28 @@ const Row = ({
   };
 
   return (
-    <TableRow key={task.id}>
+    <TableRow ref={setNodeRef} style={style}>
+      <TableCell>
+        <div
+          {...attributes}
+          {...listeners}
+          className={`cursor-move p-2 rounded hover:bg-accent-a3 transition-colors ${
+            isMobile ? "touch-manipulation select-none" : ""
+          }`}
+          style={{
+            touchAction: "none",
+            WebkitUserSelect: "none",
+            userSelect: "none",
+          }}
+          title={
+            isMobile
+              ? t("admin.nodeTable.dragToReorder", "长按拖拽重新排序")
+              : undefined
+          }
+        >
+          <MenuIcon size={isMobile ? 18 : 16} color={"var(--gray-8)"} />
+        </div>
+      </TableCell>
       <TableCell>{task.name}</TableCell>
       <TableCell>
         <Flex gap="2" align="center">
