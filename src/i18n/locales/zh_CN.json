@@ -288,7 +288,9 @@
     "update": "更新",
     "update_available": "有新版本",
     "updated_successfully": "成功更新",
-    "weight": "权重"
+    "weight": "权重",
+    "serverList": "服务器列表",
+    "ungrouped": "未分组"
   },
   "copy": "复制",
   "copy_success": "已复制到剪贴板",
