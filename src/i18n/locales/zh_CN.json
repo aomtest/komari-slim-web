@@ -278,6 +278,7 @@
     "selected": "{{count}}选择",
     "semi_annual": "半年",
     "server": "服务器",
+    "serverList": "服务器列表",
     "status": "状态",
     "success": "成功",
     "tags": "标签",
@@ -285,12 +286,11 @@
     "tagsTips": "多个标签使用\";\"隔开。</br> 如需指定颜色，请在标签末尾添加&ltcolor&gt，例如：1Gbps&ltgreen&gt。</br> 可用的颜色列表请参考：<label class=\"bg-accent-a5 rounded-sm\"><a href=\"https://www.radix-ui.com/themes/docs/theme/color\" target=\"_blank\"> Color – Radix Themes</a></label>",
     "threshold": "阈值",
     "triennial": "三年",
+    "ungrouped": "未分组",
     "update": "更新",
     "update_available": "有新版本",
     "updated_successfully": "成功更新",
-    "weight": "权重",
-    "serverList": "服务器列表",
-    "ungrouped": "未分组"
+    "weight": "权重"
   },
   "copy": "复制",
   "copy_success": "已复制到剪贴板",
