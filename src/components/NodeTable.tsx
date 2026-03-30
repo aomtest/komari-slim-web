@@ -22,14 +22,26 @@ import Tips from "./ui/tips";
 import { DetailsGrid } from "./DetailsGrid";
 import MiniPingChart from "./MiniPingChart";
 import { getOSImage } from "@/utils";
+import { usePublicInfo } from "@/contexts/PublicInfoContext";
 
 interface NodeTableProps {
   nodes: NodeBasicInfo[];
   liveData: LiveData;
 }
 
-type SortField = 'name' | 'os' | 'status' | 'cpu' | 'ram' | 'disk' | 'price' | 'networkUp' | 'networkDown' | 'totalUp' | 'totalDown';
-type SortOrder = 'asc' | 'desc' | 'default';
+type SortField =
+  | "name"
+  | "os"
+  | "status"
+  | "cpu"
+  | "ram"
+  | "disk"
+  | "price"
+  | "networkUp"
+  | "networkDown"
+  | "totalUp"
+  | "totalDown";
+type SortOrder = "asc" | "desc" | "default";
 
 interface SortState {
   field: SortField | null;
@@ -38,8 +50,14 @@ interface SortState {
 
 const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
   const [t] = useTranslation();
+  const { publicInfo } = usePublicInfo();
+  const offlineServerPosition =
+    publicInfo?.theme_settings?.offlineServerPosition;
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
-  const [sortState, setSortState] = useState<SortState>({ field: null, order: 'default' });
+  const [sortState, setSortState] = useState<SortState>({
+    field: null,
+    order: "default",
+  });
 
   const toggleRowExpansion = (uuid: string) => {
     setExpandedRows((prev) => {
@@ -56,17 +74,23 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
   const handleSort = (field: SortField) => {
     return (event: React.MouseEvent) => {
       event.preventDefault();
-      
+
       setSortState((prev) => {
         if (prev.field === field) {
           // 循环切换：default -> asc -> desc -> default
-          const nextOrder: SortOrder = 
-            prev.order === 'default' ? 'asc' : 
-            prev.order === 'asc' ? 'desc' : 'default';
-          return { field: nextOrder === 'default' ? null : field, order: nextOrder };
+          const nextOrder: SortOrder =
+            prev.order === "default"
+              ? "asc"
+              : prev.order === "asc"
+                ? "desc"
+                : "default";
+          return {
+            field: nextOrder === "default" ? null : field,
+            order: nextOrder,
+          };
         } else {
           // 新字段，从正序开始
-          return { field, order: 'asc' };
+          return { field, order: "asc" };
         }
       });
     };
@@ -74,7 +98,11 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
 
   const getSortIcon = (field: SortField) => {
     if (sortState.field !== field) return null;
-    return sortState.order === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />;
+    return sortState.order === "asc" ? (
+      <ChevronUp size={14} />
+    ) : (
+      <ChevronDown size={14} />
+    );
   };
 
   // 确保liveData是有效的
@@ -102,10 +130,15 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
     const bData = getNodeData(b.uuid);
 
     // 如果没有排序字段或为默认排序，使用原来的排序逻辑
-    if (!sortState.field || sortState.order === 'default') {
-      // 先按在线/离线状态排序，再按权重排序（权重大的靠前）
-      if (aOnline !== bOnline) {
-        return aOnline ? -1 : 1;
+    if (!sortState.field || sortState.order === "default") {
+      // 遵循后台离线节点位置设置（First/Keep/Last），再按权重排序
+      if (offlineServerPosition === "First") {
+        if (!aOnline && bOnline) return -1;
+        if (aOnline && !bOnline) return 1;
+      } else if (offlineServerPosition === "Keep") {
+      } else {
+        if (aOnline && !bOnline) return -1;
+        if (!aOnline && bOnline) return 1;
       }
       return a.weight - b.weight;
     }
@@ -113,48 +146,56 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
     // 自定义排序逻辑
     let comparison = 0;
     switch (sortState.field) {
-      case 'name':
+      case "name":
         comparison = a.name.localeCompare(b.name);
         break;
-      case 'os':
+      case "os":
         comparison = a.os.localeCompare(b.os);
         break;
-      case 'status':
+      case "status":
         comparison = Number(bOnline) - Number(aOnline); // 在线状态：true > false
         break;
-      case 'cpu':
+      case "cpu":
         comparison = aData.cpu.usage - bData.cpu.usage;
         break;
-      case 'ram':
-        const aRamPercent = a.mem_total ? (aData.ram.used / a.mem_total) * 100 : 0;
-        const bRamPercent = b.mem_total ? (bData.ram.used / b.mem_total) * 100 : 0;
+      case "ram":
+        const aRamPercent = a.mem_total
+          ? (aData.ram.used / a.mem_total) * 100
+          : 0;
+        const bRamPercent = b.mem_total
+          ? (bData.ram.used / b.mem_total) * 100
+          : 0;
         comparison = aRamPercent - bRamPercent;
         break;
-      case 'disk':
-        const aDiskPercent = a.disk_total ? (aData.disk.used / a.disk_total) * 100 : 0;
-        const bDiskPercent = b.disk_total ? (bData.disk.used / b.disk_total) * 100 : 0;
+      case "disk":
+        const aDiskPercent = a.disk_total
+          ? (aData.disk.used / a.disk_total) * 100
+          : 0;
+        const bDiskPercent = b.disk_total
+          ? (bData.disk.used / b.disk_total) * 100
+          : 0;
         comparison = aDiskPercent - bDiskPercent;
         break;
-      case 'price':
+      case "price":
         comparison = a.price - b.price;
         break;
-      case 'networkUp':
+      case "networkUp":
         comparison = aData.network.up - bData.network.up;
         break;
-      case 'networkDown':
+      case "networkDown":
         comparison = aData.network.down - bData.network.down;
         break;
-      case 'totalUp':
+      case "totalUp":
         comparison = aData.network.totalUp - bData.network.totalUp;
         break;
-      case 'totalDown':
+      case "totalDown":
         comparison = aData.network.totalDown - bData.network.totalDown;
         break;
       default:
         comparison = 0;
     }
 
-    return sortState.order === 'desc' ? -comparison : comparison;
+    return sortState.order === "desc" ? -comparison : comparison;
   });
 
   return (
@@ -163,114 +204,114 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
         <TableHeader>
           <TableRow>
             <TableHead className="w-[24px]"></TableHead>
-            <TableHead 
+            <TableHead
               className="w-[200px] min-w-[150px] cursor-pointer hover:bg-accent-2 select-none"
-              onClick={handleSort('name')}
+              onClick={handleSort("name")}
               title={t("nodeCard.sortTooltip")}
             >
               <Flex align="center" gap="1">
                 {t("nodeCard.name")}
-                {getSortIcon('name')}
+                {getSortIcon("name")}
               </Flex>
             </TableHead>
-            <TableHead 
+            <TableHead
               className="cursor-pointer hover:bg-accent-2 select-none"
-              onClick={handleSort('os')}
+              onClick={handleSort("os")}
               title={t("nodeCard.sortTooltip")}
             >
               <Flex align="center" gap="1">
                 {t("nodeCard.os")}
-                {getSortIcon('os')}
+                {getSortIcon("os")}
               </Flex>
             </TableHead>
-            <TableHead 
+            <TableHead
               className="max-w-[128px] cursor-pointer hover:bg-accent-2 select-none"
-              onClick={handleSort('status')}
+              onClick={handleSort("status")}
               title={t("nodeCard.sortTooltip")}
             >
               <Flex align="center" gap="1">
                 {t("nodeCard.status")}
-                {getSortIcon('status')}
+                {getSortIcon("status")}
               </Flex>
             </TableHead>
-            <TableHead 
+            <TableHead
               className="cursor-pointer hover:bg-accent-2 select-none"
-              onClick={handleSort('cpu')}
+              onClick={handleSort("cpu")}
               title={t("nodeCard.sortTooltip")}
             >
               <Flex align="center" gap="1">
                 {t("nodeCard.cpu")}
-                {getSortIcon('cpu')}
+                {getSortIcon("cpu")}
               </Flex>
             </TableHead>
-            <TableHead 
+            <TableHead
               className="cursor-pointer hover:bg-accent-2 select-none"
-              onClick={handleSort('ram')}
+              onClick={handleSort("ram")}
               title={t("nodeCard.sortTooltip")}
             >
               <Flex align="center" gap="1">
                 {t("nodeCard.ram")}
-                {getSortIcon('ram')}
+                {getSortIcon("ram")}
               </Flex>
             </TableHead>
-            <TableHead 
+            <TableHead
               className="cursor-pointer hover:bg-accent-2 select-none"
-              onClick={handleSort('disk')}
+              onClick={handleSort("disk")}
               title={t("nodeCard.sortTooltip")}
             >
               <Flex align="center" gap="1">
                 {t("nodeCard.disk")}
-                {getSortIcon('disk')}
+                {getSortIcon("disk")}
               </Flex>
             </TableHead>
-            <TableHead 
+            <TableHead
               className="cursor-pointer hover:bg-accent-2 select-none"
-              onClick={handleSort('price')}
+              onClick={handleSort("price")}
               title={t("nodeCard.sortTooltip")}
             >
               <Flex align="center" gap="1">
                 {t("nodeCard.price")}
-                {getSortIcon('price')}
+                {getSortIcon("price")}
               </Flex>
             </TableHead>
-            <TableHead 
+            <TableHead
               className="cursor-pointer hover:bg-accent-2 select-none text-center min-w-[80px]"
-              onClick={handleSort('networkUp')}
+              onClick={handleSort("networkUp")}
               title={t("nodeCard.sortTooltip")}
             >
               <Flex align="center" gap="1" justify="center">
                 {t("nodeCard.networkUploadSpeed")}
-                {getSortIcon('networkUp')}
+                {getSortIcon("networkUp")}
               </Flex>
             </TableHead>
-            <TableHead 
+            <TableHead
               className="cursor-pointer hover:bg-accent-2 select-none text-center min-w-[80px]"
-              onClick={handleSort('networkDown')}
+              onClick={handleSort("networkDown")}
               title={t("nodeCard.sortTooltip")}
             >
               <Flex align="center" gap="1" justify="center">
                 {t("nodeCard.networkDownloadSpeed")}
-                {getSortIcon('networkDown')}
+                {getSortIcon("networkDown")}
               </Flex>
             </TableHead>
-            <TableHead 
+            <TableHead
               className="cursor-pointer hover:bg-accent-2 select-none text-center min-w-[80px]"
-              onClick={handleSort('totalUp')}
+              onClick={handleSort("totalUp")}
               title={t("nodeCard.sortTooltip")}
             >
               <Flex align="center" gap="1" justify="center">
                 {t("nodeCard.totalUpload")}
-                {getSortIcon('totalUp')}
+                {getSortIcon("totalUp")}
               </Flex>
             </TableHead>
-            <TableHead 
+            <TableHead
               className="cursor-pointer hover:bg-accent-2 select-none text-center min-w-[80px]"
-              onClick={handleSort('totalDown')}
+              onClick={handleSort("totalDown")}
               title={t("nodeCard.sortTooltip")}
             >
               <Flex align="center" gap="1" justify="center">
                 {t("nodeCard.totalDownload")}
-                {getSortIcon('totalDown')}
+                {getSortIcon("totalDown")}
               </Flex>
             </TableHead>
           </TableRow>
@@ -335,7 +376,11 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
                   </TableCell>
 
                   <TableCell className="w-4">
-                    <img src={getOSImage(node.os)} alt={node.os} className="w-5 h-5 mr-2" />
+                    <img
+                      src={getOSImage(node.os)}
+                      alt={node.os}
+                      className="w-5 h-5 mr-2"
+                    />
                   </TableCell>
 
                   <TableCell>
