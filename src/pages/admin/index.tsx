@@ -95,12 +95,12 @@ const Layout = () => {
         )
         .sort((a, b) => a.weight - b.weight)
     : [];
-  
+
   useEffect(() => {
     const interval = setInterval(() => { refresh() }, 5000);
     return () => clearInterval(interval);
   }, [nodeDetail]);
-  
+
   if (isLoading) return <Loading text="" />;
   if (error) return <div>{error}</div>;
 
@@ -292,6 +292,22 @@ const SortableRow = ({
       <TableCell>
         <Text
           size="2"
+          title={node.group}
+          style={{
+            maxWidth: "150px",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {node.group && node.group.length > 10
+            ? `${node.group.slice(0, 10)}...`
+            : node.group}
+        </Text>
+      </TableCell>
+      <TableCell>
+        <Text
+          size="2"
           title={node.remark}
           style={{
             maxWidth: "150px",
@@ -436,6 +452,7 @@ const NodeTable = ({
               <TableHead>{t("admin.nodeTable.name")}</TableHead>
               <TableHead>{t("admin.nodeTable.ipAddress")}</TableHead>
               <TableHead>{t("admin.nodeTable.clientVersion")}</TableHead>
+              <TableHead>{t("common.group")}</TableHead>
               <TableHead>{t("admin.nodeEdit.remark")}</TableHead>
               <TableHead>{t("admin.nodeTable.billing")}</TableHead>
               <TableHead></TableHead>
@@ -1606,9 +1623,9 @@ function BillingButton({ node }: { node: NodeDetail }) {
       setSaving(true);
       const formData = new FormData(e.target as HTMLFormElement);
       const priceValue = (formData.get("price") as string) || "0";
-      
+
       const price = parseFloat(priceValue);
-      
+
       if (isNaN(price) || (price < 0 && price !== -1)) {
         toast.error(t("admin.nodeTable.invalidPrice"));
         return;
