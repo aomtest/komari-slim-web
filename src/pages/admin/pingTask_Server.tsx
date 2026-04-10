@@ -152,7 +152,7 @@ const ServerRow: React.FC<{
                 <Selector
                   value={selectedIds}
                   onChange={setSelectedIds}
-                  items={[...pingTasks.filter((t) => t.id !== undefined)].reverse()}
+                  items={[...pingTasks.filter((t) => t.id !== undefined)]}
                   getId={(task) => String(task.id)}
                   getLabel={(task) => (
                     <span className="text-sm">
