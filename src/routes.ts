@@ -85,6 +85,12 @@ export const routes: RouteObject[] = [
               lazy(() => import("./pages/admin/settings/general"))
             ),
           },
+          {
+            path: "reverse-proxy",
+            element: React.createElement(
+              lazy(() => import("./pages/admin/settings/reverse-proxy"))
+            ),
+          },
         ],
       },
       {

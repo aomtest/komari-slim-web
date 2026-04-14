@@ -574,6 +574,9 @@
       "test_title": "Send test message",
       "title": "Notifications"
     },
+    "reverse_proxy": {
+      "title": "Reverse Proxy"
+    },
     "record": {
       "enabled": "Enable Record",
       "enabled_description": "Log server historical load details and Ping records,etc.",

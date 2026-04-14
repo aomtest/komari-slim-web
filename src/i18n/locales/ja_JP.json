@@ -574,6 +574,9 @@
       "test_title": "テストメッセージを送信",
       "title": "通知"
     },
+    "reverse_proxy": {
+      "title": "リバースプロキシ"
+    },
     "record": {
       "enabled": "履歴を有効にする",
       "enabled_description": "サーバーの履歴負荷詳細や Ping 記録などを記録します",

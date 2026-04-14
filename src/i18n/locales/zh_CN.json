@@ -574,6 +574,9 @@
       "test_title": "发送测试消息",
       "title": "通知"
     },
+    "reverse_proxy": {
+      "title": "反向代理"
+    },
     "record": {
       "enabled": "开启历史记录",
       "enabled_description": "记录服务器历史负载详情和Ping记录等",

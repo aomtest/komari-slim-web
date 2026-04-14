@@ -574,6 +574,9 @@
       "test_title": "Kirim pesan uji coba",
       "title": "Notifikasi"
     },
+    "reverse_proxy": {
+      "title": "Reverse Proxy"
+    },
     "record": {
       "enabled": "Aktifkan Pencatatan",
       "enabled_description": "Catat riwayat beban server dan detail Ping, serta data lainnya.",

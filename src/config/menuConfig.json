@@ -34,6 +34,11 @@
           "labelKey": "settings.general.title",
           "path": "/admin/settings/general",
           "icon": "Ellipsis"
+        },
+        {
+          "labelKey": "settings.reverse_proxy.title",
+          "path": "/admin/settings/reverse-proxy",
+          "icon": "Globe"
         }
       ]
     },
