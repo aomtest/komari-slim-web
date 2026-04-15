@@ -62,7 +62,10 @@ export default function ReverseProxySettings() {
       const message =
         error instanceof Error
           ? error.message
-          : "Failed to fetch cloudflared status";
+          : t(
+              "settings.reverse_proxy.fetch_status_failed",
+              "Failed to fetch cloudflared status"
+            );
       if (!silent) {
         toast.error(message);
       }
@@ -131,23 +134,38 @@ export default function ReverseProxySettings() {
       </SettingCardLabel>
 
       <SettingCard
-        title="Cloudflare Tunnel"
-        description="Start and manage cloudflared directly from the Komari settings panel."
+        title={t(
+          "settings.reverse_proxy.cloudflare_title",
+          "Cloudflare Tunnel"
+        )}
+        description={t(
+          "settings.reverse_proxy.cloudflare_description",
+          "Start and manage cloudflared directly from the Komari settings panel."
+        )}
         direction="column"
       >
         <Flex direction="column" gap="3" className="w-full pt-3">
           <Flex gap="3" wrap="wrap">
             <StatusLine
-              label="cloudflared"
+              label={t(
+                "settings.reverse_proxy.cloudflared_label",
+                "cloudflared"
+              )}
               ok={status.installed}
-              okText="installed"
-              failText="not installed"
+              okText={t(
+                "settings.reverse_proxy.installed",
+                "installed"
+              )}
+              failText={t(
+                "settings.reverse_proxy.not_installed",
+                "not installed"
+              )}
             />
             <StatusLine
-              label="status"
+              label={t("settings.reverse_proxy.status_label", "status")}
               ok={status.running}
-              okText="running"
-              failText="stopped"
+              okText={t("settings.reverse_proxy.running", "running")}
+              failText={t("settings.reverse_proxy.stopped", "stopped")}
             />
             {status.pid ? (
               <Badge variant="soft" color="gray">
@@ -158,14 +176,17 @@ export default function ReverseProxySettings() {
 
           {status.binaryPath ? (
             <Text size="2" color="gray">
-              Binary: <code>{status.binaryPath}</code>
+              {t("settings.reverse_proxy.binary_label", "Binary")}:{" "}
+              <code>{status.binaryPath}</code>
             </Text>
           ) : null}
 
           {status.envTokenPresent ? (
             <Text size="2" color="gray">
-              Environment variable `KOMARI_CLOUDFLARED_TOKEN` is present.
-              Komari will try to restore cloudflared automatically on restart.
+              {t(
+                "settings.reverse_proxy.env_token_hint",
+                "Environment variable `KOMARI_CLOUDFLARED_TOKEN` is present. Komari will try to restore cloudflared automatically on restart."
+              )}
             </Text>
           ) : null}
 
@@ -174,7 +195,10 @@ export default function ReverseProxySettings() {
               className="mb-2 block text-sm font-medium"
               htmlFor="cloudflareTunnelToken"
             >
-              Cloudflare Tunnel Token
+              {t(
+                "settings.reverse_proxy.cloudflare_token",
+                "Cloudflare Tunnel Token"
+              )}
             </label>
             <TextField.Root
               id="cloudflareTunnelToken"
@@ -182,8 +206,14 @@ export default function ReverseProxySettings() {
               value={token}
               placeholder={
                 status.tokenStored
-                  ? "•••••••••••••••• (stored securely, not returned to the browser)"
-                  : "Paste your Cloudflare Tunnel token"
+                  ? t(
+                      "settings.reverse_proxy.cloudflare_token_stored_placeholder",
+                      "•••••••••••••••• (stored securely, not returned to the browser)"
+                    )
+                  : t(
+                      "settings.reverse_proxy.cloudflare_token_placeholder",
+                      "Paste your Cloudflare Tunnel token"
+                    )
               }
               onChange={(event) => {
                 setToken(event.target.value);
@@ -202,8 +232,10 @@ export default function ReverseProxySettings() {
               </TextField.Slot>
             </TextField.Root>
             <Text size="2" color="gray" className="mt-2 block">
-              The saved token is encrypted on the server side. The frontend only
-              receives whether a token is stored, never the raw token.
+              {t(
+                "settings.reverse_proxy.cloudflare_token_help",
+                "The saved token is encrypted on the server side. The frontend only receives whether a token is stored, never the raw token."
+              )}
             </Text>
             {status.tokenStored && !status.running ? (
               <Text size="2" color="gray" className="mt-1 block">
@@ -213,16 +245,25 @@ export default function ReverseProxySettings() {
                   onClick={() =>
                     void withSubmit(
                       () => removeCloudflaredToken(),
-                      "Cloudflare Tunnel token removed"
+                      t(
+                        "settings.reverse_proxy.remove_token_success",
+                        "Cloudflare Tunnel token removed"
+                      )
                     )
                   }
                 >
-                  Remove the stored token
+                  {t(
+                    "settings.reverse_proxy.remove_token",
+                    "Remove the stored token"
+                  )}
                 </button>
               </Text>
             ) : null}
             <Text size="2" color="gray" className="mt-1 block">
-              Need help finding the token? Read the Uptime Kuma guide:{" "}
+              {t(
+                "settings.reverse_proxy.guide_prefix",
+                "Need help finding the token? Read the Uptime Kuma guide:"
+              )}{" "}
               <a
                 href="https://github.com/louislam/uptime-kuma/wiki/Reverse-Proxy-with-Cloudflare-Tunnel"
                 target="_blank"
@@ -240,12 +281,18 @@ export default function ReverseProxySettings() {
                 onClick={() =>
                   void withSubmit(
                     () => startCloudflared(token.trim()),
-                    "cloudflared started"
+                    t(
+                      "settings.reverse_proxy.start_success",
+                      "cloudflared started"
+                    )
                   )
                 }
               >
                 <Play size={16} />
-                Start cloudflared
+                {t(
+                  "settings.reverse_proxy.start_cloudflared",
+                  "Start cloudflared"
+                )}
               </Button>
             ) : (
               <Button
@@ -254,7 +301,10 @@ export default function ReverseProxySettings() {
                 onClick={() => setStopDialogOpen(true)}
               >
                 <Square size={16} />
-                Stop cloudflared
+                {t(
+                  "settings.reverse_proxy.stop_cloudflared",
+                  "Stop cloudflared"
+                )}
               </Button>
             )}
 
@@ -270,14 +320,18 @@ export default function ReverseProxySettings() {
 
           {status.message ? (
             <Text size="2" color="gray">
-              Latest status: {status.message}
+              {t("settings.reverse_proxy.latest_status", "Latest status")}:{" "}
+              {status.message}
             </Text>
           ) : null}
 
           {status.errorMessage ? (
             <div>
               <label className="mb-2 block text-sm font-medium">
-                Error message
+                {t(
+                  "settings.reverse_proxy.error_message",
+                  "Error message"
+                )}
               </label>
               <TextArea value={status.errorMessage} readOnly rows={4} />
             </div>
@@ -286,7 +340,7 @@ export default function ReverseProxySettings() {
           {status.logs.length > 0 ? (
             <div>
               <label className="mb-2 block text-sm font-medium">
-                Recent logs
+                {t("settings.reverse_proxy.recent_logs", "Recent logs")}
               </label>
               <TextArea value={status.logs.join("\n")} readOnly rows={10} />
             </div>
@@ -294,8 +348,10 @@ export default function ReverseProxySettings() {
 
           {!status.installed ? (
             <Text size="2" color="gray">
-              In non-Docker deployments, install cloudflared manually or set
-              `KOMARI_CLOUDFLARED_BIN` to the cloudflared binary path.
+              {t(
+                "settings.reverse_proxy.install_hint",
+                "In non-Docker deployments, install cloudflared manually or set `KOMARI_CLOUDFLARED_BIN` to the cloudflared binary path."
+              )}
             </Text>
           ) : null}
         </Flex>
@@ -312,10 +368,17 @@ export default function ReverseProxySettings() {
         }}
       >
         <Dialog.Content maxWidth="520px">
-          <Dialog.Title>Stop cloudflared</Dialog.Title>
+          <Dialog.Title>
+            {t(
+              "settings.reverse_proxy.stop_dialog_title",
+              "Stop cloudflared"
+            )}
+          </Dialog.Title>
           <Dialog.Description>
-            If you are currently accessing Komari through this tunnel, stopping
-            cloudflared may immediately disconnect your session.
+            {t(
+              "settings.reverse_proxy.stop_dialog_description",
+              "If you are currently accessing Komari through this tunnel, stopping cloudflared may immediately disconnect your session."
+            )}
           </Dialog.Description>
 
           {!disablePasswordDoubleCheck ? (
@@ -324,7 +387,10 @@ export default function ReverseProxySettings() {
                 className="text-sm font-medium"
                 htmlFor="cloudflaredCurrentPassword"
               >
-                Current password
+                {t(
+                  "settings.reverse_proxy.current_password",
+                  "Current password"
+                )}
               </label>
               <TextField.Root
                 id="cloudflaredCurrentPassword"
@@ -339,10 +405,16 @@ export default function ReverseProxySettings() {
                 className="text-sm font-medium"
                 htmlFor="cloudflaredStopConfirmText"
               >
-                Confirmation text
+                {t(
+                  "settings.reverse_proxy.confirmation_text",
+                  "Confirmation text"
+                )}
               </label>
               <Text size="2" color="gray">
-                Password login is disabled. Type `STOP CLOUDFLARED` to confirm.
+                {t(
+                  "settings.reverse_proxy.confirmation_help",
+                  "Password login is disabled. Type `STOP CLOUDFLARED` to confirm."
+                )}
               </Text>
               <TextField.Root
                 id="cloudflaredStopConfirmText"
@@ -363,14 +435,20 @@ export default function ReverseProxySettings() {
               onClick={async () => {
                 await withSubmit(
                   () => stopCloudflared(currentPassword, confirmText),
-                  "cloudflared stopped"
+                  t(
+                    "settings.reverse_proxy.stop_success",
+                    "cloudflared stopped"
+                  )
                 );
                 setCurrentPassword("");
                 setConfirmText("");
                 setStopDialogOpen(false);
               }}
             >
-              Stop cloudflared
+              {t(
+                "settings.reverse_proxy.stop_cloudflared",
+                "Stop cloudflared"
+              )}
             </Button>
           </Flex>
         </Dialog.Content>
