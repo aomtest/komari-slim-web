@@ -25,19 +25,6 @@ export async function getCloudflaredStatus(): Promise<CloudflaredStatus> {
   return parseResponse<CloudflaredStatus>(response);
 }
 
-export async function saveCloudflaredToken(
-  token: string
-): Promise<CloudflaredStatus> {
-  const response = await fetch("/api/admin/settings/cloudflared/token", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ token }),
-  });
-  return parseResponse<CloudflaredStatus>(response);
-}
-
 export async function startCloudflared(
   token: string
 ): Promise<CloudflaredStatus> {
