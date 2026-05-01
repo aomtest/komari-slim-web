@@ -13,10 +13,12 @@ import { useSettings } from "@/lib/api";
 import {
   Box,
   Button,
+  Checkbox,
   Dialog,
-  Flex, Select,
+  Flex,
+  Select,
   Tabs,
-  TextField
+  TextField,
 } from "@radix-ui/themes";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -133,6 +135,7 @@ const AddButton: React.FC = () => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
   const [selected, setSelected] = React.useState<string[]>([]);
+  const [defaultOn, setDefaultOn] = React.useState(false);
   const { refresh } = usePingTask();
   const [selectedType, setSelectedType] = React.useState<
     "icmp" | "tcp" | "http"
@@ -140,10 +143,15 @@ const AddButton: React.FC = () => {
   const [saving, setSaving] = React.useState(false);
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!defaultOn && selected.length === 0) {
+      toast.error(t("ping.default_on_description"));
+      return;
+    }
     const payload = {
       name: e.currentTarget.ping_name.value,
       type: selectedType,
       target: e.currentTarget.ping_target.value,
+      default_on: defaultOn,
       clients: selected,
       interval: parseInt(e.currentTarget.interval.value, 10),
     };
@@ -159,6 +167,7 @@ const AddButton: React.FC = () => {
         if (response.ok) {
           setIsOpen(false);
           setSelected([]);
+          setDefaultOn(false);
           setSelectedType("icmp");
           toast.success(t("common.success"));
         } else {
@@ -213,10 +222,22 @@ const AddButton: React.FC = () => {
               placeholder="1.1.1.1 | 1.1.1.1:80 | https://1.1.1.1"
             />
             <label htmlFor="ping_server">{t("common.server")}</label>
-            <div className="flex items-center justify-start gap-2">
-              <NodeSelectorDialog value={selected} onChange={setSelected} />
-              <label className="text-md font-normal">
-                {t("common.selected", { count: selected.length })}
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-start gap-2">
+                <NodeSelectorDialog value={selected} onChange={setSelected} />
+                <label className="text-md font-normal">
+                  {t("common.selected", { count: selected.length })}
+                </label>
+              </div>
+              <label className="flex min-h-10 items-center gap-2 text-sm font-normal">
+                <Checkbox
+                  checked={defaultOn}
+                  onCheckedChange={(checked) => setDefaultOn(!!checked)}
+                />
+                <span>{t("ping.default_on")}</span>
+              </label>
+              <label className="text-sm font-normal text-gray-500">
+                {t("ping.default_on_description")}
               </label>
             </div>
             <label htmlFor="interval">
