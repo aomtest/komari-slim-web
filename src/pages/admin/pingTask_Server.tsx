@@ -40,7 +40,12 @@ export const ServerView = ({ pingTasks }: { pingTasks: PingTask[] }) => {
         </TableHeader>
         <TableBody>
           {sortedNodes.map((n) => (
-            <ServerRow key={n.uuid} nodeUuid={n.uuid} nodeName={n.name} pingTasks={pingTasks} />
+            <ServerRow
+              key={n.uuid}
+              nodeUuid={n.uuid}
+              nodeName={n.name}
+              pingTasks={pingTasks}
+            />
           ))}
         </TableBody>
       </Table>
@@ -97,6 +102,7 @@ const ServerRow: React.FC<{
           type: task.type,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           target: task.target!,
+          default_on: task.default_on || false,
           clients: Array.from(current),
           interval: task.interval,
         };
@@ -157,6 +163,11 @@ const ServerRow: React.FC<{
                   getLabel={(task) => (
                     <span className="text-sm">
                       {task.name}
+                      {task.default_on && (
+                        <span className="ml-2 text-xs text-accent-11">
+                          {t("ping.default_on_short")}
+                        </span>
+                      )}
                       <span className="ml-2 text-xs text-gray-500">
                         {task.type}/{task.interval}s
                       </span>
