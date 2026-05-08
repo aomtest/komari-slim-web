@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import type { CSSProperties } from "react";
 import { Terminal } from "xterm";
+import type { ITerminalOptions } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import { WebLinksAddon } from "xterm-addon-web-links";
 import { SearchAddon } from "xterm-addon-search";
@@ -12,6 +14,10 @@ import { TablerAlertTriangleFilled } from "../../components/Icones/Tabler";
 import CommandClipboardPanel from "@/pages/terminal/CommandClipboard";
 import { Toaster } from "@/components/ui/sonner";
 import { TerminalContext } from "@/contexts/TerminalContext";
+import {
+  isTransparentBackground,
+  useXtermjsSettings,
+} from "@/hooks/useXtermjsSettings";
 import { motion } from "framer-motion";
 import throttle from "lodash/throttle";
 interface TerminalAreaProps {
@@ -19,18 +25,20 @@ interface TerminalAreaProps {
   toggleClipboard: () => void;
   width: number | string;
   isOpen: boolean;
+  appearance: CSSProperties;
 }
 const TerminalArea: React.FC<TerminalAreaProps> = ({
   terminalRef,
   toggleClipboard,
   width,
   isOpen,
+  appearance,
 }) => (
   <div
-    className="relative flex justify-center bg-black md:bg-accent-3 flex-col h-full min-w-128"
-    style={{ width }}
+    className="terminal-page relative flex justify-center flex-col h-full min-w-128"
+    style={{ width, ...appearance }}
   >
-    <div className="m-0 md:p-4 p-0 w-full h-full bg-black">
+    <div className="terminal-xterm-host m-0 w-full h-full">
       <div ref={terminalRef} className="h-full w-full" />
     </div>
     <div
@@ -60,6 +68,7 @@ const ClipboardPanel: React.FC = () => (
 );
 
 const TerminalPage = () => {
+  const { settings } = useXtermjsSettings();
   const terminalRef = useRef<HTMLDivElement>(null);
   const terminalInstance = useRef<Terminal | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
@@ -74,6 +83,50 @@ const TerminalPage = () => {
   const draggingRef = useRef(false);
   const fitAddonRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const xtermSettingsRef = useRef(settings);
+
+  const appearance = useMemo<CSSProperties>(
+    () =>
+      ({
+        "--xterm-container-bg": xtermSettingsRef.current.containerBackground,
+        "--xterm-padding": `${xtermSettingsRef.current.terminalPadding}px`,
+        "--xterm-scrollbar-track": xtermSettingsRef.current.scrollbarTrack,
+        "--xterm-scrollbar-thumb": xtermSettingsRef.current.scrollbarThumb,
+        "--xterm-scrollbar-thumb-hover":
+          xtermSettingsRef.current.scrollbarThumbHover,
+      }) as CSSProperties,
+    []
+  );
+
+  const terminalOptions = useMemo<Partial<ITerminalOptions>>(() => {
+    const currentSettings = xtermSettingsRef.current;
+    const nextOptions: Partial<ITerminalOptions> = {
+      cursorBlink: currentSettings.terminalOptions.cursorBlink,
+      convertEol: currentSettings.terminalOptions.convertEol,
+      fontFamily: currentSettings.terminalOptions.fontFamily,
+      fontSize: currentSettings.terminalOptions.fontSize,
+      macOptionIsMeta: currentSettings.terminalOptions.macOptionIsMeta,
+      scrollback: currentSettings.terminalOptions.scrollback,
+    };
+
+    if (currentSettings.terminalOptions.fontWeight !== undefined) {
+      nextOptions.fontWeight = currentSettings.terminalOptions.fontWeight;
+    }
+    if (currentSettings.terminalOptions.fontWeightBold !== undefined) {
+      nextOptions.fontWeightBold = currentSettings.terminalOptions.fontWeightBold;
+    }
+    if (currentSettings.terminalOptions.theme !== undefined) {
+      nextOptions.theme = currentSettings.terminalOptions.theme;
+    }
+    if (
+      currentSettings.transparentBackground ||
+      isTransparentBackground(currentSettings.terminalOptions.theme?.background)
+    ) {
+      nextOptions.allowTransparency = true;
+    }
+
+    return nextOptions;
+  }, []);
 
   // 使用 useCallback 确保 resizeTerminal 引用稳定
   const resizeTerminal = useCallback(() => {
@@ -171,14 +224,7 @@ const TerminalPage = () => {
     setCallout(window.location.protocol !== "https:");
     if (!terminalRef.current) return;
 
-    const term = new Terminal({
-      cursorBlink: true,
-      macOptionIsMeta: true,
-      scrollback: 5000,
-      convertEol: true,
-      fontFamily: "'Cascadia Mono', 'Noto Sans SC', monospace",
-      fontSize: 16,
-    });
+    const term = new Terminal(terminalOptions);
 
     const fitAddon = new FitAddon();
     fitAddonRef.current = fitAddon;
@@ -310,7 +356,7 @@ const TerminalPage = () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("contextmenu", handleContextMenu);
     };
-  }, [t, uuid, resizeTerminal]);
+  }, [t, uuid, resizeTerminal, terminalOptions]);
 
   // 移除对 leftWidth 的直接依赖，改用防抖
   useEffect(() => {
@@ -374,6 +420,7 @@ const TerminalPage = () => {
             toggleClipboard={() => setIsClipboardOpen(!isClipboardOpen)}
             width={isClipboardOpen ? `${leftWidth}px` : "100%"}
             isOpen={isClipboardOpen}
+            appearance={appearance}
           />
           {isClipboardOpen && <Divider onMouseDown={startDragging} />}
           {isClipboardOpen && <ClipboardPanel />}
