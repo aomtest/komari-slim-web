@@ -225,6 +225,10 @@ const TerminalPage = () => {
     if (!terminalRef.current) return;
 
     const term = new Terminal(terminalOptions);
+    const customCssStyle = document.createElement("style");
+    customCssStyle.id = "xtermjs-custom-css";
+    customCssStyle.textContent = xtermSettingsRef.current.customCss;
+    document.head.appendChild(customCssStyle);
 
     const fitAddon = new FitAddon();
     fitAddonRef.current = fitAddon;
@@ -237,6 +241,25 @@ const TerminalPage = () => {
 
     term.open(terminalRef.current);
     terminalInstance.current = term;
+
+    const resizeObserver =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(() => {
+            resizeTerminal();
+          })
+        : null;
+
+    if (resizeObserver && terminalRef.current) {
+      resizeObserver.observe(terminalRef.current);
+    }
+
+    let isMounted = true;
+
+    document.fonts?.ready?.then(() => {
+      if (isMounted) {
+        resizeTerminal();
+      }
+    });
 
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const host = window.location.host;
@@ -344,8 +367,13 @@ const TerminalPage = () => {
     document.addEventListener("contextmenu", handleContextMenu);
 
     return () => {
+      isMounted = false;
       stopHeartbeat();
+      resizeObserver?.disconnect();
       term.dispose();
+      if (customCssStyle.parentNode) {
+        customCssStyle.parentNode.removeChild(customCssStyle);
+      }
       if (
         ws.readyState === WebSocket.OPEN ||
         ws.readyState === WebSocket.CONNECTING
