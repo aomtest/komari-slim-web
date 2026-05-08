@@ -26,6 +26,8 @@ const FONT_WEIGHT_STRING_VALUES = [
   "900",
 ] as const;
 
+type XtermStringThemeKey = Exclude<keyof ITheme, "extendedAnsi">;
+
 export const xtermThemeWhitelist: (keyof ITheme)[] = [
   "foreground",
   "background",
@@ -50,7 +52,18 @@ export const xtermThemeWhitelist: (keyof ITheme)[] = [
   "brightMagenta",
   "brightCyan",
   "brightWhite",
+  "extendedAnsi",
 ];
+
+export interface ParsedXtermThemeJson {
+  theme: Partial<ITheme> | undefined;
+  filtered: boolean;
+}
+
+export type XtermThemeJsonParseResult =
+  | { status: "invalid_json" }
+  | { status: "non_object" }
+  | ({ status: "ok" } & ParsedXtermThemeJson);
 
 export interface XtermjsTerminalOptions
   extends Pick<
@@ -163,21 +176,71 @@ function normalizeFontWeight(value: unknown): ITerminalOptions["fontWeight"] {
   return undefined;
 }
 
+function sanitizeThemeObject(value: Record<string, unknown>): ParsedXtermThemeJson {
+  const theme: Partial<ITheme> = {};
+  let filtered = false;
+
+  for (const [key, rawValue] of Object.entries(value)) {
+    if (!xtermThemeWhitelist.includes(key as keyof ITheme)) {
+      filtered = true;
+      continue;
+    }
+
+    if (key === "extendedAnsi") {
+      if (
+        Array.isArray(rawValue) &&
+        rawValue.every(
+          (color) => typeof color === "string" && color.trim().length > 0
+        )
+      ) {
+        theme.extendedAnsi = rawValue;
+      } else if (rawValue !== undefined) {
+        filtered = true;
+      }
+      continue;
+    }
+
+    if (typeof rawValue === "string" && rawValue.trim().length > 0) {
+      theme[key as XtermStringThemeKey] = rawValue;
+    } else if (rawValue !== undefined) {
+      filtered = true;
+    }
+  }
+
+  return {
+    theme: Object.keys(theme).length > 0 ? theme : undefined,
+    filtered,
+  };
+}
+
+export function parseXtermThemeJson(
+  rawValue: string
+): XtermThemeJsonParseResult {
+  let parsed: unknown;
+
+  try {
+    parsed = JSON.parse(rawValue);
+  } catch {
+    return { status: "invalid_json" };
+  }
+
+  if (!isPlainObject(parsed)) {
+    return { status: "non_object" };
+  }
+
+  return { status: "ok", ...sanitizeThemeObject(parsed) };
+}
+
+export function formatXtermThemeJson(value: Partial<ITheme> | undefined): string {
+  return JSON.stringify(value ?? {}, null, 2);
+}
+
 function sanitizeThemeValue(value: unknown): Partial<ITheme> | undefined {
   if (!isPlainObject(value)) {
     return undefined;
   }
 
-  const theme: Partial<Record<keyof ITheme, string>> = {};
-
-  for (const key of xtermThemeWhitelist) {
-    const rawValue = value[key];
-    if (typeof rawValue === "string" && rawValue.trim().length > 0) {
-      theme[key] = rawValue;
-    }
-  }
-
-  return Object.keys(theme).length > 0 ? (theme as Partial<ITheme>) : undefined;
+  return sanitizeThemeObject(value).theme;
 }
 
 export function sanitizeXtermjsSettings(value: unknown): XtermjsSettings {
@@ -269,6 +332,21 @@ export function isTransparentBackground(value: unknown): boolean {
     return true;
   }
 
+  const isTransparentAlpha = (rawAlpha: string): boolean => {
+    const alphaValue = rawAlpha.trim();
+    if (!alphaValue) {
+      return false;
+    }
+
+    if (alphaValue.endsWith("%")) {
+      const percentage = Number.parseFloat(alphaValue.slice(0, -1));
+      return Number.isFinite(percentage) && percentage < 100;
+    }
+
+    const alpha = Number.parseFloat(alphaValue);
+    return Number.isFinite(alpha) && alpha < 1;
+  };
+
   const hexMatch = normalized.match(/^#([0-9a-f]{4}|[0-9a-f]{8})$/i);
   if (hexMatch) {
     const alphaHex =
@@ -276,35 +354,21 @@ export function isTransparentBackground(value: unknown): boolean {
     return Number.parseInt(alphaHex, 16) < 255;
   }
 
-  const rgbaMatch = normalized.match(
-    /^rgba?\((.+)\)$/i
-  );
-  if (rgbaMatch) {
-    const parts = rgbaMatch[1]
-      .split(",")
-      .map((part) => part.trim())
-      .filter(Boolean);
-
-    if (parts.length === 4) {
-      const alpha = Number.parseFloat(parts[3]);
-      return Number.isFinite(alpha) && alpha < 1;
+  const functionalColorMatch = normalized.match(/^(rgba?|hsla?)\((.+)\)$/i);
+  if (functionalColorMatch) {
+    const colorBody = functionalColorMatch[2];
+    const slashAlpha = colorBody.split("/")[1]?.trim();
+    if (slashAlpha) {
+      return isTransparentAlpha(slashAlpha);
     }
 
-    return false;
-  }
-
-  const hslaMatch = normalized.match(
-    /^hsla?\((.+)\)$/i
-  );
-  if (hslaMatch) {
-    const parts = hslaMatch[1]
+    const parts = colorBody
       .split(",")
       .map((part) => part.trim())
       .filter(Boolean);
 
     if (parts.length === 4) {
-      const alpha = Number.parseFloat(parts[3]);
-      return Number.isFinite(alpha) && alpha < 1;
+      return isTransparentAlpha(parts[3]);
     }
 
     return false;

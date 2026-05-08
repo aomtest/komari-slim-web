@@ -633,10 +633,14 @@
       "scrollbar_thumb_hover": "スクロールバーのつまみ（ホバー）",
       "reset_defaults": "ローカルの既定値に戻す",
       "theme_json": "テーマ JSON",
+      "theme_json_description": "ここでは terminalOptions.theme のみ編集します。未知のキーは保存時にフィルターされます。",
       "custom_css": "カスタム CSS",
+      "custom_css_description": "ルールを書くときは .terminal-page または .terminal-xterm-host の接頭辞を推奨します。",
       "theme_json_invalid": "無効なテーマ JSON",
+      "theme_json_must_be_object": "テーマ JSON は JSON オブジェクトである必要があります",
       "theme_json_filtered": "フィルタ済みテーマ JSON",
-      "transparent_hint": "コンテナ背景も透明な場合にのみ透明化を有効にしてください。"
+      "transparent_hint": "コンテナ背景も透明な場合にのみ透明化を有効にしてください。",
+      "transparent_theme_hint": "テーマ背景はまだ不透明です。rgba(...) または hsla(...) を使用してください。"
     },
     "record": {
       "enabled": "履歴を有効にする",

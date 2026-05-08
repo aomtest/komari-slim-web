@@ -633,10 +633,14 @@
       "scrollbar_thumb_hover": "捲動條滑塊懸停",
       "reset_defaults": "恢復本地預設值",
       "theme_json": "主題 JSON",
+      "theme_json_description": "這裡只編輯 terminalOptions.theme。儲存時會過濾未知鍵。",
       "custom_css": "自訂 CSS",
+      "custom_css_description": "撰寫規則時，建議使用 .terminal-page 或 .terminal-xterm-host 作為前綴。",
       "theme_json_invalid": "主題 JSON 無效",
+      "theme_json_must_be_object": "主題 JSON 必須是 JSON 物件",
       "theme_json_filtered": "已過濾主題 JSON",
-      "transparent_hint": "僅在容器背景也透明時啟用透明效果。"
+      "transparent_hint": "僅在容器背景也透明時啟用透明效果。",
+      "transparent_theme_hint": "主題背景仍然不透明，請改用 rgba(...) 或 hsla(...)。"
     },
     "record": {
       "enabled": "開啟歷史記錄",

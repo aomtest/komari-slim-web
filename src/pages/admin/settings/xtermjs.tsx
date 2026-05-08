@@ -1,15 +1,20 @@
 import React from "react";
-import { Flex } from "@radix-ui/themes";
+import { Callout, Flex } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { AlertTriangle } from "lucide-react";
 import type { ITerminalOptions } from "xterm";
 import {
   SettingCardButton,
   SettingCardLabel,
+  SettingCardLongTextInput,
   SettingCardShortTextInput,
   SettingCardSwitch,
 } from "@/components/admin/SettingCard";
 import {
+  formatXtermThemeJson,
+  isTransparentBackground,
+  parseXtermThemeJson,
   useXtermjsSettings,
   type XtermjsSettings,
 } from "@/hooks/useXtermjsSettings";
@@ -18,6 +23,8 @@ export default function XtermjsSettingsPage() {
   const { t } = useTranslation();
   const { settings, setSettings, resetSettings } = useXtermjsSettings();
   const [formKey, setFormKey] = React.useState(0);
+  const [themeJsonRevision, setThemeJsonRevision] = React.useState(0);
+  const [customCssRevision, setCustomCssRevision] = React.useState(0);
 
   const patchSettings = React.useCallback(
     (updater: (current: XtermjsSettings) => XtermjsSettings) => {
@@ -69,6 +76,55 @@ export default function XtermjsSettingsPage() {
     setFormKey((value) => value + 1);
     toast.success(t("settings.settings_saved"));
   }, [resetSettings, t]);
+
+  const handleThemeJsonSave = React.useCallback(
+    async (value: string) => {
+      const parsed = parseXtermThemeJson(value);
+
+      if (parsed.status === "invalid_json") {
+        toast.error(t("settings.xtermjs.theme_json_invalid"));
+        return;
+      }
+
+      if (parsed.status === "non_object") {
+        toast.error(t("settings.xtermjs.theme_json_must_be_object"));
+        return;
+      }
+
+      setSettings((current) => ({
+        ...current,
+        terminalOptions: {
+          ...current.terminalOptions,
+          theme: parsed.theme,
+        },
+      }));
+      setThemeJsonRevision((current) => current + 1);
+
+      if (parsed.filtered) {
+        toast.warning(t("settings.xtermjs.theme_json_filtered"));
+      } else {
+        toast.success(t("settings.settings_saved"));
+      }
+    },
+    [setSettings, t]
+  );
+
+  const handleCustomCssSave = React.useCallback(
+    async (value: string) => {
+      setSettings((current) => ({
+        ...current,
+        customCss: value,
+      }));
+      setCustomCssRevision((current) => current + 1);
+      toast.success(t("settings.settings_saved"));
+    },
+    [setSettings, t]
+  );
+
+  const themeBackgroundIsOpaque =
+    settings.transparentBackground &&
+    settings.terminalOptions.theme?.background !== undefined &&
+    !isTransparentBackground(settings.terminalOptions.theme.background);
 
   return (
     <Flex key={formKey} direction="column" gap="3">
@@ -193,6 +249,17 @@ export default function XtermjsSettingsPage() {
         }}
       />
 
+      {themeBackgroundIsOpaque && (
+        <Callout.Root color="amber" size="1">
+          <Callout.Icon>
+            <AlertTriangle size={16} />
+          </Callout.Icon>
+          <Callout.Text>
+            {t("settings.xtermjs.transparent_theme_hint")}
+          </Callout.Text>
+        </Callout.Root>
+      )}
+
       <SettingCardShortTextInput
         title={t("settings.xtermjs.container_background")}
         defaultValue={settings.containerBackground || "#000000"}
@@ -263,6 +330,22 @@ export default function XtermjsSettingsPage() {
           }));
           toast.success(t("settings.settings_saved"));
         }}
+      />
+
+      <SettingCardLongTextInput
+        key={`theme-json-${themeJsonRevision}`}
+        title={t("settings.xtermjs.theme_json")}
+        description={t("settings.xtermjs.theme_json_description")}
+        defaultValue={formatXtermThemeJson(settings.terminalOptions.theme)}
+        OnSave={handleThemeJsonSave}
+      />
+
+      <SettingCardLongTextInput
+        key={`custom-css-${customCssRevision}`}
+        title={t("settings.xtermjs.custom_css")}
+        description={t("settings.xtermjs.custom_css_description")}
+        defaultValue={settings.customCss || ""}
+        OnSave={handleCustomCssSave}
       />
     </Flex>
   );

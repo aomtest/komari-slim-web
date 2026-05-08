@@ -633,10 +633,14 @@
       "scrollbar_thumb_hover": "Thumb Scrollbar Saat Hover",
       "reset_defaults": "Pulihkan default lokal",
       "theme_json": "JSON Tema",
+      "theme_json_description": "Hanya terminalOptions.theme yang diedit. Key yang tidak dikenal akan difilter saat disimpan.",
       "custom_css": "CSS Kustom",
+      "custom_css_description": "Gunakan prefiks .terminal-page atau .terminal-xterm-host saat menulis aturan.",
       "theme_json_invalid": "JSON tema tidak valid",
+      "theme_json_must_be_object": "JSON tema harus berupa objek JSON",
       "theme_json_filtered": "JSON tema difilter",
-      "transparent_hint": "Aktifkan transparansi hanya jika latar kontainer juga transparan."
+      "transparent_hint": "Aktifkan transparansi hanya jika latar kontainer juga transparan.",
+      "transparent_theme_hint": "Latar tema masih opak. Gunakan rgba(...) atau hsla(...)."
     },
     "record": {
       "enabled": "Aktifkan Pencatatan",
