@@ -616,6 +616,28 @@
       "confirmation_help": "Password login is disabled. Type `STOP CLOUDFLARED` to confirm.",
       "fetch_status_failed": "Failed to fetch cloudflared status"
     },
+    "xtermjs": {
+      "title": "XtermJS",
+      "font_family": "Font Family",
+      "font_size": "Font Size",
+      "font_weight": "Font Weight",
+      "font_weight_bold": "Bold Font Weight",
+      "cursor_blink": "Cursor Blink",
+      "scrollback": "Scrollback",
+      "convert_eol": "Convert EOL",
+      "transparent_background": "Transparent Background",
+      "container_background": "Container Background",
+      "terminal_padding": "Terminal Padding",
+      "scrollbar_track": "Scrollbar Track",
+      "scrollbar_thumb": "Scrollbar Thumb",
+      "scrollbar_thumb_hover": "Scrollbar Thumb Hover",
+      "reset_defaults": "Restore local defaults",
+      "theme_json": "Theme JSON",
+      "custom_css": "Custom CSS",
+      "theme_json_invalid": "Invalid theme JSON",
+      "theme_json_filtered": "Theme JSON filtered",
+      "transparent_hint": "Enable transparency only if the container background is also transparent."
+    },
     "record": {
       "enabled": "Enable Record",
       "enabled_description": "Log server historical load details and Ping records,etc.",

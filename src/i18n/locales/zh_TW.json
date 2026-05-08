@@ -616,6 +616,28 @@
       "confirmation_help": "目前已停用密碼登入。請輸入 `STOP CLOUDFLARED` 以確認。",
       "fetch_status_failed": "取得 cloudflared 狀態失敗"
     },
+    "xtermjs": {
+      "title": "XtermJS",
+      "font_family": "字體族",
+      "font_size": "字號",
+      "font_weight": "字體粗細",
+      "font_weight_bold": "粗體粗細",
+      "cursor_blink": "游標閃爍",
+      "scrollback": "回捲行數",
+      "convert_eol": "轉換 EOL",
+      "transparent_background": "透明背景",
+      "container_background": "容器背景色",
+      "terminal_padding": "終端內邊距",
+      "scrollbar_track": "捲動條軌道",
+      "scrollbar_thumb": "捲動條滑塊",
+      "scrollbar_thumb_hover": "捲動條滑塊懸停",
+      "reset_defaults": "恢復本地預設值",
+      "theme_json": "主題 JSON",
+      "custom_css": "自訂 CSS",
+      "theme_json_invalid": "主題 JSON 無效",
+      "theme_json_filtered": "已過濾主題 JSON",
+      "transparent_hint": "僅在容器背景也透明時啟用透明效果。"
+    },
     "record": {
       "enabled": "開啟歷史記錄",
       "enabled_description": "記錄伺服器歷史負載詳情和Ping記錄等",

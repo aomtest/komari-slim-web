@@ -86,6 +86,12 @@ export const routes: RouteObject[] = [
             ),
           },
           {
+            path: "xtermjs",
+            element: React.createElement(
+              lazy(() => import("./pages/admin/settings/xtermjs"))
+            ),
+          },
+          {
             path: "reverse-proxy",
             element: React.createElement(
               lazy(() => import("./pages/admin/settings/reverse-proxy"))

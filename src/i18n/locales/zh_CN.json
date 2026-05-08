@@ -627,6 +627,28 @@
       "stopped": "已停止",
       "title": "反向代理"
     },
+    "xtermjs": {
+      "title": "XtermJS",
+      "font_family": "字体族",
+      "font_size": "字号",
+      "font_weight": "字体粗细",
+      "font_weight_bold": "粗体粗细",
+      "cursor_blink": "光标闪烁",
+      "scrollback": "回滚行数",
+      "convert_eol": "转换 EOL",
+      "transparent_background": "透明背景",
+      "container_background": "容器背景色",
+      "terminal_padding": "终端内边距",
+      "scrollbar_track": "滚动条轨道",
+      "scrollbar_thumb": "滚动条滑块",
+      "scrollbar_thumb_hover": "滚动条滑块悬停",
+      "reset_defaults": "恢复本地默认值",
+      "theme_json": "主题 JSON",
+      "custom_css": "自定义 CSS",
+      "theme_json_invalid": "主题 JSON 无效",
+      "theme_json_filtered": "已过滤主题 JSON",
+      "transparent_hint": "仅在容器背景也透明时启用透明效果。"
+    },
     "settings_save_failed": "保存设置失败",
     "settings_saved": "设置已保存",
     "sign_on": {
