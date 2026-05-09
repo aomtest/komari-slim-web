@@ -8,6 +8,12 @@ export const XTERMJS_SETTINGS_STORAGE_KEY = "komari:xtermjs-settings";
 const DEFAULT_FONT_FAMILY = "'Cascadia Mono', 'Noto Sans SC', monospace";
 const DEFAULT_FONT_SIZE = 16;
 const DEFAULT_SCROLLBACK = 5000;
+const DEFAULT_CURSOR_BLINK = true;
+const DEFAULT_CONVERT_EOL = true;
+const DEFAULT_MAC_OPTION_IS_META = true;
+const DEFAULT_TERMINAL_PADDING = 16;
+const DEFAULT_TRANSPARENT_BACKGROUND = false;
+const DEFAULT_CUSTOM_CSS = "";
 
 type XtermStringThemeKey = Exclude<keyof ITheme, "extendedAnsi">;
 
@@ -61,6 +67,23 @@ export interface XtermjsTerminalOptions
   theme?: Partial<ITheme>;
 }
 
+export interface XtermjsTerminalOptionsDto {
+  cursorBlink: boolean;
+  convertEol: boolean;
+  fontFamily: string;
+  fontSize: number;
+  macOptionIsMeta: boolean;
+  scrollback: number;
+  theme: Record<string, unknown> | null;
+}
+
+export interface XtermjsSettingsDto {
+  terminalOptions: XtermjsTerminalOptionsDto;
+  terminalPadding: number;
+  transparentBackground: boolean;
+  customCss: string;
+}
+
 export interface XtermjsSettings {
   terminalOptions: XtermjsTerminalOptions;
   terminalPadding: number;
@@ -70,17 +93,17 @@ export interface XtermjsSettings {
 
 export const defaultXtermjsSettings: XtermjsSettings = {
   terminalOptions: {
-    cursorBlink: true,
-    convertEol: true,
+    cursorBlink: DEFAULT_CURSOR_BLINK,
+    convertEol: DEFAULT_CONVERT_EOL,
     fontFamily: DEFAULT_FONT_FAMILY,
     fontSize: DEFAULT_FONT_SIZE,
-    macOptionIsMeta: true,
+    macOptionIsMeta: DEFAULT_MAC_OPTION_IS_META,
     scrollback: DEFAULT_SCROLLBACK,
     theme: undefined,
   },
-  terminalPadding: 16,
-  transparentBackground: false,
-  customCss: "",
+  terminalPadding: DEFAULT_TERMINAL_PADDING,
+  transparentBackground: DEFAULT_TRANSPARENT_BACKGROUND,
+  customCss: DEFAULT_CUSTOM_CSS,
 };
 
 export function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -244,6 +267,171 @@ export function sanitizeXtermjsSettings(value: unknown): XtermjsSettings {
         ? value.customCss
         : fallback.customCss,
   };
+}
+
+function deserializeXtermTheme(value: unknown): Partial<ITheme> | undefined {
+  if (!isPlainObject(value)) {
+    return undefined;
+  }
+
+  return sanitizeThemeObject(value).theme;
+}
+
+function getXtermjsErrorMessage(
+  message: unknown,
+  fallback: string
+): string {
+  return typeof message === "string" && message.trim().length > 0
+    ? message
+    : fallback;
+}
+
+export function serializeXtermjsSettings(
+  settings: XtermjsSettings
+): XtermjsSettingsDto {
+  const sanitized = sanitizeXtermjsSettings(settings);
+  const terminalOptions = sanitized.terminalOptions;
+
+  return {
+    terminalOptions: {
+      cursorBlink: terminalOptions.cursorBlink ?? DEFAULT_CURSOR_BLINK,
+      convertEol: terminalOptions.convertEol ?? DEFAULT_CONVERT_EOL,
+      fontFamily: terminalOptions.fontFamily ?? DEFAULT_FONT_FAMILY,
+      fontSize: terminalOptions.fontSize ?? DEFAULT_FONT_SIZE,
+      macOptionIsMeta: terminalOptions.macOptionIsMeta ?? DEFAULT_MAC_OPTION_IS_META,
+      scrollback: terminalOptions.scrollback ?? DEFAULT_SCROLLBACK,
+      theme:
+        terminalOptions.theme === undefined
+          ? null
+          : { ...terminalOptions.theme },
+    },
+    terminalPadding: sanitized.terminalPadding ?? DEFAULT_TERMINAL_PADDING,
+    transparentBackground:
+      sanitized.transparentBackground ?? DEFAULT_TRANSPARENT_BACKGROUND,
+    customCss: sanitized.customCss ?? DEFAULT_CUSTOM_CSS,
+  };
+}
+
+export function deserializeXtermjsSettings(value: unknown): XtermjsSettings {
+  if (!isPlainObject(value)) {
+    return createDefaultXtermjsSettings();
+  }
+
+  const terminalOptions = isPlainObject(value.terminalOptions)
+    ? value.terminalOptions
+    : {};
+
+  return sanitizeXtermjsSettings({
+    terminalOptions: {
+      cursorBlink:
+        typeof terminalOptions.cursorBlink === "boolean"
+          ? terminalOptions.cursorBlink
+          : DEFAULT_CURSOR_BLINK,
+      convertEol:
+        typeof terminalOptions.convertEol === "boolean"
+          ? terminalOptions.convertEol
+          : DEFAULT_CONVERT_EOL,
+      fontFamily:
+        typeof terminalOptions.fontFamily === "string"
+          ? terminalOptions.fontFamily
+          : DEFAULT_FONT_FAMILY,
+      fontSize:
+        typeof terminalOptions.fontSize === "number"
+          ? terminalOptions.fontSize
+          : DEFAULT_FONT_SIZE,
+      macOptionIsMeta:
+        typeof terminalOptions.macOptionIsMeta === "boolean"
+          ? terminalOptions.macOptionIsMeta
+          : DEFAULT_MAC_OPTION_IS_META,
+      scrollback:
+        typeof terminalOptions.scrollback === "number"
+          ? terminalOptions.scrollback
+          : DEFAULT_SCROLLBACK,
+      theme: deserializeXtermTheme(terminalOptions.theme),
+    },
+    terminalPadding:
+      typeof value.terminalPadding === "number"
+        ? value.terminalPadding
+        : DEFAULT_TERMINAL_PADDING,
+    transparentBackground:
+      typeof value.transparentBackground === "boolean"
+        ? value.transparentBackground
+        : DEFAULT_TRANSPARENT_BACKGROUND,
+    customCss:
+      typeof value.customCss === "string"
+        ? value.customCss
+        : DEFAULT_CUSTOM_CSS,
+  });
+}
+
+function parseXtermjsEnvelope(value: unknown): {
+  status?: unknown;
+  message?: unknown;
+  data?: unknown;
+} {
+  return isPlainObject(value) ? value : {};
+}
+
+async function readXtermjsEnvelope(response: Response): Promise<{
+  status?: unknown;
+  message?: unknown;
+  data?: unknown;
+}> {
+  try {
+    return parseXtermjsEnvelope(await response.json());
+  } catch {
+    return {};
+  }
+}
+
+function getInvalidXtermjsEnvelopeMessage(): string {
+  return "Invalid response envelope from /api/admin/settings/xtermjs";
+}
+
+export async function fetchXtermjsSettings(options?: {
+  signal?: AbortSignal;
+}): Promise<XtermjsSettings> {
+  const response = await fetch("/api/admin/settings/xtermjs", {
+    signal: options?.signal,
+  });
+
+  const json = await readXtermjsEnvelope(response);
+  if (!response.ok || json.status !== "success") {
+    throw new Error(
+      getXtermjsErrorMessage(
+        json.message,
+        response.ok ? getInvalidXtermjsEnvelopeMessage() : `HTTP ${response.status}`
+      )
+    );
+  }
+
+  return deserializeXtermjsSettings(json.data);
+}
+
+export async function saveXtermjsSettings(
+  settings: XtermjsSettings,
+  options?: { signal?: AbortSignal }
+): Promise<XtermjsSettings> {
+  const response = await fetch("/api/admin/settings/xtermjs", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(serializeXtermjsSettings(settings)),
+    signal: options?.signal,
+  });
+
+  const json = await readXtermjsEnvelope(response);
+  if (!response.ok || json.status !== "success") {
+    throw new Error(
+      getXtermjsErrorMessage(
+        json.message,
+        response.ok ? getInvalidXtermjsEnvelopeMessage() : `HTTP ${response.status}`
+      )
+    );
+  }
+
+  return deserializeXtermjsSettings(json.data);
 }
 
 export function isTransparentBackground(value: unknown): boolean {
