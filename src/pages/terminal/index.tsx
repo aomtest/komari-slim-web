@@ -16,6 +16,8 @@ import { Toaster } from "@/components/ui/sonner";
 import { TerminalContext } from "@/contexts/TerminalContext";
 import {
   isTransparentBackground,
+  defaultXtermjsSettings,
+  type XtermjsSettings,
   useXtermjsSettings,
 } from "@/hooks/useXtermjsSettings";
 import { motion } from "framer-motion";
@@ -68,54 +70,55 @@ const ClipboardPanel: React.FC = () => (
 );
 
 const TerminalPage = () => {
-  const { settings } = useXtermjsSettings();
+  const {
+    settings,
+    loading: settingsLoading,
+    error: settingsError,
+  } = useXtermjsSettings();
   const terminalRef = useRef<HTMLDivElement>(null);
   const terminalInstance = useRef<Terminal | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const heartbeatIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const resolvedSettingsRef = useRef<XtermjsSettings>(defaultXtermjsSettings);
+  const initializedUuidRef = useRef<string | null>(null);
   const params = new URLSearchParams(window.location.search);
   const uuid = params.get("uuid");
-  const [callout, setCallout] = useState(false);
   const [t] = useTranslation();
+  const disconnectMessageRef = useRef(t("terminal.disconnect"));
   const firstBinary = useRef(false);
   const [isClipboardOpen, setIsClipboardOpen] = useState(false);
   const [leftWidth, setLeftWidth] = useState<number>(window.innerWidth * 0.7);
   const draggingRef = useRef(false);
   const fitAddonRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const xtermSettingsRef = useRef(settings);
-
-  const appearance = useMemo<CSSProperties>(
-    () =>
-      ({
-        "--xterm-padding": `${xtermSettingsRef.current.terminalPadding}px`,
-      }) as CSSProperties,
-    []
+  const [callout, setCallout] = useState(
+    window.location.protocol !== "https:"
   );
+  const [settingsResolved, setSettingsResolved] = useState(false);
+  const [settingsResolutionError, setSettingsResolutionError] =
+    useState<Error | null>(null);
+  const [appearance, setAppearance] = useState<CSSProperties>({});
 
-  const terminalOptions = useMemo<Partial<ITerminalOptions>>(() => {
-    const currentSettings = xtermSettingsRef.current;
-    const nextOptions: Partial<ITerminalOptions> = {
-      cursorBlink: currentSettings.terminalOptions.cursorBlink,
-      convertEol: currentSettings.terminalOptions.convertEol,
-      fontFamily: currentSettings.terminalOptions.fontFamily,
-      fontSize: currentSettings.terminalOptions.fontSize,
-      macOptionIsMeta: currentSettings.terminalOptions.macOptionIsMeta,
-      scrollback: currentSettings.terminalOptions.scrollback,
-    };
-
-    if (currentSettings.terminalOptions.theme !== undefined) {
-      nextOptions.theme = currentSettings.terminalOptions.theme;
-    }
-    if (
-      currentSettings.transparentBackground ||
-      isTransparentBackground(currentSettings.terminalOptions.theme?.background)
-    ) {
-      nextOptions.allowTransparency = true;
+  useEffect(() => {
+    if (settingsLoading || settingsResolved) {
+      return;
     }
 
-    return nextOptions;
-  }, []);
+    const resolvedSettings = settingsError
+      ? defaultXtermjsSettings
+      : settings;
+
+    resolvedSettingsRef.current = resolvedSettings;
+    setAppearance({
+      "--xterm-padding": `${resolvedSettings.terminalPadding}px`,
+    } as CSSProperties);
+    setSettingsResolutionError(settingsError);
+    setSettingsResolved(true);
+  }, [settings, settingsError, settingsLoading, settingsResolved]);
+
+  useEffect(() => {
+    disconnectMessageRef.current = t("terminal.disconnect");
+  }, [t]);
 
   // 使用 useCallback 确保 resizeTerminal 引用稳定
   const resizeTerminal = useCallback(() => {
@@ -151,27 +154,28 @@ const TerminalPage = () => {
   }, [resizeTerminal]);
 
   // 限制resize onMouseMove 调用频率
-  const onMouseMove = useCallback(
-    throttle((e: MouseEvent | TouchEvent) => {
-      if (!draggingRef.current || !containerRef.current) return;
+  const onMouseMove = useMemo(
+    () =>
+      throttle((e: MouseEvent | TouchEvent) => {
+        if (!draggingRef.current || !containerRef.current) return;
 
-      const containerRect = containerRef.current.getBoundingClientRect();
-      let clientX: number;
+        const containerRect = containerRef.current.getBoundingClientRect();
+        let clientX: number;
 
-      if (e instanceof MouseEvent) {
-        clientX = e.clientX;
-      } else {
-        clientX = e.touches[0].clientX;
-      }
+        if (e instanceof MouseEvent) {
+          clientX = e.clientX;
+        } else {
+          clientX = e.touches[0].clientX;
+        }
 
-      const newLeftWidth = clientX - containerRect.left;
-      const minWidth = 300;
-      const maxWidth = containerRect.width - 300;
+        const newLeftWidth = clientX - containerRect.left;
+        const minWidth = 300;
+        const maxWidth = containerRect.width - 300;
 
-      if (newLeftWidth >= minWidth && newLeftWidth <= maxWidth) {
-        setLeftWidth(newLeftWidth);
-      }
-    }, 1000 / 60), // （60fps）
+        if (newLeftWidth >= minWidth && newLeftWidth <= maxWidth) {
+          setLeftWidth(newLeftWidth);
+        }
+      }, 1000 / 60), // （60fps）
     []
   );
 
@@ -193,6 +197,7 @@ const TerminalPage = () => {
   useEffect(() => {
     if (uuid === null) {
       window.location.href = "/";
+      return;
     }
     fetch("./api/admin/client/list")
       .then((res) => res.json())
@@ -210,15 +215,33 @@ const TerminalPage = () => {
   }, [t, uuid]);
 
   useEffect(() => {
-    setCallout(window.location.protocol !== "https:");
-    if (!terminalRef.current) return;
+    if (!settingsResolved || uuid === null || !terminalRef.current) return;
+    if (initializedUuidRef.current === uuid) return;
+
+    initializedUuidRef.current = uuid;
+    firstBinary.current = false;
+
+    const snapshot = resolvedSettingsRef.current;
+    const terminalOptions: Partial<ITerminalOptions> = {
+      cursorBlink: snapshot.terminalOptions.cursorBlink,
+      convertEol: snapshot.terminalOptions.convertEol,
+      fontFamily: snapshot.terminalOptions.fontFamily,
+      fontSize: snapshot.terminalOptions.fontSize,
+      macOptionIsMeta: snapshot.terminalOptions.macOptionIsMeta,
+      scrollback: snapshot.terminalOptions.scrollback,
+    };
+
+    if (snapshot.terminalOptions.theme !== undefined) {
+      terminalOptions.theme = snapshot.terminalOptions.theme;
+    }
+    if (
+      snapshot.transparentBackground ||
+      isTransparentBackground(snapshot.terminalOptions.theme?.background)
+    ) {
+      terminalOptions.allowTransparency = true;
+    }
 
     const term = new Terminal(terminalOptions);
-    const customCssStyle = document.createElement("style");
-    customCssStyle.id = "xtermjs-custom-css";
-    customCssStyle.textContent = xtermSettingsRef.current.customCss;
-    document.head.appendChild(customCssStyle);
-
     const fitAddon = new FitAddon();
     fitAddonRef.current = fitAddon;
     const webLinksAddon = new WebLinksAddon();
@@ -230,6 +253,11 @@ const TerminalPage = () => {
 
     term.open(terminalRef.current);
     terminalInstance.current = term;
+
+    const customCssStyle = document.createElement("style");
+    customCssStyle.id = "xtermjs-custom-css";
+    customCssStyle.textContent = snapshot.customCss;
+    document.head.appendChild(customCssStyle);
 
     const resizeObserver =
       typeof ResizeObserver !== "undefined"
@@ -243,9 +271,11 @@ const TerminalPage = () => {
     }
 
     let isMounted = true;
+    let disposed = false;
+    let firstBinaryTimeout: ReturnType<typeof setTimeout> | null = null;
 
     document.fonts?.ready?.then(() => {
-      if (isMounted) {
+      if (isMounted && !disposed) {
         resizeTerminal();
       }
     });
@@ -258,11 +288,21 @@ const TerminalPage = () => {
     wsRef.current = ws;
 
     ws.onopen = () => {
+      if (disposed) {
+        return;
+      }
       resizeTerminal();
       startHeartbeat();
     };
 
     const startHeartbeat = () => {
+      if (disposed) {
+        return;
+      }
+      if (heartbeatIntervalRef.current) {
+        clearInterval(heartbeatIntervalRef.current);
+        heartbeatIntervalRef.current = null;
+      }
       heartbeatIntervalRef.current = setInterval(() => {
         if (ws.readyState === WebSocket.OPEN) {
           ws.send(
@@ -283,6 +323,9 @@ const TerminalPage = () => {
     };
 
     ws.onmessage = (event) => {
+      if (disposed) {
+        return;
+      }
       if (event.data instanceof ArrayBuffer) {
         const uint8Array = new Uint8Array(event.data);
         term.write(uint8Array);
@@ -291,7 +334,8 @@ const TerminalPage = () => {
       }
       if (!firstBinary.current && event.data instanceof ArrayBuffer) {
         firstBinary.current = true;
-        setTimeout(() => {
+        firstBinaryTimeout = setTimeout(() => {
+          if (disposed) return;
           const term = terminalInstance.current;
           if (term) {
             term.resize(term.cols - 1, term.rows);
@@ -302,11 +346,17 @@ const TerminalPage = () => {
     };
 
     ws.onclose = () => {
+      if (disposed) {
+        return;
+      }
       stopHeartbeat();
-      term.write(`\n ${t("terminal.disconnect")}`);
+      term.write(`\n ${disconnectMessageRef.current}`);
     };
 
-    term.onData((data) => {
+    const termDataDisposable = term.onData((data) => {
+      if (disposed) {
+        return;
+      }
       if (ws.readyState === WebSocket.OPEN) {
         const encoder = new TextEncoder();
         const uint8Array = encoder.encode(data);
@@ -339,6 +389,9 @@ const TerminalPage = () => {
         e.preventDefault();
         const selectedText = selection.toString();
         navigator.clipboard.writeText(selectedText).finally(() => {
+          if (disposed) {
+            return;
+          }
           term.focus();
           term.clearSelection();
         });
@@ -346,6 +399,9 @@ const TerminalPage = () => {
         e.preventDefault();
         term.focus();
         navigator.clipboard.readText().then((text) => {
+          if (disposed || ws.readyState !== WebSocket.OPEN) {
+            return;
+          }
           const encoder = new TextEncoder();
           const uint8Array = encoder.encode(text.replace(/\r?\n/g, "\r"));
           ws.send(uint8Array);
@@ -356,9 +412,18 @@ const TerminalPage = () => {
     document.addEventListener("contextmenu", handleContextMenu);
 
     return () => {
+      disposed = true;
       isMounted = false;
       stopHeartbeat();
+      ws.onopen = null;
+      ws.onmessage = null;
+      ws.onclose = null;
+      ws.onerror = null;
       resizeObserver?.disconnect();
+      if (firstBinaryTimeout !== null) {
+        clearTimeout(firstBinaryTimeout);
+      }
+      termDataDisposable.dispose();
       term.dispose();
       if (customCssStyle.parentNode) {
         customCssStyle.parentNode.removeChild(customCssStyle);
@@ -369,11 +434,17 @@ const TerminalPage = () => {
       ) {
         ws.close();
       }
+      if (initializedUuidRef.current === uuid) {
+        initializedUuidRef.current = null;
+      }
+      terminalInstance.current = null;
+      wsRef.current = null;
+      fitAddonRef.current = null;
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("contextmenu", handleContextMenu);
     };
-  }, [t, uuid, resizeTerminal, terminalOptions]);
+  }, [settingsResolved, uuid, resizeTerminal]);
 
   // 移除对 leftWidth 的直接依赖，改用防抖
   useEffect(() => {
@@ -398,6 +469,26 @@ const TerminalPage = () => {
     >
       <Theme appearance="dark">
         <Toaster theme="dark" />
+        {settingsResolutionError ? (
+          <div className="absolute left-4 top-4 z-30 max-w-[32rem]">
+            <Callout.Root
+              color="red"
+              size="2"
+              className="bg-red-50 backdrop-blur-sm border-2 border-red-800 rounded-lg"
+            >
+              <Callout.Icon>
+                <TablerAlertTriangleFilled className="text-red-700" />
+              </Callout.Icon>
+              <Callout.Text className="text-red-400 font-medium">
+                <Flex align="center" justify="between" gap="3">
+                  <span>
+                    xterm settings fallback: {settingsResolutionError.message}
+                  </span>
+                </Flex>
+              </Callout.Text>
+            </Callout.Root>
+          </div>
+        ) : null}
         <div className="absolute inset-x-0 top-4 flex justify-center items-center z-30">
           <motion.div
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
