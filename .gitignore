@@ -69,3 +69,4 @@ coverage/
 *.sw?
 vite.config.dev.ts
 todo.md
+.codex
