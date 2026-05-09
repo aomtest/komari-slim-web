@@ -632,10 +632,6 @@ export function useXtermjsSettings() {
             pendingSettingsRef.current = confirmedSettingsRef.current;
           }
 
-          if (mountedRef.current) {
-            setError(toError(caughtError));
-          }
-
           throw caughtError;
         }
       });

@@ -1,8 +1,9 @@
 import React from "react";
-import { Callout, Flex } from "@radix-ui/themes";
+import { Button, Callout, Flex } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { AlertTriangle } from "lucide-react";
+import Loading from "@/components/loading";
 import {
   SettingCardButton,
   SettingCardLabel,
@@ -20,38 +21,35 @@ import {
 
 export default function XtermjsSettingsPage() {
   const { t } = useTranslation();
-  const { settings, setSettings, resetSettings } = useXtermjsSettings();
-  const [formKey, setFormKey] = React.useState(0);
-  const [themeJsonRevision, setThemeJsonRevision] = React.useState(0);
-  const [customCssRevision, setCustomCssRevision] = React.useState(0);
+  const { settings, loading, error, saving, setSettings, resetSettings, refetch } =
+    useXtermjsSettings();
 
-  const patchSettings = React.useCallback(
-    (updater: (current: XtermjsSettings) => XtermjsSettings) => {
-      setSettings(updater);
+  const showSaveError = React.useCallback(
+    (error: unknown) => {
+      const message = error instanceof Error ? error.message : String(error);
+      toast.error(`${t("settings.settings_save_failed")}: ${message}`);
     },
-    [setSettings]
+    [t]
   );
 
-  const patchTerminalOptions = React.useCallback(
-    (
-      updater: (
-        current: XtermjsSettings["terminalOptions"]
-      ) => XtermjsSettings["terminalOptions"]
-    ) => {
-      patchSettings((current) => ({
-        ...current,
-        terminalOptions: updater(current.terminalOptions),
-      }));
+  const commitSettings = React.useCallback(
+    async (promise: Promise<unknown>) => {
+      try {
+        return await promise;
+      } catch (error) {
+        showSaveError(error);
+        throw error;
+      }
     },
-    [patchSettings]
+    [showSaveError]
   );
 
   const saveIntegerField = React.useCallback(
-    (
+    async (
       fieldLabel: string,
       rawValue: string,
       minimum: number,
-      apply: (value: number) => void
+      apply: (current: XtermjsSettings) => XtermjsSettings
     ) => {
       const normalizedValue = rawValue.trim();
       const parsed = Number.parseInt(normalizedValue, 10);
@@ -64,17 +62,16 @@ export default function XtermjsSettingsPage() {
         return;
       }
 
-      apply(parsed);
+      await commitSettings(setSettings(apply));
       toast.success(t("settings.settings_saved"));
     },
-    [t]
+    [commitSettings, setSettings, t]
   );
 
   const handleReset = React.useCallback(async () => {
-    resetSettings();
-    setFormKey((value) => value + 1);
+    await commitSettings(resetSettings());
     toast.success(t("settings.settings_saved"));
-  }, [resetSettings, t]);
+  }, [commitSettings, resetSettings, t]);
 
   const handleThemeJsonSave = React.useCallback(
     async (value: string) => {
@@ -90,14 +87,15 @@ export default function XtermjsSettingsPage() {
         return;
       }
 
-      setSettings((current) => ({
-        ...current,
-        terminalOptions: {
-          ...current.terminalOptions,
-          theme: parsed.theme,
-        },
-      }));
-      setThemeJsonRevision((current) => current + 1);
+      await commitSettings(
+        setSettings((current) => ({
+          ...current,
+          terminalOptions: {
+            ...current.terminalOptions,
+            theme: parsed.theme,
+          },
+        }))
+      );
 
       if (parsed.filtered) {
         toast.warning(t("settings.xtermjs.theme_json_filtered"));
@@ -105,28 +103,55 @@ export default function XtermjsSettingsPage() {
         toast.success(t("settings.settings_saved"));
       }
     },
-    [setSettings, t]
+    [commitSettings, setSettings, t]
   );
 
   const handleCustomCssSave = React.useCallback(
     async (value: string) => {
-      setSettings((current) => ({
-        ...current,
-        customCss: value,
-      }));
-      setCustomCssRevision((current) => current + 1);
+      await commitSettings(
+        setSettings((current) => ({
+          ...current,
+          customCss: value,
+        }))
+      );
       toast.success(t("settings.settings_saved"));
     },
-    [setSettings, t]
+    [commitSettings, setSettings, t]
   );
+
+  const handleRetry = React.useCallback(async () => {
+    try {
+      await refetch();
+    } catch {
+      // error state already comes from the hook
+    }
+  }, [refetch]);
 
   const themeBackgroundIsOpaque =
     settings.transparentBackground &&
     settings.terminalOptions.theme?.background !== undefined &&
     !isTransparentBackground(settings.terminalOptions.theme.background);
 
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return (
+      <Flex direction="column" gap="3">
+        <Callout.Root color="red" size="1">
+          <Callout.Icon>
+            <AlertTriangle size={16} />
+          </Callout.Icon>
+          <Callout.Text>{error.message}</Callout.Text>
+        </Callout.Root>
+        <Button onClick={handleRetry}>{t("common.retry", "Retry")}</Button>
+      </Flex>
+    );
+  }
+
   return (
-    <Flex key={formKey} direction="column" gap="3">
+    <Flex direction="column" gap="3">
       <SettingCardLabel>{t("settings.xtermjs.title")}</SettingCardLabel>
       <SettingCardButton
         title={t("settings.xtermjs.title")}
@@ -137,30 +162,45 @@ export default function XtermjsSettingsPage() {
       </SettingCardButton>
 
       <SettingCardShortTextInput
+        key={settings.terminalOptions.fontFamily}
         title={t("settings.xtermjs.font_family")}
         defaultValue={settings.terminalOptions.fontFamily || ""}
         placeholder="'Cascadia Mono', 'Noto Sans SC', monospace"
+        isSaving={saving}
         OnSave={async (value) => {
-          patchTerminalOptions((current) => ({
-            ...current,
-            fontFamily: value,
-          }));
+          await commitSettings(
+            setSettings((current) => ({
+              ...current,
+              terminalOptions: {
+                ...current.terminalOptions,
+                fontFamily: value,
+              },
+            }))
+          );
           toast.success(t("settings.settings_saved"));
         }}
       />
 
       <SettingCardShortTextInput
+        key={settings.terminalOptions.fontSize}
         title={t("settings.xtermjs.font_size")}
         defaultValue={settings.terminalOptions.fontSize?.toString() || "16"}
         placeholder="16"
         inputMode="numeric"
+        isSaving={saving}
         OnSave={async (value) => {
-          saveIntegerField(t("settings.xtermjs.font_size"), value, 1, (next) => {
-            patchTerminalOptions((current) => ({
+          await saveIntegerField(
+            t("settings.xtermjs.font_size"),
+            value,
+            1,
+            (current) => ({
               ...current,
-              fontSize: next,
-            }));
-          });
+              terminalOptions: {
+                ...current.terminalOptions,
+                fontSize: Number.parseInt(value.trim(), 10),
+              },
+            })
+          );
         }}
       />
 
@@ -168,26 +208,39 @@ export default function XtermjsSettingsPage() {
         title={t("settings.xtermjs.cursor_blink")}
         defaultChecked={Boolean(settings.terminalOptions.cursorBlink)}
         onChange={async (checked) => {
-          patchTerminalOptions((current) => ({
-            ...current,
-            cursorBlink: checked,
-          }));
+          await commitSettings(
+            setSettings((current) => ({
+              ...current,
+              terminalOptions: {
+                ...current.terminalOptions,
+                cursorBlink: checked,
+              },
+            }))
+          );
           toast.success(t("settings.settings_saved"));
         }}
       />
 
       <SettingCardShortTextInput
+        key={settings.terminalOptions.scrollback}
         title={t("settings.xtermjs.scrollback")}
         defaultValue={settings.terminalOptions.scrollback?.toString() || "5000"}
         placeholder="5000"
         inputMode="numeric"
+        isSaving={saving}
         OnSave={async (value) => {
-          saveIntegerField(t("settings.xtermjs.scrollback"), value, 0, (next) => {
-            patchTerminalOptions((current) => ({
+          await saveIntegerField(
+            t("settings.xtermjs.scrollback"),
+            value,
+            0,
+            (current) => ({
               ...current,
-              scrollback: next,
-            }));
-          });
+              terminalOptions: {
+                ...current.terminalOptions,
+                scrollback: Number.parseInt(value.trim(), 10),
+              },
+            })
+          );
         }}
       />
 
@@ -195,10 +248,15 @@ export default function XtermjsSettingsPage() {
         title={t("settings.xtermjs.convert_eol")}
         defaultChecked={Boolean(settings.terminalOptions.convertEol)}
         onChange={async (checked) => {
-          patchTerminalOptions((current) => ({
-            ...current,
-            convertEol: checked,
-          }));
+          await commitSettings(
+            setSettings((current) => ({
+              ...current,
+              terminalOptions: {
+                ...current.terminalOptions,
+                convertEol: checked,
+              },
+            }))
+          );
           toast.success(t("settings.settings_saved"));
         }}
       />
@@ -208,10 +266,12 @@ export default function XtermjsSettingsPage() {
         description={t("settings.xtermjs.transparent_hint")}
         defaultChecked={settings.transparentBackground}
         onChange={async (checked) => {
-          patchSettings((current) => ({
-            ...current,
-            transparentBackground: checked,
-          }));
+          await commitSettings(
+            setSettings((current) => ({
+              ...current,
+              transparentBackground: checked,
+            }))
+          );
           toast.success(t("settings.settings_saved"));
         }}
       />
@@ -228,38 +288,38 @@ export default function XtermjsSettingsPage() {
       )}
 
       <SettingCardShortTextInput
+        key={settings.terminalPadding}
         title={t("settings.xtermjs.terminal_padding")}
         defaultValue={settings.terminalPadding?.toString() || "16"}
         placeholder="16"
         inputMode="numeric"
+        isSaving={saving}
         OnSave={async (value) => {
-          saveIntegerField(
+          await saveIntegerField(
             t("settings.xtermjs.terminal_padding"),
             value,
             0,
-            (next) => {
-              patchSettings((current) => ({
-                ...current,
-                terminalPadding: next,
-              }));
-            }
+            (current) => ({
+              ...current,
+              terminalPadding: Number.parseInt(value.trim(), 10),
+            })
           );
         }}
       />
 
       <SettingCardLongTextInput
-        key={`theme-json-${themeJsonRevision}`}
         title={t("settings.xtermjs.theme_json")}
         description={t("settings.xtermjs.theme_json_description")}
         defaultValue={formatXtermThemeJson(settings.terminalOptions.theme)}
+        isSaving={saving}
         OnSave={handleThemeJsonSave}
       />
 
       <SettingCardLongTextInput
-        key={`custom-css-${customCssRevision}`}
         title={t("settings.xtermjs.custom_css")}
         description={t("settings.xtermjs.custom_css_description")}
         defaultValue={settings.customCss || ""}
+        isSaving={saving}
         OnSave={handleCustomCssSave}
       />
     </Flex>
