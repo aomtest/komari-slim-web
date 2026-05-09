@@ -246,6 +246,7 @@ interface SettingCardShortTextInputProps
   // SettingCard 相关属性
   title?: string;
   description?: string;
+  descriptionPlacement?: "header" | "footer";
   bordless?: boolean;
 
   // 按钮相关属性
@@ -273,6 +274,7 @@ export function SettingCardShortTextInput({
   // SettingCard 属性
   title = "",
   description = "",
+  descriptionPlacement = "header",
   bordless = false,
 
   // 按钮属性
@@ -388,8 +390,25 @@ export function SettingCardShortTextInput({
     onKeyDown?.(e);
   };
 
+  const showFooterDescription =
+    descriptionPlacement === "footer" &&
+    description !== undefined &&
+    description !== null &&
+    description !== "";
+  const showFooterRow =
+    descriptionPlacement === "footer" &&
+    (showFooterDescription || showSaveButton);
+  const showHiddenFooterSaveButton =
+    descriptionPlacement === "footer" &&
+    !showFooterDescription &&
+    !showSaveButton;
+
   return (
-    <SettingCard title={title} description={description} bordless={bordless}>
+    <SettingCard
+      title={title}
+      description={descriptionPlacement === "footer" ? undefined : description}
+      bordless={bordless}
+    >
       <Flex direction="column" className="w-full mt-1" gap="2" align="start">
         <TextField.Root
           {...restProps}
@@ -414,15 +433,52 @@ export function SettingCardShortTextInput({
         >
         </TextField.Root>
         {children}
-        <Button
-          ref={buttonRef}
-          onClick={handleSave}
-          variant="solid"
-          hidden={!showSaveButton}
-          disabled={savingState}
-        >
-          {resolvedLabel}
-        </Button>
+        {descriptionPlacement === "footer" ? (
+          showFooterRow ? (
+            <Flex
+              direction="row"
+              className="w-full"
+              align="center"
+              justify={showFooterDescription ? "between" : "end"}
+              gap="3"
+            >
+              {showFooterDescription ? (
+                <label className="min-w-0 flex-1 text-sm text-muted-foreground">
+                  {description}
+                </label>
+              ) : null}
+              <Button
+                ref={buttonRef}
+                onClick={handleSave}
+                variant="solid"
+                hidden={!showSaveButton}
+                disabled={savingState}
+              >
+                {resolvedLabel}
+              </Button>
+            </Flex>
+          ) : showHiddenFooterSaveButton ? (
+            <Button
+              ref={buttonRef}
+              onClick={handleSave}
+              variant="solid"
+              hidden
+              disabled={savingState}
+            >
+              {resolvedLabel}
+            </Button>
+          ) : null
+        ) : (
+          <Button
+            ref={buttonRef}
+            onClick={handleSave}
+            variant="solid"
+            hidden={!showSaveButton}
+            disabled={savingState}
+          >
+            {resolvedLabel}
+          </Button>
+        )}
       </Flex>
     </SettingCard>
   );
@@ -431,6 +487,7 @@ export function SettingCardShortTextInput({
 export function SettingCardLongTextInput({
   title = "",
   description = "",
+  descriptionPlacement = "header",
   label = "",
   defaultValue = "",
   OnSave = () => { },
@@ -442,6 +499,7 @@ export function SettingCardLongTextInput({
 }: {
   title?: string;
   description?: string;
+  descriptionPlacement?: "header" | "footer";
   label?: string;
   defaultValue?: string;
   OnSave?: (
@@ -489,8 +547,18 @@ export function SettingCardLongTextInput({
     onChange?.(e);
   };
 
+  const showFooterDescription =
+    descriptionPlacement === "footer" &&
+    description !== undefined &&
+    description !== null &&
+    description !== "";
+
   return (
-    <SettingCard title={title} description={description} bordless={bordless}>
+    <SettingCard
+      title={title}
+      description={descriptionPlacement === "footer" ? undefined : description}
+      bordless={bordless}
+    >
       <Flex direction="column" className="w-full mt-1" gap="2" align="start">
         <TextArea
           className="w-full"
@@ -500,7 +568,33 @@ export function SettingCardLongTextInput({
           onChange={handleTextAreaChange}
           ref={textAreaRef}
         />
-        {showSaveButton && (
+        {descriptionPlacement === "footer" ? (
+          showFooterDescription || showSaveButton ? (
+            <Flex
+              direction="row"
+              className="w-full"
+              align="center"
+              justify={showFooterDescription ? "between" : "end"}
+              gap="3"
+            >
+              {showFooterDescription ? (
+                <label className="min-w-0 flex-1 text-sm text-muted-foreground">
+                  {description}
+                </label>
+              ) : null}
+              {showSaveButton ? (
+                <Button
+                  ref={buttonRef}
+                  onClick={handleSave}
+                  variant="solid"
+                  disabled={savingState}
+                >
+                  {resolvedLabel}
+                </Button>
+              ) : null}
+            </Flex>
+          ) : null
+        ) : showSaveButton ? (
           <Button
             ref={buttonRef}
             onClick={handleSave}
@@ -509,7 +603,7 @@ export function SettingCardLongTextInput({
           >
             {resolvedLabel}
           </Button>
-        )}
+        ) : null}
       </Flex>
     </SettingCard>
   );

@@ -163,6 +163,7 @@ export default function XtermjsSettingsPage() {
 
       <SettingCardShortTextInput
         title={t("settings.xtermjs.font_family")}
+        descriptionPlacement="footer"
         defaultValue={settings.terminalOptions.fontFamily || ""}
         placeholder="'Cascadia Mono', 'Noto Sans SC', monospace"
         isSaving={saving}
@@ -182,6 +183,7 @@ export default function XtermjsSettingsPage() {
 
       <SettingCardShortTextInput
         title={t("settings.xtermjs.font_size")}
+        descriptionPlacement="footer"
         defaultValue={settings.terminalOptions.fontSize?.toString() || "16"}
         placeholder="16"
         inputMode="numeric"
@@ -221,6 +223,7 @@ export default function XtermjsSettingsPage() {
 
       <SettingCardShortTextInput
         title={t("settings.xtermjs.scrollback")}
+        descriptionPlacement="footer"
         defaultValue={settings.terminalOptions.scrollback?.toString() || "5000"}
         placeholder="5000"
         inputMode="numeric"
@@ -286,6 +289,7 @@ export default function XtermjsSettingsPage() {
 
       <SettingCardShortTextInput
         title={t("settings.xtermjs.terminal_padding")}
+        descriptionPlacement="footer"
         defaultValue={settings.terminalPadding?.toString() || "16"}
         placeholder="16"
         inputMode="numeric"
@@ -306,6 +310,7 @@ export default function XtermjsSettingsPage() {
       <SettingCardLongTextInput
         title={t("settings.xtermjs.theme_json")}
         description={t("settings.xtermjs.theme_json_description")}
+        descriptionPlacement="footer"
         defaultValue={formatXtermThemeJson(settings.terminalOptions.theme)}
         isSaving={saving}
         OnSave={handleThemeJsonSave}
@@ -314,6 +319,7 @@ export default function XtermjsSettingsPage() {
       <SettingCardLongTextInput
         title={t("settings.xtermjs.custom_css")}
         description={t("settings.xtermjs.custom_css_description")}
+        descriptionPlacement="footer"
         defaultValue={settings.customCss || ""}
         isSaving={saving}
         OnSave={handleCustomCssSave}
