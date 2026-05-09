@@ -2,8 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { SetStateAction } from "react";
 import type { ITerminalOptions, ITheme } from "@xterm/xterm";
 
-export const XTERMJS_SETTINGS_STORAGE_KEY = "komari:xtermjs-settings";
-
 const DEFAULT_FONT_FAMILY = "'Cascadia Mono', 'Noto Sans SC', monospace";
 const DEFAULT_FONT_SIZE = 16;
 const DEFAULT_SCROLLBACK = 5000;
