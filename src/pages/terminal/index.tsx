@@ -88,12 +88,7 @@ const TerminalPage = () => {
   const appearance = useMemo<CSSProperties>(
     () =>
       ({
-        "--xterm-container-bg": xtermSettingsRef.current.containerBackground,
         "--xterm-padding": `${xtermSettingsRef.current.terminalPadding}px`,
-        "--xterm-scrollbar-track": xtermSettingsRef.current.scrollbarTrack,
-        "--xterm-scrollbar-thumb": xtermSettingsRef.current.scrollbarThumb,
-        "--xterm-scrollbar-thumb-hover":
-          xtermSettingsRef.current.scrollbarThumbHover,
       }) as CSSProperties,
     []
   );
@@ -109,12 +104,6 @@ const TerminalPage = () => {
       scrollback: currentSettings.terminalOptions.scrollback,
     };
 
-    if (currentSettings.terminalOptions.fontWeight !== undefined) {
-      nextOptions.fontWeight = currentSettings.terminalOptions.fontWeight;
-    }
-    if (currentSettings.terminalOptions.fontWeightBold !== undefined) {
-      nextOptions.fontWeightBold = currentSettings.terminalOptions.fontWeightBold;
-    }
     if (currentSettings.terminalOptions.theme !== undefined) {
       nextOptions.theme = currentSettings.terminalOptions.theme;
     }

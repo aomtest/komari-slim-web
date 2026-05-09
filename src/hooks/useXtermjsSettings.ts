@@ -8,23 +8,6 @@ export const XTERMJS_SETTINGS_STORAGE_KEY = "komari:xtermjs-settings";
 const DEFAULT_FONT_FAMILY = "'Cascadia Mono', 'Noto Sans SC', monospace";
 const DEFAULT_FONT_SIZE = 16;
 const DEFAULT_SCROLLBACK = 5000;
-const DEFAULT_CONTAINER_BACKGROUND = "#000000";
-const DEFAULT_SCROLLBAR_TRACK = "#1e1e1e";
-const DEFAULT_SCROLLBAR_THUMB = "#555555";
-const DEFAULT_SCROLLBAR_THUMB_HOVER = "#777777";
-const FONT_WEIGHT_STRING_VALUES = [
-  "normal",
-  "bold",
-  "100",
-  "200",
-  "300",
-  "400",
-  "500",
-  "600",
-  "700",
-  "800",
-  "900",
-] as const;
 
 type XtermStringThemeKey = Exclude<keyof ITheme, "extendedAnsi">;
 
@@ -72,8 +55,6 @@ export interface XtermjsTerminalOptions
     | "convertEol"
     | "fontFamily"
     | "fontSize"
-    | "fontWeight"
-    | "fontWeightBold"
     | "macOptionIsMeta"
     | "scrollback"
   > {
@@ -83,10 +64,6 @@ export interface XtermjsTerminalOptions
 export interface XtermjsSettings {
   terminalOptions: XtermjsTerminalOptions;
   terminalPadding: number;
-  containerBackground: string;
-  scrollbarTrack: string;
-  scrollbarThumb: string;
-  scrollbarThumbHover: string;
   transparentBackground: boolean;
   customCss: string;
 }
@@ -97,17 +74,11 @@ export const defaultXtermjsSettings: XtermjsSettings = {
     convertEol: true,
     fontFamily: DEFAULT_FONT_FAMILY,
     fontSize: DEFAULT_FONT_SIZE,
-    fontWeight: undefined,
-    fontWeightBold: undefined,
     macOptionIsMeta: true,
     scrollback: DEFAULT_SCROLLBACK,
     theme: undefined,
   },
   terminalPadding: 16,
-  containerBackground: DEFAULT_CONTAINER_BACKGROUND,
-  scrollbarTrack: DEFAULT_SCROLLBAR_TRACK,
-  scrollbarThumb: DEFAULT_SCROLLBAR_THUMB,
-  scrollbarThumbHover: DEFAULT_SCROLLBAR_THUMB_HOVER,
   transparentBackground: false,
   customCss: "",
 };
@@ -128,10 +99,6 @@ function createDefaultXtermjsSettings(): XtermjsSettings {
       theme: undefined,
     },
     terminalPadding: defaultXtermjsSettings.terminalPadding,
-    containerBackground: defaultXtermjsSettings.containerBackground,
-    scrollbarTrack: defaultXtermjsSettings.scrollbarTrack,
-    scrollbarThumb: defaultXtermjsSettings.scrollbarThumb,
-    scrollbarThumbHover: defaultXtermjsSettings.scrollbarThumbHover,
     transparentBackground: defaultXtermjsSettings.transparentBackground,
     customCss: defaultXtermjsSettings.customCss,
   };
@@ -153,27 +120,6 @@ function normalizeNumber(
   }
 
   return Math.max(minimum, Math.trunc(value));
-}
-
-function normalizeFontWeight(value: unknown): ITerminalOptions["fontWeight"] {
-  if (typeof value === "string") {
-    const normalized = value.trim();
-    if (
-      FONT_WEIGHT_STRING_VALUES.includes(
-        normalized as (typeof FONT_WEIGHT_STRING_VALUES)[number]
-      )
-    ) {
-      return normalized as ITerminalOptions["fontWeight"];
-    }
-
-    return undefined;
-  }
-
-  if (typeof value === "number" && Number.isFinite(value)) {
-    return value;
-  }
-
-  return undefined;
 }
 
 function sanitizeThemeObject(value: Record<string, unknown>): ParsedXtermThemeJson {
@@ -273,8 +219,6 @@ export function sanitizeXtermjsSettings(value: unknown): XtermjsSettings {
         fallback.terminalOptions.fontSize!,
         1
       ),
-      fontWeight: normalizeFontWeight(terminalOptions.fontWeight),
-      fontWeightBold: normalizeFontWeight(terminalOptions.fontWeightBold),
       macOptionIsMeta:
         typeof terminalOptions.macOptionIsMeta === "boolean"
           ? terminalOptions.macOptionIsMeta
@@ -290,22 +234,6 @@ export function sanitizeXtermjsSettings(value: unknown): XtermjsSettings {
       value.terminalPadding,
       fallback.terminalPadding,
       0
-    ),
-    containerBackground: normalizeNonEmptyString(
-      value.containerBackground,
-      fallback.containerBackground
-    ),
-    scrollbarTrack: normalizeNonEmptyString(
-      value.scrollbarTrack,
-      fallback.scrollbarTrack
-    ),
-    scrollbarThumb: normalizeNonEmptyString(
-      value.scrollbarThumb,
-      fallback.scrollbarThumb
-    ),
-    scrollbarThumbHover: normalizeNonEmptyString(
-      value.scrollbarThumbHover,
-      fallback.scrollbarThumbHover
     ),
     transparentBackground:
       typeof value.transparentBackground === "boolean"

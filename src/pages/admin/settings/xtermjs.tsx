@@ -3,7 +3,6 @@ import { Callout, Flex } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { AlertTriangle } from "lucide-react";
-import type { ITerminalOptions } from "xterm";
 import {
   SettingCardButton,
   SettingCardLabel,
@@ -165,38 +164,6 @@ export default function XtermjsSettingsPage() {
         }}
       />
 
-      <SettingCardShortTextInput
-        title={t("settings.xtermjs.font_weight")}
-        defaultValue={settings.terminalOptions.fontWeight?.toString() || ""}
-        placeholder="normal"
-        OnSave={async (value) => {
-          const normalizedValue = value.trim();
-          patchTerminalOptions((current) => ({
-            ...current,
-            fontWeight: normalizedValue
-              ? (normalizedValue as ITerminalOptions["fontWeight"])
-              : undefined,
-          }));
-          toast.success(t("settings.settings_saved"));
-        }}
-      />
-
-      <SettingCardShortTextInput
-        title={t("settings.xtermjs.font_weight_bold")}
-        defaultValue={settings.terminalOptions.fontWeightBold?.toString() || ""}
-        placeholder="bold"
-        OnSave={async (value) => {
-          const normalizedValue = value.trim();
-          patchTerminalOptions((current) => ({
-            ...current,
-            fontWeightBold: normalizedValue
-              ? (normalizedValue as ITerminalOptions["fontWeight"])
-              : undefined,
-          }));
-          toast.success(t("settings.settings_saved"));
-        }}
-      />
-
       <SettingCardSwitch
         title={t("settings.xtermjs.cursor_blink")}
         defaultChecked={Boolean(settings.terminalOptions.cursorBlink)}
@@ -261,19 +228,6 @@ export default function XtermjsSettingsPage() {
       )}
 
       <SettingCardShortTextInput
-        title={t("settings.xtermjs.container_background")}
-        defaultValue={settings.containerBackground || "#000000"}
-        placeholder="#000000"
-        OnSave={async (value) => {
-          patchSettings((current) => ({
-            ...current,
-            containerBackground: value,
-          }));
-          toast.success(t("settings.settings_saved"));
-        }}
-      />
-
-      <SettingCardShortTextInput
         title={t("settings.xtermjs.terminal_padding")}
         defaultValue={settings.terminalPadding?.toString() || "16"}
         placeholder="16"
@@ -290,45 +244,6 @@ export default function XtermjsSettingsPage() {
               }));
             }
           );
-        }}
-      />
-
-      <SettingCardShortTextInput
-        title={t("settings.xtermjs.scrollbar_track")}
-        defaultValue={settings.scrollbarTrack || "#1e1e1e"}
-        placeholder="#1e1e1e"
-        OnSave={async (value) => {
-          patchSettings((current) => ({
-            ...current,
-            scrollbarTrack: value,
-          }));
-          toast.success(t("settings.settings_saved"));
-        }}
-      />
-
-      <SettingCardShortTextInput
-        title={t("settings.xtermjs.scrollbar_thumb")}
-        defaultValue={settings.scrollbarThumb || "#555555"}
-        placeholder="#555555"
-        OnSave={async (value) => {
-          patchSettings((current) => ({
-            ...current,
-            scrollbarThumb: value,
-          }));
-          toast.success(t("settings.settings_saved"));
-        }}
-      />
-
-      <SettingCardShortTextInput
-        title={t("settings.xtermjs.scrollbar_thumb_hover")}
-        defaultValue={settings.scrollbarThumbHover || "#777777"}
-        placeholder="#777777"
-        OnSave={async (value) => {
-          patchSettings((current) => ({
-            ...current,
-            scrollbarThumbHover: value,
-          }));
-          toast.success(t("settings.settings_saved"));
         }}
       />
 
