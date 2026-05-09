@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import type { CSSProperties } from "react";
-import { Terminal } from "xterm";
-import type { ITerminalOptions } from "xterm";
-import { FitAddon } from "xterm-addon-fit";
-import { WebLinksAddon } from "xterm-addon-web-links";
-import { SearchAddon } from "xterm-addon-search";
-import "xterm/css/xterm.css";
+import { Terminal } from "@xterm/xterm";
+import type { ITerminalOptions } from "@xterm/xterm";
+import { FitAddon } from "@xterm/addon-fit";
+import { WebLinksAddon } from "@xterm/addon-web-links";
+import { SearchAddon } from "@xterm/addon-search";
+import "@xterm/xterm/css/xterm.css";
 import "./Terminal.css";
 import { Callout, Flex, IconButton, Theme } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";

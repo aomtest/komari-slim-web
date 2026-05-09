@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
 import type { Dispatch, SetStateAction } from "react";
-import type { ITerminalOptions, ITheme } from "xterm";
+import type { ITerminalOptions, ITheme } from "@xterm/xterm";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 export const XTERMJS_SETTINGS_STORAGE_KEY = "komari:xtermjs-settings";
