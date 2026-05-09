@@ -312,8 +312,17 @@ export function SettingCardShortTextInput({
   const { t } = useTranslation();
   const [internalDisabled, setInternalDisabled] = React.useState(false);
   const savingState = Boolean(isSaving) || internalDisabled;
-  const [internalValue, setInternalValue] = React.useState(value || defaultValue || "");
-  const currentValue = value !== undefined ? value : internalValue;
+  const normalizedValue =
+    value !== undefined && value !== null ? String(value) : "";
+  const normalizedDefaultValue =
+    defaultValue !== undefined && defaultValue !== null
+      ? String(defaultValue)
+      : "";
+  const [internalValue, setInternalValue] = React.useState(
+    value !== undefined ? normalizedValue : normalizedDefaultValue
+  );
+  const previousDefaultValueRef = React.useRef(normalizedDefaultValue);
+  const currentValue = value !== undefined ? normalizedValue : internalValue;
   const inputRef = React.useRef<HTMLInputElement>(null);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
   const resolvedLabel = label || t("save");
@@ -321,9 +330,21 @@ export function SettingCardShortTextInput({
   // 当外部value改变时，同步内部状态
   React.useEffect(() => {
     if (value !== undefined) {
-      setInternalValue(value.toString());
+      setInternalValue(normalizedValue);
+      previousDefaultValueRef.current = normalizedDefaultValue;
+      return;
     }
-  }, [value]);
+
+    if (normalizedDefaultValue !== previousDefaultValueRef.current) {
+      const previousDefaultValue = previousDefaultValueRef.current;
+      setInternalValue((currentInternalValue) =>
+        currentInternalValue === previousDefaultValue
+          ? normalizedDefaultValue
+          : currentInternalValue
+      );
+      previousDefaultValueRef.current = normalizedDefaultValue;
+    }
+  }, [normalizedDefaultValue, normalizedValue, value]);
 
   const handleSave = () => {
     if (autoDisabled) setInternalDisabled(true);
@@ -373,8 +394,8 @@ export function SettingCardShortTextInput({
         <TextField.Root
           {...restProps}
           className={className}
-          value={value !== undefined ? value : internalValue}
-          defaultValue={value === undefined ? defaultValue : undefined}
+          value={currentValue}
+          defaultValue={value === undefined ? normalizedDefaultValue : undefined}
           placeholder={placeholder}
           disabled={disabled || savingState}
           type={type}

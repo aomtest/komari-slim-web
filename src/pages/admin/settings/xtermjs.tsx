@@ -162,7 +162,6 @@ export default function XtermjsSettingsPage() {
       </SettingCardButton>
 
       <SettingCardShortTextInput
-        key={settings.terminalOptions.fontFamily}
         title={t("settings.xtermjs.font_family")}
         defaultValue={settings.terminalOptions.fontFamily || ""}
         placeholder="'Cascadia Mono', 'Noto Sans SC', monospace"
@@ -182,7 +181,6 @@ export default function XtermjsSettingsPage() {
       />
 
       <SettingCardShortTextInput
-        key={settings.terminalOptions.fontSize}
         title={t("settings.xtermjs.font_size")}
         defaultValue={settings.terminalOptions.fontSize?.toString() || "16"}
         placeholder="16"
@@ -222,7 +220,6 @@ export default function XtermjsSettingsPage() {
       />
 
       <SettingCardShortTextInput
-        key={settings.terminalOptions.scrollback}
         title={t("settings.xtermjs.scrollback")}
         defaultValue={settings.terminalOptions.scrollback?.toString() || "5000"}
         placeholder="5000"
@@ -288,7 +285,6 @@ export default function XtermjsSettingsPage() {
       )}
 
       <SettingCardShortTextInput
-        key={settings.terminalPadding}
         title={t("settings.xtermjs.terminal_padding")}
         defaultValue={settings.terminalPadding?.toString() || "16"}
         placeholder="16"
