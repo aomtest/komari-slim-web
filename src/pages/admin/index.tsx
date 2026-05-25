@@ -659,7 +659,7 @@ function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings:
     if (enableInterval) {
       const intervalVal = Number.parseFloat((installOptions.interval || "").trim());
       args.push("-i");
-      args.push(Number.isFinite(intervalVal) && intervalVal > 0 ? String(intervalVal) : "1");
+      args.push(Number.isFinite(intervalVal) && intervalVal >= 1 ? String(intervalVal) : "1");
     }
     if (enableMonthRotate) {
       const rotateVal = (installOptions.monthRotate || "").trim() || "1"; // 默认 1
@@ -1186,7 +1186,7 @@ function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings:
                 <TextField.Root
                   placeholder="1"
                   type="number"
-                  min="0.1"
+                  min="1"
                   step="0.1"
                   value={installOptions.interval}
                   onChange={(e) =>
