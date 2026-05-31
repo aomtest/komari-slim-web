@@ -31,3 +31,5 @@ export const schema = z.object({
   remark: z.string().optional(),
   public_remark: z.string().optional(),
 });
+
+export type NodeSchema = z.infer<typeof schema>;
