@@ -17,9 +17,12 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
   // 更新存储的值
   const setValue = (value: T | ((val: T) => T)) => {
     try {
-      const valueToStore = value instanceof Function ? value(storedValue) : value;
-      setStoredValue(valueToStore);
-      localStorage.setItem(key, JSON.stringify(valueToStore));
+      setStoredValue((currentValue) => {
+        const valueToStore =
+          value instanceof Function ? value(currentValue) : value;
+        localStorage.setItem(key, JSON.stringify(valueToStore));
+        return valueToStore;
+      });
     } catch (error) {
       console.warn(`Error setting localStorage key "${key}":`, error);
     }

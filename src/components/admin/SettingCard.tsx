@@ -103,6 +103,11 @@ export function SettingCardSwitch({
   const switchRef = React.useRef<HTMLButtonElement>(null);
   const [disabled, setDisabled] = React.useState(false);
   const [checked, setChecked] = React.useState(defaultChecked || false);
+
+  React.useEffect(() => {
+    setChecked(Boolean(defaultChecked));
+  }, [defaultChecked]);
+
   const handleChange = (c: boolean) => {
     if (autoDisabled) setDisabled(true);
     const previousValue = checked;
@@ -159,13 +164,14 @@ export function SettingCardButton({
   autoDisabled?: boolean;
 }) {
   const [disabled, setDisabled] = React.useState(false);
+  const resolvedLabel = label;
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (autoDisabled) setDisabled(true);
     const result: any = onClick ? onClick(event.currentTarget) : undefined;
     if (autoDisabled) {
       const promise: Promise<any> = result;
       if (promise && typeof promise.then === "function") {
-        promise.finally(() => setDisabled(false));
+        promise.finally(() => setDisabled(false)).catch(() => {});
       } else {
         setDisabled(false);
       }
@@ -176,7 +182,7 @@ export function SettingCardButton({
       <SettingCard.Action>
         <Flex>
           <Flex direction="row" gap="2" align="center">
-            <label>{label}</label>
+            <label>{resolvedLabel}</label>
             <Button onClick={handleClick} variant={variant} disabled={disabled}>
               {children}
             </Button>
@@ -202,13 +208,14 @@ export function SettingCardIconButton({
   autoDisabled?: boolean;
 }) {
   const [disabled, setDisabled] = React.useState(false);
+  const resolvedLabel = label;
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (autoDisabled) setDisabled(true);
     const result: any = onClick ? onClick(event.currentTarget) : undefined;
     if (autoDisabled) {
       const promise: Promise<any> = result;
       if (promise && typeof promise.then === "function") {
-        promise.finally(() => setDisabled(false));
+        promise.finally(() => setDisabled(false)).catch(() => {});
       } else {
         setDisabled(false);
       }
@@ -219,7 +226,7 @@ export function SettingCardIconButton({
       <SettingCard.Action>
         <Flex>
           <Flex direction="row" gap="2" align="center">
-            <label>{label}</label>
+            <label>{resolvedLabel}</label>
             <IconButton
               onClick={handleClick}
               variant={variant}
@@ -239,6 +246,7 @@ interface SettingCardShortTextInputProps
   // SettingCard 相关属性
   title?: string;
   description?: string;
+  descriptionPlacement?: "header" | "footer";
   bordless?: boolean;
 
   // 按钮相关属性
@@ -252,7 +260,7 @@ interface SettingCardShortTextInputProps
     value: string,
     inputElement: HTMLInputElement,
     buttonElement: HTMLButtonElement
-  ) => void;
+  ) => void | Promise<unknown>;
 
   // 额外内容
   children?: React.ReactNode | null;
@@ -266,11 +274,12 @@ export function SettingCardShortTextInput({
   // SettingCard 属性
   title = "",
   description = "",
+  descriptionPlacement = "header",
   bordless = false,
 
   // 按钮属性
   showSaveButton = true,
-  label = useTranslation().t("save"),
+  label = "",
   autoDisabled = true,
   isSaving,
 
@@ -302,22 +311,45 @@ export function SettingCardShortTextInput({
   className = "w-full",
   ...restProps
 }: SettingCardShortTextInputProps) {
+  const { t } = useTranslation();
   const [internalDisabled, setInternalDisabled] = React.useState(false);
-  const savingState = isSaving !== undefined ? isSaving : internalDisabled;
-  const [internalValue, setInternalValue] = React.useState(value || defaultValue || "");
-  const currentValue = value !== undefined ? value : internalValue;
+  const savingState = Boolean(isSaving) || internalDisabled;
+  const normalizedValue =
+    value !== undefined && value !== null ? String(value) : "";
+  const normalizedDefaultValue =
+    defaultValue !== undefined && defaultValue !== null
+      ? String(defaultValue)
+      : "";
+  const [internalValue, setInternalValue] = React.useState(
+    value !== undefined ? normalizedValue : normalizedDefaultValue
+  );
+  const previousDefaultValueRef = React.useRef(normalizedDefaultValue);
+  const currentValue = value !== undefined ? normalizedValue : internalValue;
   const inputRef = React.useRef<HTMLInputElement>(null);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
+  const resolvedLabel = label || t("save");
 
   // 当外部value改变时，同步内部状态
   React.useEffect(() => {
     if (value !== undefined) {
-      setInternalValue(value.toString());
+      setInternalValue(normalizedValue);
+      previousDefaultValueRef.current = normalizedDefaultValue;
+      return;
     }
-  }, [value]);
+
+    if (normalizedDefaultValue !== previousDefaultValueRef.current) {
+      const previousDefaultValue = previousDefaultValueRef.current;
+      setInternalValue((currentInternalValue) =>
+        currentInternalValue === previousDefaultValue
+          ? normalizedDefaultValue
+          : currentInternalValue
+      );
+      previousDefaultValueRef.current = normalizedDefaultValue;
+    }
+  }, [normalizedDefaultValue, normalizedValue, value]);
 
   const handleSave = () => {
-    if (isSaving === undefined && autoDisabled) setInternalDisabled(true);
+    if (autoDisabled) setInternalDisabled(true);
     const valueToSave = currentValue?.toString() || "";
     const result: any =
       inputRef.current && buttonRef.current
@@ -326,9 +358,11 @@ export function SettingCardShortTextInput({
     if (autoDisabled) {
       const promise: Promise<any> = result;
       if (promise && typeof promise.then === "function") {
-        promise.finally(() => isSaving === undefined && setInternalDisabled(false));
+        promise
+          .finally(() => setInternalDisabled(false))
+          .catch(() => {});
       } else {
-        isSaving === undefined && setInternalDisabled(false);
+        setInternalDisabled(false);
       }
     }
   };
@@ -356,14 +390,31 @@ export function SettingCardShortTextInput({
     onKeyDown?.(e);
   };
 
+  const showFooterDescription =
+    descriptionPlacement === "footer" &&
+    description !== undefined &&
+    description !== null &&
+    description !== "";
+  const showFooterRow =
+    descriptionPlacement === "footer" &&
+    (showFooterDescription || showSaveButton);
+  const showHiddenFooterSaveButton =
+    descriptionPlacement === "footer" &&
+    !showFooterDescription &&
+    !showSaveButton;
+
   return (
-    <SettingCard title={title} description={description} bordless={bordless}>
+    <SettingCard
+      title={title}
+      description={descriptionPlacement === "footer" ? undefined : description}
+      bordless={bordless}
+    >
       <Flex direction="column" className="w-full mt-1" gap="2" align="start">
         <TextField.Root
           {...restProps}
           className={className}
-          value={value !== undefined ? value : internalValue}
-          defaultValue={value === undefined ? defaultValue : undefined}
+          value={currentValue}
+          defaultValue={value === undefined ? normalizedDefaultValue : undefined}
           placeholder={placeholder}
           disabled={disabled || savingState}
           type={type}
@@ -382,15 +433,52 @@ export function SettingCardShortTextInput({
         >
         </TextField.Root>
         {children}
-        <Button
-          ref={buttonRef}
-          onClick={handleSave}
-          variant="solid"
-          hidden={!showSaveButton}
-          disabled={savingState}
-        >
-          {label}
-        </Button>
+        {descriptionPlacement === "footer" ? (
+          showFooterRow ? (
+            <Flex
+              direction="row"
+              className="w-full"
+              align="center"
+              justify={showFooterDescription ? "between" : "end"}
+              gap="3"
+            >
+              {showFooterDescription ? (
+                <label className="min-w-0 flex-1 text-sm text-muted-foreground">
+                  {description}
+                </label>
+              ) : null}
+              <Button
+                ref={buttonRef}
+                onClick={handleSave}
+                variant="solid"
+                hidden={!showSaveButton}
+                disabled={savingState}
+              >
+                {resolvedLabel}
+              </Button>
+            </Flex>
+          ) : showHiddenFooterSaveButton ? (
+            <Button
+              ref={buttonRef}
+              onClick={handleSave}
+              variant="solid"
+              hidden
+              disabled={savingState}
+            >
+              {resolvedLabel}
+            </Button>
+          ) : null
+        ) : (
+          <Button
+            ref={buttonRef}
+            onClick={handleSave}
+            variant="solid"
+            hidden={!showSaveButton}
+            disabled={savingState}
+          >
+            {resolvedLabel}
+          </Button>
+        )}
       </Flex>
     </SettingCard>
   );
@@ -399,7 +487,8 @@ export function SettingCardShortTextInput({
 export function SettingCardLongTextInput({
   title = "",
   description = "",
-  label = useTranslation().t("save"),
+  descriptionPlacement = "header",
+  label = "",
   defaultValue = "",
   OnSave = () => { },
   onChange,
@@ -410,27 +499,34 @@ export function SettingCardLongTextInput({
 }: {
   title?: string;
   description?: string;
+  descriptionPlacement?: "header" | "footer";
   label?: string;
   defaultValue?: string;
   OnSave?: (
     value: string,
     textAreaElement: HTMLTextAreaElement,
     buttonElement: HTMLButtonElement
-  ) => void;
+  ) => void | Promise<unknown>;
   onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   autoDisabled?: boolean;
   isSaving?: boolean;
   bordless?: boolean;
   showSaveButton?: boolean;
 }) {
+  const { t } = useTranslation();
   const [disabled, setDisabled] = React.useState(false);
-  const savingState = isSaving !== undefined ? isSaving : disabled;
+  const savingState = Boolean(isSaving) || disabled;
   const [value, setValue] = React.useState(defaultValue);
   const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
+  const resolvedLabel = label || t("save");
+
+  React.useEffect(() => {
+    setValue(defaultValue);
+  }, [defaultValue]);
 
   const handleSave = () => {
-    if (isSaving === undefined && autoDisabled) setDisabled(true);
+    if (autoDisabled) setDisabled(true);
     const result: any =
       textAreaRef.current && buttonRef.current
         ? OnSave(value, textAreaRef.current, buttonRef.current)
@@ -438,9 +534,9 @@ export function SettingCardLongTextInput({
     if (autoDisabled) {
       const promise: Promise<any> = result;
       if (promise && typeof promise.then === "function") {
-        promise.finally(() => isSaving === undefined && setDisabled(false));
+        promise.finally(() => setDisabled(false)).catch(() => {});
       } else {
-        isSaving === undefined && setDisabled(false);
+        setDisabled(false);
       }
     }
   };
@@ -451,8 +547,18 @@ export function SettingCardLongTextInput({
     onChange?.(e);
   };
 
+  const showFooterDescription =
+    descriptionPlacement === "footer" &&
+    description !== undefined &&
+    description !== null &&
+    description !== "";
+
   return (
-    <SettingCard title={title} description={description} bordless={bordless}>
+    <SettingCard
+      title={title}
+      description={descriptionPlacement === "footer" ? undefined : description}
+      bordless={bordless}
+    >
       <Flex direction="column" className="w-full mt-1" gap="2" align="start">
         <TextArea
           className="w-full"
@@ -462,16 +568,42 @@ export function SettingCardLongTextInput({
           onChange={handleTextAreaChange}
           ref={textAreaRef}
         />
-        {showSaveButton && (
+        {descriptionPlacement === "footer" ? (
+          showFooterDescription || showSaveButton ? (
+            <Flex
+              direction="row"
+              className="w-full"
+              align="center"
+              justify={showFooterDescription ? "between" : "end"}
+              gap="3"
+            >
+              {showFooterDescription ? (
+                <label className="min-w-0 flex-1 text-sm text-muted-foreground">
+                  {description}
+                </label>
+              ) : null}
+              {showSaveButton ? (
+                <Button
+                  ref={buttonRef}
+                  onClick={handleSave}
+                  variant="solid"
+                  disabled={savingState}
+                >
+                  {resolvedLabel}
+                </Button>
+              ) : null}
+            </Flex>
+          ) : null
+        ) : showSaveButton ? (
           <Button
             ref={buttonRef}
             onClick={handleSave}
             variant="solid"
             disabled={savingState}
           >
-            {label}
+            {resolvedLabel}
           </Button>
-        )}
+        ) : null}
       </Flex>
     </SettingCard>
   );
@@ -482,7 +614,7 @@ export function SettingCardSelect({
   description,
   defaultValue = "",
   value,
-  label = useTranslation().t("select"),
+  label = "",
   options = [],
   OnSave = () => { },
   autoDisabled = true,
@@ -500,12 +632,14 @@ export function SettingCardSelect({
   isSaving?: boolean;
   bordless?: boolean;
 }) {
+  const { t } = useTranslation();
   const [disabled, setDisabled] = React.useState(false);
   const savingState = isSaving !== undefined ? isSaving : disabled;
   const [selectedValue, setSelectedValue] = React.useState(
     value !== undefined ? value : defaultValue
   );
   const buttonRef = React.useRef<HTMLButtonElement>(null);
+  const resolvedLabel = label || t("select");
 
   React.useEffect(() => {
     if (value !== undefined) {
@@ -533,10 +667,14 @@ export function SettingCardSelect({
             setSelectedValue(previousValue);
           })
           .finally(() => {
-            isSaving === undefined && setDisabled(false);
+            if (isSaving === undefined) {
+              setDisabled(false);
+            }
           });
       } else {
-        isSaving === undefined && setDisabled(false);
+        if (isSaving === undefined) {
+          setDisabled(false);
+        }
       }
     }
   };
@@ -549,7 +687,7 @@ export function SettingCardSelect({
       );
       return selectedOption?.label || selectedValue;
     }
-    return label;
+    return resolvedLabel;
   };
 
   return (

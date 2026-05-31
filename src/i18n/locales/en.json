@@ -616,6 +616,26 @@
       "confirmation_help": "Password login is disabled. Type `STOP CLOUDFLARED` to confirm.",
       "fetch_status_failed": "Failed to fetch cloudflared status"
     },
+    "xtermjs": {
+      "title": "XtermJS",
+      "font_family": "Font Family",
+      "font_size": "Font Size",
+      "cursor_blink": "Cursor Blink",
+      "scrollback": "Scrollback",
+      "convert_eol": "Convert EOL",
+      "transparent_background": "Transparent Background",
+      "terminal_padding": "Terminal Padding",
+      "reset_defaults": "Restore local defaults",
+      "theme_json": "Theme JSON",
+      "theme_json_description": "Only terminalOptions.theme is edited. Unknown keys are filtered on save.",
+      "custom_css": "Custom CSS",
+      "custom_css_description": "Prefer a .terminal-page or .terminal-xterm-host prefix when writing rules.",
+      "theme_json_invalid": "Invalid theme JSON",
+      "theme_json_must_be_object": "Theme JSON must be a JSON object",
+      "theme_json_filtered": "Theme JSON filtered",
+      "transparent_hint": "Enable transparency only if the container background is also transparent.",
+      "transparent_theme_hint": "Theme background is still opaque. Use rgba(...) or hsla(...)."
+    },
     "record": {
       "enabled": "Enable Record",
       "enabled_description": "Log server historical load details and Ping records,etc.",

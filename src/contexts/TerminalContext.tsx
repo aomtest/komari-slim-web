@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { Terminal } from 'xterm';
+import { Terminal } from '@xterm/xterm';
 
 // TerminalContext provides terminal instance and a sendCommand function to children components
 export interface TerminalContextType {
