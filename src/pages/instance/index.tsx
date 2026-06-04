@@ -46,8 +46,7 @@ export default function InstancePage() {
       if (offlineServerPosition === "First") {
         if (!aIsOnline && bIsOnline) return -1;
         if (aIsOnline && !bIsOnline) return 1;
-      } else if (offlineServerPosition === "Keep") {
-      } else {
+      } else if (offlineServerPosition !== "Keep") {
         if (aIsOnline && !bIsOnline) return -1;
         if (!aIsOnline && bIsOnline) return 1;
       }
@@ -154,7 +153,7 @@ export default function InstancePage() {
             <Flex direction="column" gap="0" className="h-full min-h-0">
               <div className="p-3 border-b border-accent-3">
                 <Text size="2" weight="bold">
-                  {t("common.serverList", { defaultValue: "服务器列表" })}
+                  {t("common.serverList")}
                 </Text>
               </div>
               <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
@@ -167,7 +166,7 @@ export default function InstancePage() {
                     )}
                     {group.group === null && (
                       <div className="px-3 py-1 text-xs font-semibold text-accent-8 bg-accent-2 sticky top-0">
-                        {t("common.ungrouped", { defaultValue: "未分组" })}
+                        {t("common.ungrouped")}
                       </div>
                     )}
                     <div>

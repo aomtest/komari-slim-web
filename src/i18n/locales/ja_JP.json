@@ -464,6 +464,22 @@
     "yes": "はい"
   },
   "region_overview": "地域の点灯",
+  "rpc2": {
+    "automatic_connection_failed": "自動接続に失敗しました:",
+    "batch_request_failed": "バッチリクエストに失敗しました",
+    "connection_disconnected": "接続が切断されました",
+    "connection_failed": "接続に失敗しました",
+    "parse_websocket_message_failed": "WebSocket メッセージの解析に失敗しました:",
+    "provider_required": "useRPC2 は RPC2Provider 内で使用する必要があります",
+    "request_failed": "リクエストに失敗しました: {{method}}",
+    "request_timed_out": "リクエストがタイムアウトしました: {{method}}",
+    "send_heartbeat_failed": "ハートビートの送信に失敗しました:",
+    "websocket_connection_error": "WebSocket 接続エラー",
+    "websocket_connection_failed": "WebSocket 接続に失敗しました",
+    "websocket_connection_timed_out": "WebSocket 接続がタイムアウトしました",
+    "websocket_error": "WebSocket エラー:",
+    "websocket_not_connected": "WebSocket は接続されていません"
+  },
   "save": "保存",
   "search": {
     "no_results": "一致するサーバーが見つかりませんでした",
@@ -805,6 +821,17 @@
     "second": "秒"
   },
   "traffic_overview": "トラフィック概要",
+  "userAgent": {
+    "android": "Android",
+    "chrome": "Chrome",
+    "edge": "Edge",
+    "firefox": "Firefox",
+    "ios": "iOS",
+    "linux": "Linux",
+    "macos": "macOS",
+    "safari": "Safari",
+    "windows": "Windows"
+  },
   "view": {
     "mode": "表示モード"
   },

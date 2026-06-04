@@ -464,6 +464,22 @@
     "yes": "是的"
   },
   "region_overview": "点亮地区",
+  "rpc2": {
+    "automatic_connection_failed": "自动连接失败:",
+    "batch_request_failed": "批量请求失败",
+    "connection_disconnected": "连接已断开",
+    "connection_failed": "连接失败",
+    "parse_websocket_message_failed": "解析 WebSocket 消息失败:",
+    "provider_required": "useRPC2 必须在 RPC2Provider 内使用",
+    "request_failed": "请求失败: {{method}}",
+    "request_timed_out": "请求超时: {{method}}",
+    "send_heartbeat_failed": "发送心跳包失败:",
+    "websocket_connection_error": "WebSocket 连接错误",
+    "websocket_connection_failed": "WebSocket 连接失败",
+    "websocket_connection_timed_out": "WebSocket 连接超时",
+    "websocket_error": "WebSocket 错误:",
+    "websocket_not_connected": "WebSocket 未连接"
+  },
   "save": "保存",
   "search": {
     "no_results": "未找到匹配的服务器",
@@ -805,6 +821,17 @@
     "second": "秒"
   },
   "traffic_overview": "流量概览",
+  "userAgent": {
+    "android": "安卓",
+    "chrome": "Chrome",
+    "edge": "Edge",
+    "firefox": "Firefox",
+    "ios": "iOS",
+    "linux": "Linux",
+    "macos": "macOS",
+    "safari": "Safari",
+    "windows": "Windows"
+  },
   "view": {
     "mode": "显示模式"
   },

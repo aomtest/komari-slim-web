@@ -310,8 +310,7 @@ export const NodeGrid = ({ nodes, liveData }: NodeGridProps) => {
     if (offlineServerPosition === "First") {
       if (!aIsOnline && bIsOnline) return -1;
       if (aIsOnline && !bIsOnline) return 1;
-    } else if (offlineServerPosition === "Keep") {
-    } else {
+    } else if (offlineServerPosition !== "Keep") {
       if (aIsOnline && !bIsOnline) return -1;
       if (!aIsOnline && bIsOnline) return 1;
     }

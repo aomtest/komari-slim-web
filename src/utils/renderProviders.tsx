@@ -187,7 +187,7 @@ export const renderProviderInputs = ({
     return (
         <div key={currentProvider}>
             <SettingCardCollapse
-                title={title ?? "详情"}
+                title={title ?? t("common.details")}
                 description={description}
                 defaultOpen={true}
             >
@@ -207,7 +207,7 @@ export const renderProviderInputs = ({
                         bordless
                         onClick={handleSaveAll}
                     >
-                        {t("save", "保存")}
+                        {t("save")}
                     </SettingCardButton>
                 </div>
             </SettingCardCollapse>

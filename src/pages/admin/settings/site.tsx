@@ -207,13 +207,9 @@ export default function SiteSettings() {
             value={shareHours}
             type="number"
             onChange={(e) => {
-              try {
-                const val = parseInt(e.target.value);
-                if (!isNaN(val)) {
-                  setShareHours(val);
-                }
-              } catch (err) {
-                // ignore
+              const val = Number.parseInt(e.target.value, 10);
+              if (!Number.isNaN(val)) {
+                setShareHours(val);
               }
             }}
           ></SettingCardShortTextInput>
@@ -340,15 +336,10 @@ export default function SiteSettings() {
                           })
                           .then((data) => {
                             if (data.status === "success") {
-                              toast.success(
-                                t(
-                                  "settings.custom.favicon_default_success",
-                                  "已恢复默认 Favicon",
-                                ),
-                              );
+                              toast.success(t("settings.custom.favicon_default_success"));
                             } else {
                               toast.error(
-                                data.message || "恢复默认 Favicon 失败",
+                                data.message || t("settings.custom.favicon_default_error"),
                               );
                             }
                           })
@@ -357,7 +348,7 @@ export default function SiteSettings() {
                           });
                       }}
                     >
-                      {t("settings.custom.favicon_confirm", "确认")}
+                      {t("settings.custom.favicon_confirm")}
                     </Button>
                   </Dialog.Trigger>
                 </Flex>
@@ -386,8 +377,7 @@ export default function SiteSettings() {
                       if (data.status === "success") {
                         toast.success(
                           t(
-                            "settings.custom.favicon_update_success",
-                            "已更新 Favicon",
+                            "settings.custom.favicon_update_success"
                           ),
                         );
                       } else {
@@ -401,7 +391,7 @@ export default function SiteSettings() {
                 input.click();
               }}
             >
-              {t("settings.custom.favicon_change", "更新 Favicon")}
+              {t("settings.custom.favicon_change")}
             </Button>
           </Flex>
         </Flex>

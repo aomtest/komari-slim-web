@@ -464,6 +464,22 @@
     "yes": "Yes"
   },
   "region_overview": "Region",
+  "rpc2": {
+    "automatic_connection_failed": "Automatic connection failed:",
+    "batch_request_failed": "Batch request failed",
+    "connection_disconnected": "Connection disconnected",
+    "connection_failed": "Connection failed",
+    "parse_websocket_message_failed": "Failed to parse WebSocket message:",
+    "provider_required": "useRPC2 must be used within RPC2Provider",
+    "request_failed": "Request failed: {{method}}",
+    "request_timed_out": "Request timed out: {{method}}",
+    "send_heartbeat_failed": "Failed to send heartbeat:",
+    "websocket_connection_error": "WebSocket connection error",
+    "websocket_connection_failed": "WebSocket connection failed",
+    "websocket_connection_timed_out": "WebSocket connection timed out",
+    "websocket_error": "WebSocket error:",
+    "websocket_not_connected": "WebSocket is not connected"
+  },
   "save": "Save",
   "search": {
     "no_results": "No matching servers found",
@@ -805,6 +821,17 @@
     "second": "Second"
   },
   "traffic_overview": "Traffic Overview",
+  "userAgent": {
+    "android": "Android",
+    "chrome": "Chrome",
+    "edge": "Edge",
+    "firefox": "Firefox",
+    "ios": "iOS",
+    "linux": "Linux",
+    "macos": "macOS",
+    "safari": "Safari",
+    "windows": "Windows"
+  },
   "view": {
     "mode": "View Mode"
   },

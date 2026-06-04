@@ -82,14 +82,14 @@ const ThemeManaged: React.FC = () => {
         });
         setValues(init);
       } catch (e: any) {
-        setError(e.message || "加载主题配置失败");
+        setError(e.message || t("theme.load_config_failed"));
       } finally {
         setLoading(false);
         setFirstLoading(false);
       }
     }
     load();
-  }, [theme, themeSettings]);
+  }, [theme, themeSettings, t]);
 
   const handleValueChange = (key: string, val: any) => {
     setValues((v) => ({ ...v, [key]: val }));
@@ -131,11 +131,11 @@ const ThemeManaged: React.FC = () => {
         const d = await resp.json().catch(() => ({ message: "unknown" }));
         throw new Error(d.message || `HTTP ${resp.status}`);
       }
-      toast.success("保存成功");
+      toast.success(t("settings.settings_saved"));
       // 刷新 publicInfo 以反映最新设置
       refresh();
     } catch (e: any) {
-      toast.error(`保存失败: ${e.message || e}`);
+      toast.error(`${t("settings.settings_save_failed")}: ${e.message || e}`);
     } finally {
       setSaving(false);
     }
@@ -174,7 +174,7 @@ const ThemeManaged: React.FC = () => {
           if (f.type === "title") {
             return (
               <Heading key={idx} size="3" className="mt-4">
-                {resolveI18nText(f.name, currentLanguage) || "标题"}
+                {resolveI18nText(f.name, currentLanguage) || t("common.title")}
               </Heading>
             );
           }
@@ -207,7 +207,7 @@ const ThemeManaged: React.FC = () => {
                   value={val}
                   options={opts}
                   OnSave={(v) => handleValueChange(f.key!, v)}
-                  label={val || "选择"}
+                  label={val || t("common.select")}
                 />
               );
             }

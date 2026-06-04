@@ -464,6 +464,22 @@
     "yes": "Ya"
   },
   "region_overview": "Wilayah",
+  "rpc2": {
+    "automatic_connection_failed": "Koneksi otomatis gagal:",
+    "batch_request_failed": "Permintaan batch gagal",
+    "connection_disconnected": "Koneksi terputus",
+    "connection_failed": "Koneksi gagal",
+    "parse_websocket_message_failed": "Gagal mengurai pesan WebSocket:",
+    "provider_required": "useRPC2 harus digunakan di dalam RPC2Provider",
+    "request_failed": "Permintaan gagal: {{method}}",
+    "request_timed_out": "Permintaan habis waktu: {{method}}",
+    "send_heartbeat_failed": "Gagal mengirim heartbeat:",
+    "websocket_connection_error": "Kesalahan koneksi WebSocket",
+    "websocket_connection_failed": "Koneksi WebSocket gagal",
+    "websocket_connection_timed_out": "Koneksi WebSocket habis waktu",
+    "websocket_error": "Kesalahan WebSocket:",
+    "websocket_not_connected": "WebSocket tidak terhubung"
+  },
   "save": "Simpan",
   "search": {
     "no_results": "Tidak ditemukan server yang cocok",
@@ -805,6 +821,17 @@
     "second": "Detik"
   },
   "traffic_overview": "Ringkasan Lalu Lintas",
+  "userAgent": {
+    "android": "Android",
+    "chrome": "Chrome",
+    "edge": "Edge",
+    "firefox": "Firefox",
+    "ios": "iOS",
+    "linux": "Linux",
+    "macos": "macOS",
+    "safari": "Safari",
+    "windows": "Windows"
+  },
   "view": {
     "mode": "Mode Tampilan"
   },

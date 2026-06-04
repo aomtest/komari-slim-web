@@ -407,8 +407,8 @@ const NodeTable = ({
         body: JSON.stringify(orderData),
       });
       // 不再调用 refresh，以免覆盖本地排序
-    } catch (error) {
-      toast.error("Order Failed");
+    } catch {
+      toast.error(t("admin.nodeTable.errorRefreshNodeList"));
     }
   };
 

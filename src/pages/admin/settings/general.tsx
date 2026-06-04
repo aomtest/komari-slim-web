@@ -84,25 +84,22 @@ export default function GeneralSettings() {
         }}
       />
       <SettingCardButton
-        title={t("settings.geoip.update_title", "更新 GeoIP 数据库")}
+        title={t("settings.geoip.update_title")}
         onClick={async () => {
           const result = await fetch("/api/admin/update/mmdb", {
             method: "POST",
           });
           const data = await result.json();
           if (data.status === "success") {
-            toast.success(
-              t("settings.geoip.update_success", "GeoIP 数据库更新成功")
-            );
+            toast.success(t("settings.geoip.update_success"));
           } else {
             toast.error(
-              data.message ||
-                t("settings.geoip.update_error", "更新 GeoIP 数据库失败")
+              data.message || t("settings.geoip.update_error")
             );
           }
         }}
       >
-        {t("common.update", "更新")}
+        {t("common.update")}
       </SettingCardButton>
       <SettingCardCollapse
         title={t("settings.geoip.test_title")}
@@ -122,11 +119,11 @@ export default function GeneralSettings() {
                 const result = await fetch(`/api/admin/test/geoip?ip=${ip}`);
                 const data = await result.json();
                 setGeoipTestResult(
-                  JSON.stringify(data.data, null, 2) || "无结果"
+                  JSON.stringify(data.data, null, 2) || t("common.no_results")
                 );
               }}
             >
-              {t("settings.geoip.test_button", "测试")}
+              {t("settings.geoip.test_button")}
             </Button>
           </div>{" "}
           <Flex className="w-full">

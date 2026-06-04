@@ -40,12 +40,12 @@ export default function SignOnSettings() {
               : "";
           setCurrentProvider(initialProvider);
         } else {
-          setProviderError(data.message || "获取登录接口信息失败");
+          setProviderError(data.message || t("settings.sso.provider_fetch_failed"));
         }
       })
-      .catch(() => setProviderError("获取登录接口信息失败"))
+      .catch(() => setProviderError(t("settings.sso.provider_fetch_failed")))
       .finally(() => setProviderLoading(false));
-  }, [loading, settings.o_auth_provider]);
+  }, [loading, settings.o_auth_provider, t]);
 
   // 拉取当前 provider 的设置
   React.useEffect(() => {
@@ -61,12 +61,12 @@ export default function SignOnSettings() {
             setProviderValues({});
           }
         } else {
-          setProviderError(data.message || "获取设置失败");
+          setProviderError(data.message || t("settings.sso.provider_settings_fetch_failed"));
         }
       })
-      .catch(() => setProviderError("获取设置失败"))
+      .catch(() => setProviderError(t("settings.sso.provider_settings_fetch_failed")))
       .finally(() => setProviderLoading(false));
-  }, [currentProvider]);
+  }, [currentProvider, t]);
 
   // 处理保存
   const handleOidcSave = async (values: any) => {
@@ -84,12 +84,12 @@ export default function SignOnSettings() {
       });
       const data = await res.json();
       if (data.status !== "success") {
-        setProviderError(data.message || "保存失败");
+        setProviderError(data.message || t("settings.sso.provider_save_failed"));
       } else {
         setProviderValues(values);
       }
     } catch {
-      setProviderError("保存失败");
+      setProviderError(t("settings.sso.provider_save_failed"));
     }
     setProviderLoading(false);
   };
@@ -110,7 +110,7 @@ export default function SignOnSettings() {
     <>
       <SettingCardLabel>{t("settings.sign_on.title")}</SettingCardLabel>
       <SettingCardSwitch
-        title={t("settings.sign_on.disable_password", "禁止密码登录")}
+        title={t("settings.sign_on.disable_password")}
         defaultChecked={settings.disable_password_login}
         onChange={async (checked) => {
           await updateSettingsWithToast({ disable_password_login: checked }, t);
@@ -118,9 +118,9 @@ export default function SignOnSettings() {
       />
       <SettingCardLabel>{t("settings.sso.title")}</SettingCardLabel>
       <SettingCardSwitch
-        title={t("settings.sso.enable", "启用单点登录")}
+        title={t("settings.sso.enable")}
         defaultChecked={settings.o_auth_enabled}
-        description={t("settings.sso.enable_description", "启用单点登录功能")}
+        description={t("settings.sso.enable_description")}
         onChange={async (checked) => {
           await updateSettingsWithToast({ o_auth_enabled: checked }, t);
         }}
