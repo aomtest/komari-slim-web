@@ -270,6 +270,7 @@ const ExecContent = () => {
                         onChange={(e) => setCommand(e.target.value)}
                         placeholder={t("exec.commandPlaceholder")}
                         size="3"
+                        style={{ fontFamily: "var(--font-mono)" }}
                     >
                         <TextField.Slot>
                             <Terminal size={16} />
