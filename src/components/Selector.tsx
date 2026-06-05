@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { Checkbox, TextField } from "@radix-ui/themes";
 import { Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -79,19 +79,10 @@ function SelectorInner<T>(props: SelectorProps<T>) {
     allIds.length > 0 && allIds.every((id) => value.includes(id));
   const isIndeterminate =
     value.length > 0 && value.some((id) => allIds.includes(id)) && !allChecked;
+  const checkAllState = allChecked ? true : isIndeterminate ? "indeterminate" : false;
 
   // 孤立（value 中但 items 不再存在）
   const orphanIds = value.filter((id) => !items.some((it) => getId(it) === id));
-
-  const checkAllRef = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
-    if (checkAllRef.current) {
-      const input = checkAllRef.current.querySelector("input");
-      if (input instanceof HTMLInputElement) {
-        input.indeterminate = isIndeterminate;
-      }
-    }
-  }, [isIndeterminate]);
 
   const resolvedSearchPlaceholder =
     searchPlaceholder ?? t("common.search");
@@ -132,8 +123,7 @@ function SelectorInner<T>(props: SelectorProps<T>) {
           <TableHeader>
             <TableHead>
               <Checkbox
-                ref={checkAllRef}
-                checked={allChecked}
+                checked={checkAllState}
                 onCheckedChange={(checked) => handleCheckAll(!!checked)}
                 aria-label={t("common.select_all")}
               />
