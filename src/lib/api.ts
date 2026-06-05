@@ -32,13 +32,22 @@ export async function getSettings(): Promise<SettingsResponse> {
     }
 
     const data = await response.json();
+    const settingsPayload = data["data"];
+
+    if (
+      typeof settingsPayload !== "object" ||
+      settingsPayload === null ||
+      Array.isArray(settingsPayload)
+    ) {
+      throw new Error("Invalid settings response payload");
+    }
 
     // Remove database metadata fields that are not needed for UI
-        const settings = Object.fromEntries(
-          Object.entries(data["data"] ?? {}).filter(
-            ([key]) => !["CreatedAt", "UpdatedAt", "id"].includes(key),
-          ),
-        );
+    const settings = Object.fromEntries(
+      Object.entries(settingsPayload).filter(
+        ([key]) => !["CreatedAt", "UpdatedAt", "id"].includes(key),
+      ),
+    );
 
     return settings as SettingsResponse;
   } catch (error) {
