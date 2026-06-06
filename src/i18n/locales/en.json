@@ -411,7 +411,16 @@
       "tips": "To prevent frequent notifications, we use a grace period:</br> <b>Grace Period</b>: If a client goes offline and doesn't reconnect within this time, an offline notification will be sent.",
       "title": "Offline"
     },
-    "title": "Notification"
+    "title": "Notification",
+    "traffic_report": {
+      "title": "Traffic Report",
+      "full_title": "Scheduled Traffic Report",
+      "report_type": "Report Type",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "batch_edit": "Batch Edit"
+    }
   },
   "page_not_found": "The server cannot find the specific page you're trying to access.",
   "ping": {

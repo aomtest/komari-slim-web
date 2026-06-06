@@ -411,7 +411,16 @@
       "tips": "为了避免频繁发送通知，我们设置了宽限期：</br> <b>宽限期</b>：客户端离线后，如果在这段时间内没有重新上线，就会发送离线通知",
       "title": "离线通知"
     },
-    "title": "通知"
+    "title": "通知",
+    "traffic_report": {
+      "title": "流量定时报告",
+      "full_title": "流量定时报告设置",
+      "report_type": "定时类型",
+      "daily": "日报",
+      "weekly": "周报",
+      "monthly": "月报",
+      "batch_edit": "批量修改"
+    }
   },
   "page_not_found": "真不巧，网页被小鞠吃掉了。",
   "ping": {

@@ -411,7 +411,16 @@
       "tips": "為了避免頻繁發送通知，我們設定了寬限期：</br> <b>寬限期</b>：客戶端離線後，如果在這段時間內沒有重新上線，就會發送離線通知",
       "title": "離線通知"
     },
-    "title": "通知"
+    "title": "通知",
+    "traffic_report": {
+      "title": "流量定時報告",
+      "full_title": "流量定時報告設定",
+      "report_type": "定時類型",
+      "daily": "日報",
+      "weekly": "週報",
+      "monthly": "月報",
+      "batch_edit": "批量修改"
+    }
   },
   "page_not_found": "真不巧，網頁被小鞠吃掉了。",
   "ping": {
