@@ -99,8 +99,13 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
         const data = await resp.json();
         if (ignore) return;
         const cfg = data?.configuration;
-        if (!cfg) {
-          // 没有 configuration 字段则不扩展
+        if (
+          !cfg ||
+          cfg.type !== "managed" ||
+          !Array.isArray(cfg.data) ||
+          cfg.data.length === 0
+        ) {
+          // 只有 managed 配置项才扩展主题设置菜单
           setExtraMenuItems([]);
           return;
         }

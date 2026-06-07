@@ -105,6 +105,7 @@ const ThemePage = () => {
           !cancelled &&
           data &&
           data.configuration &&
+          data.configuration.type === "managed" &&
           Array.isArray(data.configuration.data) &&
           data.configuration.data.length > 0
         ) {
@@ -265,7 +266,12 @@ const ThemePage = () => {
 
       const theme = themes.find((t) => t.short === themeShort);
       console.log(theme);
-      if (theme && theme.configuration && theme.configuration.data) {
+      if (
+        theme &&
+        theme.configuration?.type === "managed" &&
+        Array.isArray(theme.configuration.data) &&
+        theme.configuration.data.length > 0
+      ) {
         window.location.reload();
       }
 

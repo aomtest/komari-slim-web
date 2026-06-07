@@ -24,6 +24,7 @@ interface ThemeFieldBase {
 
 interface ThemeConfigResponse {
   configuration?: {
+    type?: string;
     data?: ThemeFieldBase[];
   };
   [k: string]: any;
@@ -63,7 +64,10 @@ const ThemeManaged: React.FC = () => {
         });
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const data: ThemeConfigResponse = await resp.json();
-        if (!data.configuration?.data) {
+        if (
+          data.configuration?.type !== "managed" ||
+          !Array.isArray(data.configuration.data)
+        ) {
           setFields([]);
           setValues({});
           return;
