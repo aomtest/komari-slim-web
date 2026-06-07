@@ -31,6 +31,10 @@ import { usePublicInfo } from "@/contexts/PublicInfoContext";
 import Loading from "@/components/loading";
 import { useSettings } from "@/lib/api";
 import UploadDialog from "@/components/UploadDialog";
+import {
+  getThemeConfigurationType,
+  THEME_CONFIGURATION_MANAGED,
+} from "@/utils/themeConfiguration";
 
 interface Theme {
   id: string;
@@ -105,7 +109,8 @@ const ThemePage = () => {
           !cancelled &&
           data &&
           data.configuration &&
-          data.configuration.type === "managed" &&
+          getThemeConfigurationType(data.configuration) ===
+            THEME_CONFIGURATION_MANAGED &&
           Array.isArray(data.configuration.data) &&
           data.configuration.data.length > 0
         ) {
@@ -268,7 +273,8 @@ const ThemePage = () => {
       console.log(theme);
       if (
         theme &&
-        theme.configuration?.type === "managed" &&
+        getThemeConfigurationType(theme.configuration) ===
+          THEME_CONFIGURATION_MANAGED &&
         Array.isArray(theme.configuration.data) &&
         theme.configuration.data.length > 0
       ) {

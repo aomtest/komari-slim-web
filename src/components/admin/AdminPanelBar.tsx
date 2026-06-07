@@ -27,6 +27,13 @@ import Tips from "../ui/tips";
 import { CircleFadingArrowUp } from "lucide-react";
 import { useRPC2Call } from "@/contexts/RPC2Context";
 import { resolveI18nText } from "@/utils/i18nText";
+import {
+  getThemeConfigurationType,
+  normalizeThemeRedirectTarget,
+  THEME_CONFIGURATION_MANAGED,
+  THEME_CONFIGURATION_RAW,
+  THEME_CONFIGURATION_REDIRECT,
+} from "@/utils/themeConfiguration";
 
 // 将JSON配置转换为类型安全的菜单项数组 (基础静态菜单)
 const baseMenuItems = (menuConfig as { menu: MenuItem[] }).menu;
@@ -99,13 +106,26 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
         const data = await resp.json();
         if (ignore) return;
         const cfg = data?.configuration;
+        if (!cfg) {
+          setExtraMenuItems([]);
+          return;
+        }
+
+        const cfgType = getThemeConfigurationType(cfg);
+        let itemPath: string | null = null;
         if (
-          !cfg ||
-          cfg.type !== "managed" ||
-          !Array.isArray(cfg.data) ||
-          cfg.data.length === 0
+          cfgType === THEME_CONFIGURATION_MANAGED &&
+          Array.isArray(cfg.data) &&
+          cfg.data.length > 0
         ) {
-          // 只有 managed 配置项才扩展主题设置菜单
+          itemPath = "/admin/theme_managed";
+        } else if (cfgType === THEME_CONFIGURATION_RAW) {
+          itemPath = "/admin/theme_raw";
+        } else if (cfgType === THEME_CONFIGURATION_REDIRECT) {
+          itemPath = normalizeThemeRedirectTarget(cfg.data);
+        }
+
+        if (!itemPath) {
           setExtraMenuItems([]);
           return;
         }
@@ -118,7 +138,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
         const item: ExtendedMenuItem = {
           labelKey: rawLabel,
           rawLabel,
-          path: "/admin/theme_managed",
+          path: itemPath,
           icon,
         };
         setExtraMenuItems([item]);

@@ -32,6 +32,12 @@ export const routes: RouteObject[] = [
         ),
       },
       {
+        path: "theme_raw",
+        element: React.createElement(
+          lazy(() => import("./pages/admin/theme_raw.tsx"))
+        ),
+      },
+      {
         path: "sessions",
         element: React.createElement(
           lazy(() => import("./pages/admin/sessions"))
