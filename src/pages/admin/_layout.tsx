@@ -6,15 +6,20 @@ import { updateSettingsWithToast, useSettings } from "@/lib/api";
 import { Button, Dialog } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
 import { Eula } from "@/utils/field";
+import { normalizeLanguage, readStoredLanguage } from "@/utils/language";
 const AdminLayout = () => {
   const { settings, loading } = useSettings();
-  const lang = localStorage.getItem("i18nextLng") || "en";
+  const lang = readStoredLanguage() || "en";
   const [open, setOpen] = useState(false);
   useEffect(() => {
     if (loading) {
       setOpen(false);
     }
-    else if (settings && !settings.eula_accepted && lang.startsWith("zh")) {
+    else if (
+      settings &&
+      !settings.eula_accepted &&
+      normalizeLanguage(lang).startsWith("zh")
+    ) {
       setOpen(true);
     }
   }, [loading, settings, lang]);

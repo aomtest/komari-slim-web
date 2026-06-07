@@ -41,6 +41,7 @@ const baseMenuItems = (menuConfig as { menu: MenuItem[] }).menu;
 // 扩展的菜单项类型（允许直接提供 rawLabel 而不是多语言 key）
 interface ExtendedMenuItem extends MenuItem {
   rawLabel?: string; // 不走 i18n，直接显示
+  reloadDocument?: boolean;
 }
 
 interface AdminPanelBarProps {
@@ -140,6 +141,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
           rawLabel,
           path: itemPath,
           icon,
+          reloadDocument: cfgType === THEME_CONFIGURATION_REDIRECT,
         };
         setExtraMenuItems([item]);
       } catch (e) {
@@ -613,6 +615,9 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                                     isMobile && setSidebarOpen(false)
                                   }
                                   newTab={child.newTab}
+                                  reloadDocument={
+                                    (child as ExtendedMenuItem).reloadDocument
+                                  }
                                 />
                               ))}
                             </Flex>
@@ -632,6 +637,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                         children={item.rawLabel || t(item.labelKey)}
                         onClick={() => isMobile && setSidebarOpen(false)}
                         newTab={item.newTab}
+                        reloadDocument={item.reloadDocument}
                       />
                     );
                   },
@@ -698,12 +704,14 @@ const SidebarItem = ({
   icon,
   children,
   newTab,
+  reloadDocument,
 }: {
   to: string;
   onClick: () => void;
   icon: ReactNode;
   children: ReactNode;
   newTab?: boolean;
+  reloadDocument?: boolean;
 }) => {
   const location = useLocation();
   const isExternalLink = to.startsWith("http://") || to.startsWith("https://");
@@ -714,13 +722,13 @@ const SidebarItem = ({
       (to !== "/admin" && location.pathname.startsWith(to)));
   const openInNewTab = newTab === true || (isExternalLink && newTab !== false);
 
-  if (openInNewTab) {
+  if (openInNewTab || reloadDocument) {
     return (
       <a
         href={to}
         onClick={onClick}
-        target="_blank"
-        rel="noopener noreferrer"
+        target={openInNewTab ? "_blank" : undefined}
+        rel={openInNewTab ? "noopener noreferrer" : undefined}
         className="group transition-colors duration-200 hover:bg-accent-3 rounded-md"
       >
         <Flex
