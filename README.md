@@ -52,6 +52,12 @@ npm run build
 
 2. 修改 `komari-theme.json` 中的相关配置，具体可参考 [主题配置文件 | Komari](https://komari-document.pages.dev/dev/theme.html#%E4%B8%BB%E9%A2%98%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6)
 
+   `configuration` 会根据 `type` 复用 `data` 字段：
+
+   - `managed`: `data` 为配置项数组，后台会生成主题设置表单。
+   - `raw`: `data` 为 HTML 字符串，后台会在主内容区域渲染该 HTML。
+   - `redirect`: `data` 为站内相对路径，以实际部署的站点根目录（如 `VITE_BASE_URL`）为基准；例如根目录为 `/` 时 `settings` 或 `../settings` 会导航到 `/settings`，根目录为 `/abc/` 时会导航到 `/abc/settings`。
+
 3. 发挥你的想象和创造力，设计并实现你独特的主题风格！
 
 4. 构建主题

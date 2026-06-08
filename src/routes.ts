@@ -32,6 +32,12 @@ export const routes: RouteObject[] = [
         ),
       },
       {
+        path: "theme_raw",
+        element: React.createElement(
+          lazy(() => import("./pages/admin/theme_raw.tsx"))
+        ),
+      },
+      {
         path: "sessions",
         element: React.createElement(
           lazy(() => import("./pages/admin/sessions"))
@@ -118,6 +124,12 @@ export const routes: RouteObject[] = [
             path: "general",
             element: React.createElement(
               lazy(() => import("./pages/admin/notification/general"))
+            ),
+          },
+          {
+            path: "traffic-report",
+            element: React.createElement(
+              lazy(() => import("./pages/admin/notification/traffic_report"))
             ),
           },
         ],

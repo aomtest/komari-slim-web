@@ -314,7 +314,7 @@
   "exec": {
     "allCompleted": "所有任务执行完成",
     "command": "执行命令",
-    "commandPlaceholder": "whoami",
+    "commandPlaceholder": "whoami（使用 Shift+Enter 换行）",
     "description": "在选定的节点上远程执行命令",
     "errors": {
       "emptyCommand": "命令不能为空",
@@ -422,7 +422,23 @@
       "tips": "为了避免频繁发送通知，我们设置了宽限期：</br> <b>宽限期</b>：客户端离线后，如果在这段时间内没有重新上线，就会发送离线通知",
       "title": "离线通知"
     },
-    "title": "通知"
+    "title": "通知",
+    "traffic_report": {
+      "batch_edit": "批量修改",
+      "daily": "日报",
+      "errors": {
+        "fetch_failed": "获取流量定时报告配置失败",
+        "save_failed": "保存流量定时报告配置失败",
+        "select_cadence": "启用流量定时报告时，至少选择一种报告周期",
+        "update_failed": "更新流量定时报告配置失败"
+      },
+      "full_title": "流量定时报告设置",
+      "monthly": "月报",
+      "report_type": "定时类型",
+      "separator": "、",
+      "title": "流量定时报告",
+      "weekly": "周报"
+    }
   },
   "page_not_found": "真不巧，网页被小鞠吃掉了。",
   "ping": {

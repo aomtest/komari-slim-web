@@ -6,6 +6,11 @@ import zh_CN from "./locales/zh_CN.json";
 import zh_TW from "./locales/zh_TW.json";
 import ja_JP from "./locales/ja_JP.json";
 import id_ID from "./locales/id_ID.json";
+import {
+  LANGUAGE_STORAGE_KEY,
+  readStoredLanguage,
+  writeLanguageCookie,
+} from "@/utils/language";
 
 // 不添加 name 字段的语言将不会在语言切换菜单中显示
 // not adding the name field will hide the language from the language switcher menu
@@ -53,6 +58,12 @@ const resources = {
   },
 };
 
+writeLanguageCookie(readStoredLanguage());
+
+i18next.on("languageChanged", (language) => {
+  writeLanguageCookie(language);
+});
+
 const i18n = i18next;
 
 void i18n
@@ -65,8 +76,9 @@ void i18n
       escapeValue: false, // React handles XSS
     },
     detection: {
-      order: ["querystring", "cookie", "localStorage", "navigator", "htmlTag"],
-      caches: ["localStorage", "cookie"],
+      order: ["localStorage"],
+      caches: ["localStorage"],
+      lookupLocalStorage: LANGUAGE_STORAGE_KEY,
     },
   });
 

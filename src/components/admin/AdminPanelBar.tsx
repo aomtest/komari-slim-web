@@ -27,6 +27,13 @@ import Tips from "../ui/tips";
 import { CircleFadingArrowUp } from "lucide-react";
 import { useRPC2Call } from "@/contexts/RPC2Context";
 import { resolveI18nText } from "@/utils/i18nText";
+import {
+  getThemeConfigurationType,
+  normalizeThemeRedirectTarget,
+  THEME_CONFIGURATION_MANAGED,
+  THEME_CONFIGURATION_RAW,
+  THEME_CONFIGURATION_REDIRECT,
+} from "@/utils/themeConfiguration";
 
 // 将JSON配置转换为类型安全的菜单项数组 (基础静态菜单)
 const baseMenuItems = (menuConfig as { menu: MenuItem[] }).menu;
@@ -34,6 +41,7 @@ const baseMenuItems = (menuConfig as { menu: MenuItem[] }).menu;
 // 扩展的菜单项类型（允许直接提供 rawLabel 而不是多语言 key）
 interface ExtendedMenuItem extends MenuItem {
   rawLabel?: string; // 不走 i18n，直接显示
+  reloadDocument?: boolean;
 }
 
 interface AdminPanelBarProps {
@@ -100,7 +108,25 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
         if (ignore) return;
         const cfg = data?.configuration;
         if (!cfg) {
-          // 没有 configuration 字段则不扩展
+          setExtraMenuItems([]);
+          return;
+        }
+
+        const cfgType = getThemeConfigurationType(cfg);
+        let itemPath: string | null = null;
+        if (
+          cfgType === THEME_CONFIGURATION_MANAGED &&
+          Array.isArray(cfg.data) &&
+          cfg.data.length > 0
+        ) {
+          itemPath = "/admin/theme_managed";
+        } else if (cfgType === THEME_CONFIGURATION_RAW) {
+          itemPath = "/admin/theme_raw";
+        } else if (cfgType === THEME_CONFIGURATION_REDIRECT) {
+          itemPath = normalizeThemeRedirectTarget(cfg.data);
+        }
+
+        if (!itemPath) {
           setExtraMenuItems([]);
           return;
         }
@@ -113,8 +139,9 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
         const item: ExtendedMenuItem = {
           labelKey: rawLabel,
           rawLabel,
-          path: "/admin/theme_managed",
+          path: itemPath,
           icon,
+          reloadDocument: cfgType === THEME_CONFIGURATION_REDIRECT,
         };
         setExtraMenuItems([item]);
       } catch (e) {
@@ -588,6 +615,9 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                                     isMobile && setSidebarOpen(false)
                                   }
                                   newTab={child.newTab}
+                                  reloadDocument={
+                                    (child as ExtendedMenuItem).reloadDocument
+                                  }
                                 />
                               ))}
                             </Flex>
@@ -607,6 +637,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                         children={item.rawLabel || t(item.labelKey)}
                         onClick={() => isMobile && setSidebarOpen(false)}
                         newTab={item.newTab}
+                        reloadDocument={item.reloadDocument}
                       />
                     );
                   },
@@ -673,12 +704,14 @@ const SidebarItem = ({
   icon,
   children,
   newTab,
+  reloadDocument,
 }: {
   to: string;
   onClick: () => void;
   icon: ReactNode;
   children: ReactNode;
   newTab?: boolean;
+  reloadDocument?: boolean;
 }) => {
   const location = useLocation();
   const isExternalLink = to.startsWith("http://") || to.startsWith("https://");
@@ -689,13 +722,13 @@ const SidebarItem = ({
       (to !== "/admin" && location.pathname.startsWith(to)));
   const openInNewTab = newTab === true || (isExternalLink && newTab !== false);
 
-  if (openInNewTab) {
+  if (openInNewTab || reloadDocument) {
     return (
       <a
         href={to}
         onClick={onClick}
-        target="_blank"
-        rel="noopener noreferrer"
+        target={openInNewTab ? "_blank" : undefined}
+        rel={openInNewTab ? "noopener noreferrer" : undefined}
         className="group transition-colors duration-200 hover:bg-accent-3 rounded-md"
       >
         <Flex
