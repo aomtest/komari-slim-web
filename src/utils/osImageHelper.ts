@@ -22,6 +22,11 @@ const osConfigs: OSConfig[] = [
     keywords: ["alpine", "alpine linux"],
   },
   {
+    name: "AOSC OS",
+    image: "/assets/logo/os-aosc.svg",
+    keywords: ["aosc", "aosc os", "aosc-os"],
+  },
+  {
     name: "Armbian",
     image: "/assets/logo/os-armbian.svg",
     keywords: ["armbian"],

@@ -1,5 +1,37 @@
 import React from "react";
+import defaultTheme from "../../komari-theme.json";
 //import { useRPC2Call } from "./RPC2Context";
+
+type ThemeField = {
+  key?: string;
+  default?: unknown;
+};
+
+const defaultThemeSettings = Object.fromEntries(
+  (
+    (defaultTheme.configuration?.data ?? []) as ThemeField[]
+  )
+    .filter(
+      (field) =>
+        typeof field.key === "string" &&
+        Object.prototype.hasOwnProperty.call(field, "default"),
+    )
+    .map((field) => [field.key, field.default]),
+);
+
+const withThemeDefaults = (publicInfo: PublicInfo): PublicInfo => {
+  if (publicInfo.theme !== "default") {
+    return publicInfo;
+  }
+
+  return {
+    ...publicInfo,
+    theme_settings: {
+      ...defaultThemeSettings,
+      ...(publicInfo.theme_settings ?? {}),
+    },
+  };
+};
 
 export interface PublicInfo {
   allow_cors: boolean;
@@ -57,7 +89,7 @@ export const PublicInfoProvider: React.FC<{ children: React.ReactNode }> = ({
       })
       .then((resp: Response) => {
         if (resp && resp.data) {
-          setPublicInfo(resp.data);
+          setPublicInfo(withThemeDefaults(resp.data));
         } else {
           setPublicInfo(null);
         }

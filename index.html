@@ -10,6 +10,36 @@
     />
     <meta name="author" content="Akizon77" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (() => {
+        try {
+          const appearance = localStorage.getItem("appearance") || "system";
+          const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+          const resolved = appearance === "dark" || (appearance !== "light" && prefersDark) ? "dark" : "light";
+          document.documentElement.dataset.initialAppearance = resolved;
+          document.documentElement.style.backgroundColor = resolved === "dark" ? "#111111" : "#ffffff";
+        } catch {
+          document.documentElement.style.backgroundColor = "#ffffff";
+        }
+      })();
+    </script>
+    <style>
+      html,
+      body,
+      #root {
+        min-height: 100%;
+      }
+
+      body {
+        margin: 0;
+        background: #ffffff;
+      }
+
+      html[data-initial-appearance="dark"],
+      html[data-initial-appearance="dark"] body {
+        background: #111111;
+      }
+    </style>
     
     <!-- PWA Configuration -->
     <link rel="manifest" href="/manifest.json" />
