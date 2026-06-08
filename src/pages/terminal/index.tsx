@@ -98,6 +98,22 @@ const TerminalPage = () => {
   const [settingsResolutionError, setSettingsResolutionError] =
     useState<Error | null>(null);
   const [appearance, setAppearance] = useState<CSSProperties>({});
+  const [twoFaEnabled, setTwoFaEnabled] = useState(false);
+  const [twoFaResolved, setTwoFaResolved] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/me")
+      .then((response) => response.json())
+      .then((data) => {
+        setTwoFaEnabled(Boolean(data?.["2fa_enabled"]));
+      })
+      .catch(() => {
+        setTwoFaEnabled(false);
+      })
+      .finally(() => {
+        setTwoFaResolved(true);
+      });
+  }, []);
 
   useEffect(() => {
     if (settingsLoading || settingsResolved) {
@@ -215,11 +231,20 @@ const TerminalPage = () => {
   }, [t, uuid]);
 
   useEffect(() => {
-    if (!settingsResolved || uuid === null || !terminalRef.current) return;
+    if (!settingsResolved || !twoFaResolved || uuid === null || !terminalRef.current) return;
     if (initializedUuidRef.current === uuid) return;
 
     initializedUuidRef.current = uuid;
     firstBinary.current = false;
+    let otpQuery = "";
+    if (twoFaEnabled) {
+      const code = window.prompt(t("account.2fa_otp_input_prompt"));
+      if (!code) {
+        initializedUuidRef.current = null;
+        return;
+      }
+      otpQuery = `?2fa_code=${encodeURIComponent(code)}`;
+    }
 
     const snapshot = resolvedSettingsRef.current;
     const terminalOptions: Partial<ITerminalOptions> = {
@@ -283,7 +308,7 @@ const TerminalPage = () => {
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const host = window.location.host;
     const baseUrl = `${protocol}//${host}`;
-    const ws = new WebSocket(`${baseUrl}/api/admin/client/${uuid}/terminal`);
+    const ws = new WebSocket(`${baseUrl}/api/admin/client/${uuid}/terminal${otpQuery}`);
     ws.binaryType = "arraybuffer";
     wsRef.current = ws;
 
@@ -444,7 +469,7 @@ const TerminalPage = () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("contextmenu", handleContextMenu);
     };
-  }, [settingsResolved, uuid, resizeTerminal]);
+  }, [settingsResolved, twoFaEnabled, twoFaResolved, uuid, resizeTerminal, t]);
 
   // 移除对 leftWidth 的直接依赖，改用防抖
   useEffect(() => {

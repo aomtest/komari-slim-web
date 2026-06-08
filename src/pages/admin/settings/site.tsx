@@ -145,6 +145,42 @@ export default function SiteSettings() {
           await updateSettingsWithToast({ allow_cors: checked }, t);
         }}
       />
+      <SettingCardLongTextInput
+        title={t("settings.site.cors_allowed_origins", "API CORS 允许列表")}
+        description={t(
+          "settings.site.cors_allowed_origins_description",
+          "每行或用逗号分隔一个 Origin，例如 https://example.com",
+        )}
+        defaultValue={settings.cors_allowed_origins || ""}
+        OnSave={async (data) => {
+          await updateSettingsWithToast({ cors_allowed_origins: data }, t);
+        }}
+      />
+      <SettingCardSwitch
+        title={t("settings.site.ws_origin_check_enabled", "WebSocket Origin 校验")}
+        description={t(
+          "settings.site.ws_origin_check_enabled_description",
+          "开启后 WebSocket 请求只允许同源或允许列表中的 Origin",
+        )}
+        defaultChecked={settings.ws_origin_check_enabled ?? true}
+        onChange={async (checked) => {
+          await updateSettingsWithToast(
+            { ws_origin_check_enabled: checked },
+            t,
+          );
+        }}
+      />
+      <SettingCardLongTextInput
+        title={t("settings.site.ws_allowed_origins", "WebSocket Origin 允许列表")}
+        description={t(
+          "settings.site.ws_allowed_origins_description",
+          "每行或用逗号分隔一个 Origin，例如 https://example.com",
+        )}
+        defaultValue={settings.ws_allowed_origins || ""}
+        OnSave={async (data) => {
+          await updateSettingsWithToast({ ws_allowed_origins: data }, t);
+        }}
+      />
       <SettingCardSwitch
         title={t("settings.site.send_ip_addr_to_guest")}
         description={t("settings.site.send_ip_addr_to_guest_description")}

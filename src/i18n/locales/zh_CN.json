@@ -688,6 +688,8 @@
       "backup_restore": "恢复备份",
       "backup_restore_description": "从文件恢复备份，将覆盖当前数据。",
       "backup_restore_error": "恢复备份失败",
+      "cors_allowed_origins": "API CORS 允许列表",
+      "cors_allowed_origins_description": "每行或用逗号分隔一个 Origin，例如 https://example.com",
       "cros": "允许跨域请求",
       "cros_description": "允许来自其他域名的请求访问 API",
       "custom": "自定义",
@@ -706,7 +708,11 @@
       "tempory_share_description": "开启私有站点后，可以通过临时分享链接访问站点。",
       "tempory_share_hours": "分享时长（小时）",
       "tempory_share_revoke": "撤销访问许可",
-      "title": "站点"
+      "title": "站点",
+      "ws_allowed_origins": "WebSocket Origin 允许列表",
+      "ws_allowed_origins_description": "每行或用逗号分隔一个 Origin，例如 https://example.com",
+      "ws_origin_check_enabled": "WebSocket Origin 校验",
+      "ws_origin_check_enabled_description": "开启后 WebSocket 请求只允许同源或允许列表中的 Origin"
     },
     "sso": {
       "callback_url_tips": "回调地址：{{url}}",
