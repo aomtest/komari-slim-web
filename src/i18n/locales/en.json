@@ -424,20 +424,20 @@
     },
     "title": "Notification",
     "traffic_report": {
-      "title": "Traffic Report",
-      "full_title": "Scheduled Traffic Report",
-      "report_type": "Report Type",
-      "daily": "Daily",
-      "weekly": "Weekly",
-      "monthly": "Monthly",
       "batch_edit": "Batch Edit",
-      "separator": ", ",
+      "daily": "Daily",
       "errors": {
         "fetch_failed": "Failed to fetch traffic report notifications",
         "save_failed": "Failed to save traffic report settings",
         "select_cadence": "Select at least one report cadence when enabling traffic reports",
         "update_failed": "Failed to update traffic report notifications"
-      }
+      },
+      "full_title": "Scheduled Traffic Report",
+      "monthly": "Monthly",
+      "report_type": "Report Type",
+      "separator": ", ",
+      "title": "Traffic Report",
+      "weekly": "Weekly"
     }
   },
   "page_not_found": "The server cannot find the specific page you're trying to access.",
@@ -688,6 +688,8 @@
       "backup_restore": "Restore backup",
       "backup_restore_description": "Restoring a backup from a file will overwrite the current data.",
       "backup_restore_error": "Restore backup failed",
+      "cors_allowed_origins": "API CORS allowed origins",
+      "cors_allowed_origins_description": "One origin per line or separated by commas, e.g., https://example.com",
       "cros": "Allow Cross-Origin Requests",
       "cros_description": "Allow API requests from other domains",
       "custom": "Customize",
@@ -706,7 +708,11 @@
       "tempory_share_description": "After enabling the private site, you can access the site through a temporary share link.",
       "tempory_share_hours": "Share Duration (Hours)",
       "tempory_share_revoke": "Revoke Access Permission",
-      "title": "Site"
+      "title": "Site",
+      "ws_allowed_origins": "WebSocket allowed origins",
+      "ws_allowed_origins_description": "One origin per line or separated by commas, e.g., https://example.com",
+      "ws_origin_check_enabled": "WebSocket origin check",
+      "ws_origin_check_enabled_description": "When enabled, WebSocket requests are only allowed from the same origin or origins in the allowed list"
     },
     "sso": {
       "callback_url_tips": "Configure your SSO provider with this callback URL: {{url}}",

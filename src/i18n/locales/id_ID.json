@@ -424,20 +424,20 @@
     },
     "title": "Notifikasi",
     "traffic_report": {
-      "title": "Laporan Trafik",
-      "full_title": "Laporan Trafik Terjadwal",
-      "report_type": "Tipe Laporan",
-      "daily": "Harian",
-      "weekly": "Mingguan",
-      "monthly": "Bulanan",
       "batch_edit": "Edit Massal",
-      "separator": ", ",
+      "daily": "Harian",
       "errors": {
         "fetch_failed": "Gagal memuat pengaturan laporan trafik",
         "save_failed": "Gagal menyimpan pengaturan laporan trafik",
         "select_cadence": "Pilih setidaknya satu periode laporan saat mengaktifkan laporan trafik",
         "update_failed": "Gagal memperbarui pengaturan laporan trafik"
-      }
+      },
+      "full_title": "Laporan Trafik Terjadwal",
+      "monthly": "Bulanan",
+      "report_type": "Tipe Laporan",
+      "separator": ", ",
+      "title": "Laporan Trafik",
+      "weekly": "Mingguan"
     }
   },
   "page_not_found": "Server tidak dapat menemukan halaman yang Anda minta.",
@@ -688,6 +688,8 @@
       "backup_restore": "Pulihkan cadangan",
       "backup_restore_description": "Memulihkan cadangan dari file akan menimpa data saat ini.",
       "backup_restore_error": "Gagal memulihkan cadangan",
+      "cors_allowed_origins": "Daftar izin CORS API",
+      "cors_allowed_origins_description": "Satu Origin per baris atau dipisahkan dengan koma, misalnya https://example.com",
       "cros": "Izinkan Permintaan Cross-Origin",
       "cros_description": "Izinkan permintaan API dari domain lain",
       "custom": "Kustomisasi",
@@ -706,7 +708,11 @@
       "tempory_share_description": "Setelah mengaktifkan situs pribadi, Anda dapat mengakses situs melalui tautan berbagi sementara.",
       "tempory_share_hours": "Durasi berbagi (jam)",
       "tempory_share_revoke": "Mencabut izin akses",
-      "title": "Situs"
+      "title": "Situs",
+      "ws_allowed_origins": "Daftar izin Origin WebSocket",
+      "ws_allowed_origins_description": "Satu Origin per baris atau dipisahkan dengan koma, misalnya https://example.com",
+      "ws_origin_check_enabled": "Pemeriksaan Origin WebSocket",
+      "ws_origin_check_enabled_description": "Jika diaktifkan, permintaan WebSocket hanya diizinkan dari Origin yang sama atau dalam daftar izin"
     },
     "sso": {
       "callback_url_tips": "Konfigurasikan penyedia SSO Anda dengan URL callback berikut: {{url}}",
