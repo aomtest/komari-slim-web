@@ -2,6 +2,7 @@ import { DropdownMenu, IconButton } from "@radix-ui/themes";
 import { type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { resources } from "../i18n/config";
+import { writeLanguageCookie } from "@/utils/language";
 interface LanguageSwitch {
   icon?: ReactNode;
 }
@@ -35,7 +36,10 @@ const LanguageSwitch = ({
         {languages.map((lang) => (
           <DropdownMenu.Item
             key={lang.code}
-            onClick={() => i18n.changeLanguage(lang.code)}
+            onClick={() => {
+              i18n.changeLanguage(lang.code);
+              writeLanguageCookie(lang.code);
+            }}
           >
             {lang.name} ({lang.code.slice(0, 2)})
           </DropdownMenu.Item>

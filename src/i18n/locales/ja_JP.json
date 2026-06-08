@@ -303,7 +303,7 @@
   "exec": {
     "allCompleted": "すべてのタスクが完了しました",
     "command": "コマンドを実行",
-    "commandPlaceholder": "whoami",
+    "commandPlaceholder": "whoami（Shift+Enter で改行）",
     "description": "選択したノードでリモートコマンドを実行",
     "errors": {
       "emptyCommand": "コマンドは空にできません",
@@ -411,7 +411,23 @@
       "tips": "頻繁な通知を避けるために、猶予期間を設定しました：</br> <b>猶予期間</b>：クライアントがオフラインになった後、この期間内に再度オンラインにならなければ、オフライン通知が送信されます。",
       "title": "オフライン通知"
     },
-    "title": "通知"
+    "title": "通知",
+    "traffic_report": {
+      "title": "トラフィックレポート",
+      "full_title": "定期トラフィックレポート設定",
+      "report_type": "レポートタイプ",
+      "daily": "日次レポート",
+      "weekly": "週次レポート",
+      "monthly": "月次レポート",
+      "batch_edit": "一括編集",
+      "separator": "、",
+      "errors": {
+        "fetch_failed": "トラフィックレポート設定の取得に失敗しました",
+        "save_failed": "トラフィックレポート設定の保存に失敗しました",
+        "select_cadence": "トラフィックレポートを有効にする場合は、少なくとも 1 つの周期を選択してください",
+        "update_failed": "トラフィックレポート設定の更新に失敗しました"
+      }
+    }
   },
   "page_not_found": "残念ながら、ページは小鞠に食べられてしまいました。",
   "ping": {

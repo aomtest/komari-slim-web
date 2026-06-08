@@ -11,6 +11,11 @@ import { toast } from "sonner";
 import Loading from "@/components/loading";
 import { useTranslation } from "react-i18next";
 import { resolveI18nText, type I18nText } from "@/utils/i18nText";
+import {
+  getThemeConfigurationType,
+  THEME_CONFIGURATION_MANAGED,
+  type ThemeConfiguration,
+} from "@/utils/themeConfiguration";
 
 interface ThemeFieldBase {
   name?: I18nText; // 显示名（字符串或多语言字典）
@@ -23,9 +28,7 @@ interface ThemeFieldBase {
 }
 
 interface ThemeConfigResponse {
-  configuration?: {
-    data?: ThemeFieldBase[];
-  };
+  configuration?: ThemeConfiguration;
   [k: string]: any;
 }
 
@@ -63,12 +66,17 @@ const ThemeManaged: React.FC = () => {
         });
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const data: ThemeConfigResponse = await resp.json();
-        if (!data.configuration?.data) {
+        const configuration = data.configuration;
+        if (
+          getThemeConfigurationType(configuration) !==
+            THEME_CONFIGURATION_MANAGED ||
+          !Array.isArray(configuration?.data)
+        ) {
           setFields([]);
           setValues({});
           return;
         }
-        const ds = data.configuration.data;
+        const ds = configuration.data;
         setFields(ds);
         // 初始值：优先 publicInfo.theme_settings，其次 default
         const init: Record<string, any> = {};
