@@ -42,12 +42,12 @@ const NotificationSettings = () => {
               : "";
           setCurrentMessageSender(initialSender);
         } else {
-          setMessageError(data.message || "获取消息通道信息失败");
+          setMessageError(data.message || t("settings.notification.provider_fetch_failed"));
         }
       })
-      .catch(() => setMessageError("获取消息通道信息失败"))
+      .catch(() => setMessageError(t("settings.notification.provider_fetch_failed")))
       .finally(() => setMessageLoading(false));
-  }, [loading, settings.notification_method]);
+  }, [loading, settings.notification_method, t]);
 
   // 拉取当前 message sender 的设置
   React.useEffect(() => {
@@ -63,12 +63,12 @@ const NotificationSettings = () => {
             setMessageValues({});
           }
         } else {
-          setMessageError(data.message || "获取设置失败");
+          setMessageError(data.message || t("settings.notification.provider_settings_fetch_failed"));
         }
       })
-      .catch(() => setMessageError("获取设置失败"))
+      .catch(() => setMessageError(t("settings.notification.provider_settings_fetch_failed")))
       .finally(() => setMessageLoading(false));
-  }, [currentMessageSender]);
+  }, [currentMessageSender, t]);
 
   // 处理保存
   const handleMessageSave = async (values: any) => {

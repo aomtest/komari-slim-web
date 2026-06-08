@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { RPC2Client } from "../lib/rpc2";
 import type { RPC2ConnectionStateType } from "../types/rpc2";
+import i18n from "../i18n/config";
 
 interface RPC2ContextType {
   client: RPC2Client;
@@ -68,7 +69,7 @@ export const RPC2Provider: React.FC<{ children: React.ReactNode }> = ({ children
       setError(null);
       await client.connect();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "连接失败");
+      setError(err instanceof Error ? err.message : i18n.t("rpc2.connection_failed"));
       throw err;
     }
   };
@@ -98,7 +99,7 @@ export const RPC2Provider: React.FC<{ children: React.ReactNode }> = ({ children
 export const useRPC2 = (): RPC2ContextType => {
   const context = useContext(RPC2Context);
   if (context === undefined) {
-    throw new Error("useRPC2 必须在 RPC2Provider 内使用");
+    throw new Error(i18n.t("rpc2.provider_required"));
   }
   return context;
 };

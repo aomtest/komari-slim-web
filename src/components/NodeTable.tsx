@@ -135,8 +135,7 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
       if (offlineServerPosition === "First") {
         if (!aOnline && bOnline) return -1;
         if (aOnline && !bOnline) return 1;
-      } else if (offlineServerPosition === "Keep") {
-      } else {
+      } else if (offlineServerPosition !== "Keep") {
         if (aOnline && !bOnline) return -1;
         if (!aOnline && bOnline) return 1;
       }
@@ -146,19 +145,23 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
     // 自定义排序逻辑
     let comparison = 0;
     switch (sortState.field) {
-      case "name":
+      case "name": {
         comparison = a.name.localeCompare(b.name);
         break;
-      case "os":
+      }
+      case "os": {
         comparison = a.os.localeCompare(b.os);
         break;
-      case "status":
+      }
+      case "status": {
         comparison = Number(bOnline) - Number(aOnline); // 在线状态：true > false
         break;
-      case "cpu":
+      }
+      case "cpu": {
         comparison = aData.cpu.usage - bData.cpu.usage;
         break;
-      case "ram":
+      }
+      case "ram": {
         const aRamPercent = a.mem_total
           ? (aData.ram.used / a.mem_total) * 100
           : 0;
@@ -167,7 +170,8 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
           : 0;
         comparison = aRamPercent - bRamPercent;
         break;
-      case "disk":
+      }
+      case "disk": {
         const aDiskPercent = a.disk_total
           ? (aData.disk.used / a.disk_total) * 100
           : 0;
@@ -176,21 +180,27 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
           : 0;
         comparison = aDiskPercent - bDiskPercent;
         break;
-      case "price":
+      }
+      case "price": {
         comparison = a.price - b.price;
         break;
-      case "networkUp":
+      }
+      case "networkUp": {
         comparison = aData.network.up - bData.network.up;
         break;
-      case "networkDown":
+      }
+      case "networkDown": {
         comparison = aData.network.down - bData.network.down;
         break;
-      case "totalUp":
+      }
+      case "totalUp": {
         comparison = aData.network.totalUp - bData.network.totalUp;
         break;
-      case "totalDown":
+      }
+      case "totalDown": {
         comparison = aData.network.totalDown - bData.network.totalDown;
         break;
+      }
       default:
         comparison = 0;
     }

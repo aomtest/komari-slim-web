@@ -58,7 +58,7 @@ export default function Sessions() {
       .then((response) => response.json())
       .then((data) => {
         if (data.status === "success") {
-          toast.success("会话已删除");
+          toast.success(t("sessions.deleted_successfully"));
           if (isCurrent) {
             window.location.href = "/"; // 登出
             return;
@@ -69,7 +69,7 @@ export default function Sessions() {
           }));
         } else {
           console.error("Failed to delete session:", data);
-          toast.error("删除失败");
+          toast.error(t("sessions.delete_failed"));
         }
       })
       .catch((error) => {
@@ -140,7 +140,7 @@ export default function Sessions() {
               <TableHead>IP</TableHead>
               <TableHead>Latest IP</TableHead>
               <TableHead>{t("sessions.expires_at")}</TableHead>
-              <TableHead>{t("sessions.last_login", "上次登录")}</TableHead>
+              <TableHead>{t("sessions.last_login")}</TableHead>
               <TableHead>{t("sessions.actions")}</TableHead>
             </TableRow>
           </TableHeader>
@@ -171,7 +171,7 @@ export default function Sessions() {
                           </label>
                           <label className="text-sm">{s.session}</label>
                           <label className="text-base font-bold">
-                            IP / {t("sessions.latest_ip", "Latest IP")}
+                            IP / {t("sessions.latest_ip")}
                           </label>
                           <label className="text-sm">
                             {s.ip} / {s.latest_ip}
@@ -181,7 +181,7 @@ export default function Sessions() {
                           </label>
                           <label className="text-sm">{s.user_agent}</label>
                           <label className="text-sm text-muted-foreground font-bold">
-                            {UserAgentHelper.format(s.user_agent)}
+                            {UserAgentHelper.format(s.user_agent, t)}
                           </label>
                           <label className="text-base font-bold">
                             {t("sessions.last_user_agent")}
@@ -190,7 +190,7 @@ export default function Sessions() {
                             {s.latest_user_agent}
                           </label>
                           <label className="text-sm text-muted-foreground font-bold">
-                            {UserAgentHelper.format(s.latest_user_agent)}
+                            {UserAgentHelper.format(s.latest_user_agent, t)}
                           </label>
 
                           <label className="text-base font-bold">
@@ -198,7 +198,7 @@ export default function Sessions() {
                           </label>
                           <label className="text-sm">{s.login_method}</label>
                           <label className="text-base font-bold">
-                            {t("sessions.latest_online", "Latest Online")}
+                            {t("sessions.latest_online")}
                           </label>
                           <label className="text-sm">
                             {new Date(s.latest_online).toLocaleString()}
@@ -211,7 +211,7 @@ export default function Sessions() {
                             {new Date(s.created_at).toLocaleString()}
                           </label>
                           <label className="text-base font-bold">
-                            {t("sessions.expires_at", "Expires At")}
+                            {t("sessions.expires_at")}
                           </label>
                           <label className="text-sm">
                             {new Date(s.expires).toLocaleString()}
@@ -225,7 +225,7 @@ export default function Sessions() {
                       </Dialog.Content>
                     </Dialog.Root>
                   </TableCell>
-                  <TableCell>{UserAgentHelper.format(s.user_agent)}</TableCell>
+                  <TableCell>{UserAgentHelper.format(s.user_agent, t)}</TableCell>
                   <TableCell>{s.ip}</TableCell>
                   <TableCell>{s.latest_ip}</TableCell>
                   <TableCell>{new Date(s.expires).toLocaleString()}</TableCell>
