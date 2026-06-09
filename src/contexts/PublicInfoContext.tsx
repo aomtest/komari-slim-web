@@ -34,7 +34,7 @@ const withThemeDefaults = (publicInfo: PublicInfo): PublicInfo => {
 };
 
 export interface PublicInfo {
-  allow_cors: boolean;
+  cors_origin_check_enabled: boolean;
   custom_body: string;
   custom_head: string;
   description: string;
