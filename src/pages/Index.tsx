@@ -8,7 +8,7 @@ import {
   Switch,
 } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
-import React, { useEffect, Suspense } from "react";
+import React, { useCallback, useEffect, useMemo, Suspense } from "react";
 const NodeDisplay = React.lazy(() => import("../components/NodeDisplay"));
 import { formatBytes } from "@/utils/unitHelper";
 import { useLiveData } from "../contexts/LiveDataContext";
@@ -16,6 +16,7 @@ import { useNodeList } from "@/contexts/NodeListContext";
 import Loading from "@/components/loading";
 import { Settings } from "lucide-react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import type { LiveData } from "@/types/LiveData";
 
 // Intelligent speed formatting function
 const formatSpeed = (bytes: number): string => {
@@ -33,203 +34,171 @@ const formatSpeed = (bytes: number): string => {
   return `${size.toFixed(decimals)} ${units[i]}`;
 };
 
+const EMPTY_LIVE_DATA: LiveData = { online: [], data: {} };
+
+const STATUS_CARD_VISIBILITY_DEFAULTS = {
+  currentTime: true,
+  currentOnline: true,
+  regionOverview: true,
+  trafficOverview: true,
+  networkSpeed: true,
+};
+
+type StatusCardKey = keyof typeof STATUS_CARD_VISIBILITY_DEFAULTS;
+
 const Index = () => {
-  const InnerLayout = () => {
-    const [t] = useTranslation();
-    const { live_data } = useLiveData();
-    const [currentTime, setCurrentTime] = React.useState(
-      new Date().toLocaleTimeString(),
-    );
-    //document.title = t("home_title");
-    //#region 节点数据
-    const { nodeList, isLoading, error, refresh } = useNodeList();
+  const [t] = useTranslation();
+  const { live_data } = useLiveData();
+  const { nodeList, isLoading, error, refresh } = useNodeList();
+  const liveData = live_data?.data ?? EMPTY_LIVE_DATA;
+  const onlineSet = useMemo(
+    () => new Set(liveData.online),
+    [liveData.online],
+  );
+  const [statusCardsVisibility, setStatusCardsVisibility] = useLocalStorage<
+    Record<StatusCardKey, boolean>
+  >("statusCardsVisibility", STATUS_CARD_VISIBILITY_DEFAULTS);
 
-    // 独立的时间更新定时器
-    useEffect(() => {
-      const timer = setInterval(() => {
-        setCurrentTime(new Date().toLocaleTimeString());
-      }, 1000);
-      return () => clearInterval(timer);
-    }, []);
+  const summaryStats = useMemo(() => {
+    const regions = new Set<string>();
+    let totalUp = 0;
+    let totalDown = 0;
+    let speedUp = 0;
+    let speedDown = 0;
 
-    // Status cards visibility state
-    const [statusCardsVisibility, setStatusCardsVisibility] = useLocalStorage(
-      "statusCardsVisibility",
+    for (const node of nodeList ?? []) {
+      if (!onlineSet.has(node.uuid)) continue;
+
+      regions.add(node.region);
+      const record = liveData.data[node.uuid];
+      if (!record) continue;
+
+      totalUp += record.network.totalUp || 0;
+      totalDown += record.network.totalDown || 0;
+      speedUp += record.network.up || 0;
+      speedDown += record.network.down || 0;
+    }
+
+    return {
+      regionCount: regions.size,
+      trafficText: `↑ ${formatBytes(totalUp)} / ↓ ${formatBytes(totalDown)}`,
+      speedText: `↑ ${formatSpeed(speedUp)} / ↓ ${formatSpeed(speedDown)}`,
+    };
+  }, [liveData.data, nodeList, onlineSet]);
+
+  const statusCards = useMemo(
+    () => [
       {
-        currentTime: true,
-        currentOnline: true,
-        regionOverview: true,
-        trafficOverview: true,
-        networkSpeed: true,
-      },
-    );
-
-    // Status cards configuration
-    const statusCards = [
-      {
-        key: "currentTime",
+        key: "currentTime" as const,
         title: t("current_time"),
-        getValue: () => currentTime,
+        value: <CurrentTimeValue />,
         visible: statusCardsVisibility.currentTime,
       },
       {
-        key: "currentOnline",
+        key: "currentOnline" as const,
         title: t("current_online"),
-        getValue: () =>
-          `${live_data?.data?.online.length ?? 0} / ${nodeList?.length ?? 0}`,
+        value: `${onlineSet.size} / ${nodeList?.length ?? 0}`,
         visible: statusCardsVisibility.currentOnline,
       },
       {
-        key: "regionOverview",
+        key: "regionOverview" as const,
         title: t("region_overview"),
-        getValue: () =>
-          nodeList
-            ? Object.entries(
-                nodeList.reduce(
-                  (acc, item) => {
-                    if (live_data?.data.online.includes(item.uuid)) {
-                      acc[item.region] = (acc[item.region] || 0) + 1;
-                    }
-                    return acc;
-                  },
-                  {} as Record<string, number>,
-                ),
-              ).length
-            : 0,
+        value: summaryStats.regionCount,
         visible: statusCardsVisibility.regionOverview,
       },
       {
-        key: "trafficOverview",
+        key: "trafficOverview" as const,
         title: t("traffic_overview"),
-        getValue: () => {
-          const data = live_data?.data?.data;
-          const online = live_data?.data?.online;
-          if (!data || !online) return "↑ 0B / ↓ 0B";
-          const onlineSet = new Set(online);
-          const values = Object.entries(data)
-            .filter(([uuid]) => onlineSet.has(uuid))
-            .map(([, node]) => node);
-          const up = values.reduce(
-            (acc, node) => acc + (node.network.totalUp || 0),
-            0,
-          );
-          const down = values.reduce(
-            (acc, node) => acc + (node.network.totalDown || 0),
-            0,
-          );
-          return `↑ ${formatBytes(up)} / ↓ ${formatBytes(down)}`;
-        },
+        value: summaryStats.trafficText,
         visible: statusCardsVisibility.trafficOverview,
       },
       {
-        key: "networkSpeed",
+        key: "networkSpeed" as const,
         title: t("network_speed"),
-        getValue: () => {
-          const data = live_data?.data?.data;
-          const online = live_data?.data?.online;
-          if (!data || !online) return "↑ 0 B/s / ↓ 0 B/s";
-          const onlineSet = new Set(online);
-          const values = Object.entries(data)
-            .filter(([uuid]) => onlineSet.has(uuid))
-            .map(([, node]) => node);
-          const up = values.reduce(
-            (acc, node) => acc + (node.network.up || 0),
-            0,
-          );
-          const down = values.reduce(
-            (acc, node) => acc + (node.network.down || 0),
-            0,
-          );
-          return `↑ ${formatSpeed(up)} / ↓ ${formatSpeed(down)}`;
-        },
+        value: summaryStats.speedText,
         visible: statusCardsVisibility.networkSpeed,
       },
-    ];
+    ],
+    [nodeList?.length, onlineSet.size, statusCardsVisibility, summaryStats, t],
+  );
 
-    useEffect(() => {
-      const interval = setInterval(() => {
-        refresh();
-      }, 5000);
-      return () => clearInterval(interval);
-    }, [nodeList]);
+  const visibleStatusCards = useMemo(
+    () => statusCards.filter((card) => card.visible),
+    [statusCards],
+  );
 
-    if (isLoading) {
-      return <Loading />;
-    }
-    if (error) {
-      return <div>Error: {error}</div>;
-    }
+  const updateStatusCardVisibility = useCallback(
+    (key: StatusCardKey, checked: boolean) => {
+      setStatusCardsVisibility((current) => ({
+        ...current,
+        [key]: checked,
+      }));
+    },
+    [setStatusCardsVisibility],
+  );
 
-    //#endregion
+  useEffect(() => {
+    const interval = window.setInterval(refresh, 5000);
+    return () => window.clearInterval(interval);
+  }, [refresh]);
 
-    return (
-      <>
-        <Callouts />
-        <Card className="summary-card mx-4 md:text-base text-sm relative">
-          <div className="absolute top-2 right-2">
-            <Popover.Root>
-              <Popover.Trigger>
-                <IconButton variant="ghost" size="1">
-                  <Settings size={16} />
-                </IconButton>
-              </Popover.Trigger>
-              <Popover.Content width="300px">
-                <Flex direction="column" gap="3">
-                  <Text size="2" weight="bold">
-                    {t("status_settings")}
-                  </Text>
-                  <Flex direction="column" gap="2">
-                    {statusCards.map((card) => (
-                      <StatusSettingSwitch
-                        key={card.key}
-                        label={card.title}
-                        checked={card.visible}
-                        onCheckedChange={(checked) =>
-                          setStatusCardsVisibility({
-                            ...statusCardsVisibility,
-                            [card.key]: checked,
-                          })
-                        }
-                      />
-                    ))}
-                  </Flex>
-                </Flex>
-              </Popover.Content>
-            </Popover.Root>
-          </div>
+  if (isLoading) {
+    return <Loading />;
+  }
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
-          {(() => {
-            return (
-              <div
-                className="grid gap-2"
-                style={{
-                  gridTemplateColumns: `repeat(auto-fit, minmax(230px, 1fr))`,
-                  gridAutoRows: "min-content",
-                }}
-              >
-                {statusCards
-                  .filter((card) => card.visible)
-                  .map((card) => (
-                    <TopCard
+  return (
+    <>
+      <Callouts />
+      <Card className="summary-card mx-4 md:text-base text-sm relative">
+        <div className="absolute top-2 right-2">
+          <Popover.Root>
+            <Popover.Trigger>
+              <IconButton variant="ghost" size="1">
+                <Settings size={16} />
+              </IconButton>
+            </Popover.Trigger>
+            <Popover.Content width="300px">
+              <Flex direction="column" gap="3">
+                <Text size="2" weight="bold">
+                  {t("status_settings")}
+                </Text>
+                <Flex direction="column" gap="2">
+                  {statusCards.map((card) => (
+                    <StatusSettingSwitch
                       key={card.key}
-                      title={card.title}
-                      value={card.getValue()}
+                      label={card.title}
+                      checked={card.visible}
+                      onCheckedChange={(checked) =>
+                        updateStatusCardVisibility(card.key, checked)
+                      }
                     />
                   ))}
-              </div>
-            );
-          })()}
-        </Card>
-        <Suspense fallback={<div style={{ padding: 16 }}>Loading…</div>}>
-          <NodeDisplay
-            nodes={nodeList ?? []}
-            liveData={live_data?.data ?? { online: [], data: {} }}
-          />
-        </Suspense>
-      </>
-    );
-  };
-  return <InnerLayout />;
+                </Flex>
+              </Flex>
+            </Popover.Content>
+          </Popover.Root>
+        </div>
+
+        <div
+          className="grid gap-2"
+          style={{
+            gridTemplateColumns: `repeat(auto-fit, minmax(230px, 1fr))`,
+            gridAutoRows: "min-content",
+          }}
+        >
+          {visibleStatusCards.map((card) => (
+            <TopCard key={card.key} title={card.title} value={card.value} />
+          ))}
+        </div>
+      </Card>
+      <Suspense fallback={<div style={{ padding: 16 }}>Loading…</div>}>
+        <NodeDisplay nodes={nodeList ?? []} liveData={liveData} />
+      </Suspense>
+    </>
+  );
 };
 
 //#region Callouts
@@ -286,7 +255,7 @@ export default Index;
 
 type TopCardProps = {
   title: string;
-  value: string | number;
+  value: React.ReactNode;
   description?: string;
 };
 
@@ -307,6 +276,21 @@ const TopCard: React.FC<TopCardProps> = React.memo(
     );
   },
 );
+
+const CurrentTimeValue = React.memo(() => {
+  const [currentTime, setCurrentTime] = React.useState(() =>
+    new Date().toLocaleTimeString(),
+  );
+
+  React.useEffect(() => {
+    const timer = window.setInterval(() => {
+      setCurrentTime(new Date().toLocaleTimeString());
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  return <>{currentTime}</>;
+});
 
 type StatusSettingSwitchProps = {
   label: string;

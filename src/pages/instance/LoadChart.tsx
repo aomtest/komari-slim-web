@@ -28,6 +28,37 @@ type LoadChartProps = {
   intervalSec?: number; // 数据间隔，单位秒
 };
 
+const getLoadChartIntervalSec = (selectedHours: number) => {
+  const minute = 60;
+  const hour = minute * 60;
+  if (selectedHours > 120) return hour;
+  if (selectedHours === 4) return minute;
+  return minute * 15;
+};
+
+const thinLoadRecords = (
+  records: RecordFormat[],
+  intervalSec: number,
+  selectedHours: number,
+) => {
+  if (!records.length) return records;
+
+  const intervalMs = intervalSec * 1000;
+  const lastTime = new Date(records[records.length - 1].time).getTime();
+  const fromTime = lastTime - selectedHours * 3600_000 - intervalMs;
+  const buckets = new Map<number, RecordFormat>();
+
+  for (const record of records) {
+    const time = new Date(record.time).getTime();
+    if (!Number.isFinite(time) || time < fromTime) continue;
+    buckets.set(Math.floor(time / intervalMs), record);
+  }
+
+  return Array.from(buckets.values()).sort(
+    (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
+  );
+};
+
 const LoadChart = ({ data = [] }: LoadChartProps) => {
   const { t } = useTranslation();
   const { live_data: all_live_data } = useLiveData();
@@ -113,14 +144,19 @@ const LoadChart = ({ data = [] }: LoadChartProps) => {
       setLoading(false);
       return;
     }
+    let active = true;
+    const controller = new AbortController();
     setLoading(true);
     setError(null);
-    fetch(`/api/records/load?uuid=${uuid}&hours=${selected.hours}`)
+    fetch(`/api/records/load?uuid=${uuid}&hours=${selected.hours}`, {
+      signal: controller.signal,
+    })
       .then((res) => {
         if (!res.ok) throw new Error(res.statusText);
         return res.json();
       })
       .then((resp) => {
+        if (!active) return;
         const records = resp.data?.records || [];
         const gpuDevices = resp.data?.gpu_devices || {};
 
@@ -160,31 +196,25 @@ const LoadChart = ({ data = [] }: LoadChartProps) => {
           (a: RecordFormat, b: RecordFormat) =>
             new Date(a.time).getTime() - new Date(b.time).getTime()
         );
-        // // 根据所选视图推导采样间隔，并对远程数据做瘦身，仅保留绘图需要的点数，避免高频数据占用内存
-        // const selectedHours = selected.hours ?? 24;
-        // const minute = 60; // s
-        // const hour = 60 * 60; // s
-        // // 与下方 chartData 的间隔策略保持一致
-        // const intervalSec =
-        //   selectedHours > 120
-        //     ? hour
-        //     : selectedHours === 4
-        //     ? minute
-        //     : 15 * minute;
-        // const totalSec = selectedHours * 3600;
-        // const maxNeededPoints = Math.max(
-        //   1,
-        //   Math.floor(totalSec / intervalSec) + 2
-        // );
-        // // 只保留末尾需要的数量（避免保留更高频的秒级数据）
-        // const thinned = mergedRecords.slice(-maxNeededPoints);
-        setRemoteData(mergedRecords);
+        const selectedHours = selected.hours ?? 24;
+        setRemoteData(
+          thinLoadRecords(
+            mergedRecords,
+            getLoadChartIntervalSec(selectedHours),
+            selectedHours,
+          ),
+        );
         setLoading(false);
       })
       .catch((err) => {
+        if (!active || err?.name === "AbortError") return;
         setError(err.message || "Error");
         setLoading(false);
       });
+    return () => {
+      active = false;
+      controller.abort();
+    };
   }, [hoursView, uuid]);
 
   // colors

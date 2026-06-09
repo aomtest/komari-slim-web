@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { Popover } from "@radix-ui/themes";
 import MiniPingChart from "./MiniPingChart"; 
 
@@ -20,30 +20,33 @@ const MiniPingChartFloat: React.FC<FloatMiniPingChartProps> = ({
   const [open, setOpen] = useState(false);
   const hoverTimeoutRef = useRef<number | null>(null);
 
-  const handleMouseEnter = useCallback(() => {
+  const clearHoverTimeout = useCallback(() => {
     if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
+      window.clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
     }
+  }, []);
+
+  useEffect(() => clearHoverTimeout, [clearHoverTimeout]);
+
+  const handleMouseEnter = useCallback(() => {
+    clearHoverTimeout();
     hoverTimeoutRef.current = window.setTimeout(() => {
       setOpen(true);
     }, 3000);
-  }, []);
+  }, [clearHoverTimeout]);
 
   const handleMouseLeave = useCallback(() => {
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
-    }
+    clearHoverTimeout();
     hoverTimeoutRef.current = window.setTimeout(() => {
       setOpen(false);
     }, 200); 
-  }, []);
+  }, [clearHoverTimeout]);
 
   const handleClick = useCallback(() => {
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
-    }
+    clearHoverTimeout();
     setOpen((prev) => !prev);
-  }, []);
+  }, [clearHoverTimeout]);
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
@@ -70,7 +73,14 @@ const MiniPingChartFloat: React.FC<FloatMiniPingChartProps> = ({
           zIndex: 5,
         }}
       >
-        <MiniPingChart hours={hours} uuid={uuid} width={chartWidth} height={chartHeight} />
+        {open && (
+          <MiniPingChart
+            hours={hours}
+            uuid={uuid}
+            width={chartWidth}
+            height={chartHeight}
+          />
+        )}
       </Popover.Content>
     </Popover.Root>
   );

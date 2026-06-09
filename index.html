@@ -12,18 +12,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
       (() => {
+        const parseAppearance = (value) => {
+          if (!value) return "system";
+          try {
+            const parsed = JSON.parse(value);
+            return typeof parsed === "string" ? parsed : value;
+          } catch {
+            return value;
+          }
+        };
+
         try {
-          const appearance = localStorage.getItem("appearance") || "system";
+          const appearance = parseAppearance(localStorage.getItem("appearance"));
           const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
-          const resolved = appearance === "dark" || (appearance !== "light" && prefersDark) ? "dark" : "light";
-          document.documentElement.dataset.initialAppearance = resolved;
-          document.documentElement.style.backgroundColor = resolved === "dark" ? "#111111" : "#ffffff";
+          const isDark = appearance === "dark" || (appearance !== "light" && prefersDark);
+          document.documentElement.classList.toggle("dark", isDark);
         } catch {
-          document.documentElement.style.backgroundColor = "#ffffff";
+          document.documentElement.classList.remove("dark");
         }
       })();
     </script>
     <style>
+      :where(html) {
+        background: #ffffff;
+        color-scheme: light;
+      }
+
+      :where(html.dark) {
+        background: #111111;
+        color-scheme: dark;
+      }
+
       html,
       body,
       #root {
@@ -32,12 +51,6 @@
 
       body {
         margin: 0;
-        background: #ffffff;
-      }
-
-      html[data-initial-appearance="dark"],
-      html[data-initial-appearance="dark"] body {
-        background: #111111;
       }
     </style>
     

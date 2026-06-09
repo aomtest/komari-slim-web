@@ -52,6 +52,11 @@ const App = () => {
   // Use the system theme hook to resolve "system" to actual theme
   const resolvedAppearance = useSystemTheme(appearance);
 
+  React.useEffect(() => {
+    const isDark = resolvedAppearance === "dark";
+    document.documentElement.classList.toggle("dark", isDark);
+  }, [resolvedAppearance]);
+
   const themeContextValue = useMemo(
     () => ({
       appearance,

@@ -35,6 +35,7 @@ const NodeDisplay: React.FC<NodeDisplayProps> = ({ nodes, liveData }) => {
     "all",
   );
   const searchRef = useRef<HTMLInputElement>(null);
+  const onlineSet = useMemo(() => new Set(liveData?.online ?? []), [liveData]);
 
   // 获取所有的分组
   const groups = useMemo(() => {
@@ -97,14 +98,14 @@ const NodeDisplay: React.FC<NodeDisplayProps> = ({ nodes, liveData }) => {
         !isNaN(Number(term)) && node.price.toString().includes(term);
 
       // 状态搜索
-      const isOnline = liveData?.online?.includes(node.uuid) || false;
+      const isOnline = onlineSet.has(node.uuid);
       const statusMatch =
         ((term === "online" || term === "在线") && isOnline) ||
         ((term === "offline" || term === "离线") && !isOnline);
 
       return basicMatch || regionMatch || priceMatch || statusMatch;
     });
-  }, [nodes, searchTerm, liveData, selectedGroup]);
+  }, [nodes, searchTerm, onlineSet, selectedGroup]);
 
   return (
     <div className="w-full">
@@ -221,7 +222,7 @@ const NodeDisplay: React.FC<NodeDisplayProps> = ({ nodes, liveData }) => {
                   group: selectedGroup,
                   total: filteredNodes.length,
                   online: filteredNodes.filter((n) =>
-                    liveData?.online?.includes(n.uuid),
+                    onlineSet.has(n.uuid),
                   ).length,
                 })}
           </Text>
@@ -250,12 +251,20 @@ const NodeDisplay: React.FC<NodeDisplayProps> = ({ nodes, liveData }) => {
       ) : (
         <>
           {viewMode === "grid" ? (
-            <NodeGrid nodes={filteredNodes} liveData={liveData} />
+            <NodeGrid
+              nodes={filteredNodes}
+              liveData={liveData}
+              onlineSet={onlineSet}
+            />
           ) : (
             <Suspense
               fallback={<div style={{ padding: 16 }}>Loading table…</div>}
             >
-              <NodeTable nodes={filteredNodes} liveData={liveData} />
+              <NodeTable
+                nodes={filteredNodes}
+                liveData={liveData}
+                onlineSet={onlineSet}
+              />
             </Suspense>
           )}
         </>

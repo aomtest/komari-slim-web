@@ -71,6 +71,10 @@ export class RPC2Client {
     this.eventListeners = { ...this.eventListeners, ...listeners };
   }
 
+  clearEventListeners(): void {
+    this.eventListeners = {};
+  }
+
   /**
    * 建立 WebSocket 连接
    */

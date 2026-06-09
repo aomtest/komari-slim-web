@@ -73,13 +73,24 @@ export const NodeListProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<string | null>(null);
   const { call } = useRPC2Call();
+  const refreshSeqRef = React.useRef(0);
+  const mountedRef = React.useRef(true);
 
-  const refresh = () => {
+  React.useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  const refresh = React.useCallback(() => {
+    const refreshSeq = ++refreshSeqRef.current;
     // setIsLoading(true);
     setError(null);
     // 通过 RPC2 获取节点基本信息
     call<{ uuid?: string }, Record<string, any>>("common:getNodes")
       .then((result) => {
+        if (!mountedRef.current || refreshSeq !== refreshSeqRef.current) return;
         if (!result || typeof result !== "object") {
           setNodeList([]);
           return;
@@ -118,19 +129,27 @@ export const NodeListProvider: React.FC<{ children: React.ReactNode }> = ({
         setNodeList(list);
       })
       .catch((err: any) => {
+        if (!mountedRef.current || refreshSeq !== refreshSeqRef.current) return;
         setError(err?.message || "An error occurred while fetching data");
         setNodeList([]);
       })
       .finally(() => {
+        if (!mountedRef.current || refreshSeq !== refreshSeqRef.current) return;
         setIsLoading(false);
       });
-  };
+  }, [call]);
 
   React.useEffect(() => {
     refresh();
-  }, []);
+  }, [refresh]);
+
+  const contextValue = React.useMemo(
+    () => ({ nodeList, isLoading, error, refresh }),
+    [nodeList, isLoading, error, refresh],
+  );
+
   return (
-    <NodeListContext.Provider value={{ nodeList, isLoading, error, refresh }}>
+    <NodeListContext.Provider value={contextValue}>
       {children}
     </NodeListContext.Provider>
   );

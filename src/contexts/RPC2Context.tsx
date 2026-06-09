@@ -59,6 +59,7 @@ export const RPC2Provider: React.FC<{ children: React.ReactNode }> = ({ children
       __rpc2_refcount = Math.max(0, __rpc2_refcount - 1);
       // 只有在最后一个 Provider 卸载时才断开连接
       if (__rpc2_refcount === 0) {
+        client.clearEventListeners();
         client.disconnect();
       }
     };

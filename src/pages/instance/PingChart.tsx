@@ -136,9 +136,9 @@ const PingChart = ({ uuid }: { uuid: string }) => {
       setLoading(false);
       return;
     }
+    let active = true;
     setLoading(true);
     setError(null);
-    const controller = new AbortController();
     (async () => {
       try {
         type RpcResp = {
@@ -153,6 +153,7 @@ const PingChart = ({ uuid }: { uuid: string }) => {
           type: "ping",
           hours,
         });
+        if (!active) return;
         const records = result?.records || [];
         records.sort(
           (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime()
@@ -161,12 +162,15 @@ const PingChart = ({ uuid }: { uuid: string }) => {
         setTasks(result?.tasks || []);
         setLoading(false);
       } catch (err: any) {
+        if (!active) return;
         setError(err?.message || "Error");
         setLoading(false);
       }
     })();
-    return () => controller.abort();
-  }, [hours, uuid]); // Depend on hours
+    return () => {
+      active = false;
+    };
+  }, [hours, uuid, call]); // Depend on hours
 
   const midData = useMemo(() => {
     // 与 Mini 保持一致：只使用合并抖动后的真实锚点，并截取到最后 hours 窗口范围。

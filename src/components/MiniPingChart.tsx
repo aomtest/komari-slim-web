@@ -66,23 +66,30 @@ const MiniPingChart = ({
   useEffect(() => {
     if (!uuid) return;
 
+    let active = true;
     setLoading(true);
     setError(null);
     (async () => {
       try {
         type RpcResp = { count: number; records: PingRecord[]; tasks?: TaskInfo[] };
         const result = await call<any, RpcResp>("common:getRecords", { uuid, type: "ping", hours });
+        if (!active) return;
         const records = result?.records || [];
         records.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
         setRemoteData(records);
         setTasks(result?.tasks || []);
         setLoading(false);
       } catch (err: any) {
+        if (!active) return;
         setError(err?.message || "Error");
         setLoading(false);
       }
     })();
-  }, [uuid, hours]);
+
+    return () => {
+      active = false;
+    };
+  }, [uuid, hours, call]);
 
   const chartData = useMemo(() => {
     // 思路：仅保留真实采样时间点（各任务原始时间点的并集），

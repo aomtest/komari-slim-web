@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
   Table,
   TableBody,
@@ -27,6 +27,7 @@ import { usePublicInfo } from "@/contexts/PublicInfoContext";
 interface NodeTableProps {
   nodes: NodeBasicInfo[];
   liveData: LiveData;
+  onlineSet: ReadonlySet<string>;
 }
 
 type SortField =
@@ -48,7 +49,21 @@ interface SortState {
   order: SortOrder;
 }
 
-const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
+const DEFAULT_TABLE_LIVE = {
+  cpu: { usage: 0 },
+  ram: { used: 0 },
+  swap: { used: 0 },
+  load: { load1: 0, load5: 0, load15: 0 },
+  disk: { used: 0 },
+  network: { up: 0, down: 0, totalUp: 0, totalDown: 0 },
+  connections: { tcp: 0, udp: 0 },
+  uptime: 0,
+  process: 0,
+  message: "",
+  updated_at: "",
+} as Record;
+
+const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData, onlineSet }) => {
   const [t] = useTranslation();
   const { publicInfo } = usePublicInfo();
   const offlineServerPosition =
@@ -59,7 +74,7 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
     order: "default",
   });
 
-  const toggleRowExpansion = (uuid: string) => {
+  const toggleRowExpansion = useCallback((uuid: string) => {
     setExpandedRows((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(uuid)) {
@@ -69,9 +84,9 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
       }
       return newSet;
     });
-  };
+  }, []);
 
-  const handleSort = (field: SortField) => {
+  const handleSort = useCallback((field: SortField) => {
     return (event: React.MouseEvent) => {
       event.preventDefault();
 
@@ -94,38 +109,26 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
         }
       });
     };
-  };
+  }, []);
 
-  const getSortIcon = (field: SortField) => {
+  const getSortIcon = useCallback((field: SortField) => {
     if (sortState.field !== field) return null;
     return sortState.order === "asc" ? (
       <ChevronUp size={14} />
     ) : (
       <ChevronDown size={14} />
     );
-  };
+  }, [sortState.field, sortState.order]);
 
-  // 确保liveData是有效的
-  const onlineNodes = liveData && liveData.online ? liveData.online : [];
-
-  const getNodeData = (uuid: string): Record => {
-    const defaultLive = {
-      cpu: { usage: 0 },
-      ram: { used: 0 },
-      disk: { used: 0 },
-      network: { up: 0, down: 0, totalUp: 0, totalDown: 0 },
-      uptime: 0,
-    } as Record;
-
-    return liveData && liveData.data
-      ? liveData.data[uuid] || defaultLive
-      : defaultLive;
-  };
+  const getNodeData = useCallback(
+    (uuid: string): Record => liveData.data[uuid] || DEFAULT_TABLE_LIVE,
+    [liveData.data],
+  );
 
   // 排序节点函数
-  const sortedNodes = [...nodes].sort((a, b) => {
-    const aOnline = onlineNodes.includes(a.uuid);
-    const bOnline = onlineNodes.includes(b.uuid);
+  const sortedNodes = useMemo(() => [...nodes].sort((a, b) => {
+    const aOnline = onlineSet.has(a.uuid);
+    const bOnline = onlineSet.has(b.uuid);
     const aData = getNodeData(a.uuid);
     const bData = getNodeData(b.uuid);
 
@@ -206,7 +209,7 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
     }
 
     return sortState.order === "desc" ? -comparison : comparison;
-  });
+  }), [nodes, onlineSet, getNodeData, offlineServerPosition, sortState]);
 
   return (
     <div className="mx-4 overflow-x-auto rounded-xl node-table-container">
@@ -328,7 +331,7 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
         </TableHeader>
         <TableBody>
           {sortedNodes.map((node) => {
-            const isOnline = onlineNodes.includes(node.uuid);
+            const isOnline = onlineSet.has(node.uuid);
             const nodeData = getNodeData(node.uuid);
             const isExpanded = expandedRows.has(node.uuid);
 

@@ -1,4 +1,12 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { LiveDataResponse } from "../types/LiveData";
 import { useRPC2Call } from "./RPC2Context";
 
@@ -21,23 +29,23 @@ export const LiveDataProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [live_data, setLiveData] = useState<LiveDataResponse | null>(null);
   const [showCallout, setShowCallout] = useState(false);
-  const [refreshCallbacks] = useState<Set<(data: LiveDataResponse) => void>>(
+  const refreshCallbacksRef = useRef<Set<(data: LiveDataResponse) => void>>(
     new Set(),
   );
   const { call } = useRPC2Call();
 
   // 注册刷新回调函数
-  const onRefresh = (callback: (data: LiveDataResponse) => void) => {
-    refreshCallbacks.add(callback);
+  const onRefresh = useCallback((callback: (data: LiveDataResponse) => void) => {
+    refreshCallbacksRef.current.add(callback);
     return () => {
-      refreshCallbacks.delete(callback);
+      refreshCallbacksRef.current.delete(callback);
     };
-  };
+  }, []);
 
   // 当数据更新时通知所有回调函数
-  const notifyRefreshCallbacks = (data: LiveDataResponse) => {
-    refreshCallbacks.forEach((callback) => callback(data));
-  };
+  const notifyRefreshCallbacks = useCallback((data: LiveDataResponse) => {
+    refreshCallbacksRef.current.forEach((callback) => callback(data));
+  }, []);
 
   // 采用 RPC2 轮询最新状态，替代 WebSocket
   useEffect(() => {
@@ -45,6 +53,7 @@ export const LiveDataProvider: React.FC<{ children: React.ReactNode }> = ({
     let stopped = false;
     let running = false; // 防抖：避免并发请求
     const intervalMs = 2000;
+    const refreshCallbacks = refreshCallbacksRef.current;
 
     const fetchLatest = async () => {
       if (running) return; // 如果上次请求还在，跳过
@@ -54,6 +63,7 @@ export const LiveDataProvider: React.FC<{ children: React.ReactNode }> = ({
         const result: Record<string, any> = await call(
           "common:getNodesLatestStatus",
         );
+        if (stopped) return;
         // 将返回转换为 LiveDataResponse 结构
         const online = Object.values(result)
           .filter((v: any) => v?.online)
@@ -104,6 +114,7 @@ export const LiveDataProvider: React.FC<{ children: React.ReactNode }> = ({
         setShowCallout(true);
         notifyRefreshCallbacks(live);
       } catch (e) {
+        if (stopped) return;
         console.error("RPC2 获取最新状态失败:", e);
         setShowCallout(false);
       } finally {
@@ -118,12 +129,18 @@ export const LiveDataProvider: React.FC<{ children: React.ReactNode }> = ({
 
     return () => {
       stopped = true;
+      refreshCallbacks.clear();
       if (timer) window.clearTimeout(timer);
     };
-  }, [call]);
+  }, [call, notifyRefreshCallbacks]);
+
+  const contextValue = useMemo(
+    () => ({ live_data, showCallout, onRefresh }),
+    [live_data, showCallout, onRefresh],
+  );
 
   return (
-    <LiveDataContext.Provider value={{ live_data, showCallout, onRefresh }}>
+    <LiveDataContext.Provider value={contextValue}>
       {children}
     </LiveDataContext.Provider>
   );

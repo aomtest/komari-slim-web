@@ -30,18 +30,21 @@ export default function InstancePage() {
     publicInfo?.theme_settings?.showServerListInDetails === true;
   const offlineServerPosition =
     publicInfo?.theme_settings?.offlineServerPosition;
+  const onlineSet = useMemo(
+    () => new Set(live_data?.data?.online ?? []),
+    [live_data?.data?.online],
+  );
 
   // 组织按分组的服务器列表
   const groupedNodes = useMemo(() => {
     if (!nodeList) return [];
 
-    const onlineNodes = live_data?.data?.online ?? [];
     const sortNodes = (
       a: (typeof nodeList)[number],
       b: (typeof nodeList)[number],
     ) => {
-      const aIsOnline = onlineNodes.includes(a.uuid);
-      const bIsOnline = onlineNodes.includes(b.uuid);
+      const aIsOnline = onlineSet.has(a.uuid);
+      const bIsOnline = onlineSet.has(b.uuid);
 
       if (offlineServerPosition === "First") {
         if (!aIsOnline && bIsOnline) return -1;
@@ -88,7 +91,7 @@ export default function InstancePage() {
     }
 
     return result;
-  }, [nodeList, live_data, offlineServerPosition]);
+  }, [nodeList, onlineSet, offlineServerPosition]);
 
   useEffect(() => {
     if (!uuid) {
