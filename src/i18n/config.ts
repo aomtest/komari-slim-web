@@ -76,7 +76,7 @@ void i18n
       escapeValue: false, // React handles XSS
     },
     detection: {
-      order: ["localStorage"],
+      order: ["localStorage", "navigator"],
       caches: ["localStorage"],
       lookupLocalStorage: LANGUAGE_STORAGE_KEY,
     },
