@@ -52,8 +52,8 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
 
   const generateCommand = () => {
     const host = window.location.origin;
-    const token = row.original.token;
-    let args = ["-e", host, "-t", token];
+    const token = row.original.token ?? "";
+    const args: string[] = ["-e", host, "-t", token];
     // 根据安装选项生成参数
     if (installOptions.disableWebSsh) {
       args.push("--disable-web-ssh");
