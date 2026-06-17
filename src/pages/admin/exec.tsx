@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo, type CSSProperties, type KeyboardEvent } from "react";
+import { useState, useRef, useEffect, useLayoutEffect, useMemo, type CSSProperties, type KeyboardEvent } from "react";
 import Loading from "@/components/loading";
 import { NodeDetailsProvider, useNodeDetails } from "@/contexts/NodeDetailsContext";
 import { useTranslation } from "react-i18next";
@@ -58,6 +58,28 @@ const COMMAND_EDITOR_VERTICAL_PADDING_VAR = "--command-editor-vertical-padding";
 const COMMAND_EDITOR_COLLAPSED_HEIGHT = `calc(${COMMAND_EDITOR_COLLAPSED_LINES} * var(${COMMAND_EDITOR_LINE_HEIGHT_VAR}) + var(${COMMAND_EDITOR_VERTICAL_PADDING_VAR}))`;
 const COMMAND_EDITOR_LINE_NUMBER_LIMIT = 500;
 
+const parsePixelValue = (value: string) => {
+    const parsedValue = Number.parseFloat(value);
+    return Number.isFinite(parsedValue) ? parsedValue : 0;
+};
+
+const getCommandEditorBorderHeight = (element: HTMLElement | null) => {
+    if (!element) {
+        return 0;
+    }
+
+    const style = window.getComputedStyle(element);
+    return parsePixelValue(style.borderTopWidth) + parsePixelValue(style.borderBottomWidth);
+};
+
+const getCommandEditorCollapsedHeight = (textarea: HTMLTextAreaElement, editor: HTMLElement | null) => {
+    const style = window.getComputedStyle(textarea);
+    const lineHeight = parsePixelValue(style.lineHeight);
+    const verticalPadding = parsePixelValue(style.paddingTop) + parsePixelValue(style.paddingBottom);
+
+    return COMMAND_EDITOR_COLLAPSED_LINES * lineHeight + verticalPadding + getCommandEditorBorderHeight(editor);
+};
+
 const ExecPage = () => {
     return (
         <NodeDetailsProvider>
@@ -84,6 +106,7 @@ const ExecContent = () => {
     const pollingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const pollingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const commandTextareaRef = useRef<HTMLTextAreaElement | null>(null);
+    const commandEditorRef = useRef<HTMLDivElement | null>(null);
     const commandLineGutterRef = useRef<HTMLDivElement | null>(null);
 
     const commandLineCount = useMemo(() => {
@@ -152,7 +175,7 @@ const ExecContent = () => {
             });
     }, []);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const textarea = commandTextareaRef.current;
         if (!textarea) {
             return;
@@ -167,8 +190,12 @@ const ExecContent = () => {
             return;
         }
 
-        textarea.style.height = "auto";
-        setCommandEditorHeight(`${textarea.scrollHeight}px`);
+        textarea.style.height = "0px";
+
+        const measuredHeight = textarea.scrollHeight + getCommandEditorBorderHeight(commandEditorRef.current);
+        const collapsedHeight = getCommandEditorCollapsedHeight(textarea, commandEditorRef.current);
+
+        setCommandEditorHeight(`${Math.max(collapsedHeight, measuredHeight)}px`);
         textarea.style.height = "100%";
     }, [command, commandFocused]);
 
@@ -365,6 +392,7 @@ const ExecContent = () => {
                         {t("exec.command")}
                     </label>
                     <div
+                        ref={commandEditorRef}
                         className="grid grid-cols-[3.75rem_minmax(0,1fr)] overflow-hidden rounded-md border border-[var(--gray-a7)] bg-[var(--color-surface)] transition-[height,border-color,box-shadow] duration-200 focus-within:border-[var(--accent-8)] focus-within:shadow-[0_0_0_1px_var(--accent-8)]"
                         style={commandEditorStyle}
                     >
