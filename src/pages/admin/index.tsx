@@ -84,6 +84,7 @@ import {
 } from "@/components/admin/SettingCard";
 import { useSettings } from "@/lib/api";
 import { SelectOrInput } from "@/components/ui/select-or-input";
+import { useRPC2Call } from "@/contexts/RPC2Context";
 
 
 const NodeDetailsPage = () => {
@@ -189,7 +190,34 @@ type AutoDiscoveryInstallOptions = {
   includeMountpoints: string;
   interval: string;
   monthRotate: string;
+  installVersion: string;
 };
+
+function useIsSnapshotBackend() {
+  const { call } = useRPC2Call();
+  const [isSnapshotBackend, setIsSnapshotBackend] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    call<unknown, { version?: string }>("common:getVersion")
+      .then((info) => {
+        if (!cancelled) {
+          const version = info?.version?.trim().toLowerCase() || "";
+          setIsSnapshotBackend(version.startsWith("snapshot"));
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch backend version:", error);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [call]);
+
+  return isSnapshotBackend;
+}
 
 const AutoDiscoverySection = ({
   settings,
@@ -221,6 +249,7 @@ const AutoDiscoverySection = ({
       includeMountpoints: "",
       interval: "",
       monthRotate: "",
+      installVersion: "",
     });
 
   const [enableGhproxy, setEnableGhproxy] = React.useState(false);
@@ -233,6 +262,20 @@ const AutoDiscoverySection = ({
     React.useState(false);
   const [enableInterval, setEnableInterval] = React.useState(false);
   const [enableMonthRotate, setEnableMonthRotate] = React.useState(false);
+  const [enableInstallVersion, setEnableInstallVersion] = React.useState(false);
+  const isSnapshotBackend = useIsSnapshotBackend();
+
+  React.useEffect(() => {
+    if (!showOptions || !isSnapshotBackend) {
+      return;
+    }
+
+    setEnableInstallVersion(true);
+    setInstallOptions((prev) => ({
+      ...prev,
+      installVersion: prev.installVersion.trim() || "snapshot",
+    }));
+  }, [showOptions, isSnapshotBackend]);
 
   const generateCommand = () => {
     const host = (function () {
@@ -280,6 +323,11 @@ const AutoDiscoverySection = ({
     if (enableCustomServiceName && serviceName) {
       args.push(`--install-service-name`);
       args.push(serviceName);
+    }
+    const installVersion = installOptions.installVersion.trim();
+    if (enableInstallVersion && installVersion) {
+      args.push(`--install-version`);
+      args.push(installVersion);
     }
     const includeNics = installOptions.includeNics.trim();
     if (enableIncludeNics && includeNics) {
@@ -359,6 +407,7 @@ const AutoDiscoverySection = ({
           "--install-ghproxy",
           "--install-dir",
           "--install-service-name",
+          "--install-version",
         ];
         const dockerArgs: string[] = [];
         for (let i = 0; i < args.length; i++) {
@@ -613,6 +662,48 @@ const AutoDiscoverySection = ({
           </div>
 
           <Flex direction="column" gap="2">
+            <Flex gap="2" align="center">
+              <Checkbox
+                checked={enableInstallVersion}
+                onCheckedChange={(checked) => {
+                  setEnableInstallVersion(Boolean(checked));
+                  if (!checked) {
+                    setInstallOptions((prev) => ({
+                      ...prev,
+                      installVersion: "",
+                    }));
+                  }
+                }}
+              />
+              <label
+                className="text-sm font-bold cursor-pointer"
+                onClick={() => {
+                  const willEnable = !enableInstallVersion;
+                  setEnableInstallVersion(willEnable);
+                  if (!willEnable) {
+                    setInstallOptions((prev) => ({
+                      ...prev,
+                      installVersion: "",
+                    }));
+                  }
+                }}
+              >
+                {t("admin.nodeTable.installVersion", "指定安装版本")}
+              </label>
+            </Flex>
+            {enableInstallVersion && (
+              <TextField.Root
+                placeholder="snapshot"
+                value={installOptions.installVersion}
+                onChange={(e) =>
+                  setInstallOptions((prev) => ({
+                    ...prev,
+                    installVersion: e.target.value,
+                  }))
+                }
+              />
+            )}
+
             <Flex gap="2" align="center">
               <Checkbox
                 checked={enableGhproxy}
@@ -1051,12 +1142,14 @@ const SortableRow = ({
   node,
   selectedNodes,
   handleSelectNode,
-  settings
+  settings,
+  isSnapshotBackend,
 }: {
   node: NodeDetail;
   selectedNodes: string[];
   handleSelectNode: (uuid: string, checked: boolean) => void;
   settings: any;
+  isSnapshotBackend: boolean;
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: node.uuid });
@@ -1178,7 +1271,11 @@ const SortableRow = ({
         />
       </TableCell>
       <TableCell>
-        <ActionButtons node={node} settings={settings} />
+        <ActionButtons
+          node={node}
+          settings={settings}
+          isSnapshotBackend={isSnapshotBackend}
+        />
       </TableCell>
     </TableRow>
   );
@@ -1215,6 +1312,7 @@ const NodeTable = ({
   // 添加 localNodes 状态，实现即时 UI 更新
   const [localNodes, setLocalNodes] = useState<NodeDetail[]>(nodes);
   const [isDragging, setIsDragging] = useState(false);
+  const isSnapshotBackend = useIsSnapshotBackend();
   React.useEffect(() => {
     setLocalNodes(nodes);
   }, [nodes]);
@@ -1318,6 +1416,7 @@ const NodeTable = ({
                   selectedNodes={selectedNodes}
                   handleSelectNode={handleSelectNode}
                   settings={settings}
+                  isSnapshotBackend={isSnapshotBackend}
                 />
               ))}
             </SortableContext>
@@ -1329,11 +1428,23 @@ const NodeTable = ({
 };
 
 type Platform = "linux" | "windows" | "macos" | "docker";
-const ActionButtons = ({ node, settings }: { node: NodeDetail, settings: any }) => {
+const ActionButtons = ({
+  node,
+  settings,
+  isSnapshotBackend,
+}: {
+  node: NodeDetail;
+  settings: any;
+  isSnapshotBackend: boolean;
+}) => {
   const { t } = useTranslation();
   return (
     <div className="flex items-center gap-4">
-      <GenerateCommandButton node={node} settings={settings} />
+      <GenerateCommandButton
+        node={node}
+        settings={settings}
+        isSnapshotBackend={isSnapshotBackend}
+      />
       <IconButton
         title={t("terminal.title")}
         variant="ghost"
@@ -1412,8 +1523,17 @@ type InstallOptions = {
   includeMountpoints: string;
   interval: string;
   monthRotate: string;
+  installVersion: string;
 };
-function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings: any }) {
+function GenerateCommandButton({
+  node,
+  settings,
+  isSnapshotBackend,
+}: {
+  node: NodeDetail;
+  settings: any;
+  isSnapshotBackend: boolean;
+}) {
   const [selectedPlatform, setSelectedPlatform] =
     React.useState<Platform>("linux");
   const [installOptions, setInstallOptions] = React.useState<InstallOptions>({
@@ -1431,6 +1551,7 @@ function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings:
     includeMountpoints: "",
     interval: "",
     monthRotate: "",
+    installVersion: "",
   });
 
   const [enableGhproxy, setEnableGhproxy] = React.useState(false);
@@ -1443,6 +1564,19 @@ function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings:
     React.useState(false);
   const [enableInterval, setEnableInterval] = React.useState(false);
   const [enableMonthRotate, setEnableMonthRotate] = React.useState(false);
+  const [enableInstallVersion, setEnableInstallVersion] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!isSnapshotBackend) {
+      return;
+    }
+
+    setEnableInstallVersion(true);
+    setInstallOptions((prev) => ({
+      ...prev,
+      installVersion: prev.installVersion.trim() || "snapshot",
+    }));
+  }, [isSnapshotBackend]);
 
   const generateCommand = () => {
     const host = function () {
@@ -1494,6 +1628,11 @@ function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings:
     if (enableCustomServiceName && serviceName) {
       args.push(`--install-service-name`);
       args.push(serviceName);
+    }
+    const installVersion = installOptions.installVersion.trim();
+    if (enableInstallVersion && installVersion) {
+      args.push(`--install-version`);
+      args.push(installVersion);
     }
     const includeNics = installOptions.includeNics.trim();
     if (enableIncludeNics && includeNics) {
@@ -1567,6 +1706,7 @@ function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings:
           "--install-ghproxy",
           "--install-dir",
           "--install-service-name",
+          "--install-version",
         ];
         const dockerArgs: string[] = [];
         for (let i = 0; i < args.length; i++) {
@@ -1761,6 +1901,48 @@ function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings:
               </Flex>
             </div>
             <Flex direction="column" gap="2">
+              <Flex gap="2" align="center">
+                <Checkbox
+                  checked={enableInstallVersion}
+                  onCheckedChange={(checked) => {
+                    setEnableInstallVersion(Boolean(checked));
+                    if (!checked) {
+                      setInstallOptions((prev) => ({
+                        ...prev,
+                        installVersion: "",
+                      }));
+                    }
+                  }}
+                />
+                <label
+                  className="text-sm font-bold cursor-pointer"
+                  onClick={() => {
+                    const willEnable = !enableInstallVersion;
+                    setEnableInstallVersion(willEnable);
+                    if (!willEnable) {
+                      setInstallOptions((prev) => ({
+                        ...prev,
+                        installVersion: "",
+                      }));
+                    }
+                  }}
+                >
+                  {t("admin.nodeTable.installVersion", "指定安装版本")}
+                </label>
+              </Flex>
+              {enableInstallVersion && (
+                <TextField.Root
+                  placeholder="snapshot"
+                  value={installOptions.installVersion}
+                  onChange={(e) =>
+                    setInstallOptions((prev) => ({
+                      ...prev,
+                      installVersion: e.target.value,
+                    }))
+                  }
+                />
+              )}
+
               <Flex gap="2" align="center">
                 <Checkbox
                   checked={enableGhproxy}

@@ -129,6 +129,7 @@
       "install_dir_placeholder": "インストールディレクトリ、空の場合はデフォルトディレクトリ（/opt/komari-agent）を使用",
       "installCommand": "ワンクリックデプロイコマンド",
       "installOptions": "インストールオプション",
+      "installVersion": "インストールバージョン",
       "interval": "収集間隔（秒）",
       "invalidPrice": "無効な価格",
       "memoryModeAvailable": "バッファメモリを含む",

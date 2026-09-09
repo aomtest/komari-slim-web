@@ -129,6 +129,7 @@
       "install_dir_placeholder": "安装目录，为空则使用默认目录(/opt/komari-agent)",
       "installCommand": "一键部署指令",
       "installOptions": "安装选项",
+      "installVersion": "指定安装版本",
       "interval": "采集间隔（秒）",
       "invalidPrice": "价格无效",
       "memoryModeAvailable": "包含缓冲区内存",

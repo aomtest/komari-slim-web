@@ -129,6 +129,7 @@
       "install_dir_placeholder": "Installation directory, leave empty to use the default directory (/opt/komari-agent)",
       "installCommand": "Install command",
       "installOptions": "Install options",
+      "installVersion": "Install version",
       "interval": "Collection interval (seconds)",
       "invalidPrice": "Invalid price",
       "memoryModeAvailable": "Include cache memory",

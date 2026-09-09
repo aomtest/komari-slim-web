@@ -129,6 +129,7 @@
       "install_dir_placeholder": "Direktori instalasi, biarkan kosong untuk menggunakan direktori default (/opt/komari-agent)",
       "installCommand": "Perintah Instalasi",
       "installOptions": "Opsi Instalasi",
+      "installVersion": "Versi Instalasi",
       "interval": "Interval pengumpulan (detik)",
       "invalidPrice": "Harga tidak valid",
       "memoryModeAvailable": "Sertakan Memori Cache",
