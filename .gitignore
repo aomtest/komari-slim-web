@@ -13,6 +13,7 @@ package-lock.json
 # Build output
 dist/
 dist-ssr/
+dist.prev-*
 *.local
 bundle-analysis.html
 
