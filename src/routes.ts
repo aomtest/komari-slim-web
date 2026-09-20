@@ -20,27 +20,11 @@ export const routes: RouteObject[] = [
         path: "instance/:uuid",
         element: React.createElement(lazy(() => import("./pages/instance"))),
       },
-      {
-        path: "plugin/:short/*",
-        element: React.createElement(lazy(() => import("./pages/plugin_page"))),
-      },
     ],
-  },
-  {
-    path: "/admin/database-migration",
-    element: React.createElement(
-      lazy(() => import("./pages/database_migration")),
-    ),
   },
   {
     path: "/install",
     element: React.createElement(lazy(() => import("./pages/install"))),
-  },
-  {
-    path: "/database-recovery",
-    element: React.createElement(
-      lazy(() => import("./pages/database_recovery")),
-    ),
   },
   {
     path: "/admin/login",
@@ -93,33 +77,9 @@ export const routes: RouteObject[] = [
         }),
       },
       {
-        path: "plugins",
-        element: React.createElement(
-          lazy(() => import("./pages/admin/plugins"))
-        ),
-      },
-      {
-        path: "plugins/config",
-        element: React.createElement(
-          lazy(() => import("./pages/admin/plugin_config"))
-        ),
-      },
-      {
-        path: "plugin-page",
-        element: React.createElement(
-          lazy(() => import("./pages/admin/plugin_page"))
-        ),
-      },
-      {
         path: "market/themes",
         element: React.createElement(
           lazy(() => import("./pages/admin/market/themes"))
-        ),
-      },
-      {
-        path: "market/plugins",
-        element: React.createElement(
-          lazy(() => import("./pages/admin/market/plugins"))
         ),
       },
       {
@@ -167,12 +127,6 @@ export const routes: RouteObject[] = [
             ),
           },
           {
-            path: "sign-on",
-            element: React.createElement(
-              lazy(() => import("./pages/admin/settings/sign-on"))
-            ),
-          },
-          {
             path: "notification",
             element: React.createElement(Navigate, {
               to: "/admin/notification/channels",
@@ -183,12 +137,6 @@ export const routes: RouteObject[] = [
             path: "general",
             element: React.createElement(
               lazy(() => import("./pages/admin/settings/general"))
-            ),
-          },
-          {
-            path: "xtermjs",
-            element: React.createElement(
-              lazy(() => import("./pages/admin/settings/xtermjs"))
             ),
           },
           {
@@ -251,19 +199,7 @@ export const routes: RouteObject[] = [
         path: "logs",
         element: React.createElement(lazy(() => import("./pages/admin/log"))),
       },
-      {
-        path: "pprof",
-        element: React.createElement(lazy(() => import("./pages/admin/pprof"))),
-      },
-      {
-        path: "exec",
-        element: React.createElement(lazy(() => import("./pages/admin/exec"))),
-      }
     ],
-  },
-  {
-    path: "/terminal",
-    element: React.createElement(lazy(() => import("./pages/terminal"))),
   },
   {
     path: "/manage/*",

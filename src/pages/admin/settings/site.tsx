@@ -2,9 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Button, Dialog, Flex, Text } from "@radix-ui/themes";
 import { updateSettingsWithToast, useSettings } from "@/lib/api";
 import {
-  SettingCardButton,
   SettingCardCollapse,
-  SettingCardIconButton,
   SettingCardLabel,
   SettingCardLongTextInput,
   SettingCardShortTextInput,
@@ -12,56 +10,12 @@ import {
 } from "@/components/admin/SettingCard";
 import { toast } from "sonner";
 import Loading from "@/components/loading";
-import { DownloadIcon } from "lucide-react";
-import { useRef, useState } from "react";
-import UploadDialog from "@/components/UploadDialog";
-import { createChunkUploadTask, type ChunkUploadTask } from "@/lib/chunkUpload";
+import { useState } from "react";
 
 export default function SiteSettings() {
   const { t } = useTranslation();
   const { settings, loading, error, refetch } = useSettings();
   const [shareHours, setShareHours] = useState(1);
-
-  // 恢复备份对话框与上传状态
-  const [restoreOpen, setRestoreOpen] = useState(false);
-  const [restoring, setRestoring] = useState(false);
-  const [restoreProgress, setRestoreProgress] = useState(0);
-  const restoreTaskRef = useRef<ChunkUploadTask | null>(null);
-
-  const uploadBackup = async (file: File) => {
-    if (restoring) return;
-
-    if (!file.name.toLowerCase().endsWith(".zip") || file.size === 0) {
-      toast.error(t("theme.invalid_file_type", "仅支持 .zip 文件"));
-      return;
-    }
-
-    setRestoring(true);
-    setRestoreProgress(0);
-    const task = createChunkUploadTask("/api/admin/upload");
-    restoreTaskRef.current = task;
-    try {
-      await task.upload("backup", file, setRestoreProgress);
-      toast.success(t("account_settings.upload_success", "上传成功"));
-      setRestoreOpen(false);
-      setRestoreProgress(0);
-    } catch (err) {
-      if (err instanceof DOMException && err.name === "AbortError") return;
-      const msg =
-        err instanceof Error
-          ? err.message
-          : t("settings.site.backup_restore_error", "恢复备份失败");
-      toast.error(msg);
-    } finally {
-      setRestoring(false);
-      restoreTaskRef.current = null;
-    }
-  };
-
-  const cancelRestore = () => {
-    restoreTaskRef.current?.cancel();
-    setRestoreProgress(0);
-  };
 
   if (loading) {
     return <Loading />;
@@ -399,49 +353,6 @@ export default function SiteSettings() {
           </Flex>
         </Flex>
       </SettingCardCollapse>
-      <SettingCardLabel>{t("settings.site.backup")}</SettingCardLabel>
-      <SettingCardIconButton
-        title={t("settings.site.backup_download")}
-        description={t("settings.site.backup_download_description")}
-        onClick={() => {
-          window.open("/api/admin/download/backup", "_blank");
-        }}
-        className="km-setting-card"
-      >
-        <DownloadIcon size={16} />
-      </SettingCardIconButton>
-      <SettingCardButton
-        title={t("settings.site.backup_restore")}
-        description={t("settings.site.backup_restore_description")}
-        onClick={() => setRestoreOpen(true)}
-        className="km-setting-card"
-      >
-        {t("common.select")}
-      </SettingCardButton>
-
-      {/* 上传备份对话框 */}
-      <UploadDialog
-        open={restoreOpen}
-        onOpenChange={(open) => {
-          if (!open && restoring) {
-            cancelRestore();
-            return;
-          }
-          setRestoreOpen(open);
-        }}
-        title={t("settings.site.backup_restore")}
-        description={t("settings.site.backup_restore_description")}
-        accept=".zip"
-        dragDropText={t("theme.drag_drop")}
-        clickToBrowseText={t("theme.or_click_to_browse")}
-        hintText={t("theme.zip_files_only")}
-        uploading={restoring}
-        progress={restoreProgress}
-        cancelUploadLabel={t("common.cancel")}
-        onCancelUpload={cancelRestore}
-        onFileSelected={(file) => uploadBackup(file)}
-        closeLabel={t("common.cancel")}
-      />
     </>
   );
 }
