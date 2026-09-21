@@ -1,7 +1,7 @@
 {
   "about": {
-    "ai": "Komari 專案的開發過程得到了人工智慧工具的輔助。這些工具被用於執行程式碼生成、重構和除錯等任務，以提高開發效率和程式碼品質。所有由 AI 生成的程式碼和建議都經過了人類開發者的審查與驗證。",
-    "open_source": "Komari 基於 MIT 協議開源，並使用了以下開源軟體構建：",
+    "ai": "komari-slim 專案的開發過程得到了人工智慧工具的輔助。這些工具被用於執行程式碼生成、重構和除錯等任務，以提高開發效率和程式碼品質。所有由 AI 生成的程式碼和建議都經過了人類開發者的審查與驗證。",
+    "open_source": "komari-slim 基於 MIT 協議開源，並使用了以下開源軟體構建：",
     "open_source_title": "開源軟體許可協議",
     "readme_open_in_new_tab": "在新標籤頁中開啟"
   },
@@ -96,7 +96,7 @@
         "tryIt": "試試自動發現"
       },
       "autoRenewal": "自動續費",
-      "autoRenewalDescription": "如果伺服器過期且當前線上，Komari 將自動將到期時間設定為下個自然月（年）",
+      "autoRenewalDescription": "如果伺服器過期且當前線上，komari-slim 將自動將到期時間設定為下個自然月（年）",
       "billing": "帳單",
       "billingCycle": "計費週期",
       "billingCycleTips": "<b>計費週期規則</b><br/> <br/> <b>按預設週期 (日曆續費)</b><br/> 當輸入的天數與預設方案（如月付、季付、年付）的數值相近時，將按對應的 <b>日曆週期</b> 續費。<br/> - 常用數值: 30 (月), 92 (季), 365 (年), 730 (兩年) 等。<br/> - 示例：輸入 30，服務從3月15日續費，新的到期日為 4月15日。<br/> <br/> <b>按自定義天數</b><br/> 當輸入其他天數時（如 7, 45, 100），將嚴格按 天數 續費。<br/> - 示例：輸入 45，服務從3月15日續費，新的到期日為 4月29日 (45天後)。<br/> <br/> <b>一次性付費</b><br/> 輸入 -1 表示一次性付費。",
@@ -151,14 +151,14 @@
     },
     "notification": {
       "expire_enable": "是否啟用過期提醒",
-      "expire_enable_description": "啟用後，Komari將在到期前傳送提醒通知。",
+      "expire_enable_description": "啟用後，komari-slim將在到期前傳送提醒通知。",
       "expire_time": "提前多少天開始提醒",
       "expire_time_description": "設定在到期前多少天開始傳送提醒通知。",
       "expire_title": "過期提醒",
       "login": "登入通知",
-      "login_description": "當有新的會話登入到Komari時，向您傳送通知",
+      "login_description": "當有新的會話登入到komari-slim時，向您傳送通知",
       "traffic": "流量用量",
-      "traffic_description": "Komari將會在伺服器到達指定的流量使用百分比時傳送通知，並以5%為梯度持續提醒。如果伺服器沒有設定流量閾值，不傳送通知。設定為0停用流量提醒。"
+      "traffic_description": "komari-slim將會在伺服器到達指定的流量使用百分比時傳送通知，並以5%為梯度持續提醒。如果伺服器沒有設定流量閾值，不傳送通知。設定為0停用流量提醒。"
     }
   },
   "chart": {
@@ -319,7 +319,7 @@
     "none": "無",
     "once": "一次性",
     "previous_page": "上一頁",
-    "private_site": "這是一個私有的Komari站點，請先登入。",
+    "private_site": "這是一個私有的komari-slim站點，請先登入。",
     "quarterly": "季",
     "quinquennial": "五年",
     "real_time": "實時",
@@ -629,7 +629,7 @@
     "username_required": "請輸入使用者名稱。",
     "welcome_description": "設定管理員帳號、網站資訊和監控資料庫。",
     "welcome_subtitle": "輕量、開源的伺服器監控工具。",
-    "welcome_title": "歡迎使用 Komari"
+    "welcome_title": "歡迎使用 komari-slim"
   },
   "just_now": "剛剛",
   "loading": "載入中...",
@@ -637,7 +637,7 @@
     "title": "日誌"
   },
   "login": {
-    "desc": "登入到 Komari 控制面板。",
+    "desc": "登入到 komari-slim 控制面板。",
     "login_with": "使用 {{provider}} 登入",
     "login_with_github": "使用 GitHub 登入",
     "password": "密碼",
@@ -814,7 +814,7 @@
     "market_reinstall": "重新安裝",
     "market_search": "搜尋外掛...",
     "market_uninstall_success": "外掛已卸載",
-    "market_update_required": "需要更新 Komari",
+    "market_update_required": "需要更新 komari-slim",
     "market_warning": "外掛市集中的第三方外掛未經官方審查，可能包含有害程式碼，請仔細甄別後再安裝。",
     "no_logs": "暫無日誌",
     "no_plugins": "尚未安裝外掛",
@@ -916,7 +916,7 @@
     "can_install": "可以安裝",
     "install": "安裝",
     "install_prompt_desc": "新增到主畫面以快速訪問",
-    "install_prompt_title": "安裝 Komari",
+    "install_prompt_title": "安裝 komari-slim",
     "install_status": "安裝狀態",
     "installed": "已安裝",
     "installed_hint": "該應用程式已安裝在裝置上，您可以從主畫面快速訪問它。",
@@ -1004,7 +1004,7 @@
         "vacuum": "回收 SQLite 檔案空間（VACUUM）",
         "vacuum_full": "完整回收並分析 PostgreSQL 資料表（VACUUM (FULL, ANALYZE)）"
       },
-      "confirm_description": "資料庫維護可能鎖定資料庫並暫時阻塞 Komari，請確認以下操作。",
+      "confirm_description": "資料庫維護可能鎖定資料庫並暫時阻塞 komari-slim，請確認以下操作。",
       "confirm_title": "確認資料庫維護",
       "invalid_response": "伺服器返回了無效的資料庫資訊",
       "load_error": "讀取資料庫資訊失敗",
@@ -1017,7 +1017,7 @@
       "main": "主資料庫",
       "maintaining": "維護中...",
       "maintenance_button": "回收空間",
-      "maintenance_description": "維護期間資料庫可能被鎖定，Komari 可能暫時無法回應。",
+      "maintenance_description": "維護期間資料庫可能被鎖定，komari-slim 可能暫時無法回應。",
       "maintenance_error": "資料庫維護失敗",
       "maintenance_partial_failure": "資料庫維護已結束，但存在失敗操作",
       "maintenance_success": "資料庫維護完成",
@@ -1290,7 +1290,7 @@
         "endpoint_help": "Telegram Bot API 的請求端點，通常為 `https://api.telegram.org/bot`"
       },
       "template": "訊息通知模板",
-      "template_description": "Komari 將按照訊息通知模板傳送通知",
+      "template_description": "komari-slim 將按照訊息通知模板傳送通知",
       "test_description": "傳送測試訊息",
       "test_title": "傳送測試訊息",
       "title": "通知"
@@ -1406,7 +1406,7 @@
       "sqlite_risk": "目前有 {{servers}} 臺伺服器並保留約 {{days}} 天資料。如果伺服器效能不足，SQLite 可能無法勝任後續處理。",
       "sqlite_warning": "SQLite 在資料量增長後會明顯佔用單機 CPU、記憶體和 IO，不適合承擔大量降取樣與平均值計算。",
       "start": "開始升級",
-      "start_description": "所有舊監控記錄都會用於計算每個序列的每小時 P95；只有遷移成功並回收空間後才會刪除舊資料表。期間請勿停止 Komari 或修改目標資料庫。",
+      "start_description": "所有舊監控記錄都會用於計算每個序列的每小時 P95；只有遷移成功並回收空間後才會刪除舊資料表。期間請勿停止 komari-slim 或修改目標資料庫。",
       "start_title": "確認開始升級",
       "subtitle": "遷移完成前，一般站點和 Agent API 將保持關閉。",
       "target": "目標資料庫",

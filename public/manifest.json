@@ -1,6 +1,6 @@
 {
-  "name": "Komari Monitor",
-  "short_name": "Komari Monitor",
+  "name": "komari-slim",
+  "short_name": "komari-slim",
   "description": "A simple server monitor tool",
   "start_url": "/",
   "display": "standalone",
@@ -28,13 +28,13 @@
       "purpose": "any"
     },
     {
-      "src": "/assets/pwa-icon.webp",
+      "src": "/assets/logo-mark.webp",
       "sizes": "192x192",
       "type": "image/webp",
       "purpose": "maskable any"
     },
     {
-      "src": "/assets/pwa-icon.webp",
+      "src": "/assets/logo-mark.webp",
       "sizes": "512x512",
       "type": "image/webp",
       "purpose": "maskable any"

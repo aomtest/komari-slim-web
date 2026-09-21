@@ -1,7 +1,7 @@
 {
   "about": {
-    "ai": "Komari プロジェクトの開発プロセスは、人工知能ツールの支援を受けています。これらのツールは、コード生成、リファクタリング、デバッグなどのタスクを実行するために使用され、開発効率とコード品質を向上させます。AI によって生成されたすべてのコードと提案は、人間の開発者によってレビューおよび検証されています。",
-    "open_source": "Komari は MIT ライセンスに基づいてオープンソースであり、以下のオープンソースソフトウェアを使用して構築されています：",
+    "ai": "komari-slim プロジェクトの開発プロセスは、人工知能ツールの支援を受けています。これらのツールは、コード生成、リファクタリング、デバッグなどのタスクを実行するために使用され、開発効率とコード品質を向上させます。AI によって生成されたすべてのコードと提案は、人間の開発者によってレビューおよび検証されています。",
+    "open_source": "komari-slim は MIT ライセンスに基づいてオープンソースであり、以下のオープンソースソフトウェアを使用して構築されています：",
     "open_source_title": "オープンソースソフトウェアライセンス",
     "readme_open_in_new_tab": "新しいタブで開く"
   },
@@ -96,7 +96,7 @@
         "tryIt": "自動検出を試す"
       },
       "autoRenewal": "自動更新",
-      "autoRenewalDescription": "サーバーが期限切れで現在オンラインの場合、Komariは期限を次の自然月（年）に自動的に設定します。",
+      "autoRenewalDescription": "サーバーが期限切れで現在オンラインの場合、komari-slimは期限を次の自然月（年）に自動的に設定します。",
       "billing": "請求書",
       "billingCycle": "請求サイクル",
       "billingCycleTips": "<b>請求サイクルのルール</b><br/> <br/> <b>設定されたサイクルに従う（カレンダー更新）</b><br/> 入力された日数が設定プラン（例：月払い、四半期払い、年払い）の数値に近い場合、対応する <b>カレンダーサイクル</b> に従って更新されます。<br/> - よく使われる数値: 30（1ヶ月）、92（四半期）、365（1年）、730（2年）など。<br/> - 例：30を入力すると、サービスは3月15日に更新され、新しい期限日は4月15日になります。<br/> <br/> <b>カスタム日数に従う</b><br/> 他の日数（例：7、45、100）を入力すると、厳密に日数に従って更新されます。<br/> - 例：45を入力すると、サービスは3月15日に更新され、新しい期限日は4月29日（45日後）になります。<br/> <br/> <b>一括払い</b><br/> -1を入力すると、一括払いを意味します。",
@@ -151,14 +151,14 @@
     },
     "notification": {
       "expire_enable": "期限切れ通知を有効にしますか",
-      "expire_enable_description": "有効にすると、Komariは期限前に通知を送信します。",
+      "expire_enable_description": "有効にすると、komari-slimは期限前に通知を送信します。",
       "expire_time": "何日前から通知を開始しますか",
       "expire_time_description": "期限前に何日前から通知を送信するかを設定します。",
       "expire_title": "期限切れ通知",
       "login": "ログイン通知",
-      "login_description": "新しいセッションがKomariにログインしたときに通知を送信します。",
+      "login_description": "新しいセッションがkomari-slimにログインしたときに通知を送信します。",
       "traffic": "トラフィック使用量",
-      "traffic_description": "Komariは、サーバーが指定されたトラフィック使用率に達したときに通知を送信し、5%の間隔で継続的にリマインダーを表示します。サーバーにトラフィック閾値が設定されていない場合、通知は送信されません。0に設定するとトラフィックリマインダーが無効になります。"
+      "traffic_description": "komari-slimは、サーバーが指定されたトラフィック使用率に達したときに通知を送信し、5%の間隔で継続的にリマインダーを表示します。サーバーにトラフィック閾値が設定されていない場合、通知は送信されません。0に設定するとトラフィックリマインダーが無効になります。"
     }
   },
   "chart": {
@@ -319,7 +319,7 @@
     "none": "なし",
     "once": "一回限り",
     "previous_page": "前のページ",
-    "private_site": "これはプライベートなKomariサイトです。ログインしてください。",
+    "private_site": "これはプライベートなkomari-slimサイトです。ログインしてください。",
     "quarterly": "四半期",
     "quinquennial": "5年",
     "real_time": "リアルタイム",
@@ -629,7 +629,7 @@
     "username_required": "ユーザー名を入力してください。",
     "welcome_description": "管理者アカウント、サイト情報、監視データベースを設定します。",
     "welcome_subtitle": "軽量なオープンソースのサーバー監視ツールです。",
-    "welcome_title": "Komari へようこそ"
+    "welcome_title": "komari-slim へようこそ"
   },
   "just_now": "たった今",
   "loading": "読み込み中...",
@@ -637,7 +637,7 @@
     "title": "ログ"
   },
   "login": {
-    "desc": "Komari コントロールパネルにログインします。",
+    "desc": "komari-slim コントロールパネルにログインします。",
     "login_with": "{{provider}} でログイン",
     "login_with_github": "GitHubでログイン",
     "password": "パスワード",
@@ -814,7 +814,7 @@
     "market_reinstall": "再インストール",
     "market_search": "プラグインを検索...",
     "market_uninstall_success": "プラグインをアンインストールしました",
-    "market_update_required": "Komari の更新が必要です",
+    "market_update_required": "komari-slim の更新が必要です",
     "market_warning": "マーケットのサードパーティ製プラグインは公式の審査を受けていません。有害なコードが含まれている可能性があるため、インストール前に十分に確認してください。",
     "no_logs": "ログはありません",
     "no_plugins": "プラグインはまだインストールされていません",
@@ -916,7 +916,7 @@
     "can_install": "インストール可能",
     "install": "インストール",
     "install_prompt_desc": "主画面に追加して迅速にアクセス",
-    "install_prompt_title": "Komariをインストール",
+    "install_prompt_title": "komari-slimをインストール",
     "install_status": "インストール状況",
     "installed": "インストール済み",
     "installed_hint": "このアプリはデバイスにインストールされており、主画面から迅速にアクセスできます。",
@@ -1004,7 +1004,7 @@
         "vacuum": "SQLite ファイル領域を回収（VACUUM）",
         "vacuum_full": "PostgreSQL テーブルを完全回収・分析（VACUUM (FULL, ANALYZE)）"
       },
-      "confirm_description": "データベースのメンテナンス中はデータベースがロックされ、Komari が一時的に停止する場合があります。以下の操作を確認してください。",
+      "confirm_description": "データベースのメンテナンス中はデータベースがロックされ、komari-slim が一時的に停止する場合があります。以下の操作を確認してください。",
       "confirm_title": "データベースメンテナンスの確認",
       "invalid_response": "サーバーから無効なデータベース情報が返されました",
       "load_error": "データベース情報の読み込みに失敗しました",
@@ -1017,7 +1017,7 @@
       "main": "メインデータベース",
       "maintaining": "メンテナンス中...",
       "maintenance_button": "領域を回収",
-      "maintenance_description": "メンテナンス中はデータベースがロックされ、Komari が一時的に応答しない場合があります。",
+      "maintenance_description": "メンテナンス中はデータベースがロックされ、komari-slim が一時的に応答しない場合があります。",
       "maintenance_error": "データベースのメンテナンスに失敗しました",
       "maintenance_partial_failure": "データベースのメンテナンスは終了しましたが、失敗した操作があります",
       "maintenance_success": "データベースのメンテナンスが完了しました",
@@ -1290,7 +1290,7 @@
         "endpoint_help": "Telegram ボット API のリクエストエンドポイント、通常は `https://api.telegram.org/bot`"
       },
       "template": "メッセージ通知テンプレート",
-      "template_description": "Komariはメッセージ通知テンプレートに従って通知を送信します",
+      "template_description": "komari-slimはメッセージ通知テンプレートに従って通知を送信します",
       "test_description": "テストメッセージを送信",
       "test_title": "テストメッセージを送信",
       "title": "通知"
@@ -1406,7 +1406,7 @@
       "sqlite_risk": "現在 {{servers}} 台のサーバーと約 {{days}} 日分のデータがあります。サーバー性能が十分でない場合、SQLite では処理できない可能性があります。",
       "sqlite_warning": "データ量が増えると SQLite は単一サーバーの CPU、メモリ、IO を大きく消費し、大量のダウンサンプリングや平均値計算には適しません。",
       "start": "アップグレードを開始",
-      "start_description": "すべての旧監視レコードを使用して系列ごとの 1 時間 P95 を計算します。旧テーブルは移行と領域回収が成功した後にのみ削除されます。移行中は Komari を停止したり、移行先データベースを変更したりしないでください。",
+      "start_description": "すべての旧監視レコードを使用して系列ごとの 1 時間 P95 を計算します。旧テーブルは移行と領域回収が成功した後にのみ削除されます。移行中は komari-slim を停止したり、移行先データベースを変更したりしないでください。",
       "start_title": "アップグレードを開始しますか？",
       "subtitle": "移行が完了するまで通常サイトと Agent API は停止します。",
       "target": "移行先データベース",

@@ -9,12 +9,12 @@ export default function GuideHeader() {
     <Flex justify="between" align="center" gap="4" className="km-guide-header w-full">
       <Flex align="center" gap="2">
         <img
-          src="/assets/pwa-icon.webp"
-          alt="Komari"
+          src="/assets/logo-mark.webp"
+          alt="komari-slim"
           className="size-9 object-contain"
         />
         <Text size="3" weight="bold">
-          Komari
+          komari-slim
         </Text>
       </Flex>
       <Flex gap="2">

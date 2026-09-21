@@ -362,7 +362,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                 <TablerMenu2 />
               </IconButton>
               <a href="/" target="_blank" rel="noopener noreferrer">
-                <label className="text-xl font-bold">Komari</label>
+                <label className="text-xl font-bold">komari-slim</label>
               </a>
               {updateAvailable && releasesSince.length > 0 && (
                 <Tips

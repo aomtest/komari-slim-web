@@ -6,14 +6,14 @@ export const EULAS: Record<string, string> = {
   "zh_CN": `法律声明与合规指引
 
 重要提示
-  本文档旨在明确 Komari（“本软件”）的合法使用边界、用户权利义务与风险提示。请在下载、安装或使用本软件前，务必完整阅读并理解本声明的全部内容。一经下载、安装或使用，即视为您已理解并同意受本声明约束。
+  本文档旨在明确 komari-slim（“本软件”）的合法使用边界、用户权利义务与风险提示。请在下载、安装或使用本软件前，务必完整阅读并理解本声明的全部内容。一经下载、安装或使用，即视为您已理解并同意受本声明约束。
 
 1. 适用范围
   本声明适用于所有直接或间接获取、安装、访问或使用本软件及其衍生工具、文档与服务的自然人、法人或其他组织。
 
 2. 定义
   - “您/用户”：指任何以任何方式使用本软件的主体。
-  - “本软件/Komari”：指开源发布的 Komari Monitor 及相关组件、示例、脚本与文档。
+  - “本软件/komari-slim”：指开源发布的 komari-slim 及相关组件、示例、脚本与文档。
   - “目标设备”：指被您管理或操作的任何主机、服务器、虚拟机、容器或网络设备。
 
 3. 许可与使用边界
@@ -88,14 +88,14 @@ export const EULAS: Record<string, string> = {
   "zh_TW": `法律聲明與合規指引
 
 重要提示
-  本文件旨在明確 Komari（“本軟體”）的合法使用邊界、使用者權利義務與風險提示。請在下載、安裝或使用本軟體前，務必完整閱讀並理解本聲明的全部內容。一經下載、安裝或使用，即視為您已理解並同意受本聲明約束。
+  本文件旨在明確 komari-slim（“本軟體”）的合法使用邊界、使用者權利義務與風險提示。請在下載、安裝或使用本軟體前，務必完整閱讀並理解本聲明的全部內容。一經下載、安裝或使用，即視為您已理解並同意受本聲明約束。
 
 1. 適用範圍
   本聲明適用於所有直接或間接獲取、安裝、訪問或使用本軟體及其衍生工具、文件與服務的自然人、法人或其他組織。
 
 2. 定義
   - “您/使用者”：指任何以任何方式使用本軟體的主體。
-  - “本軟體/Komari”：指開源釋出的 Komari Monitor 及相關元件、示例、指令碼與文件。
+  - “本軟體/komari-slim”：指開源釋出的 komari-slim 及相關元件、示例、指令碼與文件。
   - “目標裝置”：指被您管理或操作的任何主機、伺服器、虛擬機器、容器或網路裝置。
 
 3. 許可與使用邊界
@@ -170,14 +170,14 @@ export const EULAS: Record<string, string> = {
   "en": `Legal Notice and Compliance Guide
 
 Important Notice
-  This document clarifies the lawful boundaries of using Komari ("the Software"), your rights and obligations, and risk disclosures. Before downloading, installing, or using the Software, please read and understand this notice in full. By downloading, installing, or using the Software, you acknowledge that you have read, understood, and agreed to be bound by this notice.
+  This document clarifies the lawful boundaries of using komari-slim ("the Software"), your rights and obligations, and risk disclosures. Before downloading, installing, or using the Software, please read and understand this notice in full. By downloading, installing, or using the Software, you acknowledge that you have read, understood, and agreed to be bound by this notice.
 
 1. Scope of Application
   This notice applies to all individuals, legal persons, or other organizations that directly or indirectly obtain, install, access, or use the Software and its derivative tools, documentation, and services.
 
 2. Definitions
   - "You/User": any party that uses the Software in any manner.
-  - "Software/Komari": Komari Monitor, released as open source, and its related components, examples, scripts, and documentation.
+  - "Software/komari-slim": komari-slim, released as open source, and its related components, examples, scripts, and documentation.
   - "Target Device": any host, server, virtual machine, container, or network device that you manage or operate.
 
 3. License and Usage Boundaries
@@ -252,14 +252,14 @@ Effective date: 2025-10-20
   "ja_JP": `法的通知とコンプライアンスガイド
 
 重要な注意
-  本書は、Komari（「本ソフトウェア」）の合法的な利用範囲、ユーザーの権利義務、およびリスクに関する注意事項を明確にすることを目的としています。本ソフトウェアをダウンロード、インストール、または使用する前に、本書の全内容を必ずお読みいただきご理解ください。ダウンロード、インストール、または使用した時点で、本書の内容を理解し同意したものとみなされます。
+  本書は、komari-slim（「本ソフトウェア」）の合法的な利用範囲、ユーザーの権利義務、およびリスクに関する注意事項を明確にすることを目的としています。本ソフトウェアをダウンロード、インストール、または使用する前に、本書の全内容を必ずお読みいただきご理解ください。ダウンロード、インストール、または使用した時点で、本書の内容を理解し同意したものとみなされます。
 
 1. 適用範囲
   本書は、本ソフトウェアおよびその派生ツール、ドキュメント、サービスを直接または間接的に取得、インストール、アクセス、または使用するすべての自然人、法人、その他の組織に適用されます。
 
 2. 定義
   - 「あなた/ユーザー」：何らかの方法で本ソフトウェアを使用する主体を指します。
-  - 「本ソフトウェア/Komari」：オープンソースとして公開されている Komari Monitor および関連コンポーネント、サンプル、スクリプト、ドキュメントを指します。
+  - 「本ソフトウェア/komari-slim」：オープンソースとして公開されている komari-slim および関連コンポーネント、サンプル、スクリプト、ドキュメントを指します。
   - 「対象デバイス」：あなたが管理または操作するすべてのホスト、サーバー、仮想マシン、コンテナ、またはネットワークデバイスを指します。
 
 3. ライセンスと利用範囲
@@ -334,14 +334,14 @@ Effective date: 2025-10-20
   "id_ID": `Pemberitahuan Hukum dan Panduan Kepatuhan
 
 Penting
-  Dokumen ini bertujuan untuk menjelaskan batas penggunaan Komari ("Perangkat Lunak") secara sah, hak dan kewajiban pengguna, serta peringatan risiko. Sebelum mengunduh, menginstal, atau menggunakan Perangkat Lunak, harap baca dan pahami seluruh isi pemberitahuan ini. Dengan mengunduh, menginstal, atau menggunakan Perangkat Lunak, Anda dianggap telah memahami dan menyetujui untuk terikat oleh pemberitahuan ini.
+  Dokumen ini bertujuan untuk menjelaskan batas penggunaan komari-slim ("Perangkat Lunak") secara sah, hak dan kewajiban pengguna, serta peringatan risiko. Sebelum mengunduh, menginstal, atau menggunakan Perangkat Lunak, harap baca dan pahami seluruh isi pemberitahuan ini. Dengan mengunduh, menginstal, atau menggunakan Perangkat Lunak, Anda dianggap telah memahami dan menyetujui untuk terikat oleh pemberitahuan ini.
 
 1. Ruang Lingkup
   Pemberitahuan ini berlaku untuk semua orang perseorangan, badan hukum, atau organisasi lain yang secara langsung atau tidak langsung memperoleh, menginstal, mengakses, atau menggunakan Perangkat Lunak beserta alat turunan, dokumentasi, dan layanannya.
 
 2. Definisi
   - "Anda/Pengguna": pihak mana pun yang menggunakan Perangkat Lunak dengan cara apa pun.
-  - "Perangkat Lunak/Komari": Komari Monitor yang dirilis sebagai sumber terbuka beserta komponen, contoh, skrip, dan dokumentasi terkait.
+  - "Perangkat Lunak/komari-slim": komari-slim yang dirilis sebagai sumber terbuka beserta komponen, contoh, skrip, dan dokumentasi terkait.
   - "Perangkat Target": setiap host, server, mesin virtual, kontainer, atau perangkat jaringan yang Anda kelola atau operasikan.
 
 3. Lisensi dan Batas Penggunaan

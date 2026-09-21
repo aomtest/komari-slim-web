@@ -138,7 +138,7 @@ export const PWAInstallPrompt = () => {
     //                         </h2>
     //                         <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
     //                             {hasNativePrompt 
-    //                                 ? '快速访问 Komari Monitor，享受更好的体验' 
+    //                                 ? '快速访问 komari-slim，享受更好的体验' 
     //                                 : '将应用添加到主屏幕，方便快速访问'
     //                             }
     //                         </p>

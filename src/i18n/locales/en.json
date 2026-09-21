@@ -1,7 +1,7 @@
 {
   "about": {
-    "ai": "The development process of the Komari project has been assisted by artificial intelligence tools. These tools are used for tasks such as code generation, refactoring, and debugging to improve development efficiency and code quality. All AI-generated code and suggestions have been reviewed and validated by human developers.",
-    "open_source": "Komari is open source under the MIT license and is built using the following open source software:",
+    "ai": "The development process of the komari-slim project has been assisted by artificial intelligence tools. These tools are used for tasks such as code generation, refactoring, and debugging to improve development efficiency and code quality. All AI-generated code and suggestions have been reviewed and validated by human developers.",
+    "open_source": "komari-slim is open source under the MIT license and is built using the following open source software:",
     "open_source_title": "Open Source Software License",
     "readme_open_in_new_tab": "Open in new tab"
   },
@@ -96,7 +96,7 @@
         "tryIt": "Try auto discovery"
       },
       "autoRenewal": "Auto renewal",
-      "autoRenewalDescription": "If the server expires and is currently online, Komari will automatically set the expiration time to the next natural month (year)",
+      "autoRenewalDescription": "If the server expires and is currently online, komari-slim will automatically set the expiration time to the next natural month (year)",
       "billing": "Billing",
       "billingCycle": "Billing cycle",
       "billingCycleTips": "<b>Billing Cycle Rules</b><br/> <br/> <b>By Preset Cycle (Calendar Renewal)</b><br/> When the number of days entered is close to the preset plan (such as monthly, quarterly, annually), it will renew according to the corresponding <b>calendar cycle</b>.<br/> - Common values: 30 (monthly), 92 (quarterly), 365 (annually), 730 (biennially), etc.<br/> - Example: Entering 30, the service renews on March 15, and the new expiration date will be April 15.<br/> <br/> <b>By Custom Days</b><br/> When other numbers of days are entered (such as 7, 45, 100), it will strictly renew according to the number of days.<br/> - Example: Entering 45, the service renews on March 15, and the new expiration date will be April 29 (45 days later).<br/> <br/> <b>One-time Payment</b><br/> Entering -1 indicates a one-time payment.",
@@ -156,9 +156,9 @@
       "expire_time_description": "Set how many days in advance to start sending reminder notifications before expiration.",
       "expire_title": "Expire notification",
       "login": "Login Notification",
-      "login_description": "Send a notification when a new session logs into Komari.",
+      "login_description": "Send a notification when a new session logs into komari-slim.",
       "traffic": "Traffic Usage",
-      "traffic_description": "Komari will send notifications when the server reaches the specified percentage of traffic usage, with reminders at 5% increments. If no traffic threshold is set, no notifications will be sent. Set to 0 to disable traffic reminders."
+      "traffic_description": "komari-slim will send notifications when the server reaches the specified percentage of traffic usage, with reminders at 5% increments. If no traffic threshold is set, no notifications will be sent. Set to 0 to disable traffic reminders."
     }
   },
   "chart": {
@@ -474,7 +474,7 @@
     "none": "None",
     "once": "Once",
     "previous_page": "Previous page",
-    "private_site": "This is a private Komari site. Please log in first.",
+    "private_site": "This is a private komari-slim site. Please log in first.",
     "quarterly": "Quarterly",
     "quinquennial": "Quinquennial",
     "real_time": "RealTime",
@@ -624,7 +624,7 @@
     "username_required": "Enter a username.",
     "welcome_description": "Configure your administrator account, site metadata, and monitoring database.",
     "welcome_subtitle": "A lightweight, open-source server monitor.",
-    "welcome_title": "Welcome to Komari"
+    "welcome_title": "Welcome to komari-slim"
   },
   "just_now": "Just now",
   "loading": "Loading",
@@ -632,7 +632,7 @@
     "title": "Log"
   },
   "login": {
-    "desc": "Log in to the Komari control panel.",
+    "desc": "Log in to the komari-slim control panel.",
     "login_with": "Login with {{provider}}",
     "login_with_github": "Login with GitHub",
     "password": "Password",
@@ -808,7 +808,7 @@
     "market_refresh_success": "Plugin sources refreshed",
     "market_reinstall": "Reinstall",
     "market_search": "Search plugins...",
-    "market_update_required": "Komari update required",
+    "market_update_required": "komari-slim update required",
     "market_uninstall_success": "Plugin uninstalled",
     "market_warning": "Third-party plugins in the market are not vetted by the project and may contain harmful code. Please review carefully before installing.",
     "no_logs": "No logs",
@@ -911,7 +911,7 @@
     "can_install": "Can Install",
     "install": "Install",
     "install_prompt_desc": "Add to home screen for quick access",
-    "install_prompt_title": "Install Komari Monitor",
+    "install_prompt_title": "Install komari-slim",
     "install_status": "Install Status",
     "installed": "Installed",
     "installed_hint": "The app is installed on your device, you can access it quickly from the home screen.",
@@ -999,7 +999,7 @@
         "vacuum": "Reclaim SQLite file space (VACUUM)",
         "vacuum_full": "Fully reclaim and analyze PostgreSQL tables (VACUUM (FULL, ANALYZE))"
       },
-      "confirm_description": "Database maintenance may lock the databases and temporarily block Komari. Confirm the operations below.",
+      "confirm_description": "Database maintenance may lock the databases and temporarily block komari-slim. Confirm the operations below.",
       "confirm_title": "Confirm Database Maintenance",
       "invalid_response": "The server returned invalid database information",
       "load_error": "Failed to load database information",
@@ -1012,7 +1012,7 @@
       "main": "Main Database",
       "maintaining": "Maintaining...",
       "maintenance_button": "Reclaim Space",
-      "maintenance_description": "Maintenance may lock the databases and make Komari temporarily unavailable.",
+      "maintenance_description": "Maintenance may lock the databases and make komari-slim temporarily unavailable.",
       "maintenance_error": "Database maintenance failed",
       "maintenance_partial_failure": "Database maintenance finished with failed operations",
       "maintenance_success": "Database maintenance completed",
@@ -1285,7 +1285,7 @@
         "endpoint_help": "Request endpoint for the Telegram Bot API, usually `https://api.telegram.org/bot`"
       },
       "template": "Notification template",
-      "template_description": "Komari will send notifications according to the notification template",
+      "template_description": "komari-slim will send notifications according to the notification template",
       "test_description": "Send a test message",
       "test_title": "Send test message",
       "title": "Notifications"
@@ -1401,7 +1401,7 @@
       "sqlite_risk": "There are {{servers}} servers and about {{days}} retained days. SQLite may not keep up unless this server is sufficiently powerful.",
       "sqlite_warning": "As data grows, SQLite can put heavy CPU, memory, and IO pressure on one server and is not suitable for large downsampling and mean calculations.",
       "start": "Start upgrade",
-      "start_description": "All legacy monitoring rows are used to calculate hourly P95 for each series. Legacy tables are deleted only after migration and space reclamation succeed. Do not stop Komari or change the target database during migration.",
+      "start_description": "All legacy monitoring rows are used to calculate hourly P95 for each series. Legacy tables are deleted only after migration and space reclamation succeed. Do not stop komari-slim or change the target database during migration.",
       "start_title": "Start the upgrade?",
       "subtitle": "The normal site and Agent APIs remain offline until migration finishes.",
       "target": "Target database",

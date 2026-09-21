@@ -32,7 +32,7 @@ const NavBar = () => {
             className="text-base font-bold whitespace-nowrap"
             style={{ color: "var(--accent-4)" }}
           >
-            Komari Monitor
+            komari-slim
           </span>
         </div>
       </div>

@@ -1,6 +1,6 @@
 # RPC2 客户端使用指南
 
-这个 RPC2 客户端实现了 JSON-RPC 2.0 标准，支持通过 WebSocket 和 HTTP POST 调用 Komari 的 `/api/rpc2` 接口。
+这个 RPC2 客户端实现了 JSON-RPC 2.0 标准，支持通过 WebSocket 和 HTTP POST 调用 komari-slim 的 `/api/rpc2` 接口。
 
 ## 特性
 
