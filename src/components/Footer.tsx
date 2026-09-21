@@ -46,7 +46,7 @@ const Footer = () => {
   }, []);
 
   return (
-    <div className="km-footer footer p-2 border-t-1 border-t-[var(--gray-7)]">
+    <div className="km-footer footer p-2 px-4 border-t-1 border-t-[var(--gray-7)]">
       {/* Copyright and ICP Filing */}
 
       {customFooterHtml ? (
@@ -65,15 +65,14 @@ const Footer = () => {
           </Text>
         </Text>
       ) : (
+        // 左对齐：内层原本带 maxWidth:1200px + margin:auto（居中的 1200px 容器），
+        // 在宽屏上会把这段文字推到页面中间（1780 视口下 x=290），
+        // 与满宽的导航/内容对不齐，故去掉居中约束，靠 px-4 与导航品牌左边界对齐。
         <Flex
           direction={{ initial: "column", md: "row" }}
           justify="between"
           align={{ initial: "center", md: "start" }}
           gap="4"
-          style={{
-            maxWidth: "1200px",
-            margin: "0 auto",
-          }}
         >
           <Flex
             direction="column"
