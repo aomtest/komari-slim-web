@@ -31,7 +31,6 @@ import {
   Plus,
   Radar,
   Settings,
-  Terminal,
   Trash2Icon,
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -1409,7 +1408,6 @@ const ActionButtons = ({
   settings: any;
   isSnapshotBackend: boolean;
 }) => {
-  const { t } = useTranslation();
   return (
     <div className="flex items-center gap-4">
       <GenerateCommandButton
@@ -1417,15 +1415,6 @@ const ActionButtons = ({
         settings={settings}
         isSnapshotBackend={isSnapshotBackend}
       />
-      <IconButton
-        title={t("terminal.title")}
-        variant="ghost"
-        onClick={() => {
-          window.open(`/terminal?uuid=${node.uuid}`, "_blank");
-        }}
-      >
-        <Terminal size="18" />
-      </IconButton>
       <EditButton node={node} />
       <BillingButton node={node} />
       <DeleteButton node={node} />

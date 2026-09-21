@@ -2,7 +2,7 @@ import * as React from "react";
 import { z } from "zod";
 import { schema } from "@/components/admin/NodeTable/schema/node";
 import { DataTableRefreshContext } from "@/components/admin/NodeTable/schema/DataTableRefreshContext";
-import { Terminal, Trash2, Copy, Download, DollarSign } from "lucide-react";
+import { Trash2, Copy, Download, DollarSign } from "lucide-react";
 import { t } from "i18next";
 import type { Row } from "@tanstack/react-table";
 import { EditDialog } from "./NodeEditDialog";
@@ -292,15 +292,6 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
           </div>
         </Dialog.Content>
       </Dialog.Root>
-      <a href={`/terminal?uuid=${row.original.uuid}`} target="_blank">
-        <IconButton
-          variant="ghost"
-          title={t("terminal.title", "Terminal")}
-          aria-label={t("terminal.title", "Terminal")}
-        >
-          <Terminal className="p-1" />
-        </IconButton>
-      </a>
       {/** Edit Button */}
       <EditDialog item={row.original} />
       {/** Edit Money */}
