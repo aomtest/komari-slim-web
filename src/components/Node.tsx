@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import Tips from "./ui/tips";
 
 import { formatBytes } from "@/utils/unitHelper";
+import { formatCpuName } from "@/utils/cpuHelper";
 
 /** 格式化秒*/
 export function formatUptime(seconds: number, t: TFunction): string {
@@ -169,17 +170,29 @@ const Node = React.memo(
           <Flex className="md:flex-col flex-row md:gap-1 gap-4">
             {/* CPU Usage */}
             <UsageBar label={t("admin.nodeDetail.cpu")} value={liveData.cpu.usage} />
-            {/* CPU 型号：与内存/磁盘的用量小字同一样式；长名单行截断，完整名放 title */}
+            {/* CPU 型号：与内存/磁盘的用量小字同一样式。
+                最多两行，超长才截断——单行截断会让
+                "Intel Xeon Platinum 8272CL CPU @ 2.60GHz" 这类长型号看不全。
+                两行仍放不下时，完整型号见 title。 */}
             {basic.cpu_name && (
               <Text
                 size="1"
                 color="gray"
                 className="md:block hidden"
                 style={{ marginTop: "-4px" }}
-                truncate
                 title={basic.cpu_name}
               >
-                {basic.cpu_name}
+                <span
+                  style={{
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {formatCpuName(basic.cpu_name)}
+                </span>
               </Text>
             )}
 
