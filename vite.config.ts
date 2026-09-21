@@ -71,7 +71,7 @@ export default defineConfig(({ mode }) => {
           name: "komari-slim",
           short_name: "komari-slim",
           description: "A simple server monitor tool",
-          theme_color: "#2563eb",
+          theme_color: "#2F92EE",
           background_color: "#ffffff",
           display: "standalone",
           scope: base,

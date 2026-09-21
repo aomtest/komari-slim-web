@@ -112,10 +112,11 @@
     },
     {
       "labelKey": "common.documentation",
-      "path": "https://komari-document.pages.dev/",
+      "path": "",
       "icon": "Book",
       "newTab": true,
-      "bottom": true
+      "bottom": true,
+      "hidden": true
     },
     {
       "labelKey": "common.home",

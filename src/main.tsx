@@ -6,6 +6,7 @@ import "@radix-ui/themes/styles.css";
 import {
   ThemeContext,
   THEME_DEFAULTS,
+  migrateLegacyAccentColor,
   type Appearance,
   type Colors,
 } from "./contexts/ThemeContext";
@@ -110,6 +111,10 @@ const App = () => {
     </Suspense>
   );
 };
+
+// 必须在任何 useLocalStorage("color", ...) 读取之前执行，
+// 否则会先读到旧默认值 iris，再被迁移覆盖，出现一次紫色闪烁。
+migrateLegacyAccentColor();
 
 createRoot(document.getElementById("root")!).render(
   <ErrorBoundary>

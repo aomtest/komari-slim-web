@@ -245,15 +245,21 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
 
   // 主题配置作为“主题”主菜单的二级菜单。
   const mergedBaseMenuItems: ExtendedMenuItem[] = useMemo(() => {
-    return baseMenuItems.map((item) => {
-      if (item.labelKey === "theme.menu" && extraMenuItems.length > 0) {
-        return {
-          ...item,
-          children: [...(item.children || []), ...extraMenuItems],
-        };
-      }
-      return item;
-    });
+    return (
+      baseMenuItems
+        // hidden 项（如暂未上线的「文档」入口）不参与渲染，
+        // 也不参与下面 bottomStartPath 的判定，避免空 path 抢到"贴底"标记。
+        .filter((item) => !item.hidden)
+        .map((item) => {
+          if (item.labelKey === "theme.menu" && extraMenuItems.length > 0) {
+            return {
+              ...item,
+              children: [...(item.children || []), ...extraMenuItems],
+            };
+          }
+          return item;
+        })
+    );
   }, [extraMenuItems]);
   const bottomStartPath = mergedBaseMenuItems.find(
     (item) => item.bottom,

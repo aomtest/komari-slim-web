@@ -49,7 +49,7 @@ const PriceTags = ({
         </Badge>
       )}
 
-      <Badge color="iris" size="1" variant="soft" className="text-sm">
+      <Badge color="blue" size="1" variant="soft" className="text-sm">
         <label className="text-xs">
           {price == -1 ? t("common.free") : `${currency}${price}`}/
           {(() => {
