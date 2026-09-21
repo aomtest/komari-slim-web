@@ -26,8 +26,6 @@ async function removeClient(uuid: string) {
 }
 
 type InstallOptions = {
-  disableWebSsh: boolean;
-  disableAutoUpdate: boolean;
   ignoreUnsafeCert: boolean;
   ghproxy: string;
   dir: string;
@@ -42,8 +40,6 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
   const [selectedPlatform, setSelectedPlatform] =
     React.useState<Platform>("linux");
   const [installOptions, setInstallOptions] = React.useState<InstallOptions>({
-    disableWebSsh: false,
-    disableAutoUpdate: false,
     ignoreUnsafeCert: false,
     ghproxy: "",
     dir: "",
@@ -55,12 +51,6 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
     const token = row.original.token ?? "";
     const args: string[] = ["-e", host, "-t", token];
     // 根据安装选项生成参数
-    if (installOptions.disableWebSsh) {
-      args.push("--disable-web-ssh");
-    }
-    if (installOptions.disableAutoUpdate) {
-      args.push("--disable-auto-update");
-    }
     if (installOptions.ignoreUnsafeCert) {
       args.push("--ignore-unsafe-cert");
     }
@@ -152,50 +142,6 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
                 {t("admin.nodeTable.installOptions", "安装选项")}
               </label>
               <div className="grid grid-cols-2 gap-2">
-                <Flex gap="2">
-                  <Checkbox
-                    checked={installOptions.disableWebSsh}
-                    onCheckedChange={(checked) => {
-                      setInstallOptions((prev) => ({
-                        ...prev,
-                        disableWebSsh: Boolean(checked),
-                      }));
-                    }}
-                  />
-                  <label
-                    className="text-sm font-normal"
-                    onClick={() => {
-                      setInstallOptions((prev) => ({
-                        ...prev,
-                        disableWebSsh: !prev.disableWebSsh,
-                      }));
-                    }}
-                  >
-                    {t("admin.nodeTable.disableWebSsh", "禁用 WebSSH")}
-                  </label>
-                </Flex>
-                <Flex gap="2">
-                  <Checkbox
-                    checked={installOptions.disableAutoUpdate}
-                    onCheckedChange={(checked) => {
-                      setInstallOptions((prev) => ({
-                        ...prev,
-                        disableAutoUpdate: Boolean(checked),
-                      }));
-                    }}
-                  ></Checkbox>
-                  <label
-                    className="text-sm font-normal"
-                    onClick={() => {
-                      setInstallOptions((prev) => ({
-                        ...prev,
-                        disableAutoUpdate: !prev.disableAutoUpdate,
-                      }));
-                    }}
-                  >
-                    {t("admin.nodeTable.disableAutoUpdate", "禁用自动更新")}
-                  </label>
-                </Flex>
                 <Flex gap="2">
                   <Checkbox
                     checked={installOptions.ignoreUnsafeCert}

@@ -16,6 +16,12 @@ export default function SiteSettings() {
   const { t } = useTranslation();
   const { settings, loading, error, refetch } = useSettings();
   const [shareHours, setShareHours] = useState(1);
+  // 预览 favicon 用的缓存破坏参数。
+  // 浏览器对 /favicon.ico 的缓存极其激进，且服务端的 favicon handler 没有设置
+  // Cache-Control，所以一旦浏览器缓存过一次 404（例如安装完成前访问过）或旧图标，
+  // 「当前 Favicon」预览就会长期显示破图/旧图。加个随每次进入页面变化的参数可绕开它；
+  // 上传/恢复默认后再更新一次，让预览立刻反映新状态。
+  const [faviconBust, setFaviconBust] = useState(() => Date.now());
 
   if (loading) {
     return <Loading />;
@@ -249,7 +255,7 @@ export default function SiteSettings() {
           <Flex gap="2" align="center">
             {t("settings.custom.favicon_current", "当前 Favicon")}
             <img
-              src="/favicon.ico"
+              src={`/favicon.ico?v=${faviconBust}`}
               alt="Favicon"
               style={{ width: 32, height: 32 }}
             />
@@ -293,6 +299,8 @@ export default function SiteSettings() {
                           })
                           .then((data) => {
                             if (data.status === "success") {
+                              // 恢复默认后立刻刷新预览（绕开缓存）
+                              setFaviconBust(Date.now());
                               toast.success(t("settings.custom.favicon_default_success"));
                             } else {
                               toast.error(
@@ -332,6 +340,8 @@ export default function SiteSettings() {
                       );
                       const data = await response.json();
                       if (data.status === "success") {
+                        // 上传成功后立刻刷新预览（绕开缓存）
+                        setFaviconBust(Date.now());
                         toast.success(
                           t(
                             "settings.custom.favicon_update_success"
