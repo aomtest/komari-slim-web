@@ -46,7 +46,7 @@ const Footer = () => {
   }, []);
 
   return (
-    <div className="km-footer footer p-2 px-4 border-t-1 border-t-[var(--gray-7)]">
+    <div className="km-footer footer p-2 border-t-1 border-t-[var(--gray-7)]">
       {/* Copyright and ICP Filing */}
 
       {customFooterHtml ? (
@@ -65,20 +65,18 @@ const Footer = () => {
           </Text>
         </Text>
       ) : (
-        // 左对齐：内层原本带 maxWidth:1200px + margin:auto（居中的 1200px 容器），
-        // 在宽屏上会把这段文字推到页面中间（1780 视口下 x=290），
-        // 与满宽的导航/内容对不齐，故去掉居中约束，靠 px-4 与导航品牌左边界对齐。
+        // 整体居中：外层只有一个子元素，justify/align 都取 center，
+        // 内层三行也居中对齐。
+        // 历史：上游在内层加了 maxWidth:1200px + margin:auto，于是宽屏下这段文字
+        // 会被推到页面中间偏左（1780 视口下 x=290）；曾改成左对齐，现按使用者要求
+        // 回到完全居中。
         <Flex
           direction={{ initial: "column", md: "row" }}
-          justify="between"
-          align={{ initial: "center", md: "start" }}
+          justify="center"
+          align="center"
           gap="4"
         >
-          <Flex
-            direction="column"
-            gap="2"
-            align={{ initial: "center", md: "start" }}
-          >
+          <Flex direction="column" gap="2" align="center">
             <Text size="2" color="gray">
               Powered by komari-slim.
             </Text>

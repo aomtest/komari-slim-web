@@ -56,10 +56,14 @@ const Node = React.memo(
   const [t] = useTranslation();
   const liveData = live || DEFAULT_NODE_LIVE;
   const osImage = React.useMemo(() => getOSImage(basic.os), [basic.os]);
-  const osName = React.useMemo(() => getOSName(basic.os), [basic.os]);
+  // 带版本号的短标签（如 "Debian 12"），见 getOSDisplayName
+  const osName = React.useMemo(() => getOSDisplayName(basic.os), [basic.os]);
 
   const memoryUsagePercent = basic.mem_total
     ? (liveData.ram.used / basic.mem_total) * 100
+    : 0;
+  const swapUsagePercent = basic.swap_total
+    ? (liveData.swap.used / basic.swap_total) * 100
     : 0;
   const diskUsagePercent = basic.disk_total
     ? (liveData.disk.used / basic.disk_total) * 100
@@ -165,6 +169,19 @@ const Node = React.memo(
           <Flex className="md:flex-col flex-row md:gap-1 gap-4">
             {/* CPU Usage */}
             <UsageBar label={t("admin.nodeDetail.cpu")} value={liveData.cpu.usage} />
+            {/* CPU 型号：与内存/磁盘的用量小字同一样式；长名单行截断，完整名放 title */}
+            {basic.cpu_name && (
+              <Text
+                size="1"
+                color="gray"
+                className="md:block hidden"
+                style={{ marginTop: "-4px" }}
+                truncate
+                title={basic.cpu_name}
+              >
+                {basic.cpu_name}
+              </Text>
+            )}
 
             {/* Memory Usage */}
             <UsageBar label={t("nodeCard.ram")} value={memoryUsagePercent} />
@@ -177,6 +194,22 @@ const Node = React.memo(
               ({formatBytes(liveData.ram.used)} / {formatBytes(basic.mem_total)}
               )
             </Text>
+
+            {/* Swap Usage（未配置 swap 时不渲染，避免留一条恒为 0 的进度条） */}
+            {basic.swap_total > 0 && (
+              <>
+                <UsageBar label={t("nodeCard.swap")} value={swapUsagePercent} />
+                <Text
+                  className="md:block hidden"
+                  size="1"
+                  color="gray"
+                  style={{ marginTop: "-4px" }}
+                >
+                  ({formatBytes(liveData.swap.used)} /{" "}
+                  {formatBytes(basic.swap_total)})
+                </Text>
+              </>
+            )}
 
             {/* Disk Usage */}
             <UsageBar label={t("nodeCard.disk")} value={diskUsagePercent} />
@@ -302,7 +335,7 @@ import type { NodeBasicInfo } from "@/contexts/NodeListContext";
 import PriceTags from "./PriceTags";
 import { TrendingUp } from "lucide-react";
 import MiniPingChartFloat from "./MiniPingChartFloat";
-import { getOSImage, getOSName } from "@/utils";
+import { getOSDisplayName, getOSImage } from "@/utils";
 import { usePublicInfo } from "@/contexts/PublicInfoContext";
 export const NodeGrid = ({ nodes, liveData, onlineSet }: NodeGridProps) => {
   const { publicInfo } = usePublicInfo();

@@ -270,3 +270,50 @@ export function isSupportedOS(osString: string): boolean {
   const config = findOSConfig(osString);
   return config !== defaultOSConfig;
 }
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * 把 OS 原始串压成"发行名 + 版本"的短标签，供卡片这类空间有限的位置使用。
+ *
+ * 原始串来自 agent 上报的 /etc/os-release 的 PRETTY_NAME，
+ * 形如 "Debian GNU/Linux 12 (bookworm)"、"Ubuntu 24.04.1 LTS"。
+ * getOSName() 只返回归一化后的发行名（"Debian"），会把版本丢掉，这里补上。
+ *
+ * 规则：
+ *   1. 去掉括号内容（"(bookworm)"、"(Core)"）
+ *   2. 发行名沿用 getOSName 的匹配结果
+ *   3. 从剩余部分取第一个形如 v?N(.N){0,2} 的版本号，超过两段则截到两段
+ *      （"24.04.1" -> "24.04"）
+ *   4. 匹配不到已知发行版时，原样返回去掉括号后的串，不做猜测
+ *
+ * 例：Debian GNU/Linux 12 (bookworm) -> "Debian 12"
+ *     Ubuntu 24.04.1 LTS            -> "Ubuntu 24.04"
+ *     CentOS Linux 7 (Core)         -> "CentOS 7"
+ */
+export function getOSDisplayName(osString: string): string {
+  if (!osString) return "Unknown";
+
+  const stripped = osString.replace(/\([^)]*\)/g, " ").replace(/\s+/g, " ").trim();
+  if (!stripped) return "Unknown";
+
+  const config = findOSConfig(stripped);
+  if (config === defaultOSConfig) {
+    // 未知发行版：不做解析，原样返回（由调用方按需截断）
+    return stripped;
+  }
+
+  const baseName = config.name;
+  const rest = stripped.replace(
+    new RegExp(escapeRegExp(config.name), "ig"),
+    " ",
+  );
+
+  const versionMatch = rest.match(/\bv?(\d+(?:\.\d+){0,2})\b/i);
+  if (!versionMatch) return baseName;
+
+  const version = versionMatch[1].split(".").slice(0, 2).join(".");
+  return `${baseName} ${version}`;
+}
