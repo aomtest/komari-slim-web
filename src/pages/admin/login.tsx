@@ -8,6 +8,7 @@ import ThemeSwitch from "@/components/ThemeSwitch";
 import ColorSwitch from "@/components/ColorSwitch";
 import { AccountProvider, useAccount } from "@/contexts/AccountContext";
 import { usePublicInfo } from "@/contexts/PublicInfoContext";
+import { useNodeList } from "@/contexts/NodeListContext";
 import Loading from "@/components/loading";
 import { resolveLoginRedirect } from "@/utils/loginRedirect";
 
@@ -20,6 +21,7 @@ const AdminLoginPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { account, loading, refresh } = useAccount();
+  const nodeList = useNodeList(false);
   const { publicInfo, isLoading: publicInfoLoading } = usePublicInfo();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -66,6 +68,23 @@ const AdminLoginPage = () => {
         }
         throw new Error(payload.message || `HTTP ${response.status}`);
       }
+
+      // 清掉登出期间遗留在 app 层上下文里的错误状态。
+      //
+      // 为什么需要：NodeListContext 挂在 app 层（main.tsx），它的 error 是
+      // **跨路由保留**的。站点开启「私有站点」时，登出后首页的
+      // common:getNodes 会被中间件以 401 拒绝（PrivateSiteMiddleware），
+      // 首页随即渲染出 `Error: HTTP 401: ...`。
+      //
+      // 这个错误在登录成功后**不会自动消失** —— 首页只在挂载时建一个 5 秒
+      // 轮询定时器，并不在挂载时刷新。所以登录回到首页后，那句错误还会挂着
+      // 最多 5 秒，等第一次轮询成功才被清掉。表现就是"短暂提示 Error:
+      // HTTP 401:，然后才显示服务器卡片"。
+      //
+      // 这里主动刷新一次：refresh() 会同步 setError(null) 并立即重新请求，
+      // 此刻会话已经生效，于是首页立刻恢复正常。
+      nodeList?.refresh();
+
       await refresh();
       navigate(redirect, { replace: true });
     } catch (loginError) {
