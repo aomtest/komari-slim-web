@@ -1,0 +1,13 @@
+# 统一行尾：仓库内一律 LF。
+#
+# 背景与 server 仓库相同：core.autocrlf=false（未设 .gitattributes），索引里存的是
+# LF，但工作区有 138 个文件被历史上的编辑工具写成了 CRLF（.tsx 92 / .svg 15 /
+# .ts 12 / .json 9 …）。
+#
+# 麻烦在于 git 的 stat 缓存（比对 mtime + size）不会去读内容，所以 `git status`
+# 一直显示干净，问题被掩盖。一旦真的编辑到这些文件，git 读到真实内容就会把
+# **整个文件**判定为重写 —— 一次改 package.json 的 name 就可能带出上百个文件的
+# 行尾翻转。
+#
+# 显式声明 eol=lf 之后，checkout / checkin 都会强制 LF，不再依赖本地 git 配置。
+* text=auto eol=lf
