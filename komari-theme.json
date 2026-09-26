@@ -55,7 +55,7 @@
       {
         "key": "backgroundImageUrlDesktop",
         "type": "string",
-        "default": "",
+        "default": "/assets/wallpaper-default.webp",
         "name": {
           "en": "Background Image URL (Desktop)",
           "zh-CN": "背景图片URL（桌面端）",
