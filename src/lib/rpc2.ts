@@ -12,6 +12,20 @@ import { RPC2ConnectionState } from "../types/rpc2";
 import i18n from "../i18n/config";
 
 /**
+ * WebSocket 请求超时。
+ *
+ * 超时和「发送失败」必须区分开：发送失败说明请求根本没送出去，换条路重试是安全的；
+ * 而超时说明请求**可能已经被服务端执行、只是响应没回来**，此时重试会重复执行。
+ * 单独建一个类型，好让 call() 能识别出来并拒绝回退。
+ */
+export class RPC2TimeoutError extends Error {
+  constructor(method: string) {
+    super(i18n.t("rpc2.request_timed_out", { method }));
+    this.name = "RPC2TimeoutError";
+  }
+}
+
+/**
  * RPC2 客户端类
  * 支持通过 WebSocket 和 HTTP POST 调用 JSON-RPC 2.0 接口
  */
@@ -234,9 +248,7 @@ export class RPC2Client {
     return new Promise<TResult>((resolve, reject) => {
       const timeout = setTimeout(() => {
         this.pendingRequests.delete(request.id!);
-        reject(
-          new Error(i18n.t("rpc2.request_timed_out", { method }))
-        );
+        reject(new RPC2TimeoutError(method));
       }, options.timeout || this.options.requestTimeout);
 
       this.pendingRequests.set(request.id!, {
@@ -393,13 +405,19 @@ export class RPC2Client {
     }
 
     // 策略：
-    // 1) WS 已连接 → 尝试 WS；失败则回退一次 HTTP
+    // 1) WS 已连接 → 尝试 WS；**确定失败**时回退一次 HTTP
     // 2) 其他状态（未连/连接中/重连中/错误）→ 直接 HTTP
     if (this.connectionState === RPC2ConnectionState.CONNECTED) {
       try {
         return await this.callViaWebSocket(method, params, options);
-      } catch {
-        // 回退一次 HTTP
+      } catch (error) {
+        // 超时不能回退。请求已经送到服务端了，只是响应没在超时内回来，
+        // 服务端很可能已经执行成功 —— 再用 HTTP 发一次就是重复执行。
+        // 对创建 / 删除 / 安装这类非幂等操作，这是实打实的重复副作用。
+        // 只有「请求确实没送出去」的确定失败，换条路重试才是安全的。
+        if (error instanceof RPC2TimeoutError) {
+          throw error;
+        }
         return this.callViaHTTP(method, params, options);
       }
     }
