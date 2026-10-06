@@ -188,6 +188,9 @@ type AutoDiscoveryInstallOptions = {
   interval: string;
   monthRotate: string;
   installVersion: string;
+  // 勾选后生成的安装命令会带上 --update-listen / --update-token，
+  // 让 agent 装好就具备"被面板远程触发更新"的能力。
+  enableSelfUpdate: boolean;
 };
 
 function useIsSnapshotBackend() {
@@ -230,22 +233,33 @@ const AutoDiscoverySection = ({
   const [selectedPlatform, setSelectedPlatform] =
     React.useState<Platform>("linux");
   const [showOptions, setShowOptions] = React.useState(false);
-  const [installOptions, setInstallOptions] =
-    React.useState<AutoDiscoveryInstallOptions>({
-      ignoreUnsafeCert: false,
-      memoryIncludeCache: false,
-      getIpAddrFromNic: false,
-      enableGpu: false,
-      ghproxy: "",
-      dir: "",
-      serviceName: "",
-      includeNics: "",
-      excludeNics: "",
-      includeMountpoints: "",
-      interval: "",
-      monthRotate: "",
-      installVersion: "",
-    });
+    const [installOptions, setInstallOptions] =
+      React.useState<AutoDiscoveryInstallOptions>({
+        ignoreUnsafeCert: false,
+        memoryIncludeCache: false,
+        getIpAddrFromNic: false,
+        enableGpu: false,
+        ghproxy: "",
+        dir: "",
+        serviceName: "",
+        includeNics: "",
+        excludeNics: "",
+        includeMountpoints: "",
+        interval: "",
+        monthRotate: "",
+        installVersion: "",
+        enableSelfUpdate: false,
+      });
+
+    // 自更新参数需要面板配置里的共享令牌。令牌只下发给管理员(这个页面本身就
+    // 是管理员页面),不会出现在公开接口里。
+    const { settings: adSettings } = useSettings();
+    const selfUpdateToken = String(
+      (adSettings as Record<string, unknown>)?.agent_update_token ?? ""
+    );
+    const selfUpdatePort = Number(
+      (adSettings as Record<string, unknown>)?.agent_update_port ?? 25775
+    );
 
   const [enableGhproxy, setEnableGhproxy] = React.useState(false);
   const [enableCustomDir, setEnableCustomDir] = React.useState(false);
@@ -313,11 +327,20 @@ const AutoDiscoverySection = ({
       args.push(`--install-service-name`);
       args.push(serviceName);
     }
-    const installVersion = installOptions.installVersion.trim();
-    if (enableInstallVersion && installVersion) {
-      args.push(`--install-version`);
-      args.push(installVersion);
-    }
+      const installVersion = installOptions.installVersion.trim();
+      if (enableInstallVersion && installVersion) {
+        args.push(`--install-version`);
+        args.push(installVersion);
+      }
+
+      // 自更新触发参数。令牌来自面板设置,只在这个管理员页面使用,
+      // 不会出现在任何公开接口里。
+      if (installOptions.enableSelfUpdate && selfUpdateToken) {
+        // 监听 0.0.0.0:面板通常不在 agent 本机,只监听回环地址的话面板连不进来。
+        // 这个端口只做令牌比对,不匹配的内容一律静默丢弃。
+        args.push("--update-listen", `0.0.0.0:${selfUpdatePort}`);
+        args.push("--update-token", selfUpdateToken);
+      }
     const includeNics = installOptions.includeNics.trim();
     if (enableIncludeNics && includeNics) {
       args.push(`--include-nics`);
@@ -574,9 +597,46 @@ const AutoDiscoverySection = ({
                 }
               >
                 {t("admin.nodeTable.enableGpuMonitoring", "启用详细 GPU 监控")}
-              </label>
-            </Flex>
-          </div>
+                </label>
+              </Flex>
+              <Flex gap="2" align="center">
+                <Checkbox
+                  checked={installOptions.enableSelfUpdate}
+                  // 面板没配共享令牌时这个开关没有意义 —— 生成的命令会缺
+                  // --update-token，agent 侧会拒绝启动监听。所以直接禁用，
+                  // 并用 title 说明去哪里配。
+                  disabled={!selfUpdateToken}
+                  onCheckedChange={(checked) =>
+                    setInstallOptions((prev) => ({
+                      ...prev,
+                      enableSelfUpdate: Boolean(checked),
+                    }))
+                  }
+                />
+                <label
+                  className={`text-sm font-normal ${
+                    selfUpdateToken ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
+                  }`}
+                  title={
+                    selfUpdateToken
+                      ? undefined
+                      : t(
+                          "admin.nodeTable.enableSelfUpdateHint",
+                          "请先在设置中配置 Agent 更新令牌"
+                        )
+                  }
+                  onClick={() => {
+                    if (!selfUpdateToken) return;
+                    setInstallOptions((prev) => ({
+                      ...prev,
+                      enableSelfUpdate: !prev.enableSelfUpdate,
+                    }));
+                  }}
+                >
+                  {t("admin.nodeTable.enableSelfUpdate", "启用远程更新触发")}
+                </label>
+              </Flex>
+            </div>
 
           <Flex direction="column" gap="2">
             <Flex gap="2" align="center">
@@ -1424,12 +1484,14 @@ type InstallOptions = {
   dir: string;
   serviceName: string;
   includeNics: string;
-  excludeNics: string;
-  includeMountpoints: string;
-  interval: string;
-  monthRotate: string;
-  installVersion: string;
-};
+    excludeNics: string;
+    includeMountpoints: string;
+    interval: string;
+    monthRotate: string;
+    installVersion: string;
+    // 勾选后生成的安装命令会带上 --update-listen / --update-token。
+    enableSelfUpdate: boolean;
+  };
 function GenerateCommandButton({
   node,
   settings,
@@ -1452,12 +1514,21 @@ function GenerateCommandButton({
     includeNics: "",
     excludeNics: "",
     includeMountpoints: "",
-    interval: "",
-    monthRotate: "",
-    installVersion: "",
-  });
+      interval: "",
+      monthRotate: "",
+      installVersion: "",
+      enableSelfUpdate: false,
+    });
 
-  const [enableGhproxy, setEnableGhproxy] = React.useState(false);
+    // settings 由父组件以 prop 传入(这里不做一次额外的请求)。
+    const selfUpdateToken = String(
+      (settings as Record<string, unknown>)?.agent_update_token ?? ""
+    );
+    const selfUpdatePort = Number(
+      (settings as Record<string, unknown>)?.agent_update_port ?? 25775
+    );
+
+    const [enableGhproxy, setEnableGhproxy] = React.useState(false);
   const [enableCustomDir, setEnableCustomDir] = React.useState(false);
   const [enableCustomServiceName, setEnableCustomServiceName] =
     React.useState(false);
@@ -1526,11 +1597,20 @@ function GenerateCommandButton({
       args.push(`--install-service-name`);
       args.push(serviceName);
     }
-    const installVersion = installOptions.installVersion.trim();
-    if (enableInstallVersion && installVersion) {
-      args.push(`--install-version`);
-      args.push(installVersion);
-    }
+      const installVersion = installOptions.installVersion.trim();
+      if (enableInstallVersion && installVersion) {
+        args.push(`--install-version`);
+        args.push(installVersion);
+      }
+
+      // 自更新触发参数。令牌来自面板设置,只在这个管理员页面使用,
+      // 不会出现在任何公开接口里。
+      if (installOptions.enableSelfUpdate && selfUpdateToken) {
+        // 监听 0.0.0.0:面板通常不在 agent 本机,只监听回环地址的话面板连不进来。
+        // 这个端口只做令牌比对,不匹配的内容一律静默丢弃。
+        args.push("--update-listen", `0.0.0.0:${selfUpdatePort}`);
+        args.push("--update-token", selfUpdateToken);
+      }
     const includeNics = installOptions.includeNics.trim();
     if (enableIncludeNics && includeNics) {
       args.push(`--include-nics`);
@@ -1727,6 +1807,43 @@ function GenerateCommandButton({
                   }}
                 >
                   {t("admin.nodeTable.enableGpuMonitoring", "启用详细 GPU 监控")}
+                </label>
+              </Flex>
+              <Flex gap="2" align="center">
+                <Checkbox
+                  checked={installOptions.enableSelfUpdate}
+                  // 面板没配共享令牌时这个开关没有意义 —— 生成的命令会缺
+                  // --update-token，agent 侧会拒绝启动监听。所以直接禁用，
+                  // 并用 title 说明去哪里配。
+                  disabled={!selfUpdateToken}
+                  onCheckedChange={(checked) =>
+                    setInstallOptions((prev) => ({
+                      ...prev,
+                      enableSelfUpdate: Boolean(checked),
+                    }))
+                  }
+                />
+                <label
+                  className={`text-sm font-normal ${
+                    selfUpdateToken ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
+                  }`}
+                  title={
+                    selfUpdateToken
+                      ? undefined
+                      : t(
+                          "admin.nodeTable.enableSelfUpdateHint",
+                          "请先在设置中配置 Agent 更新令牌"
+                        )
+                  }
+                  onClick={() => {
+                    if (!selfUpdateToken) return;
+                    setInstallOptions((prev) => ({
+                      ...prev,
+                      enableSelfUpdate: !prev.enableSelfUpdate,
+                    }));
+                  }}
+                >
+                  {t("admin.nodeTable.enableSelfUpdate", "启用远程更新触发")}
                 </label>
               </Flex>
             </div>
