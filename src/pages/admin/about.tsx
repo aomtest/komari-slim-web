@@ -9,6 +9,7 @@ import { SegmentedControl } from "@radix-ui/themes";
 import { Apache2_LICENSE, MIT_LICENSE } from "@/utils/field";
 import { getEula } from "@/utils/eula";
 import { SettingCardCollapse } from "@/components/admin/SettingCard";
+import SelfUpdateCard from "@/components/admin/SelfUpdateCard";
 
 export default function AboutPage() {
   const [markdown, setMarkdown] = useState("");
@@ -122,6 +123,7 @@ export default function AboutPage() {
   return (
     <div className="km-page-admin-about km-about-content flex flex-col gap-4">
       <h1 className="km-about-title text-2xl font-bold text-foreground">{t("common.about")}</h1>
+      <SelfUpdateCard />
       <SegmentedControl.Root defaultValue={view} onValueChange={setView}>
         <SegmentedControl.Item value="open_source">
           {t("about.open_source_title")}
