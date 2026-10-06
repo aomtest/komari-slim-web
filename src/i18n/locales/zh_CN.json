@@ -1070,6 +1070,11 @@
       "auto_discovery": "自动发现",
       "auto_discovery_key": "自动发现密钥",
       "auto_discovery_key_description": "使用自动发现可以批量注册客户端，留空表示禁用自动发现。",
+      "agent_update_token": "Agent 更新令牌",
+      "agent_update_token_description": "面板用它向 agent 发送更新触发。留空则禁用该功能；填写时必须与 agent 启动参数 --update-token 一致。",
+      "agent_update_port": "Agent 更新端口",
+      "agent_update_port_description": "agent 侧 --update-listen 使用的端口，默认 25775。",
+      "agent_update_port_invalid": "端口必须是 1-65535 之间的整数",
       "title": "通用"
     },
     "geoip": {

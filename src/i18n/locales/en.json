@@ -1065,6 +1065,11 @@
       "auto_discovery": "Auto discovery",
       "auto_discovery_key": "Auto discovery key",
       "auto_discovery_key_description": "Use automatic discovery to register clients in bulk. Leave blank to disable automatic discovery.",
+      "agent_update_token": "Agent update token",
+      "agent_update_token_description": "The panel uses this to trigger an agent update. Leave empty to disable the feature; it must match the agent's --update-token.",
+      "agent_update_port": "Agent update port",
+      "agent_update_port_description": "The port the agent listens on via --update-listen. Defaults to 25775.",
+      "agent_update_port_invalid": "The port must be an integer between 1 and 65535",
       "title": "General"
     },
     "geoip": {

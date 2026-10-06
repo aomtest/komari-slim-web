@@ -1070,6 +1070,11 @@
       "auto_discovery": "Penemuan Otomatis",
       "auto_discovery_key": "Kunci Penemuan Otomatis",
       "auto_discovery_key_description": "Gunakan penemuan otomatis untuk mendaftarkan klien secara massal. Biarkan kosong untuk menonaktifkan penemuan otomatis.",
+      "agent_update_token": "Token pembaruan agent",
+      "agent_update_token_description": "Panel memakai ini untuk memicu pembaruan agent. Biarkan kosong untuk menonaktifkan fitur ini; harus sama dengan --update-token pada agent.",
+      "agent_update_port": "Port pembaruan agent",
+      "agent_update_port_description": "Port yang didengarkan agent melalui --update-listen. Bawaannya 25775.",
+      "agent_update_port_invalid": "Port harus berupa bilangan bulat antara 1 dan 65535",
       "title": "Umum"
     },
     "geoip": {

@@ -1070,6 +1070,11 @@
       "auto_discovery": "自動検出",
       "auto_discovery_key": "自動検出キー",
       "auto_discovery_key_description": "自動検出を使用すると、クライアントを一括登録できます。空白の場合、自動検出は無効になります。",
+      "agent_update_token": "Agent 更新トークン",
+      "agent_update_token_description": "パネルが agent の更新をトリガーするために使用します。空欄にするとこの機能は無効になります。agent の --update-token と一致させる必要があります。",
+      "agent_update_port": "Agent 更新ポート",
+      "agent_update_port_description": "agent 側の --update-listen が使用するポート。既定値は 25775。",
+      "agent_update_port_invalid": "ポートは 1〜65535 の整数である必要があります",
       "title": "一般"
     },
     "geoip": {

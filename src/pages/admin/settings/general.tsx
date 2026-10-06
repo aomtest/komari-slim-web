@@ -37,6 +37,7 @@ export default function GeneralSettings() {
         {t("settings.general.auto_discovery")}
       </SettingCardLabel>
       <ApiCard settings={settings} />
+      <AgentUpdateCard settings={settings} />
       <label className="text-xl font-bold">{t("settings.geoip.title")}</label>
       <SettingCardSwitch
         title={t("settings.geoip.enable_title")}
@@ -122,8 +123,79 @@ export default function GeneralSettings() {
   );
 }
 
-const ApiCard = ({ settings }: { settings: SettingsResponse }) => {
+/**
+ * Agent 自更新触发的配置。
+ *
+ * 这里的令牌必须与 agent 侧 --update-token 一致。它只用于向 agent 的触发
+ * 端口发一个固定字符串，不承载任何指令 —— agent 收到后只会「更新自己」。
+ * 留空则整个功能禁用，面板不会向任何 agent 发起连接。
+ */
+const AgentUpdateCard = ({ settings }: { settings: SettingsResponse }) => {
+  const { t } = useTranslation();
+  const [token, setToken] = React.useState<string>(
+    settings?.agent_update_token || ""
+  );
+  const [port, setPort] = React.useState<string>(
+    String(settings?.agent_update_port ?? 25775)
+  );
 
+  React.useEffect(() => {
+    setToken(settings?.agent_update_token || "");
+    setPort(String(settings?.agent_update_port ?? 25775));
+  }, [settings?.agent_update_token, settings?.agent_update_port]);
+
+  const generateToken = () => {
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
+    for (let i = 0; i < 32; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setToken(result);
+  };
+
+  return (
+    <>
+      <SettingCardShortTextInput
+        title={t("settings.general.agent_update_token")}
+        description={t("settings.general.agent_update_token_description")}
+        value={token}
+        onChange={(e) => setToken(e.target.value)}
+        OnSave={async (values) => {
+          // 留空是允许的 —— 那就是"关闭这个功能"。
+          if (values && values.length < 12) {
+            toast.error(t("settings.api.key_length_error"));
+            return;
+          }
+          await updateSettingsWithToast({ agent_update_token: values || "" }, t);
+        }}
+      >
+        <div className="flex flex-row gap-2 justify-start items-center">
+          <Button variant="soft" color="green" onClick={generateToken}>
+            {t("common.generate")}
+          </Button>
+        </div>
+      </SettingCardShortTextInput>
+
+      <SettingCardShortTextInput
+        title={t("settings.general.agent_update_port")}
+        description={t("settings.general.agent_update_port_description")}
+        value={port}
+        onChange={(e) => setPort(e.target.value)}
+        OnSave={async (values) => {
+          const parsed = Number((values || "").trim());
+          if (!Number.isInteger(parsed) || parsed <= 0 || parsed > 65535) {
+            toast.error(t("settings.general.agent_update_port_invalid"));
+            return;
+          }
+          await updateSettingsWithToast({ agent_update_port: parsed }, t);
+        }}
+      />
+    </>
+  );
+};
+
+const ApiCard = ({ settings }: { settings: SettingsResponse }) => {
   //const { settings } = useSettings();
   const { t } = useTranslation();
   const [apiValues, setApiValues] = React.useState<string>(
