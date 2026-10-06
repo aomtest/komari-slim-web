@@ -26,6 +26,19 @@ export class RPC2TimeoutError extends Error {
 }
 
 /**
+ * WebSocket disconnected while a request's delivery status was unknown.
+ *
+ * The request may already have reached the server, so retrying it over HTTP
+ * could execute a non-idempotent RPC twice.
+ */
+export class RPC2ConnectionLostError extends Error {
+  constructor() {
+    super(i18n.t("rpc2.connection_disconnected"));
+    this.name = "RPC2ConnectionLostError";
+  }
+}
+
+/**
  * RPC2 客户端类
  * 支持通过 WebSocket 和 HTTP POST 调用 JSON-RPC 2.0 接口
  */
@@ -217,7 +230,7 @@ export class RPC2Client {
     }
 
     this.setConnectionState(RPC2ConnectionState.DISCONNECTED);
-    this.clearPendingRequests(new Error(i18n.t("rpc2.connection_disconnected")));
+    this.clearPendingRequests(new RPC2ConnectionLostError());
   }
 
   /**
@@ -415,7 +428,8 @@ export class RPC2Client {
         // 服务端很可能已经执行成功 —— 再用 HTTP 发一次就是重复执行。
         // 对创建 / 删除 / 安装这类非幂等操作，这是实打实的重复副作用。
         // 只有「请求确实没送出去」的确定失败，换条路重试才是安全的。
-        if (error instanceof RPC2TimeoutError) {
+        if (error instanceof RPC2TimeoutError ||
+            error instanceof RPC2ConnectionLostError) {
           throw error;
         }
         return this.callViaHTTP(method, params, options);
@@ -469,7 +483,7 @@ export class RPC2Client {
         clearTimeout(this.stableConnectionTimeout);
         this.stableConnectionTimeout = undefined;
       }
-      this.clearPendingRequests(new Error(i18n.t("rpc2.connection_disconnected")));
+      this.clearPendingRequests(new RPC2ConnectionLostError());
       this.eventListeners.onDisconnect?.();
 
       if (!this.manualDisconnect && this.options.autoReconnect &&
