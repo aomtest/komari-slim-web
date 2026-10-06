@@ -92,6 +92,8 @@
       "agentUpdateSent": "{{count}} 台の Agent に更新を指示しました",
       "agentUpdatePartial": "{{succeeded}}/{{total}} 台で成功",
       "agentUpdateFailed": "更新の指示に失敗しました",
+      "enableSelfUpdate": "リモート更新トリガーを有効化",
+      "enableSelfUpdateHint": "先に設定で Agent 更新トークンを構成してください",
       "autoDiscovery": {
         "disabledDescription": "自動検出を有効にすると、ノードを1台ずつ手動で追加する必要がなくなります。対象サーバーでコマンドを1つ実行するだけで、Agent がキーを使って自動的に登録・オンライン化されます。多数のサーバーを一括展開する場合に最適です。",
         "enabledDescription": "対象サーバーで以下のコマンドを実行すると、Agent が自動的に登録・オンライン化されます。手動でのノード作成は不要です。",

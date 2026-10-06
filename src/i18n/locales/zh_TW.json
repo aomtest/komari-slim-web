@@ -92,6 +92,8 @@
       "agentUpdateSent": "已向 {{count}} 個 Agent 傳送更新指令",
       "agentUpdatePartial": "{{succeeded}}/{{total}} 個 Agent 觸發成功",
       "agentUpdateFailed": "觸發失敗",
+      "enableSelfUpdate": "啟用遠端更新觸發",
+      "enableSelfUpdateHint": "請先在設定中配置 Agent 更新權杖",
       "autoDiscovery": {
         "disabledDescription": "開啟自動發現後，無需逐臺手動新增節點。只要在目標伺服器上執行一條命令，Agent 就會攜帶金鑰自動註冊並上線，非常適合批次部署多臺伺服器。",
         "enabledDescription": "在目標伺服器上執行下面的命令，Agent 將自動註冊並上線，無需手動新增節點。",

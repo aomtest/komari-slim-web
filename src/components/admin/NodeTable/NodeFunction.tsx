@@ -6,6 +6,7 @@ import { Trash2, Copy, Download, DollarSign } from "lucide-react";
 import { t } from "i18next";
 import type { Row } from "@tanstack/react-table";
 import { EditDialog } from "./NodeEditDialog";
+import { useSettings } from "@/lib/api";
 import { quotePowerShellArg, quoteShellArgs } from "@/utils/shellQuote";
 import {
   Button,
@@ -30,6 +31,9 @@ type InstallOptions = {
   ghproxy: string;
   dir: string;
   serviceName: string;
+  // 勾选后生成的安装命令会带上 --update-listen / --update-token，
+  // 让 agent 装好就具备"被面板远程触发更新"的能力。
+  enableSelfUpdate: boolean;
 };
 
 type Platform = "linux" | "windows" | "macos";
@@ -44,7 +48,18 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
     ghproxy: "",
     dir: "",
     serviceName: "",
+    enableSelfUpdate: false,
   });
+
+  // 自更新参数需要面板配置里的共享令牌。令牌只下发给管理员(这个页面本身就
+  // 是管理员页面),不会出现在公开接口里。
+  const { settings } = useSettings();
+  const selfUpdateToken = String(
+    (settings as Record<string, unknown>)?.agent_update_token ?? ""
+  );
+  const selfUpdatePort = Number(
+    (settings as Record<string, unknown>)?.agent_update_port ?? 25775
+  );
 
   const generateCommand = () => {
     const host = window.location.origin;
@@ -71,6 +86,13 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
     if (serviceName) {
       args.push(`--install-service-name`);
       args.push(serviceName);
+    }
+
+    if (installOptions.enableSelfUpdate && selfUpdateToken) {
+      // 监听 0.0.0.0:面板通常不在 agent 本机,只监听回环地址的话面板连不进来。
+      // 这个端口只做令牌比对,不匹配的内容一律静默丢弃。
+      args.push("--update-listen", `0.0.0.0:${selfUpdatePort}`);
+      args.push("--update-token", selfUpdateToken);
     }
 
     let finalCommand = "";
@@ -162,6 +184,43 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
                     }}
                   >
                     {t("admin.nodeTable.ignoreUnsafeCert", "忽略不安全证书")}
+                  </label>
+                </Flex>
+                <Flex gap="2">
+                  <Checkbox
+                    checked={installOptions.enableSelfUpdate}
+                    // 面板没配共享令牌时这个开关没有意义 —— 生成的命令会缺
+                    // --update-token,agent 侧会拒绝启动监听。所以直接禁用,
+                    // 并用 title 说明去哪里配。
+                    disabled={!selfUpdateToken}
+                    onCheckedChange={(checked) => {
+                      setInstallOptions((prev) => ({
+                        ...prev,
+                        enableSelfUpdate: Boolean(checked),
+                      }));
+                    }}
+                  />
+                  <label
+                    className={`text-sm font-normal ${
+                      selfUpdateToken ? "" : "opacity-50 cursor-not-allowed"
+                    }`}
+                    title={
+                      selfUpdateToken
+                        ? undefined
+                        : t(
+                            "admin.nodeTable.enableSelfUpdateHint",
+                            "请先在设置中配置 Agent 更新令牌"
+                          )
+                    }
+                    onClick={() => {
+                      if (!selfUpdateToken) return;
+                      setInstallOptions((prev) => ({
+                        ...prev,
+                        enableSelfUpdate: !prev.enableSelfUpdate,
+                      }));
+                    }}
+                  >
+                    {t("admin.nodeTable.enableSelfUpdate", "启用远程更新触发")}
                   </label>
                 </Flex>
               </div>
