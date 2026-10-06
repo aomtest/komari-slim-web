@@ -48,7 +48,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ChevronDown, Columns2, Copy, PlusIcon } from "lucide-react";
+import { ChevronDown, Columns2, Copy, Loader2, PlusIcon, RefreshCw } from "lucide-react";
 
 import type { schema } from "./NodeTable/schema/node";
 import { DataTableRefreshContext } from "./NodeTable/schema/DataTableRefreshContext";
@@ -177,6 +177,65 @@ export function DataTable() {
   );
   const [newNodeName, setNewNodeName] = React.useState("");
   const [isAddingNode, setIsAddingNode] = React.useState(false);
+  const [isTriggeringUpdate, setIsTriggeringUpdate] = React.useState(false);
+
+  const selectedUUIDs = React.useMemo(
+    () => Object.keys(rowSelection),
+    [rowSelection]
+  );
+
+  /**
+   * 让选中的 agent 去更新自己。
+   *
+   * 面板只向每个 agent 的触发端口发一个共享令牌，不发送任何指令或二进制 ——
+   * agent 收到匹配的令牌后自己去 GitHub 拉最新版。所以这个操作的能力上限
+   * 就是「让 agent 更新到最新版」。
+   */
+  const handleTriggerAgentUpdate = React.useCallback(async () => {
+    if (selectedUUIDs.length === 0) return;
+    setIsTriggeringUpdate(true);
+    try {
+      const res = await fetch("/api/admin/self-update/agent", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // 后端对这个接口要求自定义 header 作为 CSRF 纵深防御。
+          "X-Requested-With": "XMLHttpRequest",
+        },
+        body: JSON.stringify({ uuids: selectedUUIDs }),
+      });
+      const json = await res.json();
+      if (json.status !== "success") {
+        toast.error(json.message || t("admin.nodeTable.agentUpdateFailed"));
+        return;
+      }
+
+      const { succeeded, total, results } = json.data as {
+        succeeded: number;
+        total: number;
+        results: { uuid: string; name: string; ok: boolean; message: string }[];
+      };
+
+      if (succeeded === total) {
+        toast.success(t("admin.nodeTable.agentUpdateSent", { count: total }));
+      } else {
+        // 部分失败时把原因带上 —— 最常见的失败是 agent 在内网/NAT 后面，
+        // 面板连不进去，光说"失败"帮不上忙。
+        const detail = results
+          .filter((r) => !r.ok)
+          .map((r) => `${r.name || r.uuid}: ${r.message}`)
+          .join("\n");
+        toast.warning(
+          t("admin.nodeTable.agentUpdatePartial", { succeeded, total }),
+          { description: detail }
+        );
+      }
+    } catch (e) {
+      toast.error(String(e));
+    } finally {
+      setIsTriggeringUpdate(false);
+    }
+  }, [selectedUUIDs, t]);
 
   async function handleAddNode() {
     setIsAddingNode(true);
@@ -370,7 +429,23 @@ export function DataTable() {
       <DataTableRefreshContext.Provider value={refreshTable}>
         <div className="w-full flex-col justify-start gap-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2"></div>
+            <div className="flex items-center gap-2">
+              {selectedUUIDs.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="2"
+                  disabled={isTriggeringUpdate}
+                  onClick={handleTriggerAgentUpdate}
+                >
+                  {isTriggeringUpdate ? (
+                    <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4 mr-1" />
+                  )}
+                  {t("admin.nodeTable.agentUpdateTrigger")}
+                </Button>
+              )}
+            </div>
           </div>
           <div className="relative flex flex-col gap-4 overflow-auto">
             <div className="overflow-hidden rounded-lg">

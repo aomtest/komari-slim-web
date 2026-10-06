@@ -88,6 +88,10 @@
     },
     "nodeTable": {
       "addNode": "Tambah Node",
+      "agentUpdateTrigger": "Perbarui agent",
+      "agentUpdateSent": "Pembaruan dikirim ke {{count}} agent",
+      "agentUpdatePartial": "{{succeeded}}/{{total}} agent berhasil",
+      "agentUpdateFailed": "Gagal memicu pembaruan",
       "autoDiscovery": {
         "disabledDescription": "Dengan penemuan otomatis aktif, Anda tidak perlu menambahkan node satu per satu. Cukup jalankan satu perintah di server target dan Agent akan otomatis terdaftar dan online menggunakan kunci tersebut. Ideal untuk men-deploy banyak server sekaligus.",
         "enabledDescription": "Jalankan perintah di bawah ini pada server target. Agent akan otomatis terdaftar dan online tanpa perlu membuat node secara manual.",

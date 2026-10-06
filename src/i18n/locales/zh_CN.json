@@ -88,6 +88,10 @@
     },
     "nodeTable": {
       "addNode": "添加节点",
+      "agentUpdateTrigger": "触发 Agent 更新",
+      "agentUpdateSent": "已向 {{count}} 个 Agent 发送更新指令",
+      "agentUpdatePartial": "{{succeeded}}/{{total}} 个 Agent 触发成功",
+      "agentUpdateFailed": "触发失败",
       "autoDiscovery": {
         "disabledDescription": "开启自动发现后，无需逐台手动添加节点。只要在目标服务器上运行一条命令，Agent 就会携带密钥自动注册并上线，非常适合批量部署多台服务器。",
         "enabledDescription": "在目标服务器上运行下面的命令，Agent 将自动注册并上线，无需手动添加节点。",
