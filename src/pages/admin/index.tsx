@@ -31,6 +31,8 @@ import {
   Plus,
   Radar,
   Settings,
+  Loader2,
+  RefreshCw,
   Trash2Icon,
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -1067,6 +1069,67 @@ const Header = ({
       setDialogOpen(false);
     }
   };
+
+  // 面板没配共享令牌时这个操作不可用 —— 后端也会拒绝,这里提前把按钮禁掉,
+  // 免得点了才报错。
+  const selfUpdateToken = String(
+    (settings as Record<string, unknown>)?.agent_update_token ?? ""
+  );
+  const [isTriggeringUpdate, setIsTriggeringUpdate] = useState(false);
+
+  /**
+   * 让选中的 agent 去更新自己。
+   *
+   * 面板只向每个 agent 的触发端口发一个共享令牌,不发送任何指令或二进制 ——
+   * agent 收到匹配的令牌后自己去 GitHub 拉最新版。所以这个操作的能力上限
+   * 就是「让 agent 更新到最新版」。
+   */
+  const handleTriggerAgentUpdate = async () => {
+    if (selectedNodes.length === 0) return;
+    setIsTriggeringUpdate(true);
+    try {
+      const res = await fetch("/api/admin/self-update/agent", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // 后端对这个接口要求自定义 header 作为 CSRF 纵深防御。
+          "X-Requested-With": "XMLHttpRequest",
+        },
+        body: JSON.stringify({ uuids: selectedNodes }),
+      });
+      const json = await res.json();
+      if (json.status !== "success") {
+        toast.error(json.message || t("admin.nodeTable.agentUpdateFailed"));
+        return;
+      }
+
+      const { succeeded, total, results } = json.data as {
+        succeeded: number;
+        total: number;
+        results: { uuid: string; name: string; ok: boolean; message: string }[];
+      };
+
+      if (succeeded === total) {
+        toast.success(t("admin.nodeTable.agentUpdateSent", { count: total }));
+      } else {
+        // 部分失败时把原因带上 —— 最常见的失败是 agent 在内网/NAT 后面,
+        // 面板连不进去,光说"失败"帮不上忙。
+        const detail = results
+          .filter((r) => !r.ok)
+          .map((r) => `${r.name || r.uuid}: ${r.message}`)
+          .join("\n");
+        toast.warning(
+          t("admin.nodeTable.agentUpdatePartial", { succeeded, total }),
+          { description: detail }
+        );
+      }
+    } catch (error) {
+      toast.error(String(error));
+    } finally {
+      setIsTriggeringUpdate(false);
+    }
+  };
+
   return (
     <Flex justify="between" align="center" gap="4" wrap="wrap">
       <Flex gap="2" align="center">
@@ -1074,7 +1137,29 @@ const Header = ({
           {t("admin.nodeTable.nodeList")}
         </Text>
         {selectedNodes.length > 0 && (
-          <Text size="2">({selectedNodes.length} selected)</Text>
+          <>
+            <Text size="2">({selectedNodes.length} selected)</Text>
+            <Button
+              variant="outline"
+              disabled={isTriggeringUpdate || !selfUpdateToken}
+              title={
+                selfUpdateToken
+                  ? undefined
+                  : t(
+                      "admin.nodeTable.enableSelfUpdateHint",
+                      "请先在设置中配置 Agent 更新令牌"
+                    )
+              }
+              onClick={handleTriggerAgentUpdate}
+            >
+              {isTriggeringUpdate ? (
+                <Loader2 className="animate-spin" size={16} />
+              ) : (
+                <RefreshCw size={16} />
+              )}
+              {t("admin.nodeTable.agentUpdateTrigger")}
+            </Button>
+          </>
         )}
       </Flex>
       <Flex gap="2">
