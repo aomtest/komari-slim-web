@@ -4,8 +4,6 @@ import { LoaderCircle, LogIn } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export type RestrictedAuthStatus = {
-  oauth_enabled: boolean;
-  oauth_provider: string;
   password_login_enabled: boolean;
   logged_in: boolean;
   username?: string;
@@ -147,19 +145,6 @@ export default function RestrictedLoginDialog({
               {busy ? t("loading") : t("login.title")}
             </Button>
           </form>
-        )}
-        {auth?.oauth_enabled && (
-          <Button
-            variant={auth.password_login_enabled ? "soft" : "solid"}
-            className="mt-3 w-full"
-            onClick={() => {
-              window.location.href = "/api/oauth";
-            }}
-          >
-            {t("login.login_with", {
-              provider: auth.oauth_provider || "OAuth",
-            })}
-          </Button>
         )}
       </Dialog.Content>
     </Dialog.Root>

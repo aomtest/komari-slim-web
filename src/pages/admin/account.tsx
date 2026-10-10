@@ -4,14 +4,12 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { AccountProvider, useAccount } from "@/contexts/AccountContext";
 import {
-  Badge,
   Button,
   Dialog,
   Flex,
   Skeleton,
   TextField,
 } from "@radix-ui/themes";
-import { Github, Globe, User } from "lucide-react";
 import Loading from "@/components/loading";
 
 const Account = () => {
@@ -24,7 +22,7 @@ const Account = () => {
 
 const InnerLayout = () => {
   const { t } = useTranslation();
-  const { account, loading, error, refresh } = useAccount();
+  const { account, loading, error } = useAccount();
   const [usernameSaving, setUsernameSaving] = React.useState(false);
   const [passwordSaving, setPasswordSaving] = React.useState(false);
   const [passwordTwoFa, setPasswordTwoFa] = React.useState("");
@@ -123,71 +121,6 @@ const InnerLayout = () => {
       });
   }
   
-  // SSO 辅助函数
-  function getSSOInfo() {
-    if (!account?.sso_id) return null;
-    
-    const [platform, uniqueId] = account.sso_id.split('_', 2);
-    return {
-      platform: platform || '',
-      uniqueId: uniqueId || '',
-      isBound: !!account.sso_id
-    };
-  }
-  
-  function getSSOIcon(platform: string) {
-    switch (platform.toLowerCase()) {
-      case 'github':
-        return <Github className="size-5" />;
-      case 'google':
-        return <Globe className="size-5" />;
-      default:
-        return <User className="size-5" />;
-    }
-  }
-  
-  function getSSODisplayName(platform: string) {
-    switch (platform.toLowerCase()) {
-      case 'github':
-        return 'GitHub';
-      case 'google':
-        return 'Google';
-      case 'gitlab':
-        return 'GitLab';
-      case 'discord':
-        return 'Discord';
-      default:
-        return platform.charAt(0).toUpperCase() + platform.slice(1);
-    }
-  }
-  
-  const handleSSOAuth = async () => {
-    try {
-      const ssoInfo = getSSOInfo();
-      if (ssoInfo?.isBound) {
-        // 解绑SSO
-        const response = await fetch("/api/admin/oauth2/unbind", {
-          method: "POST",
-        });
-
-        if (response.ok) {
-          toast.success(t("account_settings.unbind_sso_success", { provider: getSSODisplayName(ssoInfo.platform) }));
-          refresh(); // 刷新用户信息
-        } else {
-          const error = await response.json();
-          toast.error(t("account_settings.unbind_sso_failed", { 
-            provider: getSSODisplayName(ssoInfo.platform),
-            error: error.message || t("common.unknownError")
-          }));
-        }
-      } else {
-        window.location.href = "/api/admin/oauth2/bind";
-      }
-    } catch (error) {
-      console.error("处理SSO认证失败:", error);
-      toast.error(t("account_settings.sso_auth_failed"));
-    }
-  };
   return (
     <Flex gap="4" direction="column" align="start">
       <Flex gap="4" direction="row" className="km-page-admin-account p-4" wrap="wrap">
@@ -268,79 +201,6 @@ const InnerLayout = () => {
           ) : (
             <TwoFactorDisabled></TwoFactorDisabled>
           )}
-          <label className="font-bold text-2xl mt-2">
-            {t("settings.sso.title")}
-          </label>
-
-          {/* SSO账户绑定/解绑 */}
-          <div className="km-account-sso mb-8 flex flex-col gap-4 ">
-            {(() => {
-              const ssoInfo = getSSOInfo();
-              const platform = ssoInfo?.platform || '';
-              const displayName = getSSODisplayName(platform);
-              const icon = getSSOIcon(platform);
-              
-              return (
-                <>
-                  <label className="text-xl font-semibold flex items-center gap-2">
-                    {ssoInfo?.isBound ? icon : <User className="size-5" />}
-                    {ssoInfo?.isBound ? t("account_settings.sso_account_bound", { name: displayName }) : t("account_settings.sso_account")}
-                  </label>
-                  <div className="p-4 bg-[var(--accent-2)] rounded-lg">
-                    <p>
-                      {ssoInfo?.isBound ? (
-                        <div className="flex items-center gap-2">
-                          <Badge color="green">
-                            {t("account_settings.sso_bound")}
-                          </Badge>
-                          {displayName} ID: {ssoInfo.uniqueId}
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <Badge color="gray">
-                            {t("account_settings.sso_not_bound")}
-                          </Badge>
-                          {t("account_settings.sso_not_bound")}
-                        </div>
-                      )}
-                    </p>
-                  </div>
-                  <div>
-                    {ssoInfo?.isBound ? (
-                      <Dialog.Root>
-                        <Dialog.Trigger>
-                          <Button>{t("account_settings.unbind_sso", { provider: displayName })}</Button>
-                        </Dialog.Trigger>
-                        <Dialog.Content>
-                          <Dialog.Title>
-                            {t("account_settings.confirm_unbind")}
-                          </Dialog.Title>
-                          <Dialog.Description>
-                            {t("account_settings.unbind_sso_warning", { provider: displayName })}
-                          </Dialog.Description>
-                          <Flex gap="2" justify="end" className="mt-4">
-                            <Dialog.Close>
-                              <Button variant="soft">
-                                {t("common.cancel")}
-                              </Button>
-                            </Dialog.Close>
-                            <Button color="red" onClick={handleSSOAuth}>
-                              {t("account_settings.confirm_unbind")}
-                            </Button>
-                          </Flex>
-                        </Dialog.Content>
-                      </Dialog.Root>
-                    ) : (
-                      <Button onClick={handleSSOAuth}>
-                        <User className="size-4" />
-                        {t("account_settings.bind_sso")}
-                      </Button>
-                    )}
-                  </div>
-                </>
-              );
-            })()}
-          </div>
           <Flex gap="4" align="center" justify="start">
             <label className="text-muted-foreground text-sm">
               {t("account_settings.looking_for_backup")}

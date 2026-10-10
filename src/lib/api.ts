@@ -11,8 +11,6 @@ export interface SettingsResponse {
   cors_origin_check_enabled: boolean;
   geo_ip_enabled: boolean;
   geo_ip_provider: string;
-  o_auth_provider: string;
-  o_auth_enabled: boolean;
   ssrf_protection_enabled: boolean;
   custom_head: string;
   metric_rollup_minute_retention_minutes?: number;
@@ -195,8 +193,6 @@ export function useSettings() {
     cors_origin_check_enabled: true,
     geo_ip_enabled: false,
     geo_ip_provider: "",
-    o_auth_provider: "",
-    o_auth_enabled: false,
     ssrf_protection_enabled: false,
     custom_head: "",
     CreatedAt: "",

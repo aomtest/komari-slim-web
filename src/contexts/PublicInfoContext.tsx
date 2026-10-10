@@ -39,8 +39,6 @@ export interface PublicInfo {
   custom_head: string;
   description: string;
   disable_password_login: boolean;
-  oauth_provider: string;
-  oauth_enable: boolean;
   metric_retention_days: number;
   sitename: string;
   private_site: boolean;

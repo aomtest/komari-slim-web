@@ -3,8 +3,6 @@ import React from "react";
 // 账户数据类型
 type Account = {
   logged_in: boolean;
-  sso_id: string;
-  sso_type: string;
   username: string;
   uuid: string;
   "2fa_enabled": boolean;

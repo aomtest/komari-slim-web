@@ -30,18 +30,8 @@
     "title": "帳戶"
   },
   "account_settings": {
-    "bind_sso": "繫結外部帳戶",
     "confirm_unbind": "確認解除繫結",
     "looking_for_backup": "正在尋找備份？現已經遷移到設定-站點-備份。",
-    "sso_account": "外部帳戶",
-    "sso_account_bound": "{{name}}帳戶",
-    "sso_auth_failed": "處理SSO認證失敗",
-    "sso_bound": "已繫結外部帳戶",
-    "sso_not_bound": "未繫結",
-    "unbind_sso": "解除繫結外部帳戶",
-    "unbind_sso_failed": "解除繫結失敗",
-    "unbind_sso_success": "成功解除繫結",
-    "unbind_sso_warning": "確定要解除繫結 {{provider}} 帳號嗎？",
     "upload_success": "上傳成功"
   },
   "admin": {
@@ -1380,36 +1370,7 @@
       "ws_origin_check_enabled": "WebSocket Origin 校驗",
       "ws_origin_check_enabled_description": "開啟後 WebSocket 請求只允許同源或允許列表中的 Origin"
     },
-    "sso": {
-      "callback_url_tips": "回調地址：{{url}}",
-      "client_id_description": "OAuth 應用的客戶端 ID",
-      "client_secret_description": "OAuth 應用的客戶端金鑰",
-      "enable": "啟用單點登入",
-      "enable_description": "允許使用者透過第三方賬戶（如 GitHub）登入",
-      "generic": {
-        "auth_url": "授權 URL",
-        "client_id": "客戶端 ID",
-        "client_secret": "客戶端金鑰",
-        "scope": "作用域",
-        "token_url": "令牌 URL",
-        "user_id_field": "使用者 ID 欄位",
-        "user_info_url": "使用者資訊 URL"
-      },
-      "github": {
-        "client_id": "GitHub 客戶端 ID",
-        "client_secret": "GitHub 客戶端金鑰"
-      },
-      "not_implemented_suffix": " [暫未實作]",
-      "provider": "單點登入提供商",
-      "provider_description": "選擇用於單點登入的身份驗證提供商",
-      "provider_fetch_failed": "載入登入提供商資訊失敗",
-      "provider_fields": "登入參數",
-      "provider_fields_description": "設定您選擇登入方式的詳細資訊",
-      "provider_save_failed": "儲存登入提供商設定失敗",
-      "provider_settings_fetch_failed": "載入登入提供商設定失敗",
-      "title": "單點登入"
-    },
-    "title": "設定",
+        "title": "設定",
     "update_1_2_7": {
       "before": "移除這個時間之前的資料",
       "cleanup": "遷移前清理",

@@ -30,18 +30,8 @@
     "title": "账户"
   },
   "account_settings": {
-    "bind_sso": "绑定外部账户",
     "confirm_unbind": "确认解绑",
     "looking_for_backup": "正在寻找备份？现已经迁移到设置-站点-备份。",
-    "sso_account": "外部账户",
-    "sso_account_bound": "{{name}}账户",
-    "sso_auth_failed": "处理SSO认证失败",
-    "sso_bound": "已绑定外部账户",
-    "sso_not_bound": "未绑定",
-    "unbind_sso": "解绑外部账户",
-    "unbind_sso_failed": "解绑失败",
-    "unbind_sso_success": "成功解绑",
-    "unbind_sso_warning": "确定要解绑 {{provider}} 账号吗？",
     "upload_success": "上传成功"
   },
   "admin": {
@@ -1380,36 +1370,7 @@
       "ws_origin_check_enabled": "WebSocket Origin 校验",
       "ws_origin_check_enabled_description": "开启后 WebSocket 请求只允许同源或允许列表中的 Origin"
     },
-    "sso": {
-      "callback_url_tips": "回调地址：{{url}}",
-      "client_id_description": "OAuth 应用的客户端 ID",
-      "client_secret_description": "OAuth 应用的客户端密钥",
-      "enable": "启用单点登录",
-      "enable_description": "允许用户通过第三方账户（如 GitHub）登录",
-      "generic": {
-        "auth_url": "授权 URL",
-        "client_id": "客户端 ID",
-        "client_secret": "客户端密钥",
-        "scope": "作用域",
-        "token_url": "令牌 URL",
-        "user_id_field": "用户 ID 字段",
-        "user_info_url": "用户信息 URL"
-      },
-      "github": {
-        "client_id": "GitHub 客户端 ID",
-        "client_secret": "GitHub 客户端密钥"
-      },
-      "not_implemented_suffix": " [暂未实现]",
-      "provider": "单点登录提供商",
-      "provider_description": "选择用于单点登录的身份验证提供商",
-      "provider_fetch_failed": "加载登录提供商信息失败",
-      "provider_fields": "登录参数",
-      "provider_fields_description": "设置您选择登录方式的详细信息",
-      "provider_save_failed": "保存登录提供商设置失败",
-      "provider_settings_fetch_failed": "加载登录提供商设置失败",
-      "title": "单点登录"
-    },
-    "title": "设置",
+        "title": "设置",
     "update_1_2_7": {
       "before": "移除这个时间之前的数据",
       "cleanup": "迁移前清理",

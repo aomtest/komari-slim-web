@@ -30,18 +30,8 @@
     "title": "Account"
   },
   "account_settings": {
-    "bind_sso": "Bind External Account",
     "confirm_unbind": "Confirm Unbind",
     "looking_for_backup": "Looking for backup? It has now been moved to Settings - Site - Backup.",
-    "sso_account": "External Account",
-    "sso_account_bound": "{{name}} account",
-    "sso_auth_failed": "SSO authentication failed",
-    "sso_bound": "Bound External Account",
-    "sso_not_bound": "Unbound",
-    "unbind_sso": "Unbind External Account",
-    "unbind_sso_failed": "Unbinding failed",
-    "unbind_sso_success": "Successfully unbound",
-    "unbind_sso_warning": "Are you sure you want to unbind the {{provider}} account?",
     "upload_success": "Upload success"
   },
   "admin": {
@@ -1375,36 +1365,7 @@
       "ws_origin_check_enabled": "WebSocket origin check",
       "ws_origin_check_enabled_description": "When enabled, WebSocket requests are only allowed from the same origin or origins in the allowed list"
     },
-    "sso": {
-      "callback_url_tips": "Configure your SSO provider with this callback URL: {{url}}",
-      "client_id_description": "OAuth application client ID",
-      "client_secret_description": "OAuth application client secret",
-      "enable": "Enable Single Sign-On",
-      "enable_description": "Allow users to login with third-party accounts (like GitHub)",
-      "generic": {
-        "auth_url": "Authorization URL",
-        "client_id": "Client ID",
-        "client_secret": "Client Secret",
-        "scope": "Scope",
-        "token_url": "Token URL",
-        "user_id_field": "User ID Field",
-        "user_info_url": "User Info URL"
-      },
-      "github": {
-        "client_id": "GitHub Client ID",
-        "client_secret": "GitHub Client Secret"
-      },
-      "not_implemented_suffix": " [Not implemented yet]",
-      "provider": "Single Sign-On Provider",
-      "provider_description": "Choose the authentication provider for single sign-on",
-      "provider_fetch_failed": "Failed to load sign-on provider information",
-      "provider_fields": "OAuth Parameter",
-      "provider_fields_description": "Details of the login method you choose",
-      "provider_save_failed": "Failed to save sign-on provider settings",
-      "provider_settings_fetch_failed": "Failed to load sign-on provider settings",
-      "title": "Single Sign-On"
-    },
-    "title": "Settings",
+        "title": "Settings",
     "update_1_2_7": {
       "before": "Remove data before this time",
       "cleanup": "Clean up before migration",

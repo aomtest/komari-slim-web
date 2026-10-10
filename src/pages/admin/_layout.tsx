@@ -1,4 +1,4 @@
-import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 import AdminPanelBar from "../../components/admin/AdminPanelBar";
 import { AdminNavigationProvider } from "@/contexts/AdminNavigationContext";
@@ -11,7 +11,7 @@ import { normalizeLanguage, readStoredLanguage } from "@/utils/language";
 import { useTranslation } from "react-i18next";
 import { useAccount } from "@/contexts/AccountContext";
 import Loading from "@/components/loading";
-import { loginPath, resolveLoginRedirect } from "@/utils/loginRedirect";
+import { loginPath } from "@/utils/loginRedirect";
 
 const AdminLayout = () => {
   const { t, i18n } = useTranslation();
@@ -79,22 +79,7 @@ const AdminLayout = () => {
 
 const AdminRoute = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const account = useAccount();
-  const [oauthRedirect, setOauthRedirect] = useState<string | null>(() => {
-    const value = sessionStorage.getItem("oauth_redirect");
-    sessionStorage.removeItem("oauth_redirect");
-    return value ? resolveLoginRedirect(value) : null;
-  });
-
-  useEffect(() => {
-    if (!account.loading && account.account?.logged_in && oauthRedirect) {
-      const target = oauthRedirect;
-      setOauthRedirect(null);
-      navigate(target, { replace: true });
-    }
-  }, [account.account?.logged_in, account.loading, navigate, oauthRedirect]);
-
   if (account.loading) {
     return <Loading />;
   }
@@ -105,9 +90,6 @@ const AdminRoute = () => {
         replace
       />
     );
-  }
-  if (oauthRedirect) {
-    return <Loading />;
   }
   return <AdminLayout />;
 };

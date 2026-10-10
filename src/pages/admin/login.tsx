@@ -31,7 +31,6 @@ const AdminLoginPage = () => {
   const [busy, setBusy] = useState(false);
   const redirect = resolveLoginRedirect(searchParams.get("redirect"));
   const passwordLoginEnabled = !publicInfo?.disable_password_login;
-  const oauthEnabled = !!publicInfo?.oauth_enable;
   const canSubmit =
     passwordLoginEnabled && username.trim() !== "" && password !== "";
 
@@ -190,28 +189,6 @@ const AdminLoginPage = () => {
                   {busy ? t("loading") : t("login.title")}
                 </Button>
                 </>
-              )}
-              {oauthEnabled && (
-                <Button
-                  variant={passwordLoginEnabled ? "soft" : "solid"}
-                  className="w-full"
-                  disabled={busy}
-                  type="button"
-                  onClick={() => {
-                    sessionStorage.setItem("oauth_redirect", redirect);
-                    window.location.href = "/api/oauth";
-                  }}
-                >
-                  {t("login.login_with", {
-                    provider:
-                      publicInfo?.oauth_provider === "generic"
-                        ? "OAuth"
-                        : publicInfo?.oauth_provider
-                          ? publicInfo.oauth_provider.charAt(0).toUpperCase() +
-                            publicInfo.oauth_provider.slice(1)
-                          : "",
-                  })}
-                </Button>
               )}
             </Flex>
           </form>
