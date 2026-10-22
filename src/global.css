@@ -277,3 +277,48 @@ body, * {
 .km-login-card {
   border-radius: 8px;
 }
+
+/* ===== 节点卡片毛玻璃 =====
+   半透明面板 + 背景模糊，让自定义壁纸从卡片下透出来。
+   底色用 Radix 的 --color-panel-solid 调透明度，比硬编码白色更能跟随主题；
+   亮色透一点、暗色实一点，避免暗色下字看不清。 */
+.km-node-card {
+  background-color: color-mix(in oklch, var(--color-panel-solid) 74%, transparent) !important;
+  border: 1px solid var(--gray-a5);
+  box-shadow: 0 8px 28px var(--black-a4);
+  backdrop-filter: blur(14px) saturate(145%);
+  -webkit-backdrop-filter: blur(14px) saturate(145%);
+}
+
+.dark .km-node-card {
+  background-color: color-mix(in oklch, var(--color-panel-solid) 82%, transparent) !important;
+  border-color: rgb(255 255 255 / 0.14);
+  box-shadow: 0 8px 30px rgb(0 0 0 / 0.48);
+}
+
+/* Node.tsx 原本用 hover:bg-accent-2 做悬停反馈，会被上面的 !important 吃掉，这里补回来 */
+.km-node-card:hover {
+  background-color: color-mix(in oklch, var(--color-panel-solid) 86%, transparent) !important;
+  box-shadow: 0 12px 38px var(--black-a5);
+}
+
+/* Firefox 合成多层 backdrop-filter 的开销明显高于 Chromium，节点多时会掉帧，
+   这里直接退回不透明面板——效果差一点，但列表滚动不卡。 */
+@supports (-moz-appearance: none) {
+  .km-node-card,
+  .km-node-card:hover {
+    background-color: var(--color-panel-solid) !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* 系统开启「减少动态效果」时同样不铺合成层 */
+@media (prefers-reduced-motion: reduce) {
+  .km-node-card,
+  .km-node-card:hover {
+    background-color: var(--color-panel-solid) !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
