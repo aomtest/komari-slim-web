@@ -19,16 +19,33 @@ const defaultThemeSettings = Object.fromEntries(
     .map((field) => [field.key, field.default]),
 );
 
+// 曾经作为默认值发布过、后来被替换掉的值。
+//
+// 主题设置页保存一次，就会把当时的默认值原样写进数据库；此后清单里的
+// default 再怎么改都覆盖不到它——数据库有值，合并时永远以数据库为准。
+// 结果是老实例一直停在旧壁纸上，看起来像"升级没生效"。
+// 这里把"值等于旧默认值"的条目当成没设置过，让它们跟随新的 default。
+const legacyThemeDefaults: Record<string, unknown> = {
+  backgroundImageUrlDesktop: "/assets/wallpaper-default.webp",
+};
+
 const withThemeDefaults = (publicInfo: PublicInfo): PublicInfo => {
   if (publicInfo.theme !== "default") {
     return publicInfo;
+  }
+
+  const stored = { ...(publicInfo.theme_settings ?? {}) };
+  for (const [key, legacyValue] of Object.entries(legacyThemeDefaults)) {
+    if (stored[key] === legacyValue) {
+      delete stored[key];
+    }
   }
 
   return {
     ...publicInfo,
     theme_settings: {
       ...defaultThemeSettings,
-      ...(publicInfo.theme_settings ?? {}),
+      ...stored,
     },
   };
 };
