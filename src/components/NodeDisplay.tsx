@@ -121,7 +121,7 @@ const NodeDisplay: React.FC<NodeDisplayProps> = ({ nodes, liveData }) => {
         <Flex
           align="center"
           gap="2"
-          className="flex-1 max-w-md relative"
+          className="km-search-box flex-1 max-w-md relative"
           wrap="wrap"
         >
           <TextField.Root
@@ -154,9 +154,6 @@ const NodeDisplay: React.FC<NodeDisplayProps> = ({ nodes, liveData }) => {
 
         {/* 视图模式切换 */}
         <Flex align="center" gap="2">
-          <label className="whitespace-nowrap text-md text-muted-foreground">
-            {t("view.mode")}
-          </label>
           <Flex gap="1">
             <IconButton
               variant={viewMode === "grid" ? "solid" : "soft"}

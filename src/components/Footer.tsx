@@ -46,7 +46,7 @@ const Footer = () => {
   }, []);
 
   return (
-    <div className="km-footer footer p-2 border-t-1 border-t-[var(--gray-7)]">
+    <div className="km-footer footer p-2 mt-auto">
       {/* Copyright and ICP Filing */}
 
       {customFooterHtml ? (

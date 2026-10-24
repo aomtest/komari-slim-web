@@ -20,7 +20,7 @@ const IndexLayout = () => {
         <div
           className={
             bgUrl
-              ? "km-layout layout flex flex-col w-full min-h-screen bg-cover bg-center bg-fixed bg-no-repeat"
+              ? "km-layout layout has-wallpaper flex flex-col w-full min-h-screen bg-cover bg-center bg-fixed bg-no-repeat"
               : "km-layout layout flex flex-col w-full min-h-screen bg-accent-1"
           }
           style={{

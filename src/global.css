@@ -280,26 +280,45 @@ body, * {
 
 /* ===== 节点卡片毛玻璃 =====
    半透明面板 + 背景模糊，让自定义壁纸从卡片下透出来。
-   底色用 Radix 的 --color-panel-solid 调透明度，比硬编码白色更能跟随主题；
-   亮色透一点、暗色实一点，避免暗色下字看不清。 */
+   底色用 Radix 的 --color-panel-solid 调透明度，比硬编码白色更能跟随主题。
+   透明度压得比较低：壁纸多为深色，白色占比一高就整片糊白、等于没效果；
+   暗色再实一点，避免暗底上字看不清。 */
 .km-node-card {
-  background-color: color-mix(in oklch, var(--color-panel-solid) 74%, transparent) !important;
+  background-color: color-mix(in oklch, var(--color-panel-solid) 20%, transparent) !important;
   border: 1px solid var(--gray-a5);
   box-shadow: 0 8px 28px var(--black-a4);
-  backdrop-filter: blur(14px) saturate(145%);
-  -webkit-backdrop-filter: blur(14px) saturate(145%);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
 }
 
 .dark .km-node-card {
-  background-color: color-mix(in oklch, var(--color-panel-solid) 82%, transparent) !important;
+  background-color: color-mix(in oklch, var(--color-panel-solid) 34%, transparent) !important;
   border-color: rgb(255 255 255 / 0.14);
   box-shadow: 0 8px 30px rgb(0 0 0 / 0.48);
 }
 
 /* Node.tsx 原本用 hover:bg-accent-2 做悬停反馈，会被上面的 !important 吃掉，这里补回来 */
 .km-node-card:hover {
-  background-color: color-mix(in oklch, var(--color-panel-solid) 86%, transparent) !important;
+  background-color: color-mix(in oklch, var(--color-panel-solid) 30%, transparent) !important;
   box-shadow: 0 12px 38px var(--black-a5);
+}
+
+/* ===== 工具栏与视图切换的方块按钮 =====
+   这些按钮是 Radix 的 soft 变体，底色只有一层极淡的 --accent-a3，
+   压在深色壁纸上几乎看不到边界。这里给它们和卡片同一套玻璃底，
+   但更实一些，保证图标始终可辨。选中态是 solid，不在此列。 */
+.km-navbar .rt-IconButton.rt-variant-soft,
+.km-node-display .view-switch-button.rt-variant-soft {
+  background-color: color-mix(in oklch, var(--color-panel-solid) 58%, transparent) !important;
+  border: 1px solid var(--gray-a6);
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+}
+
+.dark .km-navbar .rt-IconButton.rt-variant-soft,
+.dark .km-node-display .view-switch-button.rt-variant-soft {
+  background-color: color-mix(in oklch, var(--color-panel-solid) 64%, transparent) !important;
+  border-color: rgb(255 255 255 / 0.18);
 }
 
 /* Firefox 合成多层 backdrop-filter 的开销明显高于 Chromium，节点多时会掉帧，
@@ -307,6 +326,13 @@ body, * {
 @supports (-moz-appearance: none) {
   .km-node-card,
   .km-node-card:hover {
+    background-color: var(--color-panel-solid) !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .km-navbar .rt-IconButton.rt-variant-soft,
+  .km-node-display .view-switch-button.rt-variant-soft {
     background-color: var(--color-panel-solid) !important;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
@@ -321,4 +347,68 @@ body, * {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
+
+  .km-navbar .rt-IconButton.rt-variant-soft,
+  .km-node-display .view-switch-button.rt-variant-soft {
+    background-color: var(--color-panel-solid) !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* 有壁纸时清掉顶部这些块：状态条、搜索框、分组筛选、节点计数。
+   用 display:none 释放它们占的高度，把卡片区整体提上来；
+   提多少由下面 .km-node-display 的 padding-top 控制，避免直接贴住导航栏。 */
+.km-layout.has-wallpaper .km-summary-card,
+.km-layout.has-wallpaper .km-search-box,
+.km-layout.has-wallpaper .km-node-group,
+.km-layout.has-wallpaper .km-node-summary {
+  display: none;
+}
+
+.km-layout.has-wallpaper .km-node-display {
+  padding-top: 0.5rem;
+}
+
+/* 页脚文字在壁纸上改成白色；customFooterHtml 里的自定义内容不在此列 */
+.km-layout.has-wallpaper .km-footer .rt-Text {
+  color: rgb(255 255 255 / 0.82) !important;
+}
+
+/* 控制栏本身是透明的（rt-Flex 无背景）。
+   搜索框被 display:none 后，剩下的视图切换按钮会被 justify-between 甩到左边，
+   这里改成靠右，并收掉多余的上下内边距，让它和卡片区保持一条线上。 */
+.km-layout.has-wallpaper .control-bar {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+  justify-content: flex-end;
+  padding-top: 0;
+  padding-bottom: 0.75rem;
+}
+
+/* ===== 有壁纸时的站名配色 =====
+   站名默认继承 --foreground，亮色主题下接近黑色，压在深色壁纸上很难看。
+   只在布局带 has-wallpaper 时切成白字 + 一层淡玻璃底；
+   没设壁纸时保持原色，否则白字会消失在白底上。 */
+.km-layout.has-wallpaper {
+  --km-brand-accent: rgb(255 255 255 / 0.78);
+  --km-brand-divider: rgb(255 255 255 / 0.38);
+}
+
+.km-layout.has-wallpaper .km-sitename {
+  /* 真正的「毛玻璃文字」做不到：backdrop-filter 只能作用于元素的盒子，
+     无法按字形裁剪出模糊区域。这里改用渐变裁切——字的上半实白、下半半透明，
+     模仿玻璃的透光层次，再用 drop-shadow 保证在任何壁纸上都读得清。 */
+  background-image: linear-gradient(
+    180deg,
+    #fff 0%,
+    rgb(255 255 255 / 0.66) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.5))
+    drop-shadow(0 0 10px rgb(0 0 0 / 0.22));
 }
