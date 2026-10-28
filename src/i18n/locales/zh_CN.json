@@ -99,7 +99,7 @@
       "dragToReorder": "长按拖拽重新排序",
       "editNodePrice": "编辑账单",
       "emptyGuide": {
-        "description": "点击右上角的“添加节点”开始，或开启自动发现批量接入服务器。",
+        "description": "点击右上角的“添加节点”开始。",
         "title": "还没有任何服务器"
       },
       "enableGpuMonitoring": "启用详细 GPU 监控",

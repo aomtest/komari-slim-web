@@ -99,7 +99,7 @@
       "dragToReorder": "長按拖拽重新排序",
       "editNodePrice": "編輯帳單",
       "emptyGuide": {
-        "description": "點選右上角的「新增節點」開始，或開啟自動發現批次接入伺服器。",
+        "description": "點選右上角的「新增節點」開始。",
         "title": "還沒有任何伺服器"
       },
       "enableGpuMonitoring": "啟用詳細 GPU 監控",

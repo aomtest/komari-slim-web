@@ -99,7 +99,7 @@
       "dragToReorder": "Tekan lama dan seret untuk mengurutkan ulang",
       "editNodePrice": "Ubah Harga",
       "emptyGuide": {
-        "description": "Klik \"Tambah Node\" di kanan atas untuk memulai, atau aktifkan penemuan otomatis untuk menambahkan server secara massal.",
+        "description": "Klik \"Tambah Node\" di kanan atas untuk memulai.",
         "title": "Belum ada server"
       },
       "enableGpuMonitoring": "Aktifkan pemantauan GPU terperinci",

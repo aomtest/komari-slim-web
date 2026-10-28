@@ -99,7 +99,7 @@
       "dragToReorder": "Long press and drag to reorder",
       "editNodePrice": "Edit Price",
       "emptyGuide": {
-        "description": "Click \"Add\" in the top right to get started, or enable auto discovery to onboard servers in bulk.",
+        "description": "Click \"Add\" in the top right to get started.",
         "title": "No servers yet"
       },
       "enableGpuMonitoring": "Enable detailed GPU monitoring",

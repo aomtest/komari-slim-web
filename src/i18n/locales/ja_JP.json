@@ -99,7 +99,7 @@
       "dragToReorder": "長押ししてドラッグで再配置",
       "editNodePrice": "請求書を編集",
       "emptyGuide": {
-        "description": "右上の「ノードを追加」をクリックして開始するか、自動検出を有効にしてサーバーを一括登録してください。",
+        "description": "右上の「ノードを追加」をクリックして開始してください。",
         "title": "まだサーバーがありません"
       },
       "enableGpuMonitoring": "詳細な GPU 監視を有効にする",
