@@ -84,13 +84,6 @@
       "agentUpdateFailed": "Failed to trigger the update",
       "enableSelfUpdate": "Enable remote update trigger",
       "enableSelfUpdateHint": "Configure the agent update token in the settings first",
-      "autoDiscovery": {
-        "disabledDescription": "With auto discovery enabled, you no longer need to add nodes one by one. Just run a single command on the target server and the Agent will register and come online automatically using the key. Ideal for deploying many servers at once.",
-        "enabledDescription": "Run the command below on the target server. The Agent will register and come online automatically, no manual node creation needed.",
-        "goToSettings": "Go to General settings to enable auto discovery",
-        "title": "Auto discovery",
-        "tryIt": "Try auto discovery"
-      },
       "autoRenewal": "Auto renewal",
       "autoRenewalDescription": "If the server expires and is currently online, komari-slim will automatically set the expiration time to the next natural month (year)",
       "billing": "Billing",
@@ -1052,9 +1045,7 @@
       "title": "Database"
     },
     "general": {
-      "auto_discovery": "Auto discovery",
-      "auto_discovery_key": "Auto discovery key",
-      "auto_discovery_key_description": "Use automatic discovery to register clients in bulk. Leave blank to disable automatic discovery.",
+      "agent_update": "Agent self-update",
       "agent_update_token": "Agent update token",
       "agent_update_token_description": "The panel uses this to trigger an agent update. Leave empty to disable the feature; it must match the agent's --update-token.",
       "agent_update_port": "Agent update port",

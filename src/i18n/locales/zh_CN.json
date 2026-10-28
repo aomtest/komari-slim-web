@@ -84,13 +84,6 @@
       "agentUpdateFailed": "触发失败",
       "enableSelfUpdate": "启用远程更新触发",
       "enableSelfUpdateHint": "请先在设置中配置 Agent 更新令牌",
-      "autoDiscovery": {
-        "disabledDescription": "开启自动发现后，无需逐台手动添加节点。只要在目标服务器上运行一条命令，Agent 就会携带密钥自动注册并上线，非常适合批量部署多台服务器。",
-        "enabledDescription": "在目标服务器上运行下面的命令，Agent 将自动注册并上线，无需手动添加节点。",
-        "goToSettings": "前往“设置”开启自动发现",
-        "title": "自动发现",
-        "tryIt": "试试自动发现"
-      },
       "autoRenewal": "自动续费",
       "autoRenewalDescription": "如果服务器过期且当前在线，komari-slim 将自动将到期时间设置为下个自然月（年）",
       "billing": "账单",
@@ -1057,9 +1050,7 @@
       "title": "数据库"
     },
     "general": {
-      "auto_discovery": "自动发现",
-      "auto_discovery_key": "自动发现密钥",
-      "auto_discovery_key_description": "使用自动发现可以批量注册客户端，留空表示禁用自动发现。",
+      "agent_update": "Agent 自更新",
       "agent_update_token": "Agent 更新令牌",
       "agent_update_token_description": "面板用它向 agent 发送更新触发。留空则禁用该功能；填写时必须与 agent 启动参数 --update-token 一致。",
       "agent_update_port": "Agent 更新端口",

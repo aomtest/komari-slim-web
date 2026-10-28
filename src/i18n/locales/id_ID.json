@@ -84,13 +84,6 @@
       "agentUpdateFailed": "Gagal memicu pembaruan",
       "enableSelfUpdate": "Aktifkan pemicu pembaruan jarak jauh",
       "enableSelfUpdateHint": "Konfigurasikan token pembaruan agent di pengaturan terlebih dahulu",
-      "autoDiscovery": {
-        "disabledDescription": "Dengan penemuan otomatis aktif, Anda tidak perlu menambahkan node satu per satu. Cukup jalankan satu perintah di server target dan Agent akan otomatis terdaftar dan online menggunakan kunci tersebut. Ideal untuk men-deploy banyak server sekaligus.",
-        "enabledDescription": "Jalankan perintah di bawah ini pada server target. Agent akan otomatis terdaftar dan online tanpa perlu membuat node secara manual.",
-        "goToSettings": "Buka Pengaturan Umum untuk mengaktifkan penemuan otomatis",
-        "title": "Penemuan otomatis",
-        "tryIt": "Coba penemuan otomatis"
-      },
       "autoRenewal": "Perpanjangan Otomatis",
       "autoRenewalDescription": "Jika server kedaluwarsa dan masih online, komari-slim akan otomatis mengatur waktu kedaluwarsa ke bulan (atau tahun) berikutnya.",
       "billing": "Penagihan",
@@ -1057,9 +1050,7 @@
       "title": "Basis Data"
     },
     "general": {
-      "auto_discovery": "Penemuan Otomatis",
-      "auto_discovery_key": "Kunci Penemuan Otomatis",
-      "auto_discovery_key_description": "Gunakan penemuan otomatis untuk mendaftarkan klien secara massal. Biarkan kosong untuk menonaktifkan penemuan otomatis.",
+      "agent_update": "Pembaruan mandiri agent",
       "agent_update_token": "Token pembaruan agent",
       "agent_update_token_description": "Panel memakai ini untuk memicu pembaruan agent. Biarkan kosong untuk menonaktifkan fitur ini; harus sama dengan --update-token pada agent.",
       "agent_update_port": "Port pembaruan agent",
