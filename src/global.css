@@ -415,18 +415,20 @@ body, * {
 }
 
 .km-layout.has-wallpaper .km-sitename {
-  /* 真正的「毛玻璃文字」做不到：backdrop-filter 只能作用于元素的盒子，
-     无法按字形裁剪出模糊区域。这里改用渐变裁切——字的上半实白、下半半透明，
-     模仿玻璃的透光层次，再用 drop-shadow 保证在任何壁纸上都读得清。 */
-  background-image: linear-gradient(
-    180deg,
-    #fff 0%,
-    rgb(255 255 255 / 0.66) 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.5))
-    drop-shadow(0 0 10px rgb(0 0 0 / 0.22));
+  /* 与小标题（komari-slim）共用 --km-brand-accent，两处颜色永远一致，
+     以后要调只改 .km-layout.has-wallpaper 上的那一个变量。 */
+  color: var(--km-brand-accent, rgb(255 255 255 / 0.78)) !important;
+  -webkit-text-fill-color: var(--km-brand-accent, rgb(255 255 255 / 0.78));
+}
+
+/* ===== HTTP / WebSocket 警告条的毛玻璃底 =====
+   Radix 的 Callout(soft) 背景就是元素自身的 --accent-a3（约 6% 的强调色），
+   压在壁纸上只有一层淡粉、看不出边界。这里把底色提到 a4 一档，再加模糊
+   和同色系边框，让它成为一块真正的玻璃条；强调色随 color="red"/"tomato" 自动变。 */
+.km-layout.has-wallpaper .km-callout {
+  background-color: color-mix(in oklch, var(--accent-a4) 85%, transparent) !important;
+  border: 1px solid color-mix(in oklch, var(--accent-a7) 55%, transparent);
+  box-shadow: 0 4px 18px rgb(0 0 0 / 0.18);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
 }
