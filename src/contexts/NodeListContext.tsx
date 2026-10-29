@@ -59,7 +59,8 @@ interface NodeListContextType {
   nodeList: NodeBasicInfo[] | null;
   isLoading: boolean;
   error: string | null;
-  refresh: () => void;
+  /** 返回的 Promise 会在一次请求彻底结束后 settle，调用方可以据此串行调度。 */
+  refresh: () => Promise<void>;
 }
 
 const NODE_LIST_CONTEXT_KEY = "__komariNodeListContext" as const;
@@ -99,13 +100,19 @@ export const NodeListProvider: React.FC<{ children: React.ReactNode }> = ({
   const refresh = React.useCallback(() => {
     const refreshSeq = ++refreshSeqRef.current;
     // setIsLoading(true);
-    setError(null);
+    // 注意：这里**不**预先 setError(null)。乐观清除会让「重试中」的错误
+    // 反复消失又出现，首屏失败时界面会一屏错误、一屏空列表地闪。
+    // 只在真正收到响应后才清。
     // 通过 RPC2 获取节点基本信息
-    call<{ uuid?: string }, Record<string, any>>("common:getNodes")
+    return call<{ uuid?: string }, Record<string, any>>("common:getNodes")
       .then((result) => {
         if (!mountedRef.current || refreshSeq !== refreshSeqRef.current) return;
+        setError(null);
         if (!result || typeof result !== "object") {
-          setNodeList([]);
+          // 返回了非法结果。**不要**把列表清空：一次异常响应就抹掉全部卡片，
+          // 页面高度会瞬间塌到只有页头和页脚，浏览器的 scrollTop 被夹回 0，
+          // 用户再想看某台机器就得重新滚一遍。保留上一次的数据，只记录错误。
+          setError("Unexpected response for common:getNodes");
           return;
         }
         // 将 { [uuid]: Client } 转换为 NodeBasicInfo[]
@@ -159,8 +166,13 @@ export const NodeListProvider: React.FC<{ children: React.ReactNode }> = ({
       })
       .catch((err: any) => {
         if (!mountedRef.current || refreshSeq !== refreshSeqRef.current) return;
+        // 同上：轮询失败只标记错误，保留已渲染的列表。
+        //
+        // 这条路径是长时间挂着面板时最常见的一次「全部卡片消失」：RPC 走
+        // WebSocket，心跳 15s、请求超时 30s，链路一旦假死就会 reject 一次；
+        // 清空列表的代价是整页高度归零、滚动位置丢失，而数据本身 5 秒后
+        // 就回来了。宁可显示几秒旧数据，也不要把页面撕掉重排。
         setError(err?.message || "An error occurred while fetching data");
-        setNodeList([]);
       })
       .finally(() => {
         if (!mountedRef.current || refreshSeq !== refreshSeqRef.current) return;
@@ -169,7 +181,7 @@ export const NodeListProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [call]);
 
   React.useEffect(() => {
-    refresh();
+    void refresh();
   }, [refresh]);
 
   const contextValue = React.useMemo(

@@ -138,30 +138,51 @@ const Index = () => {
   );
 
   useEffect(() => {
-    let interval: number | undefined;
-    const stopPolling = () => {
-      if (interval !== undefined) {
-        window.clearInterval(interval);
-        interval = undefined;
+    let timer: number | undefined;
+    let stopped = false;
+    let running = false;
+
+    const clearTimer = () => {
+      if (timer !== undefined) {
+        window.clearTimeout(timer);
+        timer = undefined;
       }
     };
-    const startPolling = () => {
-      if (interval === undefined && !document.hidden) {
-        interval = window.setInterval(refresh, 5000);
+
+    // 串行调度：上一次请求落地之后才排下一次。
+    //
+    // 原来是 setInterval(refresh, 5000)，而请求单次超时是 30 秒 —— 链路一慢
+    // 就会堆出六个并发，每一次失败都要花 30 秒，面板会连着抖好几轮。
+    // 串行之后最坏情况只是「刷新间隔变成一次请求的耗时」，不会叠加。
+    const tick = async () => {
+      if (stopped || running || document.hidden) return;
+      running = true;
+      try {
+        await refresh();
+      } catch {
+        // refresh 内部已经把错误写进 context，这里只负责排下一轮
+      } finally {
+        running = false;
+        clearTimer();
+        if (!stopped && !document.hidden) {
+          timer = window.setTimeout(tick, 5000);
+        }
       }
     };
+
     const handleVisibilityChange = () => {
-      stopPolling();
-      if (!document.hidden) {
-        refresh();
-        startPolling();
+      if (document.hidden) {
+        clearTimer();
+      } else {
+        void tick();
       }
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
-    startPolling();
+    void tick();
     return () => {
-      stopPolling();
+      stopped = true;
+      clearTimer();
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [refresh]);
@@ -169,7 +190,10 @@ const Index = () => {
   if (isLoading) {
     return <Loading />;
   }
-  if (error) {
+  // 只有「一次都没成功过」才用错误页顶掉整页。已经拿到数据之后再出错，
+  // 继续渲染旧列表 —— 否则一次轮询失败会让整页只剩一行 Error，高度塌缩、
+  // 滚动位置丢失，比数据本身旧几秒要难受得多。
+  if (error && nodeList === null) {
     return <div>Error: {error}</div>;
   }
 
